@@ -1,0 +1,9 @@
+{
+	"name": "db",
+	"authors": [
+		"zoujiaqing"
+	],
+	"description": "A minimal D application.",
+	"copyright": "Copyright © 2017, zoujiaqing",
+	"license": "proprietary"
+}
