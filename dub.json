@@ -5,5 +5,7 @@
 	],
 	"description": "A minimal D application.",
 	"copyright": "Copyright © 2017, zoujiaqing",
-	"license": "proprietary"
+	"license": "proprietary",
+	"versions": ["USE_MYSQL","MySQL_51"],
+	"libs":["mysqlclient"]
 }

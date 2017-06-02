@@ -1,17 +1,30 @@
 module db.driver.postgresql.connection;
 
-import db.driver.connection;
-import db.derver.postgresql.statement;
+import db;
 
 class PostgresqlConnection : Connection
 {
-    override Statemente query(string sql)
+	this(URL url)
+	{
+	
+	}
+
+	void close()
+	{
+	}
+
+	ResultSet queryImpl(string sql, Variant[] args...)
     {
         return null;
     }
 
-    override int execute(string sql)
+    int execute(string sql)
     {
         return 0;
     }
+
+	string escape(string sqlData)
+	{
+		return null;
+	}
 }

@@ -1,49 +1,55 @@
-
 module db.database;
 
-import db.driver.statement;
-import db.driver.connection;
+import db;
 
 class Database
 {
-    this(string uri)
-    {
-        //
-    }
+	this(string url)
+	{
+		this._url = url.parseURL;
+		initConnection();
+	}
 
-    bool beginTransaction()
-    {
-        //
-    }
+	private void initConnection()
+	{
+		switch(_url.scheme)
+		{
+			case "postgresql":
+				_conn = new PostgresqlConnection(_url);
+				break;
+			case "mysql":
+				_conn = new MysqlConnection(_url);
+				break;
+			default:
+				throw new Exception("Don't support database driver: %s", _url.scheme);
+		}
+	}
 
-    bool commit()
-    {
-        //
-    }
+	bool beginTransaction()
+	{
+		return false;
+	}
 
-    int errorCode()
-    {
-        //
-    }
+	bool commit()
+	{
+		return false;
+	}
 
-    int errorInfo()
-    {
-        //
-    }
+	int error()
+	{
+		return 0;
+	}
 
-    int execute(string sql)
-    {
-        //
-    }
+	int execute(string sql)
+	{
+		return _conn.execute(sql);
+	}
 
-    Statement query(string sql)
-    {
-        //
-    }
+	Statement query(string sql)
+	{
+		return new Statement(_conn,sql);
+	}
 
-    private
-    {
-        Connection _conn;
-        Statement _stmt;
-    }
+	Connection _conn;
+	URL _url;
 }
