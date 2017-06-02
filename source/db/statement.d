@@ -1,14 +1,26 @@
 module db.statement;
 
-import db.row;
+import db;
 
 class Statement
 {
-    this(string sql)
+	private Connection _conn;
+	private string _sql;
+    
+	this(Connection conn,string sql)
     {
-        //
+		this._conn = conn;
+		this._sql = sql;
     }
     
-    // return result set
-    Row[] fetch();
+	ResultSet fetchAll()
+	{
+		return _conn.query(_sql);
+	}
+
+	~this()
+	{
+		_conn = null;
+		_sql = null;
+	}
 }
