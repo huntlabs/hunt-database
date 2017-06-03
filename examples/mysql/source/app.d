@@ -5,6 +5,7 @@ import std.experimental.logger;
 
 void main()
 {
+
 	Database db = new Database("mysql://dev:111111@10.1.11.31:3306/blog?charset=utf-8");
 	
 	Statement statement = db.query("SELECT * FROM user");

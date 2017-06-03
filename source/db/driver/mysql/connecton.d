@@ -11,7 +11,7 @@ class MysqlConnection : Connection
 	private string _pass;
 	private string _db;
 	private uint _port;
-	private string[string] _querys;
+	private QueryParams _querys;
 	private MYSQL* mysql;
 
 	this(URL url) 
@@ -22,11 +22,12 @@ class MysqlConnection : Connection
 		this._user = url.user;
 		this._db = (url.path)[1..$];
 		this._pass = url.pass;
-		this._querys = url.query;
+		this._querys = url.queryParams;
 		this.dbname = this._db;
 		connect();
-		if("charset" in _querys)
-			execute("SET NAMES '"~ _querys["charset"] ~"'");
+		auto charset = _querys["charset"];
+		if(!charset.empty())
+			execute("SET NAMES '"~ charset.front ~"'");
 	}
 
 	~this() 
