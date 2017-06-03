@@ -4,3 +4,10 @@ __dummy.html
 *.o
 *.obj
 __test__*__
+*.o
+*.a
+*.so
+*.obj
+/obj
+/bin
+*_demo
