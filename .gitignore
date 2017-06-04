@@ -11,3 +11,5 @@ __test__*__
 /obj
 /bin
 *_demo
+libdb.a
+db-test-db_lib
