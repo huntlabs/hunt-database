@@ -13,3 +13,4 @@ __test__*__
 *_demo
 libdb.a
 db-test-db_lib
+mysql_demo
