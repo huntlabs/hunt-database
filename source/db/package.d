@@ -15,10 +15,12 @@ public import db.row;
 public import db.exception;
 
 public import db.driver.connection;
+public import db.driver.resultset;
+
 public import db.driver.mysql.connection;
 public import db.driver.mysql.driver;
+public import db.driver.mysql.resultset;
+
 public import db.driver.postgresql.connection;
 public import db.driver.postgresql.driver;
-
-public import db.resultset.resultset;
-public import db.resultset.mysql;
+//public import db.driver.postgresql.resultset;

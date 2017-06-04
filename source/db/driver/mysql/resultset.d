@@ -1,4 +1,4 @@
-module db.resultset.mysql;
+module db.driver.mysql.resultset;
 
 import db;
 

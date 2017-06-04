@@ -1,4 +1,4 @@
-module db.resultset.resultset;
+module db.driver.resultset;
 
 import db;
 
