@@ -98,16 +98,17 @@ class MySqlResult : ResultSet
 		//writeln(__FUNCTION__,__LINE__,numFields);
 		auto lengths = mysql_fetch_lengths(result);
 		//writeln(__FUNCTION__,__LINE__,length);
-		string[] row;
+		string[string] row;
 		// potential FIXME: not really binary safe
 
 		columnIsNull.length = numFields;
+		string[] _fieldNames = fieldNames();
 		for(int a = 0; a < numFields; a++) {
 			if(*(r+a) is null) {
-				row ~= null;
+				row[_fieldNames[a]] = null;
 				columnIsNull[a] = true;
 			} else {
-				row ~= fromCstring(*(r+a), *(lengths +a));
+				row[_fieldNames[a]] = fromCstring(*(r+a), *(lengths +a));
 				//writeln("all string------", fromCstring(*(r+a)));
 				//writeln("Column  ength:------", *(lengths++));
 				columnIsNull[a] = false;

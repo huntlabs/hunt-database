@@ -6,7 +6,7 @@ string yield(string what) { return `if(auto result = dg(`~what~`)) return result
 
 class Row 
 {
-	string[] row;
+	string[string] row;
 	ResultSet resultSet;
 
 	this()
@@ -19,6 +19,7 @@ class Row
 	
 	}
 
+	/*
 	string opIndex(size_t idx, string file = __FILE__, int line = __LINE__) {
 		if(idx >= row.length)
 			throw new Exception(text("index ", idx, " is out of bounds on result"), file, line);
@@ -31,11 +32,13 @@ class Row
 			throw new Exception(text("no field ", name, " in result"), file, line);
 		return row[idx];
 	}
+	*/
 
 	override string toString() {
 		return to!string(row);
 	}
 
+	/*
 	string[string] toAA() {
 		string[string] a;
 
@@ -46,15 +49,15 @@ class Row
 
 		return a;
 	}
-
 	int opApply(int delegate(ref string, ref string) dg) {
 		foreach(a, b; toAA())
 			mixin(yield("a, b"));
 
 		return 0;
 	}
+	*/
 
-	string[] toStringArray() {
+	string[string] toStringArray() {
 		return row;
 	}
 }
