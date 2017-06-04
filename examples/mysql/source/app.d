@@ -11,7 +11,7 @@ void main()
 	Statement statement = db.query("SELECT * FROM user");
 	
 	//ResultSet rs = statement.fetchAll();
-	db._conn.query("SELECT * from user");
+	//db._conn.query("SELECT * from user");
 
 	/*
 	Row[] rows = statement.fetch();
