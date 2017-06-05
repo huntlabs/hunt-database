@@ -12,9 +12,15 @@ class Statement
 		this._conn = conn;
 		this._sql = sql;
     }
+
+	string sql()
+	{
+		return _sql;
+	}
     
 	ResultSet fetchAll()
 	{
+		//writeln(__FUNCTION__,__LINE__,sql);
 		return _conn.query(_sql);
 	}
 

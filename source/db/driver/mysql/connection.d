@@ -36,14 +36,20 @@ class MysqlConnection : Connection
 
 	private void connect()
 	{
-		mysql = mysql_init(null);
-		char value = 1; 
-		mysql_options(mysql, mysql_option.MYSQL_OPT_RECONNECT, cast(char*)&value);
-		size_t read_timeout = 60;
-		mysql_options(mysql, mysql_option.MYSQL_OPT_READ_TIMEOUT, cast(size_t*)&read_timeout);
-		mysql_options(mysql, mysql_option.MYSQL_OPT_WRITE_TIMEOUT, cast(size_t*)&read_timeout);
-		mysql_real_connect(mysql, toCstring(_host), toCstring(_user), 
-				toCstring(_pass), toCstring(_db), _port, null, 0);
+		try{
+			mysql = mysql_init(null);
+			char value = 1; 
+			mysql_options(mysql, mysql_option.MYSQL_OPT_RECONNECT, cast(char*)&value);
+			size_t read_timeout = 60;
+			mysql_options(mysql, mysql_option.MYSQL_OPT_READ_TIMEOUT, cast(size_t*)&read_timeout);
+			mysql_options(mysql, mysql_option.MYSQL_OPT_WRITE_TIMEOUT, cast(size_t*)&read_timeout);
+			mysql_real_connect(mysql, toCstring(_host), toCstring(_user), 
+					toCstring(_pass), toCstring(_db), _port, null, 0);
+		}
+		catch(DatabaseException ex)
+		{
+			std.stdio.writeln(error());
+		}
 	}
 
 	int execute(string sql)
@@ -53,7 +59,6 @@ class MysqlConnection : Connection
 		return 1;
 	}
 
-	/*
 	void startTransaction() 
 	{
 		query("START TRANSACTION");
@@ -68,7 +73,6 @@ class MysqlConnection : Connection
 	{
 		return fromCstring(mysql_error(mysql));
 	}
-	*/
 	void close() 
 	{
 		try{
@@ -77,7 +81,6 @@ class MysqlConnection : Connection
 		{
 		}
 	}
-	/*
 	int pingMysql()
 	{
 		return mysql_ping(mysql);
@@ -92,7 +95,6 @@ class MysqlConnection : Connection
 	{
 		return cast(int) mysql_insert_id(mysql);
 	}
-	*/
 	string escape(string str) 
 	{
 		ubyte[] buffer = new ubyte[str.length * 2 + 1];
@@ -143,7 +145,6 @@ class MysqlConnection : Connection
 		return sql;
 	}
 
-	/*
 	ResultByDataObject!R queryDataObject(R = DataObject, T...)(string sql, T t) 
 	{
 		// modify sql for the best data object grabbing
@@ -170,9 +171,9 @@ class MysqlConnection : Connection
 		return cast(int) mysql_affected_rows(mysql);
 	}
 
-	*/
-	ResultSet queryImpl(string sql, Variant[] args...) 
+	override ResultSet queryImpl(string sql, Variant[] args...) 
 	{
+		//writeln(__FUNCTION__,__LINE__,sql);
 		import std.stdio;
 
 		sql = escapedVariants(this, sql, args);
@@ -184,6 +185,7 @@ class MysqlConnection : Connection
 		{
 			std.stdio.writeln( ex.msg, " :::: " , sql);
 		}
+		//writeln(__FUNCTION__,__LINE__,sql);
 		return new MySqlResult(mysql_store_result(mysql), sql);
 	}
 }

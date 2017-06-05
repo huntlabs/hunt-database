@@ -14,8 +14,7 @@ interface Connection
 
 	void close();
 
-
-	final ResultSet query(T...)(string sql, T t) {
+	ResultSet query(T...)(string sql, T t) {
 		Variant[] args;
 		foreach(arg; t) {
 			Variant a;
