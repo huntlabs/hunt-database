@@ -54,9 +54,7 @@ class MysqlConnection : Connection
 
 	int execute(string sql)
 	{
-		mysql_query(mysql, toCstring(sql));
-		//mysql_store_result(mysql), sql;
-		return 1;
+		return mysql_query(mysql, toCstring(sql));
 	}
 
 	void startTransaction() 
