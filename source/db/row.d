@@ -9,6 +9,16 @@ class Row
 	string[] row;
 	ResultSet resultSet;
 
+	this()
+	{
+	
+	}
+
+	~this()
+	{
+	
+	}
+
 	string opIndex(size_t idx, string file = __FILE__, int line = __LINE__) {
 		if(idx >= row.length)
 			throw new Exception(text("index ", idx, " is out of bounds on result"), file, line);

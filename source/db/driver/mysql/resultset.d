@@ -12,12 +12,15 @@ class MySqlResult : ResultSet
 
 	string sql;
 
-	this(MYSQL_RES* r, string sql) {
+	this(MYSQL_RES* r, string sql) 
+	{
+		row = new Row();
 		result = r;
 		itemsTotal = length();
 		itemsUsed = 0;
 		this.sql = sql;
 
+		//writeln(__FUNCTION__,__LINE__,itemsTotal);
 		// prime it
 		if(itemsTotal)
 			fetchNext();
@@ -92,7 +95,9 @@ class MySqlResult : ResultSet
 		if(r is null)
 			throw new Exception("there is no next row");
 		uint numFields = mysql_num_fields(result);
+		//writeln(__FUNCTION__,__LINE__,numFields);
 		auto lengths = mysql_fetch_lengths(result);
+		//writeln(__FUNCTION__,__LINE__,length);
 		string[] row;
 		// potential FIXME: not really binary safe
 
@@ -109,6 +114,7 @@ class MySqlResult : ResultSet
 			}
 		}
 
+		//writeln(__FUNCTION__,__LINE__,row);
 		this.row.row = row;
 		this.row.resultSet = this;
 	}
