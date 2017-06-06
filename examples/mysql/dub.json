@@ -1,19 +1,19 @@
 {
-	"name": "mysql_demo",
-	"authors": [
-		"Zhang"
-		],
-	"versions": [
-		"USE_MYSQL",
-		"MySQL_51"
-	],
-	"libs": [
-		"mysqlclient"
-	],
-	"dependencies": {
-		"db": {"path":"../../"}
-	},
-	"description": "A minimal D application.",
-	"copyright": "Copyright © 2017, Zhang",
-	"license": "public domain"
+    "name": "mysql_demo",
+    "authors": ["putao"],
+    "targetType": "executable",
+    "dependencies": {
+        "db": {"path":"../../"}
+    },
+    "description": "A minimal D application.",
+    "copyright": "Copyright © 2017, Zhang",
+    "license": "public domain",
+    "configurations": [
+        {
+            "name": "default",
+            "subConfigurations": {
+                "db": "mysql"
+            }
+        }
+    ]
 }

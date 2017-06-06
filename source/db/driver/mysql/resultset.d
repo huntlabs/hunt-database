@@ -1,7 +1,7 @@
 module db.driver.mysql.resultset;
 
 import db;
-
+version(USE_MYSQL): 
 class MySqlResult : ResultSet 
 {
 	private int[string] mapping;
