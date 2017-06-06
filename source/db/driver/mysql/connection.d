@@ -2,6 +2,7 @@ module db.driver.mysql.connection;
 
 import db;
 
+version(USE_MYSQL):
 class MysqlConnection : Connection
 {
 	public string dbname;

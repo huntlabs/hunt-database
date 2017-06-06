@@ -1,31 +1,40 @@
 {
-	"name": "db",
-	"authors": [
-		"zoujiaqing"
-	],
-	"description": "A minimal D application.",
-	"copyright": "Copyright © 2017, zoujiaqing",
-	"license": "public domain",
-	"versions": [
-		"USE_MYSQL",
-		"MySQL_51"
-	],
-	"libs": [
-		"mysqlclient"
-	],
-	"configurations": [
-		{
-			"name": "db_lib"
-		},
-		{
-			"name": "mysql_demo",
-			"targetType": "executable",
-			"targetName": "mysql_demo",
-			"sourcePaths": [
-				"examples/mysql"
-			],
-			"mainSourceFile": "examples/mysql/source/app.d",
-			"targetPath": "examples/mysql"
-		}
-	]
+    "name": "db",
+    "authors": [
+        "zoujiaqing"
+    ],
+    "description": "A minimal D application.",
+    "copyright": "Copyright © 2017, zoujiaqing",
+    "license": "public domain",
+    "configurations": [
+        {
+            "name": "default",
+            "targetType": "library"
+        },
+        {
+            "name": "mysql",
+            "targetType": "library",
+            "versions": [
+                "USE_MYSQL",
+                "MySQL_51"
+            ],
+            "libs": [
+                "mysqlclient"
+            ],
+        },
+        {
+            "name": "pgsql",
+            "targetType": "library",
+            "versions": [
+                "USE_PGSQL",
+            ],
+            "libs": [
+                "pq"
+            ],
+        },
+        {
+            "name": "sqlite",
+            "targetType": "library"
+        }
+    ]
 }

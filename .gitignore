@@ -14,3 +14,4 @@ __test__*__
 libdb.a
 db-test-db_lib
 mysql_demo
+pgsql_demo

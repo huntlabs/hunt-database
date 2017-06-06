@@ -14,12 +14,16 @@ class Database
 	{
 		switch(_url.scheme)
 		{
-			case "postgresql":
+            version(USE_PGSQL){
+			case "pgsql":
 				_conn = new PostgresqlConnection(_url);
 				break;
+            }
+            version(USE_MYSQL){
 			case "mysql":
 				_conn = new MysqlConnection(_url);
 				break;
+            }
 			default:
 				throw new Exception("Don't support database driver: %s", _url.scheme);
 		}
