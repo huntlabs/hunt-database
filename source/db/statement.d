@@ -20,7 +20,6 @@ class Statement
     
 	ResultSet fetchAll()
 	{
-		//writeln(__FUNCTION__,__LINE__,sql);
 		return _conn.query(_sql);
 	}
 

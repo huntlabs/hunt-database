@@ -4,9 +4,7 @@ import db;
 version(USE_MYSQL): 
 class MysqlResult : ResultSet 
 {
-	private int[string] mapping;
 	private MYSQL_RES* result;
-
 	private int itemsTotal;
 	private int itemsUsed;
 	public bool[] columnIsNull;
@@ -16,7 +14,6 @@ class MysqlResult : ResultSet
 
 	this(MYSQL_RES* res, string sql) 
 	{
-		this.row = new Row();
 		this.result = res;
 		this.itemsTotal = length();
 		this.itemsUsed = 0;
@@ -50,6 +47,10 @@ class MysqlResult : ResultSet
 			return 0;
 		return cast(int) mysql_num_rows(result);
 	}
+	int columns() {
+		if(result is null)return 0;
+		return mysql_num_fields(result);
+	}
 
 	bool empty() 
 	{
@@ -61,14 +62,16 @@ class MysqlResult : ResultSet
 		return row;
 	}
 
-	void popFront() {
+	void popFront() 
+	{
 		itemsUsed++;
 		if(itemsUsed < itemsTotal) {
 			fetchNext();
 		}
 	}
 
-	private void fetchNext() {
+	private void fetchNext() 
+	{
 		assert(result);
 		auto r = mysql_fetch_row(result);
 		if(r is null)
@@ -89,7 +92,7 @@ class MysqlResult : ResultSet
 			}
 		}
 
-		this.row.row = row;
+		this.row = new Row(row);
 		this.row.resultSet = this;
 	}
 

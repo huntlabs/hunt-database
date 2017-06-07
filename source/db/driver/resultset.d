@@ -8,4 +8,5 @@ interface ResultSet {
 	Row front() @property;
 	void popFront() ;
 	int length() @property;
+	int columns() @property;
 }
