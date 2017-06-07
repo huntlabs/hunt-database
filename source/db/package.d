@@ -7,6 +7,7 @@ public import std.variant;
 public import std.conv;
 public import std.string;
 public import std.exception;
+public import std.experimental.logger;
 
 public import db.url;
 public import db.database;
@@ -18,9 +19,9 @@ public import db.driver.connection;
 public import db.driver.resultset;
 
 public import db.driver.mysql.connection;
-public import db.driver.mysql.driver;
+public import db.driver.mysql.binding;
 public import db.driver.mysql.resultset;
 
 public import db.driver.postgresql.connection;
-public import db.driver.postgresql.driver;
-//public import db.driver.postgresql.resultset;
+public import db.driver.postgresql.binding;
+public import db.driver.postgresql.resultset;

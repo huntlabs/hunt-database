@@ -1,10 +1,9 @@
-module db.driver.postgresql.driver;
+module db.driver.postgresql.binding;
 
 import core.stdc.stdio;
 
 version(USE_PGSQL):
 extern(System) {
-    // from server/catalog/pg_type.h
 	enum BOOLOID = 16;
 	enum BYTEAOID = 17;
 	enum CHAROID = 18;

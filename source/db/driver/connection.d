@@ -10,8 +10,6 @@ interface Connection
 	// return Statement object
 	ResultSet queryImpl(string sql, Variant[] args...);
 
-	string escape(string sql);
-
 	void close();
 
 	ResultSet query(T...)(string sql, T t) {
