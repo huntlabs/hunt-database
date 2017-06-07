@@ -11,6 +11,7 @@ interface Connection
 	ResultSet queryImpl(string sql, Variant[] args...);
 
 	void close();
+    string escape(string sql);
 
 	ResultSet query(T...)(string sql, T t) {
 		Variant[] args;

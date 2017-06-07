@@ -6,11 +6,12 @@ string yield(string what) { return `if(auto result = dg(`~what~`)) return result
 
 class Row 
 {
-	string[string] row;
-	ResultSet resultSet;
+	public string[string] row;
+	public ResultSet resultSet;
 
-	this()
+	this(string[string] row)
 	{
+		this.row = row;
 	}
 
 	~this()

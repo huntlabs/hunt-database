@@ -4,6 +4,9 @@ import db;
 
 class Database
 {
+	Connection _conn;
+	URL _url;
+
 	this(string url)
 	{
 		this._url = url.parseURL;
@@ -53,7 +56,4 @@ class Database
 	{
 		return new Statement(_conn,sql);
 	}
-
-	Connection _conn;
-	URL _url;
 }
