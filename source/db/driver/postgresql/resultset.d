@@ -1,9 +1,39 @@
 module db.driver.postgresql.resultset;
 
+import db;
+version(USE_PGSQL):
 pragma(lib, "pq");
 pragma(lib, "pgtypes");
 
-import db;
+class PgsqlResult : ResultSet 
+{
+	private PGresult* res;
+	this(PGresult* res)
+	{
+		this.res = res;
+	}
+	string[] fieldNames()
+	{
+		return null;
+	}
+	bool empty()
+	{
+		return true;
+	}
+	Row front()
+	{
+		return null;
+	}
+	void popFront()
+	{
+	
+	}
+	int length()
+	{
+		return 0;
+	}
+}
+
 /*
 struct Describe {
 	int dbType;

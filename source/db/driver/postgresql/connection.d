@@ -1,10 +1,38 @@
 module db.driver.postgresql.connection;
 
+import db;
+version(USE_PGSQL):
 pragma(lib, "pq");
 pragma(lib, "pgtypes");
 
-import db;
-/*
+void error(string file = __FILE__, size_t line = __LINE__)(PGconn* con, string msg) {
+    import std.conv;
+
+    auto s = msg ~ to!string(PQerrorMessage(con));
+    throw new DatabaseException(s,file,line);
+}
+
+void error(string file = __FILE__, size_t line = __LINE__)(PGconn* con, string msg, int result) {
+    import std.conv;
+
+    auto s = "error:" ~ msg ~ ": " ~ to!string(result) ~ ": " ~ to!string(PQerrorMessage(con));
+    throw new DatabaseException(s,file,line);
+}
+
+int check(string file = __FILE__, size_t line = __LINE__)(PGconn* con, string msg, int result) {
+    info(msg, ": ", result);
+    if (result != 1)
+    error!(file,line)(con, msg, result);
+    return result;
+}
+
+int checkForZero(string file = __FILE__, size_t line = __LINE__)(PGconn* con, string msg, int result) {
+    info(msg, ": ", result);
+    if (result != 0)
+    error!(file,line)(con, msg, result);
+    return result;
+}
+
 class PostgresqlConnection :  Connection 
 {
     public string dbname;
@@ -34,7 +62,7 @@ class PostgresqlConnection :  Connection
     {
         string conninfo;
         conninfo ~= "host=" ~ _host;
-        if(_port.length) conninfo ~= " port=" ~ to!string(_port);
+        if(_port > 0) conninfo ~= " port=" ~ to!string(_port);
         conninfo ~= " dbname=" ~ _db;
         if(_user.length) conninfo ~= " user=" ~ _user;
         if(_pass.length) conninfo ~= " password=" ~ _pass;
@@ -66,12 +94,15 @@ class PostgresqlConnection :  Connection
         return 0; 
     }
 
-        override ResultSet queryImpl(string sql, Variant[] args...) 
-        {
-            return null;
-        }
-        }
-
+    override ResultSet queryImpl(string sql, Variant[] args...) 
+    {
+        trace("query sql: ", sql);
+        PGresult* res;
+        res = PQexec(con,toStringz(sql));
+        return new PgsqlResult(res);
+    }
+}
+/*
 struct Statement {
     Connection* connection;
     string sql;
@@ -173,7 +204,8 @@ struct Statement {
     }
 
 }
-
+*/
+/*
 struct Describe {
     int dbType;
     int fmt;

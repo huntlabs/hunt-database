@@ -1,4 +1,4 @@
-module db.driver.mysql.driver;
+module db.driver.mysql.binding;
 
 version(USE_MYSQL ):
 version(MySQL_51) {

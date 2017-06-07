@@ -152,7 +152,7 @@ class MysqlConnection : Connection
 		//writeln(sql);
 		auto magic = query(sql, t);
 		//writeln("------------------------");
-		return ResultByDataObject!R(cast(MySqlResult) magic, this);
+		return ResultByDataObject!R(cast(MysqlResult) magic, this);
 	}
 
 
@@ -162,7 +162,7 @@ class MysqlConnection : Connection
 			sql = fixupSqlForDataObjectUse(sql, keyMapping);
 
 			auto magic = query(sql, t);
-			return ResultByDataObject!R(cast(MySqlResult) magic, this);
+			return ResultByDataObject!R(cast(MysqlResult) magic, this);
 		}
 
 	int affectedRows() 
@@ -185,7 +185,7 @@ class MysqlConnection : Connection
 			std.stdio.writeln( ex.msg, " :::: " , sql);
 		}
 		//writeln(__FUNCTION__,__LINE__,sql);
-		return new MySqlResult(mysql_store_result(mysql), sql);
+		return new MysqlResult(mysql_store_result(mysql), sql);
 	}
 }
 
