@@ -1,6 +1,7 @@
 module db.database;
 
 import db;
+import db.driver.sqlite.connection;
 
 class Database
 {
@@ -19,6 +20,9 @@ class Database
 				break;
 			case "mysql":
 				_conn = new MysqlConnection(_url);
+				break;
+			case "sqlite":
+				_conn = new SQLiteConnection(_url);
 				break;
 			default:
 				throw new Exception("Don't support database driver: %s", _url.scheme);
@@ -50,6 +54,11 @@ class Database
 		return new Statement(_conn,sql);
 	}
 
+	void close()
+	{
+
+	}
+	
 	Connection _conn;
 	URL _url;
 }

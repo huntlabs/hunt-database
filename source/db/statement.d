@@ -6,6 +6,12 @@ class Statement
 {
 	private Connection _conn;
 	private string _sql;
+
+
+	this(Connection conn)
+    {
+		this._conn = conn;
+    }
     
 	this(Connection conn,string sql)
     {
@@ -22,6 +28,11 @@ class Statement
 	{
 		//writeln(__FUNCTION__,__LINE__,sql);
 		return _conn.query(_sql);
+	}
+
+	void close()
+	{
+
 	}
 
 	~this()
