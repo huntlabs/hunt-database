@@ -1,5 +1,7 @@
 module db;
 
+public import std.path;
+public import std.file;
 public import std.stdio;
 public import std.traits;
 public import std.typecons;
@@ -25,3 +27,7 @@ public import db.driver.mysql.resultset;
 public import db.driver.postgresql.connection;
 public import db.driver.postgresql.binding;
 public import db.driver.postgresql.resultset;
+
+public import db.driver.sqlite.connection;
+public import db.driver.sqlite.binding;
+public import db.driver.sqlite.resultset;

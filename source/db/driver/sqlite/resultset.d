@@ -1,423 +1,123 @@
 module db.driver.sqlite.resultset;
 
-import db;
 version(USE_SQLITE):
-import etc.c.sqlite3;
+import db;
+import core.stdc.string : strlen;
 
-class SQLITEResultSet : ResultSet
+class SqliteResult : ResultSet
 {
-    private SQLiteStatement stmt;
-    private sqlite3_stmt* rs;
-    ResultSetMetaData metadata;
-    private bool closed;
-    private int currentRowIndex;
-    //        private int rowCount;
-    private int[string] columnMap;
-    private bool lastIsNull;
-    private int columnCount;
+	private int itemsTotal;
+	private int itemsUsed;
+	public bool[] columnIsNull;
+	private Row row;
+	private sqlite3* conn;
+	private sqlite3_stmt* st;
+	private string sql;
+	private string[] _fieldNames;
+	private int _columns;
+	private char** dbResult;
+	private char* errmsg;
+	private bool firstLine = true;
+	private int nCount;
+	private int index;
 
-    private bool _last;
-    private bool _first;
+	this(sqlite3* conn,string sql)
+	{
+		this.conn = conn;
+		this.sql = sql;
 
-    // checks index, updates lastIsNull, returns column type
-    int checkIndex(int columnIndex)
-    {
-        enforceEx!SQLException(columnIndex >= 1 && columnIndex <= columnCount,
-                "Column index out of bounds: " ~ to!string(columnIndex));
-        int res = sqlite3_column_type(rs, columnIndex - 1);
-        lastIsNull = (res == SQLITE_NULL);
-        return res;
-    }
+		writeln(sql);
+		
+		int res = sqlite3_get_table(conn,toStringz(sql), &dbResult, &itemsTotal, &_columns, &errmsg );
+		nCount = itemsTotal * _columns;
+		if(this.itemsTotal)
+			fetchNext();
+		
+		/*
+		int res = sqlite3_prepare_v2(conn, toStringz(sql),
+				cast(int) sql.length + 1, &st, null);
+		if (res != SQLITE_OK)
+			throw new DatabaseException("prepare");
+		int binds_ = sqlite3_bind_parameter_count(st);
+		int nlength = 0;
+		int status = SQLITE_ROW;
+		while(status == SQLITE_ROW){
+			status = sqlite3_step(st);
+			nlength++;
+		}
+		writeln(__LINE__,nlength);
+		int columns = sqlite3_column_count(st);
+		int length = sqlite3_data_count(st);
+		writeln(__LINE__,":",columns);
+		writeln(__LINE__,":",length);
+		for(int i = 0;i<columns * nlength;i++)
+		{
+			auto ptr = sqlite3_column_name(st, i);
+			string type = cast(string) ptr[0 .. strlen(ptr)];
+			writeln(__LINE__,":",type);
+			ubyte * bytes = cast(ubyte *)sqlite3_column_blob(st, i);
+			int len = sqlite3_column_bytes(st, i);
+			string value = cast(string)bytes[0..len];
+			writeln(__LINE__,":",value);
+		}
+		*/
+		
+	}
 
-    void checkClosed()
-    {
-        if (closed)
-            throw new SQLException("Result set is already closed");
-    }
+	~this()
+	{
+		sqlite3_free_table(dbResult);
+		sqlite3_finalize(st);
+		st = null;
+	}
 
-public:
+	string[] fieldNames()
+	{
+		return _fieldNames;
+	}
+	bool empty()
+	{
+		return itemsUsed == itemsTotal;
+	}
+	Row front()
+	{
+		return this.row;
+	}
+	void popFront()
+	{
+		itemsUsed++;
+		if(itemsUsed < itemsTotal) {
+			fetchNext();
+		}
+	}
+	int length()
+	{
+		return itemsTotal;
+	}
+	int columns()
+	{
+		return _columns;
+	}
 
-    void lock()
-    {
-        stmt.lock();
-    }
-
-    void unlock()
-    {
-        stmt.unlock();
-    }
-
-    this(SQLiteStatement stmt, sqlite3_stmt* rs, ResultSetMetaData metadata)
-    {
-        this.stmt = stmt;
-        this.rs = rs;
-        this.metadata = metadata;
-        closed = false;
-        this.columnCount = sqlite3_data_count(rs); //metadata.getColumnCount();
-        for (int i = 0; i < columnCount; i++)
-        {
-            columnMap[metadata.getColumnName(i + 1)] = i;
-        }
-        currentRowIndex = -1;
-        _first = true;
-    }
-
-    void onStatementClosed()
-    {
-        closed = true;
-    }
-
-    string decodeTextBlob(ubyte[] data)
-    {
-        char[] res = new char[data.length];
-        foreach (i, ch; data)
-        {
-            res[i] = cast(char) ch;
-        }
-        return to!string(res);
-    }
-
-    // ResultSet interface implementation
-
-    //Retrieves the number, types and properties of this ResultSet object's columns
-    override ResultSetMetaData getMetaData()
-    {
-        checkClosed();
-        lock();
-        scope (exit)
-            unlock();
-        return metadata;
-    }
-
-    override void close()
-    {
-        if (closed)
-            return;
-        checkClosed();
-        lock();
-        scope (exit)
-            unlock();
-        stmt.closeResultSet();
-        closed = true;
-    }
-
-    override bool first()
-    {
-        checkClosed();
-        lock();
-        scope (exit)
-            unlock();
-        throw new SQLException("Not implemented");
-    }
-
-    override bool isFirst()
-    {
-        checkClosed();
-        lock();
-        scope (exit)
-            unlock();
-        return _first;
-    }
-
-    override bool isLast()
-    {
-        checkClosed();
-        lock();
-        scope (exit)
-            unlock();
-        return _last;
-    }
-
-    override bool next()
-    {
-        checkClosed();
-        lock();
-        scope (exit)
-            unlock();
-
-        if (_first)
-        {
-            _first = false;
-            //writeln("next() first time invocation, columnCount=" ~ to!string(columnCount));
-            //return columnCount > 0;
-        }
-
-        int res = sqlite3_step(rs);
-        if (res == SQLITE_DONE)
-        {
-            _last = true;
-            columnCount = sqlite3_data_count(rs);
-            //writeln("sqlite3_step = SQLITE_DONE columnCount=" ~ to!string(columnCount));
-            // end of data
-            return columnCount > 0;
-        }
-        else if (res == SQLITE_ROW)
-        {
-            //writeln("sqlite3_step = SQLITE_ROW");
-            // have a row
-            currentRowIndex++;
-            columnCount = sqlite3_data_count(rs);
-            return true;
-        }
-        else
-        {
-            enforceEx!SQLException(false,
-                    "Error #" ~ to!string(res) ~ " while reading query result: " ~ copyCString(
-                        sqlite3_errmsg(stmt.conn.getConnection())));
-            return false;
-        }
-    }
-
-    override int findColumn(string columnName)
-    {
-        checkClosed();
-        lock();
-        scope (exit)
-            unlock();
-        int* p = (columnName in columnMap);
-        if (!p)
-            throw new SQLException("Column " ~ columnName ~ " not found");
-        return *p + 1;
-    }
-
-    override bool getBoolean(int columnIndex)
-    {
-        return getLong(columnIndex) != 0;
-    }
-
-    override ubyte getUbyte(int columnIndex)
-    {
-        return cast(ubyte) getLong(columnIndex);
-    }
-
-    override byte getByte(int columnIndex)
-    {
-        return cast(byte) getLong(columnIndex);
-    }
-
-    override short getShort(int columnIndex)
-    {
-        return cast(short) getLong(columnIndex);
-    }
-
-    override ushort getUshort(int columnIndex)
-    {
-        return cast(ushort) getLong(columnIndex);
-    }
-
-    override int getInt(int columnIndex)
-    {
-        return cast(int) getLong(columnIndex);
-    }
-
-    override uint getUint(int columnIndex)
-    {
-        return cast(uint) getLong(columnIndex);
-    }
-
-    override long getLong(int columnIndex)
-    {
-        checkClosed();
-        checkIndex(columnIndex);
-        lock();
-        scope (exit)
-            unlock();
-        auto v = sqlite3_column_int64(rs, columnIndex - 1);
-        return v;
-    }
-
-    override ulong getUlong(int columnIndex)
-    {
-        return cast(ulong) getLong(columnIndex);
-    }
-
-    override double getDouble(int columnIndex)
-    {
-        checkClosed();
-        checkIndex(columnIndex);
-        lock();
-        scope (exit)
-            unlock();
-        auto v = sqlite3_column_double(rs, columnIndex - 1);
-        return v;
-    }
-
-    override float getFloat(int columnIndex)
-    {
-        return cast(float) getDouble(columnIndex);
-    }
-
-    override byte[] getBytes(int columnIndex)
-    {
-        checkClosed();
-        checkIndex(columnIndex);
-        lock();
-        scope (exit)
-            unlock();
-        const byte* bytes = cast(const byte*) sqlite3_column_blob(rs, columnIndex - 1);
-        int len = sqlite3_column_bytes(rs, columnIndex - 1);
-        byte[] res = new byte[len];
-        for (int i = 0; i < len; i++)
-            res[i] = bytes[i];
-        return res;
-    }
-
-    override ubyte[] getUbytes(int columnIndex)
-    {
-        checkClosed();
-        checkIndex(columnIndex);
-        lock();
-        scope (exit)
-            unlock();
-        const ubyte* bytes = cast(const ubyte*) sqlite3_column_blob(rs, columnIndex - 1);
-        int len = sqlite3_column_bytes(rs, columnIndex - 1);
-        ubyte[] res = new ubyte[len];
-        for (int i = 0; i < len; i++)
-            res[i] = bytes[i];
-        return res;
-    }
-
-    override string getString(int columnIndex)
-    {
-        checkClosed();
-        checkIndex(columnIndex);
-        lock();
-        scope (exit)
-            unlock();
-        const char* bytes = cast(const char*) sqlite3_column_text(rs, columnIndex - 1);
-        int len = sqlite3_column_bytes(rs, columnIndex - 1);
-        char[] res = new char[len];
-        for (int i = 0; i < len; i++)
-            res[i] = bytes[i];
-        return cast(string) res;
-    }
-
-    override DateTime getDateTime(int columnIndex)
-    {
-        string s = getString(columnIndex);
-        DateTime dt;
-        if (s is null)
-            return dt;
-        try
-        {
-            return DateTime.fromISOString(s);
-        }
-        catch (Throwable e)
-        {
-            throw new SQLException("Cannot convert string to DateTime - " ~ s);
-        }
-    }
-
-    override Date getDate(int columnIndex)
-    {
-        string s = getString(columnIndex);
-        Date dt;
-        if (s is null)
-            return dt;
-        try
-        {
-            return Date.fromISOString(s);
-        }
-        catch (Throwable e)
-        {
-            throw new SQLException("Cannot convert string to DateTime - " ~ s);
-        }
-    }
-
-    override TimeOfDay getTime(int columnIndex)
-    {
-        string s = getString(columnIndex);
-        TimeOfDay dt;
-        if (s is null)
-            return dt;
-        try
-        {
-            return TimeOfDay.fromISOString(s);
-        }
-        catch (Throwable e)
-        {
-            throw new SQLException("Cannot convert string to DateTime - " ~ s);
-        }
-    }
-
-    override Variant getVariant(int columnIndex)
-    {
-        checkClosed();
-        int type = checkIndex(columnIndex);
-        lock();
-        scope (exit)
-            unlock();
-        Variant v = null;
-        if (lastIsNull)
-            return v;
-        switch (type)
-        {
-        case SQLITE_INTEGER:
-            v = getLong(columnIndex);
-            break;
-        case SQLITE_FLOAT:
-            v = getDouble(columnIndex);
-            break;
-        case SQLITE3_TEXT:
-            v = getString(columnIndex);
-            break;
-        case SQLITE_BLOB:
-            v = getUbytes(columnIndex);
-            break;
-        default:
-            break;
-        }
-        return v;
-    }
-
-    override bool wasNull()
-    {
-        checkClosed();
-        lock();
-        scope (exit)
-            unlock();
-        return lastIsNull;
-    }
-
-    override bool isNull(int columnIndex)
-    {
-        checkClosed();
-        lock();
-        scope (exit)
-            unlock();
-        checkIndex(columnIndex);
-        return lastIsNull;
-    }
-
-    //Retrieves the Statement object that produced this ResultSet object.
-    override Statement getStatement()
-    {
-        checkClosed();
-        lock();
-        scope (exit)
-            unlock();
-        return stmt;
-    }
-
-    //Retrieves the current row number
-    override int getRow()
-    {
-        checkClosed();
-        lock();
-        scope (exit)
-            unlock();
-        if (currentRowIndex < 0)
-            return 0;
-        return currentRowIndex + 1;
-    }
-
-    //Retrieves the fetch size for this ResultSet object.
-    override int getFetchSize()
-    {
-        checkClosed();
-        lock();
-        scope (exit)
-            unlock();
-        return -1;
-    }
+	private void fetchNext()
+	{
+		if(firstLine)
+		{
+			for(int i = 0;i<_columns;i++)
+			{
+				_fieldNames ~= cast(string)fromStringz(dbResult[i]);
+			}
+			index++;
+			firstLine = false;
+		}
+		string[string] row;
+		for(int i = _columns * index;i<(_columns * (index + 1));i++)
+		{
+			row[_fieldNames[i % _columns ]] = cast(string)fromStringz(dbResult[i]);
+		}
+		index++;
+		
+		this.row = new Row(row);
+		this.row.resultSet = this;
+	}
 }
