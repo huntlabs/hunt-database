@@ -8,6 +8,7 @@ pragma(lib, "sqlite3");
 
 void main()
 {
+	/*
 	//sqlite://relative
 	Database db = new Database("sqlite:///./db/db-test.sqlite");
 
@@ -42,4 +43,5 @@ void main()
 	}
 
 	db.close();
+	*/
 }

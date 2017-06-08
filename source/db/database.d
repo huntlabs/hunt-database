@@ -20,21 +20,23 @@ class Database
 		{
 			version (USE_PGSQL)
 			{
-		case "pgsql":
-				_conn = new PostgresqlConnection(_url);
-				break;
+				case "pgsql":
+					_conn = new PostgresqlConnection(_url);
+					break;
 			}
 			version (USE_MYSQL)
 			{
-		case "mysql":
-				_conn = new MysqlConnection(_url);
-				break;
-		case "sqlite":
-				_conn = new SQLiteConnection(_url);
-				break;
-		default:
-				throw new Exception("Don't support database driver: %s", _url.scheme);
+				case "mysql":
+					_conn = new MysqlConnection(_url);
+					break;
 			}
+			version(USE_SQLITE){
+				case "sqlite":
+					_conn = new SQLiteConnection(_url);
+					break;
+			}
+			default:
+			throw new Exception("Don't support database driver: %s", _url.scheme);
 		}
 	}
 

@@ -1,13 +1,7 @@
 module db.driver.sqlite.connection;
 
-// import db.database;
-import db.driver.connection;
-import db.driver.resultset;
-import db.driver.utils;
-import db.exception;
-import db.statement;
-import db.url;
-
+import db;
+version(USE_SQLITE):
 import std.algorithm;
 import std.conv;
 import std.datetime;

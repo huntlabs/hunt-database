@@ -1,4 +1,4 @@
-module db.driver.sqlite.driver;
+module db.driver.sqlite.binding;
 
 /**
 This module contains implementation of SQLite Driver

@@ -1,47 +1,15 @@
 {
 	"name": "db",
 	"authors": [
-		"zoujiaqing"
+		"putao"
 	],
 	"description": "A minimal D application.",
-	"copyright": "Copyright © 2017, zoujiaqing",
+	"copyright": "Copyright © 2017, putao",
 	"license": "public domain",
-	"versions": [
-		"USE_MYSQL",
-		"USE_SQLITE",
-		"USE_PGSQL"
-	],
-	"libs": [
-		"mysqlclient"
-	],
 	"configurations": [
 		{
 			"name": "default",
-            "targetType": "library",
-			"versions": [
-				"USE_MYSQL",
-				"USE_SQLITE",
-				"USE_PGSQL"
-			],
-			"libs": [
-				"mysqlclient"
-			],
-			"libs-posix": [
-				"sqlite3"
-			],
-			"libs-windows": [
-				"sqlite3"
-			]
-		},
-		{
-			"name": "mysql_demo",
-			"targetType": "executable",
-			"targetName": "mysql_demo",
-			"sourcePaths": [
-				"examples/mysql"
-			],
-			"mainSourceFile": "examples/mysql/source/app.d",
-			"targetPath": "examples/mysql"
+            "targetType": "library"
 		},
         {
             "name": "mysql",
@@ -52,36 +20,17 @@
             ],
             "libs": [
                 "mysqlclient"
-            ],
+            ]
         },
-		{
-			"name": "sqlite_demo",
-			"versions": [
-				"USE_SQLITE"
-			],
-			"targetType": "executable",
-			"targetName": "sqlite_demo",
-			"sourcePaths": [
-				"examples/sqlite"
-			],
-			"mainSourceFile": "examples/sqlite/source/app.d",
-			"targetPath": "examples/sqlite",
-			"libs-posix": [
-				"sqlite3"
-			],
-			"libs-windows": [
-				"sqlite3"
-			]
-		},
         {
             "name": "pgsql",
             "targetType": "library",
             "versions": [
-                "USE_PGSQL",
+                "USE_PGSQL"
             ],
             "libs": [
                 "pq"
-            ],
+            ]
         },
 		{
 			"name": "sqlite",
