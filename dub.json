@@ -8,14 +8,29 @@
 	"license": "public domain",
 	"versions": [
 		"USE_MYSQL",
-		"MySQL_51"
+		"USE_SQLITE",
+		"USE_PGSQL"
 	],
 	"libs": [
 		"mysqlclient"
 	],
 	"configurations": [
 		{
-			"name": "db_lib"
+			"name": "full_lib",
+			"versions": [
+				"USE_MYSQL",
+				"USE_SQLITE",
+				"USE_PGSQL"
+			],
+			"libs": [
+				"mysqlclient"
+			],
+			"libs-posix": [
+				"sqlite3"
+			],
+			"libs-windows": [
+				"sqlite3"
+			]
 		},
 		{
 			"name": "mysql_demo",
@@ -26,6 +41,37 @@
 			],
 			"mainSourceFile": "examples/mysql/source/app.d",
 			"targetPath": "examples/mysql"
+		},
+		{
+			"name": "sqlite_demo",
+			"versions": [
+				"USE_SQLITE"
+			],
+			"targetType": "executable",
+			"targetName": "sqlite_demo",
+			"sourcePaths": [
+				"examples/sqlite"
+			],
+			"mainSourceFile": "examples/sqlite/source/app.d",
+			"targetPath": "examples/sqlite",
+			"libs-posix": [
+				"sqlite3"
+			],
+			"libs-windows": [
+				"sqlite3"
+			]
+		},
+		{
+			"name": "SQLite",
+			"versions": [
+				"USE_SQLITE"
+			],
+			"libs-posix": [
+				"sqlite3"
+			],
+			"libs-windows": [
+				"sqlite3"
+			]
 		}
 	]
 }

@@ -1,0 +1,9 @@
+{
+	"name": "sqlite",
+	"authors": [
+		"Zhang"
+	],
+	"description": "A minimal D application for testing SQLite.",
+	"copyright": "Copyright © 2017, Zhang",
+	"license": "public domain"
+}
