@@ -1,13 +1,13 @@
-module db.driver.mysql.driver;
+module db.driver.mysql.binding;
 
 version(USE_MYSQL ):
 version(MySQL_51) {
 	// we good
 } else version(Less_Than_MySQL_51) {
 	// we good
-} else
+} else {
 pragma(msg, "NOTE: If you are using MySQL 5.1 or newer, specify -version=MySQL_51 to dmd to avoid segfaults. If you are on an older version, you can shut this message up with -version=Less_Than_MySQL_51");
-
+}
 version(Windows) {
 	pragma(lib, "libmysql");
 }
@@ -33,6 +33,7 @@ enum CR_SERVER_LOST = 2013;
 extern(System) {
 	struct MYSQL;
 	struct MYSQL_RES;
+	struct MYSQL_STMT;
 	/* typedef */ alias const(ubyte)* cstring;
 
 	struct MYSQL_FIELD {
@@ -75,7 +76,8 @@ extern(System) {
 		MYSQL_REPORT_DATA_TRUNCATION, MYSQL_OPT_RECONNECT  
 	}; 
 
-	/* typedef */ alias cstring* MYSQL_ROW;
+	/* typedef */ 
+	alias cstring* MYSQL_ROW;
 
 	cstring mysql_get_client_info();
 	MYSQL* mysql_init(MYSQL*);
@@ -112,6 +114,11 @@ extern(System) {
 	void mysql_free_result(MYSQL_RES*);
 	size_t mysql_thread_id(MYSQL* mysql);
 
+	/*
+	MYSQL_STMT* mysql_stmt_init(MYSQL*);
+	void mysql_stmt_close(MYSQL_STMT*);
+	int mysql_stmt_prepare(MYSQL_STMT*,cstring str,c_ulong length);
+	*/
 }
 
 

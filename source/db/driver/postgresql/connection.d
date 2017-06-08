@@ -1,30 +1,111 @@
 module db.driver.postgresql.connection;
 
 import db;
+version(USE_PGSQL):
+pragma(lib, "pq");
+pragma(lib, "pgtypes");
 
-class PostgresqlConnection : Connection
+void error(string file = __FILE__, size_t line = __LINE__)(PGconn* con, string msg) {
+    import std.conv;
+
+    auto s = msg ~ to!string(PQerrorMessage(con));
+    throw new DatabaseException(s,file,line);
+}
+
+void error(string file = __FILE__, size_t line = __LINE__)(PGconn* con, string msg, int result) {
+    import std.conv;
+
+    auto s = "error:" ~ msg ~ ": " ~ to!string(result) ~ ": " ~ to!string(PQerrorMessage(con));
+    throw new DatabaseException(s,file,line);
+}
+
+int check(string file = __FILE__, size_t line = __LINE__)(PGconn* con, string msg, int result) {
+    info(msg, ": ", result);
+    if (result != 1)
+    error!(file,line)(con, msg, result);
+    return result;
+}
+
+int checkForZero(string file = __FILE__, size_t line = __LINE__)(PGconn* con, string msg, int result) {
+    info(msg, ": ", result);
+    if (result != 0)
+    error!(file,line)(con, msg, result);
+    return result;
+}
+
+class PostgresqlConnection :  Connection 
 {
-	this(URL url)
-	{
-	
-	}
+    public string dbname;
+    private URL _url;
+    private string _host;
+    private string _user;
+    private string _pass;
+    private string _db;
+    private uint _port;
+    private QueryParams _querys;
+    private PGconn* con;
 
-	void close()
-	{
-	}
-
-	ResultSet queryImpl(string sql, Variant[] args...)
+    this(URL url)
     {
-        return null;
+        this._url = url;
+        this._port = url.port;
+        this._host = url.host;
+        this._user = url.user;
+        this._db = (url.path)[1..$];
+        this._pass = url.pass;
+        this._querys = url.queryParams;
+        this.dbname = this._db;
+        connect();
+    }
+
+    private void connect() 
+    {
+        string conninfo;
+        conninfo ~= "host=" ~ _host;
+        if(_port > 0) conninfo ~= " port=" ~ to!string(_port);
+        conninfo ~= " dbname=" ~ _db;
+        if(_user.length) conninfo ~= " user=" ~ _user;
+        if(_pass.length) conninfo ~= " password=" ~ _pass;
+        trace("link string is : ", conninfo);
+        con = PQconnectdb(toStringz(conninfo));
+        if (PQstatus(con) != CONNECTION_OK)
+        throw new DatabaseException("login error");
+    }
+
+    ~this() {
+        PQfinish(con);
+    }
+
+    void close()
+    {
+        PQfinish(con);
+    }
+
+    int socket() {
+        return PQsocket(con);
+    }
+
+    void* handle() {
+        return con;
     }
 
     int execute(string sql)
     {
-        return 0;
+        PGresult* res;
+        res = PQexec(con,toStringz(sql));
+        return PQresultStatus(res);
     }
 
-	string escape(string sqlData)
-	{
-		return null;
-	}
+    ResultSet queryImpl(string sql, Variant[] args...) 
+    {
+        trace("query sql: ", sql);
+        PGresult* res;
+        res = PQexec(con,toStringz(sql));
+        return new PgsqlResult(res);
+    }
+
+    string escape(string sql)
+    {
+        return sql;
+    }
 }
