@@ -15,3 +15,5 @@ libdb.a
 db-test-db_lib
 mysql_demo
 pgsql_demo
+sqlite_demo
+testDB.db

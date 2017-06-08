@@ -7,6 +7,7 @@ class MysqlResult : ResultSet
 	private MYSQL_RES* result;
 	private int itemsTotal;
 	private int itemsUsed;
+	private string[] _fieldNames;
 	public bool[] columnIsNull;
 	public Row row;
 

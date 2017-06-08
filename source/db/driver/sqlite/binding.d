@@ -1,9 +1,6 @@
 module db.driver.sqlite.binding;
 
-/**
-This module contains implementation of SQLite Driver
-*/
-
 version(USE_SQLITE):
+public import etc.c.sqlite3;
 
 

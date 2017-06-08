@@ -1,47 +1,24 @@
-
+import std.stdio;
 
 import db;
-import std.stdio;
-import std.experimental.logger.core;
-
-pragma(lib, "sqlite3");
 
 void main()
 {
-	/*
-	//sqlite://relative
-	Database db = new Database("sqlite:///./db/db-test.sqlite");
+	Database db = new Database("sqlite:///./testDB.db");
 
-	string sql = `insert into user(username) values("testsdf");`;
+	string sql = `insert into test(name,pass,age) values("testsdf","123",12);`;
 
-	// URL url;
-	// url.scheme = "sqlite";
+    db.execute(sql);
 
-	// url.path="db/db-test.sqlite";
-	// trace(url.toString());
-
-	// url.path="./db/db-test.sqlite";
-	// trace(url.toString());
-
-	// url.path="../db/db-test.sqlite";
-	// trace(url.toString());
-
-	// url.path="/db/db-test.sqlite";
-	// trace(url.toString());
-
-	// int result = db.execute(sql);
-	
-	// writeln(result);
-
-	Statement statement = db.query("SELECT * FROM user");
+	Statement statement = db.query("SELECT * FROM test");
 
 	ResultSet rs = statement.fetchAll();
 
+    
 	foreach(row;rs)
 	{
 		writeln(row);
 	}
 
 	db.close();
-	*/
 }

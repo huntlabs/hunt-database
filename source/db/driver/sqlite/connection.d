@@ -1,297 +1,133 @@
 module db.driver.sqlite.connection;
 
-import db;
 version(USE_SQLITE):
-import std.algorithm;
-import std.conv;
-import std.datetime;
-import std.exception;
-import std.path;
-import std.file;
-import std.stdio;
-import std.string;
-import std.variant;
-import core.sync.mutex;
-
-import etc.c.sqlite3;
-import std.experimental.logger.core;
+import db;
 
 version (Windows)
 {
-	pragma(lib, "sqlite3");
+    pragma(lib, "sqlite3");
 }
 else version (linux)
 {
-	pragma(lib, "sqlite3");
+    pragma(lib, "sqlite3");
 }
 else version (Posix)
 {
-	pragma(lib, "libsqlite3");
+    pragma(lib, "libsqlite3");
 }
 else version (darwin)
 {
-	pragma(lib, "libsqlite3");
+    pragma(lib, "libsqlite3");
 }
 else
 {
-	pragma(msg, "You will need to manually link in the SQLite library.");
+    pragma(msg, "You will need to manually link in the SQLite library.");
 }
 
 class SQLiteConnection : Connection
 {
-	private
-	{
-		string filename;
-		string _host;
-		string _user;
-		string _pass;
-		string _db;
-		uint _port;
+    private
+    {
+        URL _url;
+        string filename;
+        string _host;
+        string _user;
+        string _pass;
+        string _db;
+        uint _port;
 
-		QueryParams _querys;
-		sqlite3* conn;
-		bool closed;
-		bool autocommit;
-		Mutex mutex;
+        QueryParams _querys;
+        sqlite3* conn;
+        sqlite3_stmt* st;
+        bool closed;
+        bool autocommit;
+    }
 
-		Statement[] activeStatements;
-	}
+    this(URL url)
+    {
 
-	this(URL url)
-	{
-		mutex = new Mutex();
+        this._url = url;
+        this._port = url.port;
+        this._host = url.host;
+        this._user = url.user;
+        string p = url.path;
+        if (p[0 .. 2] == "/.")
+        p = (url.path)[1 .. $];
 
-		// this._url = url;
-		this._port = url.port;
-		this._host = url.host;
-		this._user = url.user;
-		string p = url.path;
-		if (p[0 .. 2] == "/.")
-			p = (url.path)[1 .. $];
+        this.filename = buildPath(dirName(thisExePath), p);
 
-		this.filename = buildPath(dirName(thisExePath), p);
+        this._pass = url.pass;
+        this._querys = url.queryParams;
+        closed = false;
 
-		this._pass = url.pass;
-		this._querys = url.queryParams;
-		closed = false;
+        trace("Trying to open a sqlite file:", filename);
 
-		// trace("path=", url.path);
-		trace("Trying to open a sqlite file:", filename);
+        int flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE;
+        int res = sqlite3_open_v2(toStringz(filename), &conn,flags,null);
+        if (res != SQLITE_OK)
+        throw new DatabaseException("SQLite Error " ~ to!string(
+            res) ~ " while trying to open DB " ~ filename ~ " : " ~ getError());
+        assert(conn !is null);
+        setAutoCommit(true);
+    }
 
-		//writeln("trying to connect");
-		int res = sqlite3_open(toStringz(filename), &conn);
-		if (res != SQLITE_OK)
-			throw new SQLException("SQLite Error " ~ to!string(
-					res) ~ " while trying to open DB " ~ filename ~ " : " ~ getError());
-		assert(conn !is null);
-		setAutoCommit(true);
-	}
+    ~this()
+    {
+        close();
+    }
 
-	void close()
-	{
-		checkClosed();
+    void close()
+    {
+        checkClosed();
 
-		lock();
-		scope (exit)
-			unlock();
+        int res = sqlite3_close(conn);
+        if (res != SQLITE_OK)
+        throw new SQLException("SQLite Error " ~ to!string(
+            res) ~ " while trying to close DB " ~ filename ~ " : " ~ getError());
+        closed = true;
+        conn = null;
+    }
 
-		closeUnclosedStatements();
-		int res = sqlite3_close(conn);
-		if (res != SQLITE_OK)
-			throw new SQLException("SQLite Error " ~ to!string(
-					res) ~ " while trying to close DB " ~ filename ~ " : " ~ getError());
-		closed = true;
-	}
+    void setAutoCommit(bool autoCommit)
+    {
+        this.autocommit = autoCommit;
+    }
 
-	void commit()
-	{
-		checkClosed();
 
-		lock();
-		scope (exit)
-			unlock();
+    ResultSet queryImpl(string sql, Variant[] args...)
+    {
+        return new SqliteResult(conn,sql);
+    }
 
-		// Statement stmt = createStatement();
-		// scope (exit)
-		// 	stmt.close();
-		// stmt.executeUpdate("COMMIT");
-	}
+    int execute(string sql)
+    {
+        int code = sqlite3_exec(conn,toStringz(sql),&myCallback,null,null);
+        return code;
+    }
 
-	void setAutoCommit(bool autoCommit)
-	{
-		checkClosed();
-		if (this.autocommit == autoCommit)
-			return;
-		lock();
-		scope (exit)
-			unlock();
+    string escape(string sql)
+    {
+        return sql;
+    }
 
-		Statement stmt = createStatement();
-		scope (exit)
-			stmt.close();
-		//TODO:
-		//stmt.executeUpdate("SET autocommit = " ~ (autoCommit ? "ON" : "OFF"));
-		this.autocommit = autoCommit;
-	}
+    private string getError()
+    {
+        return cast(string)fromStringz(sqlite3_errmsg(conn));
+    }
 
-	void lock()
-	{
-		mutex.lock();
-	}
-
-	void unlock()
-	{
-		mutex.unlock();
-	}
-
-	ResultSet queryImpl(string sql, Variant[] args...)
-	{
-		return null;
-	}
-
-	int execute(string sql)
-	{
-		return 0;
-	}
-
-	string escape(string sqlData)
-	{
-		return null;
-	}
-
-	Statement createStatement()
-	{
-		checkClosed();
-
-		lock();
-		scope (exit)
-			unlock();
-
-		Statement stmt = new Statement(this, "");
-		activeStatements ~= stmt;
-		return stmt;
-	}
-
-	private string getError()
-	{
-		return copyCString(sqlite3_errmsg(conn));
-	}
-
-	private void checkClosed()
-	{
-		if (closed)
-			throw new SQLException("Connection is already closed");
-	}
-
-	private void closeUnclosedStatements()
-	{
-		Statement[] list = activeStatements.dup;
-		foreach (stmt; list)
-		{
-			stmt.close();
-		}
-	}
+    private void checkClosed()
+    {
+        if (closed)
+        throw new DatabaseException("Connection is already closed");
+    }
+}  
+extern(C) int myCallback(void *a_parm, int argc, char **argv,
+                         char **column)
+{
+    return 0;
 }
 
-/**
-*/
-class SQLiteStatement : Statement
-{
-	private
-	{
-
-		SQLiteConnection conn;
-		//  Command * cmd;
-		//  ddbc.drivers.mysql.ResultSet rs;
-		// SQLiteResultSet resultSet;
-
-		bool closed;
-	}
-
-public:
-	void checkClosed()
-	{
-		enforceEx!SQLException(!closed, "Statement is already closed");
-	}
-
-	void lock()
-	{
-		conn.lock();
-	}
-
-	void unlock()
-	{
-		conn.unlock();
-	}
-
-	this(SQLiteConnection conn)
-	{
-		this.conn = conn;
-		super(conn);
-	}
-
-public:
-	SQLiteConnection getConnection()
-	{
-		checkClosed();
-		return conn;
-	}
-
-	// private PreparedStatement _currentStatement;
-	private ResultSet _currentResultSet;
-
-	private void closePreparedStatement()
-	{
-		// if (_currentResultSet !is null)
-		// {
-		// 	_currentResultSet.close();
-		// 	_currentResultSet = null;
-		// }
-		// if (_currentStatement !is null)
-		// {
-		// 	_currentStatement.close();
-		// 	_currentStatement = null;
-		// }
-	}
-
-	// override ddbc.core.ResultSet executeQuery(string query)
-	// {
-	// 	closePreparedStatement();
-	// 	_currentStatement = conn.prepareStatement(query);
-	// 	_currentResultSet = _currentStatement.executeQuery();
-	// 	return _currentResultSet;
-	// }
-
-	//    string getError() {
-	//        return copyCString(PQerrorMessage(conn.getConnection()));
-	//    }
-
-	int executeUpdate(string query)
-	{
-		Variant dummy;
-		return executeUpdate(query, dummy);
-	}
-
-	int executeUpdate(string query, out Variant insertId)
-	{
-		closePreparedStatement();
-		// _currentStatement = conn.prepareStatement(query);
-		// return _currentStatement.executeUpdate(insertId);
-		return 0;
-	}
-
-	override void close()
-	{
-		checkClosed();
-		lock();
-		scope (exit)
-			unlock();
-		closePreparedStatement();
-		closed = true;
-		// conn.onStatementClosed(this);
-	}
-
-	void closeResultSet()
-	{
-	}
+enum State {
+    Init,
+    Execute,
 }
