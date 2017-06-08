@@ -1,6 +1,7 @@
 module db.driver.sqlite.resultset;
 
 import db;
+version(USE_SQLITE):
 import etc.c.sqlite3;
 
 class SQLITEResultSet : ResultSet
