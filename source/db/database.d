@@ -16,22 +16,25 @@ class Database
 
 	private void initConnection()
 	{
-		switch(_url.scheme)
+		switch (_url.scheme)
 		{
-            version(USE_PGSQL){
-			case "pgsql":
+			version (USE_PGSQL)
+			{
+		case "pgsql":
 				_conn = new PostgresqlConnection(_url);
 				break;
-            }
-            version(USE_MYSQL){
-			case "mysql":
+			}
+			version (USE_MYSQL)
+			{
+		case "mysql":
 				_conn = new MysqlConnection(_url);
 				break;
-			case "sqlite":
+		case "sqlite":
 				_conn = new SQLiteConnection(_url);
 				break;
-			default:
+		default:
 				throw new Exception("Don't support database driver: %s", _url.scheme);
+			}
 		}
 	}
 
@@ -57,12 +60,12 @@ class Database
 
 	Statement query(string sql)
 	{
-		return new Statement(_conn,sql);
+		return new Statement(_conn, sql);
 	}
 
 	void close()
 	{
 
 	}
-	
+
 }

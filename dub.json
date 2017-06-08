@@ -1,5 +1,4 @@
 {
-    "license": "public domain",
 	"name": "db",
 	"authors": [
 		"zoujiaqing"
@@ -17,7 +16,8 @@
 	],
 	"configurations": [
 		{
-			"name": "full_lib",
+			"name": "default",
+            "targetType": "library",
 			"versions": [
 				"USE_MYSQL",
 				"USE_SQLITE",
@@ -43,6 +43,17 @@
 			"mainSourceFile": "examples/mysql/source/app.d",
 			"targetPath": "examples/mysql"
 		},
+        {
+            "name": "mysql",
+            "targetType": "library",
+            "versions": [
+                "USE_MYSQL",
+                "MySQL_51"
+            ],
+            "libs": [
+                "mysqlclient"
+            ],
+        },
 		{
 			"name": "sqlite_demo",
 			"versions": [
@@ -62,8 +73,19 @@
 				"sqlite3"
 			]
 		},
+        {
+            "name": "pgsql",
+            "targetType": "library",
+            "versions": [
+                "USE_PGSQL",
+            ],
+            "libs": [
+                "pq"
+            ],
+        },
 		{
-			"name": "SQLite",
+			"name": "sqlite",
+            "targetType": "library",
 			"versions": [
 				"USE_SQLITE"
 			],
