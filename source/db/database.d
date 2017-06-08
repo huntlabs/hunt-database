@@ -5,6 +5,9 @@ import db.driver.sqlite.connection;
 
 class Database
 {
+	Connection _conn;
+	URL _url;
+
 	this(string url)
 	{
 		this._url = url.parseURL;
@@ -15,9 +18,12 @@ class Database
 	{
 		switch(_url.scheme)
 		{
-			case "postgresql":
+            version(USE_PGSQL){
+			case "pgsql":
 				_conn = new PostgresqlConnection(_url);
 				break;
+            }
+            version(USE_MYSQL){
 			case "mysql":
 				_conn = new MysqlConnection(_url);
 				break;
@@ -59,6 +65,4 @@ class Database
 
 	}
 	
-	Connection _conn;
-	URL _url;
 }
