@@ -6,31 +6,30 @@ import core.stdc.string : strlen;
 
 class SqliteResult : ResultSet
 {
-	private int itemsTotal;
-	private int itemsUsed;
-	public bool[] columnIsNull;
-	private Row row;
 	private sqlite3* conn;
 	private sqlite3_stmt* st;
 	private string sql;
 	private string[] _fieldNames;
 	private int _columns;
+	private int _rows;
 	private char** dbResult;
 	private char* errmsg;
 	private bool firstLine = true;
 	private int nCount;
+	private int fetchIndex;
 	private int index;
+	public Row row;
 
 	this(sqlite3* conn,string sql)
 	{
 		this.conn = conn;
 		this.sql = sql;
 
-		writeln(sql);
-		
-		int res = sqlite3_get_table(conn,toStringz(sql), &dbResult, &itemsTotal, &_columns, &errmsg );
-		nCount = itemsTotal * _columns;
-		if(this.itemsTotal)
+		int res = sqlite3_get_table(conn,toStringz(sql), &dbResult, &_rows, &_columns, &errmsg);
+		if(res != SQLITE_OK)
+			throw new DatabaseException("sqlite get data error" ~ fromStringz(errmsg));
+		nCount = _rows * _columns;
+		if(this._rows)
 			fetchNext();
 	}
 
@@ -38,6 +37,7 @@ class SqliteResult : ResultSet
 	{
 		sqlite3_free_table(dbResult);
 		sqlite3_finalize(st);
+		dbResult = null;
 		st = null;
 	}
 
@@ -47,7 +47,7 @@ class SqliteResult : ResultSet
 	}
 	bool empty()
 	{
-		return itemsUsed == itemsTotal;
+		return fetchIndex == _rows;
 	}
 	Row front()
 	{
@@ -55,14 +55,14 @@ class SqliteResult : ResultSet
 	}
 	void popFront()
 	{
-		itemsUsed++;
-		if(itemsUsed < itemsTotal) {
+		fetchIndex++;
+		if(fetchIndex < _rows) {
 			fetchNext();
 		}
 	}
 	int rows()
 	{
-		return itemsTotal;
+		return _rows;
 	}
 	int columns()
 	{
