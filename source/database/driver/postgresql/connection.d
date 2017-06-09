@@ -80,7 +80,7 @@ class PostgresqlConnection :  Connection
         trace("link string is : ", conninfo);
         con = PQconnectdb(toStringz(conninfo));
         if (PQstatus(con) != CONNECTION_OK)
-        throw new DatabaseException("login error");
+			throw new DatabaseException("login error");
     }
 
     ~this() {
