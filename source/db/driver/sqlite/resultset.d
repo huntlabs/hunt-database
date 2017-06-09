@@ -32,36 +32,6 @@ class SqliteResult : ResultSet
 		nCount = itemsTotal * _columns;
 		if(this.itemsTotal)
 			fetchNext();
-		
-		/*
-		int res = sqlite3_prepare_v2(conn, toStringz(sql),
-				cast(int) sql.length + 1, &st, null);
-		if (res != SQLITE_OK)
-			throw new DatabaseException("prepare");
-		int binds_ = sqlite3_bind_parameter_count(st);
-		int nlength = 0;
-		int status = SQLITE_ROW;
-		while(status == SQLITE_ROW){
-			status = sqlite3_step(st);
-			nlength++;
-		}
-		writeln(__LINE__,nlength);
-		int columns = sqlite3_column_count(st);
-		int length = sqlite3_data_count(st);
-		writeln(__LINE__,":",columns);
-		writeln(__LINE__,":",length);
-		for(int i = 0;i<columns * nlength;i++)
-		{
-			auto ptr = sqlite3_column_name(st, i);
-			string type = cast(string) ptr[0 .. strlen(ptr)];
-			writeln(__LINE__,":",type);
-			ubyte * bytes = cast(ubyte *)sqlite3_column_blob(st, i);
-			int len = sqlite3_column_bytes(st, i);
-			string value = cast(string)bytes[0..len];
-			writeln(__LINE__,":",value);
-		}
-		*/
-		
 	}
 
 	~this()
@@ -90,7 +60,7 @@ class SqliteResult : ResultSet
 			fetchNext();
 		}
 	}
-	int length()
+	int rows()
 	{
 		return itemsTotal;
 	}

@@ -15,8 +15,7 @@
             "name": "mysql",
             "targetType": "library",
             "versions": [
-                "USE_MYSQL",
-                "MySQL_51"
+                "USE_MYSQL"
             ],
             "libs": [
                 "mysqlclient"

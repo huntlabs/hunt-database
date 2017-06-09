@@ -33,6 +33,9 @@ class MysqlConnection : Connection
 
 	~this() 
 	{
+		if(mysql)
+			mysql_close(mysql);
+		mysql = null;
 	}
 
 	private void connect()
@@ -74,11 +77,8 @@ class MysqlConnection : Connection
 	}
 	void close() 
 	{
-		try{
+		if(mysql)
 			mysql_close(mysql);
-		}catch(Exception ex)
-		{
-		}
 	}
 	int pingMysql()
 	{
@@ -90,7 +90,7 @@ class MysqlConnection : Connection
 		return mysql_thread_id(mysql);
 	}
 
-	public int lastInsertId() 
+	int lastInsertId() 
 	{
 		return cast(int) mysql_insert_id(mysql);
 	}

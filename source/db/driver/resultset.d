@@ -7,6 +7,6 @@ interface ResultSet {
 	bool empty() @property;
 	Row front() @property;
 	void popFront() ;
-	int length() @property;
+	int rows() @property;
 	int columns() @property;
 }

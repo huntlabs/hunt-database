@@ -5,22 +5,23 @@ version(USE_MYSQL):
 class MysqlResult : ResultSet 
 {
 	private MYSQL_RES* result;
-	private int itemsTotal;
-	private int itemsUsed;
+	private int _rows;
+	private int _columns;
+	private int fetchIndex = 0;
 	private string[] _fieldNames;
-	public bool[] columnIsNull;
-	public Row row;
+	private string _sql;
 
-	string sql;
+	public Row row;
 
 	this(MYSQL_RES* res, string sql) 
 	{
 		this.result = res;
-		this.itemsTotal = length();
-		this.itemsUsed = 0;
-		this.sql = sql;
+		this._rows = rows();
+		this._columns = columns();
+		this._fieldNames = fieldNames();
+		this._sql = sql;
 
-		if(this.itemsTotal)
+		if(this._rows)
 			fetchNext();
 	}
 
@@ -30,32 +31,18 @@ class MysqlResult : ResultSet
 			mysql_free_result(result);
 	}
 
-
-	MYSQL_FIELD[] fields() {
-		int numFields = mysql_num_fields(result);
-		auto fields = mysql_fetch_fields(result);
-
-		MYSQL_FIELD[] ret;
-		for(int i = 0; i < numFields; i++) {
-			ret ~= fields[i];
-		}
-
-		return ret;
-	}
-
-	int length() {
-		if(result is null)
-			return 0;
+	int rows() {
+		if(result is null)return 0;
 		return cast(int) mysql_num_rows(result);
 	}
 	int columns() {
 		if(result is null)return 0;
-		return mysql_num_fields(result);
+		return cast(int) mysql_num_fields(result);
 	}
 
 	bool empty() 
 	{
-		return itemsUsed == itemsTotal;
+		return fetchIndex == _rows;
 	}
 
 	Row front() 
@@ -65,8 +52,8 @@ class MysqlResult : ResultSet
 
 	void popFront() 
 	{
-		itemsUsed++;
-		if(itemsUsed < itemsTotal) {
+		fetchIndex++;
+		if(fetchIndex < _rows) {
 			fetchNext();
 		}
 	}
@@ -76,21 +63,12 @@ class MysqlResult : ResultSet
 		assert(result);
 		auto r = mysql_fetch_row(result);
 		if(r is null)
-			throw new Exception("there is no next row");
-		uint numFields = mysql_num_fields(result);
+			throw new DatabaseException("there is no next row");
 		auto lengths = mysql_fetch_lengths(result);
+		
 		string[string] row;
-
-		columnIsNull.length = numFields;
-		string[] _fieldNames = fieldNames();
-		for(int a = 0; a < numFields; a++) {
-			if(*(r+a) is null) {
-				row[_fieldNames[a]] = null;
-				columnIsNull[a] = true;
-			} else {
-				row[_fieldNames[a]] = fromCstring(*(r+a), *(lengths +a));
-				columnIsNull[a] = false;
-			}
+		for(int a = 0; a < _columns; a++) {
+			row[_fieldNames[a]] = (*(r+a) is null) ? null : fromCstring(*(r+a), *(lengths +a));
 		}
 
 		this.row = new Row(row);
@@ -98,12 +76,12 @@ class MysqlResult : ResultSet
 	}
 
 
-	string[] fieldNames() {
-		int numFields = mysql_num_fields(result);
+	string[] fieldNames() 
+	{
 		auto fields = mysql_fetch_fields(result);
 
 		string[] names;
-		for(int i = 0; i < numFields; i++) {
+		for(int i = 0; i < _columns; i++) {
 			names ~= fromCstring(fields[i].name, fields[i].name_length);
 		}
 
