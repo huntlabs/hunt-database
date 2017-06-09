@@ -36,9 +36,11 @@ class SqliteResult : ResultSet
 	~this()
 	{
 		sqlite3_free_table(dbResult);
+		sqlite3_free(errmsg);
 		sqlite3_finalize(st);
 		dbResult = null;
 		st = null;
+		errmsg = null;
 	}
 
 	string[] fieldNames()
