@@ -3,27 +3,24 @@ module db.driver.postgresql.resultset;
 import db;
 version(USE_PGSQL):
 
-pragma(lib, "pq");
-pragma(lib, "pgtypes");
-
 class PgsqlResult : ResultSet 
 {
 	private PGresult* res;
-	Describe[] describes;
-	string[] fields;
-	private int itemsTotal;
-	private int itemsUsed;
+	private Describe[] describes;
+	private string[] fields;
+	private int _rows;
+	private int fetchIndex;
 	private int _columns;
 	public bool[] columnIsNull;
-	private Row row;
+	public Row row;
 
 	this(PGresult* res)
 	{
 		this.res = res;
 		_columns = columns();
-		itemsTotal = rows();
+		_rows = rows();
 		makeFieldInfo();
-		if(this.itemsTotal)
+		if(this._rows)
 			fetchNext();
 	}
 	~this()
@@ -32,7 +29,8 @@ class PgsqlResult : ResultSet
 	}
 	void makeFieldInfo()
 	{
-		for (int col = 0; col < _columns; col++) {
+		for (int col = 0; col < _columns; col++) 
+		{
 			Describe d = Describe();
 			d.dbType = cast(int) PQftype(res, col);
 			d.fmt = PQfformat(res, col);
@@ -47,7 +45,7 @@ class PgsqlResult : ResultSet
 	}
 	bool empty()
 	{
-		return itemsUsed == itemsTotal;
+		return fetchIndex == _rows;
 	}
 	Row front()
 	{
@@ -55,8 +53,8 @@ class PgsqlResult : ResultSet
 	}
 	void popFront()
 	{
-		itemsUsed++;
-		if(itemsUsed < itemsTotal) 
+		fetchIndex++;
+		if(fetchIndex < _rows) 
 		{
 			fetchNext();
 		}
@@ -76,8 +74,8 @@ class PgsqlResult : ResultSet
 	{
 		string[string] row;
 		for(int n=0;n<_columns;n++){
-			void* dt = PQgetvalue(res, itemsUsed, n);
-			int len = PQgetlength(res, itemsUsed,n);
+			void* dt = PQgetvalue(res, fetchIndex, n);
+			int len = PQgetlength(res, fetchIndex,n);
 			immutable char* ptr = cast(immutable char*) dt;
 			string str = cast(string) ptr[0 .. len];
 			row[fieldNames[n]] = str;

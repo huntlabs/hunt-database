@@ -3,6 +3,8 @@ module db.driver.postgresql.binding;
 import core.stdc.stdio;
 
 version(USE_PGSQL):
+pragma(lib, "pq");
+pragma(lib, "pgtypes");
 extern(System) {
 	enum BOOLOID = 16;
 	enum BYTEAOID = 17;
