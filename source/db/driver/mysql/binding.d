@@ -1,13 +1,9 @@
 module db.driver.mysql.binding;
 
 version(USE_MYSQL ):
-version(MySQL_51) {
-	// we good
-} else version(Less_Than_MySQL_51) {
-	// we good
-} else {
-pragma(msg, "NOTE: If you are using MySQL 5.1 or newer, specify -version=MySQL_51 to dmd to avoid segfaults. If you are on an older version, you can shut this message up with -version=Less_Than_MySQL_51");
-}
+/*
+ * 
+ */
 version(Windows) {
 	pragma(lib, "libmysql");
 }
@@ -28,15 +24,15 @@ enum CR_SERVER_GONE_ERROR = 2006;
 ///The connection to the server was lost during the query.
 enum CR_SERVER_LOST = 2013;
 
-
-
 extern(System) {
 	struct MYSQL;
 	struct MYSQL_RES;
 	struct MYSQL_STMT;
 	/* typedef */ alias const(ubyte)* cstring;
+	alias ubyte my_bool;
 
-	struct MYSQL_FIELD {
+	struct MYSQL_FIELD 
+	{
 		cstring name;                 /* Name of column */
 		cstring org_name;             /* Original column name, if an alias */ 
 		cstring table;                /* Table of column if column was a field */
@@ -59,11 +55,57 @@ extern(System) {
 		uint type; /* Type of field. See mysql_com.h for types */
 		// type is actually an enum btw
 
-		version(MySQL_51) {
-			void* extension;
-		}
+		void* extension;
 	}
 
+	enum mysql_types
+	{
+		MYSQL_TYPE_DECIMAL,
+		MYSQL_TYPE_TINY,
+		MYSQL_TYPE_SHORT,
+		MYSQL_TYPE_LONG,
+		MYSQL_TYPE_FLOAT,
+		MYSQL_TYPE_DOUBLE,
+		MYSQL_TYPE_NULL, 
+		MYSQL_TYPE_TIMESTAMP,
+		MYSQL_TYPE_LONGLONG,
+		MYSQL_TYPE_INT24,
+		MYSQL_TYPE_DATE,
+		MYSQL_TYPE_TIME,
+		MYSQL_TYPE_DATETIME, 
+		MYSQL_TYPE_YEAR,
+		MYSQL_TYPE_NEWDATE, 
+		MYSQL_TYPE_VARCHAR,
+		MYSQL_TYPE_BIT,
+		MYSQL_TYPE_TIMESTAMP2,
+		MYSQL_TYPE_DATETIME2,
+		MYSQL_TYPE_TIME2,
+		MYSQL_TYPE_NEWDECIMAL=246,
+		MYSQL_TYPE_ENUM=247,
+		MYSQL_TYPE_SET=248,
+		MYSQL_TYPE_TINY_BLOB=249,
+		MYSQL_TYPE_MEDIUM_BLOB=250,
+		MYSQL_TYPE_LONG_BLOB=251,
+		MYSQL_TYPE_BLOB=252,
+		MYSQL_TYPE_VAR_STRING=253,
+		MYSQL_TYPE_STRING=254,
+		MYSQL_TYPE_GEOMETRY=255
+	};
+
+	enum MYSQL_TIMESTAMP_TYPE {
+		MYSQL_TIMESTAMP_NONE    = -2,
+		MYSQL_TIMESTAMP_ERROR   = -1,
+		MYSQL_TIMESTAMP_DATE    =  0,
+		MYSQL_TIMESTAMP_DATETIME= 1,
+		MYSQL_TIMESTAMP_TIME    = 2
+	};
+
+	struct MYSQL_TIME {
+		uint  year, month, day, hour, minute, second;
+		uint  second_part;
+		my_bool neg;
+		MYSQL_TIMESTAMP_TYPE time_type;
+	};
 	enum mysql_option   
 	{  
 		MYSQL_OPT_CONNECT_TIMEOUT, MYSQL_OPT_COMPRESS, MYSQL_OPT_NAMED_PIPE,  
@@ -91,7 +133,6 @@ extern(System) {
 	int mysql_query(MYSQL*, cstring);
 	int mysql_ping(MYSQL*);
 
-
 	void mysql_close(MYSQL*);
 
 	ulong mysql_num_rows(MYSQL_RES*);
@@ -114,11 +155,11 @@ extern(System) {
 	void mysql_free_result(MYSQL_RES*);
 	size_t mysql_thread_id(MYSQL* mysql);
 
-	/*
-	MYSQL_STMT* mysql_stmt_init(MYSQL*);
-	void mysql_stmt_close(MYSQL_STMT*);
-	int mysql_stmt_prepare(MYSQL_STMT*,cstring str,c_ulong length);
-	*/
+	MYSQL_STMT* mysql_stmt_init(MYSQL *);
+	my_bool mysql_stmt_close(MYSQL_STMT *);
+	int mysql_stmt_prepare(MYSQL_STMT *, cstring, size_t);
+	cstring mysql_stmt_error(MYSQL_STMT *);
+	int mysql_stmt_execute(MYSQL_STMT *);
 }
 
 

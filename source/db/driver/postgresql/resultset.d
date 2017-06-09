@@ -21,7 +21,7 @@ class PgsqlResult : ResultSet
 	{
 		this.res = res;
 		_columns = columns();
-		itemsTotal = length();
+		itemsTotal = rows();
 		makeFieldInfo();
 		if(this.itemsTotal)
 			fetchNext();
@@ -66,7 +66,7 @@ class PgsqlResult : ResultSet
 		if(res is null)return 0;
 		return PQnfields(res);
 	}
-	int length()
+	int rows()
 	{
 		if(res is null)return 0;
 		return PQntuples(res);
