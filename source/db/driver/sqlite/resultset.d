@@ -27,7 +27,7 @@ class SqliteResult : ResultSet
 
 		int res = sqlite3_get_table(conn,toStringz(sql), &dbResult, &_rows, &_columns, &errmsg);
 		if(res != SQLITE_OK)
-			throw new DatabaseException("sqlite get data error" ~ fromStringz(errmsg));
+			throw new DatabaseException("sqlite get data error");
 		nCount = _rows * _columns;
 		if(this._rows)
 			fetchNext();
