@@ -1,43 +1,22 @@
 module db.database;
 
 import db;
-import db.driver.sqlite.connection;
 
 class Database
 {
 	Connection _conn;
-	URL _url;
+	Pool _pool;
+	DatabaseConfig _config;
 
-	this(string url)
+	this(DatabaseConfig config)
 	{
-		this._url = url.parseURL;
-		initConnection();
+		this._config = config;
+		initPool();
 	}
 
-	private void initConnection()
+	private void initPool()
 	{
-		switch (_url.scheme)
-		{
-			version (USE_PGSQL)
-			{
-				case "pgsql":
-					_conn = new PostgresqlConnection(_url);
-					break;
-			}
-			version (USE_MYSQL)
-			{
-				case "mysql":
-					_conn = new MysqlConnection(_url);
-					break;
-			}
-			version(USE_SQLITE){
-				case "sqlite":
-					_conn = new SQLiteConnection(_url);
-					break;
-			}
-			default:
-			throw new Exception("Don't support database driver: %s", _url.scheme);
-		}
+		_pool = new Pool(this._config);
 	}
 
 	bool beginTransaction()

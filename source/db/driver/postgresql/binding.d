@@ -2,7 +2,7 @@ module db.driver.postgresql.binding;
 
 import core.stdc.stdio;
 
-version(USE_PGSQL):
+version(USE_POSTGRESQL):
 pragma(lib, "pq");
 pragma(lib, "pgtypes");
 extern(System) {

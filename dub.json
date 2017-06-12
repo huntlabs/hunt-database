@@ -22,10 +22,10 @@
             ]
         },
         {
-            "name": "pgsql",
+            "name": "postgresql",
             "targetType": "library",
             "versions": [
-                "USE_PGSQL"
+                "USE_POSTGRESQL"
             ],
             "libs": [
                 "pq"

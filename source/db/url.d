@@ -80,7 +80,7 @@ static this()
 		"tftp": 69,
 		"tip": 3372,
 		"mysql": 3306,
-		"pgsql": 5432
+		"postgresql": 5432
 	];
 }
 

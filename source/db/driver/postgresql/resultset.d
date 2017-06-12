@@ -1,9 +1,9 @@
 module db.driver.postgresql.resultset;
 
 import db;
-version(USE_PGSQL):
+version(USE_POSTGRESQL):
 
-class PgsqlResult : ResultSet 
+class PostgresqlResult : ResultSet 
 {
 	private PGresult* res;
 	private Describe[] describes;

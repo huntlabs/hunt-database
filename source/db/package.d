@@ -16,6 +16,8 @@ public import db.database;
 public import db.statement;
 public import db.row;
 public import db.exception;
+public import db.config;
+public import db.pool;
 
 public import db.driver.connection;
 public import db.driver.resultset;
