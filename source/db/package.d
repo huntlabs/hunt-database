@@ -9,6 +9,7 @@ public import std.variant;
 public import std.conv;
 public import std.string;
 public import std.exception;
+public import std.container.array;
 public import std.experimental.logger;
 
 public import db.url;

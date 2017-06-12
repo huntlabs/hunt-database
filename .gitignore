@@ -17,3 +17,5 @@ mysql_demo
 pgsql_demo
 sqlite_demo
 testDB.db
+dub.selections.json
+postgresql_demo

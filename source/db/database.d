@@ -37,13 +37,13 @@ class Database
 	int execute(string sql)
 	{
 		_conn = _pool.getConnection();
-		scope(exit){_pool.push(_conn);}
+		scope(exit){_pool.release(_conn);}
 		return _conn.execute(sql);
 	}
 
 	Statement query(string sql)
 	{
-		return new Statement(_conn, sql);
+		return new Statement(_pool, sql);
 	}
 
 	void close()
