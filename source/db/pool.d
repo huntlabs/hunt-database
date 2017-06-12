@@ -15,7 +15,7 @@ class Pool
 		this._config = config;
 		_mutex = new ReadWriteMutex();
 		int i = 0;
-		while(i <= _config.maxConnection)
+		while(i < _config.maxConnection)
 		{
 			_conns.insertBack(initConnection);
 			i++;
