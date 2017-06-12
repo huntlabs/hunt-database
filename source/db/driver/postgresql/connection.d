@@ -1,7 +1,7 @@
 module db.driver.postgresql.connection;
 
 import db;
-version(USE_PGSQL):
+version(USE_POSTGRESQL):
 pragma(lib, "pq");
 pragma(lib, "pgtypes");
 
@@ -101,7 +101,7 @@ class PostgresqlConnection :  Connection
         trace("query sql: ", sql);
         PGresult* res;
         res = PQexec(con,toStringz(sql));
-        return new PgsqlResult(res);
+        return new PostgresqlResult(res);
     }
 
     string escape(string sql)

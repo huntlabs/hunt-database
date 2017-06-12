@@ -1,5 +1,5 @@
 {
-	"name": "pgsql_demo",
+	"name": "postgresql_demo",
 	"authors": ["putao"],
 	"targetType": "executable",
 	"dependencies": {
@@ -12,7 +12,7 @@
 		{
 			"name": "default",
 			"subConfigurations": {
-				"db": "pgsql"
+				"db": "postgresql"
 			}
 		}
 	]
