@@ -5,6 +5,7 @@ import db;
 class Pool
 {
 	Connection _conn;
+	Connection[] _conns;
 	DatabaseConfig _config;
 
 	this(DatabaseConfig config)
@@ -45,4 +46,8 @@ class Pool
 		return null;
 	}
 
+	void push(Connection conn)
+	{
+	
+	}
 }
