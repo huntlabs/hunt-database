@@ -1,4 +1,4 @@
-module db.databaseconfig;
+module db.config;
 
 import db;
 
@@ -8,6 +8,11 @@ class DatabaseConfig
 	private int _connectionTimeout = 10000;
 	private URL _url;
 	
+	this()
+	{
+	
+	}
+
 	this(string url)
 	{
 		this._url = url.parseURL;

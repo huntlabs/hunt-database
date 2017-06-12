@@ -4,7 +4,8 @@ import db;
 
 void main()
 {
-	Database db = new Database("sqlite:///./testDB.db");
+	DatabaseConfig config = new DatabaseConfig("sqlite:///./testDB.db");
+	Database db = new Database(config);
 
 	string sql = `insert into test(name,pass,age) values("testsdf","123",12);`;
 

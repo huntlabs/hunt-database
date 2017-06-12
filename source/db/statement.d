@@ -4,18 +4,13 @@ import db;
 
 class Statement
 {
+	private Pool _pool;
 	private Connection _conn;
 	private string _sql;
-
-
-	this(Connection conn)
-    {
-		this._conn = conn;
-    }
     
-	this(Connection conn,string sql)
+	this(Pool pool,string sql)
     {
-		this._conn = conn;
+		this._pool = pool;
 		this._sql = sql;
     }
 
@@ -26,7 +21,9 @@ class Statement
     
 	ResultSet fetchAll()
 	{
-		return _conn.query(_sql);
+		_conn = _pool.getConnection();
+		scope(exit){_pool.release(_conn);}
+		return _conn.query(sql);
 	}
 
 	void close()

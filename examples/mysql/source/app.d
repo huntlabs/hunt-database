@@ -7,14 +7,15 @@ void main()
 {
 	writeln("run");
 
-	Database db = new Database("mysql://dev:111111@10.1.11.31:3306/blog?charset=utf-8");
+	DatabaseConfig config = new DatabaseConfig("mysql://root:123456@127.0.0.1:3306/mm?charset=utf-8");
+	Database db = new Database(config);
 
-	string sql = `insert into user(username) values("testsdf");`;
+	string sql = `insert into mm_user(username) values("testsdf1111");`;
 	int result = db.execute(sql);
 	
 	writeln(result);
 
-	Statement statement = db.query("SELECT * FROM user");
+	Statement statement = db.query("SELECT * FROM mm_user");
 
 	ResultSet rs = statement.fetchAll();
 
