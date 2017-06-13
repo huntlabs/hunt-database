@@ -78,6 +78,7 @@ class MysqlResult : ResultSet
 
 	string[] fieldNames() 
 	{
+		if(result is null)return null;
 		auto fields = mysql_fetch_fields(result);
 
 		string[] names;

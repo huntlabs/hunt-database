@@ -40,25 +40,21 @@ class MysqlConnection : Connection
 
 	private void connect()
 	{
-		try{
-			mysql = mysql_init(null);
-			char value = 1; 
-			mysql_options(mysql, mysql_option.MYSQL_OPT_RECONNECT, cast(char*)&value);
-			size_t read_timeout = 60;
-			mysql_options(mysql, mysql_option.MYSQL_OPT_READ_TIMEOUT, cast(size_t*)&read_timeout);
-			mysql_options(mysql, mysql_option.MYSQL_OPT_WRITE_TIMEOUT, cast(size_t*)&read_timeout);
-			mysql_real_connect(mysql, toCstring(_host), toCstring(_user), 
-					toCstring(_pass), toCstring(_db), _port, null, 0);
-		}
-		catch(DatabaseException ex)
-		{
-			std.stdio.writeln(error());
-		}
+		mysql = mysql_init(null);
+		char value = 1; 
+		mysql_options(mysql, mysql_option.MYSQL_OPT_RECONNECT, cast(char*)&value);
+		size_t read_timeout = 60;
+		mysql_options(mysql, mysql_option.MYSQL_OPT_READ_TIMEOUT, cast(size_t*)&read_timeout);
+		mysql_options(mysql, mysql_option.MYSQL_OPT_WRITE_TIMEOUT, cast(size_t*)&read_timeout);
+		mysql_real_connect(mysql, toCstring(_host), toCstring(_user), 
+				toCstring(_pass), toCstring(_db), _port, null, 0);
 	}
 
 	int execute(string sql)
 	{
-		return mysql_query(mysql, toCstring(sql));
+		assert(mysql);
+		auto v = toCstring(sql);
+		return mysql_query(mysql, v);
 	}
 
 	void startTransaction() 
@@ -148,10 +144,7 @@ class MysqlConnection : Connection
 	{
 		// modify sql for the best data object grabbing
 		sql = fixupSqlForDataObjectUse(sql);
-		//import std.stdio;
-		//writeln(sql);
 		auto magic = query(sql, t);
-		//writeln("------------------------");
 		return ResultByDataObject!R(cast(MysqlResult) magic, this);
 	}
 
@@ -172,19 +165,9 @@ class MysqlConnection : Connection
 
 	override ResultSet queryImpl(string sql, Variant[] args...) 
 	{
-		//writeln(__FUNCTION__,__LINE__,sql);
-		import std.stdio;
-
+		assert(mysql);
 		sql = escapedVariants(this, sql, args);
-
-		try{
-			mysql_query(mysql, toCstring(sql));
-		}
-		catch(DatabaseException ex)
-		{
-			std.stdio.writeln( ex.msg, " :::: " , sql);
-		}
-		//writeln(__FUNCTION__,__LINE__,sql);
+		mysql_query(mysql, toCstring(sql));
 		return new MysqlResult(mysql_store_result(mysql), sql);
 	}
 }
@@ -296,7 +279,7 @@ string escapedVariants(Connection conn, in string sql, Variant[] t)
 }
 
 cstring toCstring(string c) {
-	return cast(cstring) toStringz(c);
+	return toStringz(c);
 }
 
 

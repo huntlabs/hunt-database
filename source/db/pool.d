@@ -6,7 +6,7 @@ import core.sync.rwmutex;
 class Pool
 {
 	Connection _conn;
-	Array!Connection _conns;
+	__gshared Array!Connection _conns;
 	DatabaseConfig _config;
 	private ReadWriteMutex _mutex;
 

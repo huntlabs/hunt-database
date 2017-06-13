@@ -4,8 +4,8 @@ import db;
 
 class Database
 {
-	Connection _conn;
-	Pool _pool;
+	__gshared Connection _conn;
+	__gshared Pool _pool;
 	DatabaseConfig _config;
 
 	this(DatabaseConfig config)

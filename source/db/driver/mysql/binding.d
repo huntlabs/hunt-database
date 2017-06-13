@@ -28,7 +28,7 @@ extern(System) {
 	struct MYSQL;
 	struct MYSQL_RES;
 	struct MYSQL_STMT;
-	/* typedef */ alias const(ubyte)* cstring;
+	/* typedef */ alias const(char)* cstring;
 	alias ubyte my_bool;
 
 	struct MYSQL_FIELD 
