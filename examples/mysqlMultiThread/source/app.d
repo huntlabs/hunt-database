@@ -10,34 +10,35 @@ void main()
 	writeln("run");
 
 	__gshared Database db;
-	db = new Database("mysql://dev:111111@10.1.11.31:3306/blog?charset=utf-8");
-
-	string sql = `insert into user(username) values("testsdf");`;
-
+	__gshared DatabaseConfig config;
+	config = (new DatabaseConfig())
+		.addDatabaseSource("mysql://dev:111111@10.1.11.31:3306/blog?charset=utf-8")
+		.setMaxConnection(20)
+		.setConnectionTimeout(5000);
+	db = new Database(config);
 
 	int i = 0;
-	while(i < 10){
+	while(i < 100){
 		taskPool.put(task!threadTest(db,i));
+		//threadTest(db,i);
 		i++;
 	}
-
-	Thread.sleep(10.seconds);
-	
+	taskPool.finish(true);
 	db.close();
-	
 	writeln("end...");
 }
 void threadTest(Database db,int i)
 {
-	db.execute(`insert into user(username) values("`~i.to!string~`");`);
+	string key = i.to!string;
+	string sql = `insert into user(username) values("`~key~`");`;
+	db.execute(sql);
 
-	Statement statement = db.query("SELECT * FROM user");
+	Statement statement = db.query("SELECT * FROM user where username = '"~key~"' limit 10");
 
-	//ResultSet rs = statement.fetchAll();
+	ResultSet rs = statement.fetchAll();
 
-	//foreach(row;rs)
-	//{
-		//writeln(row);
-	//}
-
+	foreach(row;rs)
+	{
+		writeln(row);
+	}
 }
