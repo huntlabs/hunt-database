@@ -3,7 +3,7 @@ module db.driver.mysql.connection;
 import db;
 
 version(USE_MYSQL):
-class MysqlConnection : Connection
+	class MysqlConnection : Connection
 {
 	public string dbname;
 	private URL _url;
@@ -90,10 +90,25 @@ class MysqlConnection : Connection
 	{
 		return cast(int) mysql_insert_id(mysql);
 	}
+
+	int affectedRows() 
+	{
+		return cast(int) mysql_affected_rows(mysql);
+	}
+
+	override ResultSet queryImpl(string sql, Variant[] args...) 
+	{
+		assert(mysql);
+		sql = escapedVariants(sql, args);
+		mysql_query(mysql, toCstring(sql));
+		return new MysqlResult(mysql_store_result(mysql), sql);
+	}
+
 	string escape(string str) 
 	{
 		ubyte[] buffer = new ubyte[str.length * 2 + 1];
-		buffer.length = mysql_real_escape_string(mysql, buffer.ptr, cast(cstring) str.ptr, cast(uint) str.length);
+		buffer.length = mysql_real_escape_string(mysql, buffer.ptr, 
+				cast(cstring) str.ptr, cast(uint) str.length);
 		return cast(string) buffer;
 	}
 
@@ -140,171 +155,124 @@ class MysqlConnection : Connection
 		return sql;
 	}
 
-	ResultByDataObject!R queryDataObject(R = DataObject, T...)(string sql, T t) 
+	string escapedVariants(in string sql, Variant[string] t) 
 	{
-		// modify sql for the best data object grabbing
-		sql = fixupSqlForDataObjectUse(sql);
-		auto magic = query(sql, t);
-		return ResultByDataObject!R(cast(MysqlResult) magic, this);
-	}
-
-
-	ResultByDataObject!R queryDataObjectWithCustomKeys(R = DataObject, T...)
-		(string[string] keyMapping, string sql, T t) 
-		{
-			sql = fixupSqlForDataObjectUse(sql, keyMapping);
-
-			auto magic = query(sql, t);
-			return ResultByDataObject!R(cast(MysqlResult) magic, this);
+		if(t.keys.length <= 0 || sql.indexOf("?") == -1) {
+			return sql;
 		}
 
-	int affectedRows() 
-	{
-		return cast(int) mysql_affected_rows(mysql);
-	}
-
-	override ResultSet queryImpl(string sql, Variant[] args...) 
-	{
-		assert(mysql);
-		sql = escapedVariants(this, sql, args);
-		mysql_query(mysql, toCstring(sql));
-		return new MysqlResult(mysql_store_result(mysql), sql);
-	}
-}
-
-string escapedVariants(Connection conn, in string sql, Variant[string] t) {
-	if(t.keys.length <= 0 || sql.indexOf("?") == -1) {
-		return sql;
-	}
-
-	string fixedup;
-	int currentStart = 0;
-	// FIXME: let's make ?? render as ? so we have some escaping capability
-	foreach(int i, dchar c; sql) {
-		if(c == '?') {
-			fixedup ~= sql[currentStart .. i];
-
-			int idxStart = i + 1;
-			int idxLength;
-
-			bool isFirst = true;
-
-			while(idxStart + idxLength < sql.length) {
-				char C = sql[idxStart + idxLength];
-
-				if((C >= 'a' && C <= 'z') || (C >= 'A' && C <= 'Z') || C == '_' || (!isFirst && C >= '0' && C <= '9'))
-					idxLength++;
-				else
-					break;
-
-				isFirst = false;
-			}
-
-			auto idx = sql[idxStart .. idxStart + idxLength];
-
-			if(idx in t) {
-				fixedup ~= toSql(conn, t[idx]);
-				currentStart = idxStart + idxLength;
-			} else {
-				// just leave it there, it might be done on another layer
-				currentStart = i;
-			}
-		}
-	}
-
-	fixedup ~= sql[currentStart .. $];
-
-	return fixedup;
-}
-
-string toSql(Connection conn, Variant a) {
-	auto v = a.peek!(void*);
-	if(v && (*v is null))
-		return "NULL";
-	else {
-		string str = to!string(a);
-		return '\'' ~ conn.escape(str) ~ '\'';
-	}
-
-	assert(0);
-}
-
-string toSql(string s, Connection conn) {
-	if(s is null)
-		return "NULL";
-	return '\'' ~ conn.escape(s) ~ '\'';
-}
-
-string toSql(long s, Connection conn) {
-	return to!string(s);
-}
-
-string escapedVariants(Connection conn, in string sql, Variant[] t) 
-{
-	if(t.length > 0 && sql.indexOf("?") != -1) {
 		string fixedup;
-		int currentIndex;
 		int currentStart = 0;
+		// FIXME: let's make ?? render as ? so we have some escaping capability
 		foreach(int i, dchar c; sql) {
 			if(c == '?') {
 				fixedup ~= sql[currentStart .. i];
 
-				int idx = -1;
-				currentStart = i + 1;
-				if((i + 1) < sql.length) {
-					auto n = sql[i + 1];
-					if(n >= '0' && n <= '9') {
-						currentStart = i + 2;
-						idx = n - '0';
-					}
-				}
-				if(idx == -1) {
-					idx = currentIndex;
-					currentIndex++;
+				int idxStart = i + 1;
+				int idxLength;
+
+				bool isFirst = true;
+
+				while(idxStart + idxLength < sql.length) {
+					char C = sql[idxStart + idxLength];
+
+					if((C >= 'a' && C <= 'z') || (C >= 'A' && C <= 'Z') || 
+							C == '_' || (!isFirst && C >= '0' && C <= '9'))
+						idxLength++;
+					else
+						break;
+
+					isFirst = false;
 				}
 
-				if(idx < 0 || idx >= t.length)
-					throw new Exception("SQL Parameter index is out of bounds: " ~ to!string(idx) ~ " at `"~sql[0 .. i]~"`");
+				auto idx = sql[idxStart .. idxStart + idxLength];
 
-				fixedup ~= toSql(conn, t[idx]);
+				if(idx in t) {
+					fixedup ~= toSql(t[idx]);
+					currentStart = idxStart + idxLength;
+				} else {
+					// just leave it there, it might be done on another layer
+					currentStart = i;
+				}
 			}
 		}
 
 		fixedup ~= sql[currentStart .. $];
-
 		return fixedup;
 	}
+	string escapedVariants(in string sql, Variant[] t) 
+	{
+		if(t.length > 0 && sql.indexOf("?") != -1) {
+			string fixedup;
+			int currentIndex;
+			int currentStart = 0;
+			foreach(int i, dchar c; sql) {
+				if(c == '?') {
+					fixedup ~= sql[currentStart .. i];
 
-	return sql;
+					int idx = -1;
+					currentStart = i + 1;
+					if((i + 1) < sql.length) {
+						auto n = sql[i + 1];
+						if(n >= '0' && n <= '9') {
+							currentStart = i + 2;
+							idx = n - '0';
+						}
+					}
+					if(idx == -1) {
+						idx = currentIndex;
+						currentIndex++;
+					}
+
+					if(idx < 0 || idx >= t.length)
+						throw new Exception("SQL Parameter index is out of bounds: " ~ to!string(idx) ~ " at `"~sql[0 .. i]~"`");
+
+					fixedup ~= toSql(t[idx]);
+				}
+			}
+
+			fixedup ~= sql[currentStart .. $];
+
+			return fixedup;
+		}
+
+		return sql;
+	}
+
+	string toSql(Variant a) {
+		auto v = a.peek!(string);
+		return toSql(*v);
+	}
+
+	string toSql(string s) {
+		if(s is null)return "NULL";
+		return '\'' ~ escape(s) ~ '\'';
+	}
+
+	string toSql(long s) {
+		return to!string(s);
+	}
 }
 
-cstring toCstring(string c) {
+cstring toCstring(string c) 
+{
 	return toStringz(c);
 }
-
-
 string fromCstring(cstring c, size_t len = size_t.max) {
 	string ret;
-	if(c is null)
-		return null;
-	if(len == 0)
-		return "";
+	if(c is null)return null;
+	if(len == 0)return "";
 	if(len == size_t.max) {
 		auto iterator = c;
 		len =0;
 		while(*iterator)
 		{
 			iterator++;
-
-			// note they are both byte pointers, so this is sane
-			//len = cast(int) iterator - cast(int) c;
 			len++;
 		}
 		assert(len >= 0);
 	}
-
 	ret = cast(string) (c[0 .. len].idup);
-
 	return ret;
 }
 
