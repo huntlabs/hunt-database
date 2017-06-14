@@ -112,94 +112,6 @@ version(USE_MYSQL):
 		return cast(string) buffer;
 	}
 
-	string escaped(T...)(string sql, T t) 
-	{
-		static if(t.length > 0) {
-			string fixedup;
-			int pos = 0;
-
-
-			void escAndAdd(string str, int q) {
-				ubyte[] buffer = new ubyte[str.length * 2 + 1];
-				buffer.length = mysql_real_escape_string(mysql, buffer.ptr, cast(cstring) str.ptr, str.length);
-
-				fixedup ~= sql[pos..q] ~ '\'' ~ cast(string) buffer ~ '\'';
-
-			}
-
-			foreach(a; t) {
-				int q = sql[pos..$].indexOf("?");
-				if(q == -1)
-					break;
-				q += pos;
-
-				static if(__traits(compiles, t is null)) {
-					if(t is null)
-						fixedup  ~= sql[pos..q] ~ "NULL";
-					else
-						escAndAdd(to!string(*a), q);
-				} else {
-					string str = to!string(a);
-					escAndAdd(str, q);
-				}
-
-				pos = q+1;
-			}
-
-			fixedup ~= sql[pos..$];
-
-			sql = fixedup;
-
-		}
-
-		return sql;
-	}
-
-	string escapedVariants(in string sql, Variant[string] t) 
-	{
-		if(t.keys.length <= 0 || sql.indexOf("?") == -1) {
-			return sql;
-		}
-
-		string fixedup;
-		int currentStart = 0;
-		// FIXME: let's make ?? render as ? so we have some escaping capability
-		foreach(int i, dchar c; sql) {
-			if(c == '?') {
-				fixedup ~= sql[currentStart .. i];
-
-				int idxStart = i + 1;
-				int idxLength;
-
-				bool isFirst = true;
-
-				while(idxStart + idxLength < sql.length) {
-					char C = sql[idxStart + idxLength];
-
-					if((C >= 'a' && C <= 'z') || (C >= 'A' && C <= 'Z') || 
-							C == '_' || (!isFirst && C >= '0' && C <= '9'))
-						idxLength++;
-					else
-						break;
-
-					isFirst = false;
-				}
-
-				auto idx = sql[idxStart .. idxStart + idxLength];
-
-				if(idx in t) {
-					fixedup ~= toSql(t[idx]);
-					currentStart = idxStart + idxLength;
-				} else {
-					// just leave it there, it might be done on another layer
-					currentStart = i;
-				}
-			}
-		}
-
-		fixedup ~= sql[currentStart .. $];
-		return fixedup;
-	}
 	string escapedVariants(in string sql, Variant[] t) 
 	{
 		if(t.length > 0 && sql.indexOf("?") != -1) {
@@ -225,7 +137,7 @@ version(USE_MYSQL):
 					}
 
 					if(idx < 0 || idx >= t.length)
-						throw new Exception("SQL Parameter index is out of bounds: " ~ to!string(idx) ~ " at `"~sql[0 .. i]~"`");
+						throw new DatabaseException("SQL Parameter index is out of bounds: " ~ to!string(idx) ~ " at `"~sql[0 .. i]~"`");
 
 					fixedup ~= toSql(t[idx]);
 				}
