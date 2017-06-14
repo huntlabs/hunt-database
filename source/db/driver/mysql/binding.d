@@ -131,6 +131,7 @@ extern(System) {
 	int mysql_options(MYSQL *mysql, mysql_option option, const void *arg);
 
 	int mysql_query(MYSQL*, cstring);
+	int mysql_real_query(MYSQL*, cstring,ulong);
 	int mysql_ping(MYSQL*);
 
 	void mysql_close(MYSQL*);
