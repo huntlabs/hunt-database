@@ -38,7 +38,7 @@ version(USE_MYSQL):
 	private void connect()
 	{
 		mysql = mysql_init(null);
-		my_bool reconnect = 0;
+		my_bool reconnect = 1;
 		mysql_options(mysql, mysql_option.MYSQL_OPT_RECONNECT, &reconnect);
 		mysql_real_connect(mysql, toCstring(_host), toCstring(_user), 
 				toCstring(_pass), toCstring(_db), _port, null, 0);
@@ -46,7 +46,8 @@ version(USE_MYSQL):
 
 	int execute(string sql)
 	{
-		if(!mysql)throw new DatabaseException("connection error");
+		assert(mysql);
+		writeln(__FUNCTION__,error);
 		auto v = toCstring(sql);
 		return mysql_query(mysql, v);
 	}
@@ -100,7 +101,8 @@ version(USE_MYSQL):
 
 	override ResultSet queryImpl(string sql, Variant[] args...) 
 	{
-		if(!mysql)throw new DatabaseException("connection error");
+		assert(mysql);
+		writeln(__FUNCTION__,error);
 		sql = escapedVariants(sql, args);
 		mysql_query(mysql, toCstring(sql));
 		return new MysqlResult(mysql_store_result(mysql), sql);
