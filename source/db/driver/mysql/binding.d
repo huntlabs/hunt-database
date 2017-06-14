@@ -161,6 +161,9 @@ extern(System) {
 	int mysql_stmt_prepare(MYSQL_STMT *, cstring, size_t);
 	cstring mysql_stmt_error(MYSQL_STMT *);
 	int mysql_stmt_execute(MYSQL_STMT *);
+
+	my_bool mysql_autocommit(MYSQL *, my_bool);
+
 }
 
 

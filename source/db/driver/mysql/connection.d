@@ -13,7 +13,7 @@ version(USE_MYSQL):
 	private string _db;
 	private uint _port;
 	private QueryParams _querys;
-	private MYSQL* mysql;
+	__gshared private MYSQL* mysql;
 
 	this(URL url) 
 	{
@@ -26,9 +26,6 @@ version(USE_MYSQL):
 		this._querys = url.queryParams;
 		this.dbname = this._db;
 		connect();
-		auto charset = _querys["charset"];
-		if(!charset.empty())
-			execute("SET NAMES '"~ charset.front ~"'");
 	}
 
 	~this() 
@@ -41,18 +38,15 @@ version(USE_MYSQL):
 	private void connect()
 	{
 		mysql = mysql_init(null);
-		char value = 1; 
-		mysql_options(mysql, mysql_option.MYSQL_OPT_RECONNECT, cast(char*)&value);
-		size_t read_timeout = 60;
-		mysql_options(mysql, mysql_option.MYSQL_OPT_READ_TIMEOUT, cast(size_t*)&read_timeout);
-		mysql_options(mysql, mysql_option.MYSQL_OPT_WRITE_TIMEOUT, cast(size_t*)&read_timeout);
+		my_bool reconnect = 0;
+		mysql_options(mysql, mysql_option.MYSQL_OPT_RECONNECT, &reconnect);
 		mysql_real_connect(mysql, toCstring(_host), toCstring(_user), 
 				toCstring(_pass), toCstring(_db), _port, null, 0);
 	}
 
 	int execute(string sql)
 	{
-		assert(mysql);
+		if(!mysql)throw new DatabaseException("connection error");
 		auto v = toCstring(sql);
 		return mysql_query(mysql, v);
 	}
@@ -95,10 +89,18 @@ version(USE_MYSQL):
 	{
 		return cast(int) mysql_affected_rows(mysql);
 	}
+	void ping()
+	{
+		if(!mysql_ping(mysql)){
+			mysql_close(mysql);
+			mysql = null;
+			connect();
+		}
+	}
 
 	override ResultSet queryImpl(string sql, Variant[] args...) 
 	{
-		assert(mysql);
+		if(!mysql)throw new DatabaseException("connection error");
 		sql = escapedVariants(sql, args);
 		mysql_query(mysql, toCstring(sql));
 		return new MysqlResult(mysql_store_result(mysql), sql);
