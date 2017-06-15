@@ -36,7 +36,8 @@ void threadTest(Database db,int i)
 	Statement statement = db.query("SELECT * FROM user where username = '"~key~"' limit 10");
 
 	ResultSet rs = statement.fetchAll();
-
+	auto user  = statement.fetch();
+	user['id'];
 	foreach(row;rs)
 	{
 		writeln(row);
