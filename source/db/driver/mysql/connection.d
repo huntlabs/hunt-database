@@ -3,7 +3,8 @@ module db.driver.mysql.connection;
 import db;
 
 version(USE_MYSQL):
-	class MysqlConnection : Connection
+
+class MysqlConnection : Connection
 {
 	public string dbname;
 	private URL _url;
@@ -13,7 +14,7 @@ version(USE_MYSQL):
 	private string _db;
 	private uint _port;
 	private QueryParams _querys;
-	__gshared private MYSQL* mysql;
+	private MYSQL* mysql;
 
 	this(URL url) 
 	{
@@ -47,7 +48,6 @@ version(USE_MYSQL):
 	int execute(string sql)
 	{
 		assert(mysql);
-		writeln(__FUNCTION__,error);
 		auto v = toCstring(sql);
 		return mysql_query(mysql, v);
 	}
@@ -102,7 +102,6 @@ version(USE_MYSQL):
 	override ResultSet queryImpl(string sql, Variant[] args...) 
 	{
 		assert(mysql);
-		writeln(__FUNCTION__,error);
 		sql = escapedVariants(sql, args);
 		mysql_query(mysql, toCstring(sql));
 		return new MysqlResult(mysql_store_result(mysql), sql);
