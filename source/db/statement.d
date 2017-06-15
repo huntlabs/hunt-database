@@ -19,6 +19,12 @@ class Statement
 		return _sql;
 	}
     
+	Row fetch()
+	{
+		auto rs = fetchAll();
+		return rs.front();
+	}
+
 	ResultSet fetchAll()
 	{
 		_conn = _pool.getConnection();
