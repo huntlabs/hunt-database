@@ -3,6 +3,7 @@ import db;
 
 import std.conv;
 import core.thread;
+import std.process;
 import std.parallelism;
 
 void main()
@@ -18,17 +19,16 @@ void main()
 	db = new Database(config);
 
 	int i = 0;
-	while(i < 100){
+	while(i < 1000){
 		taskPool.put(task!threadTest(db,i));
-	//	threadTest(db,i);
 		i++;
 	}
 	taskPool.finish(true);
 	db.close();
-	writeln("end...");
 }
 void threadTest(Database db,int i)
 {
+	writeln("start.........",thisThreadID);
 	string key = i.to!string;
 	string sql = `insert into user(username) values("`~key~`");`;
 	db.execute(sql);
@@ -41,4 +41,5 @@ void threadTest(Database db,int i)
 	{
 		writeln(row);
 	}
+	writeln("end...",thisThreadID);
 }

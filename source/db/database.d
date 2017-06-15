@@ -4,8 +4,7 @@ import db;
 
 class Database
 {
-	__gshared Connection _conn;
-	__gshared Pool _pool;
+	Pool _pool;
 	DatabaseConfig _config;
 
 	this(DatabaseConfig config)
@@ -36,7 +35,7 @@ class Database
 
 	int execute(string sql)
 	{
-		_conn = _pool.getConnection();
+		auto _conn = _pool.getConnection();
 		scope(exit){_pool.release(_conn);}
 		return _conn.execute(sql);
 	}
