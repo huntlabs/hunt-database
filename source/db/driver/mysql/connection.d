@@ -27,6 +27,7 @@ class MysqlConnection : Connection
 		this._querys = url.queryParams;
 		this.dbname = this._db;
 		connect();
+		execute("set names utf8;");
 	}
 
 	~this() 
