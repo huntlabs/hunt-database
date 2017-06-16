@@ -7,6 +7,9 @@ interface Connection
 	// return affected line quantity
 	int execute(string sql);
 
+	int lastInsertId();
+	int affectedRows();
+
 	// return Statement object
 	ResultSet queryImpl(string sql, Variant[] args...);
 
