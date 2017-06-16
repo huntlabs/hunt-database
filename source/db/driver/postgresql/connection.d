@@ -108,4 +108,14 @@ class PostgresqlConnection :  Connection
     {
         return sql;
     }
+
+	int lastInsertId()
+	{
+		return 0;
+	}
+	
+	int affectedRows()
+	{
+		return 0;
+	}
 }

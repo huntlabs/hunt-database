@@ -35,9 +35,7 @@ class Database
 
 	int execute(string sql)
 	{
-		auto _conn = _pool.getConnection();
-		scope(exit){_pool.release(_conn);}
-		return _conn.execute(sql);
+		return new Statement(_pool,sql).execute();
 	}
 
 	Statement query(string sql)
