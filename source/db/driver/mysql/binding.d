@@ -164,6 +164,8 @@ extern(System) {
 
 	my_bool mysql_autocommit(MYSQL *, my_bool);
 
+	int mysql_set_character_set(MYSQL *, cstring);
+
 }
 
 
