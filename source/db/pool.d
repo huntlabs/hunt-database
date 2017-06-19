@@ -59,6 +59,7 @@ class Pool
 			_mutex.writer.unlock();
 		}
 		if(!_conns.length)_conns.insertBack(initConnection);
+		version(USE_MYSQL){_conns.front.ping();}
 		return _conns.front;
 	}
 

@@ -119,6 +119,10 @@ class SQLiteConnection : Connection
 		return 0;
 	}
 
+	void ping()
+	{
+		
+	}
     private string getError()
     {
         return cast(string)fromStringz(sqlite3_errmsg(conn));

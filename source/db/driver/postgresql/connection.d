@@ -118,4 +118,9 @@ class PostgresqlConnection :  Connection
 	{
 		return 0;
 	}
+
+	void ping()
+	{
+	
+	}
 }

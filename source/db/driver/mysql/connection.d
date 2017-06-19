@@ -27,7 +27,6 @@ class MysqlConnection : Connection
 		this._querys = url.queryParams;
 		this.dbname = this._db;
 		connect();
-		execute("set names utf8;");
 	}
 
 	~this() 
@@ -40,10 +39,11 @@ class MysqlConnection : Connection
 	private void connect()
 	{
 		mysql = mysql_init(null);
-		my_bool reconnect = 1;
-		mysql_options(mysql, mysql_option.MYSQL_OPT_RECONNECT, &reconnect);
+		//my_bool reconnect = 1;
+		//mysql_options(mysql, mysql_option.MYSQL_OPT_RECONNECT, &reconnect);
 		mysql_real_connect(mysql, toCstring(_host), toCstring(_user), 
 				toCstring(_pass), toCstring(_db), _port, null, 0);
+		mysql_set_character_set(mysql, toCstring("utf8"));
 	}
 
 	int execute(string sql)
@@ -72,6 +72,11 @@ class MysqlConnection : Connection
 		if(mysql)
 			mysql_close(mysql);
 	}
+	void ping()
+	{
+		if(pingMysql())
+			connect();
+	}
 	int pingMysql()
 	{
 		return mysql_ping(mysql);
@@ -90,14 +95,6 @@ class MysqlConnection : Connection
 	int affectedRows() 
 	{
 		return cast(int) mysql_affected_rows(mysql);
-	}
-	void ping()
-	{
-		if(!mysql_ping(mysql)){
-			mysql_close(mysql);
-			mysql = null;
-			connect();
-		}
 	}
 
 	override ResultSet queryImpl(string sql, Variant[] args...) 

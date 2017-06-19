@@ -15,6 +15,8 @@ interface Connection
 
 	void close();
 
+	void ping();
+
     string escape(string sql);
 
 	ResultSet query(T...)(string sql, T t) {
