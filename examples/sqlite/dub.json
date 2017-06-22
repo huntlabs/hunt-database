@@ -1,0 +1,19 @@
+{
+	"name": "sqlite_demo",
+	"authors": ["putao"],
+	"targetType": "executable",
+	"dependencies": {
+		"db": {"path":"../../"}
+	},
+	"description": "A minimal D application.",
+	"copyright": "Copyright ? 2017, Zhang",
+	"license": "public domain",
+	"configurations": [
+		{
+			"name": "default",
+			"subConfigurations": {
+				"db": "sqlite"
+			}
+		}
+	]
+}

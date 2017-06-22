@@ -1,0 +1,48 @@
+{
+	"name": "db",
+	"authors": [
+		"putao"
+	],
+	"description": "A minimal D application.",
+	"copyright": "Copyright © 2017, putao",
+	"license": "public domain",
+	"configurations": [
+		{
+			"name": "default",
+            "targetType": "library"
+		},
+        {
+            "name": "mysql",
+            "targetType": "library",
+            "versions": [
+                "USE_MYSQL"
+            ],
+            "libs": [
+                "mysqlclient"
+            ]
+        },
+        {
+            "name": "postgresql",
+            "targetType": "library",
+            "versions": [
+                "USE_POSTGRESQL"
+            ],
+            "libs": [
+                "pq"
+            ]
+        },
+		{
+			"name": "sqlite",
+            "targetType": "library",
+			"versions": [
+				"USE_SQLITE"
+			],
+			"libs-posix": [
+				"sqlite3"
+			],
+			"libs-windows": [
+				"sqlite3"
+			]
+		}
+	]
+}
