@@ -72,16 +72,17 @@ class PostgresqlResult : ResultSet
 
 	private void fetchNext()
 	{
-		string[string] row;
+		auto row = new Row(this);
 		for(int n=0;n<_columns;n++){
 			void* dt = PQgetvalue(res, fetchIndex, n);
 			int len = PQgetlength(res, fetchIndex,n);
 			immutable char* ptr = cast(immutable char*) dt;
-			string str = cast(string) ptr[0 .. len];
-			row[fieldNames[n]] = str;
+			auto key = fieldNames[n];
+			auto type = typeid(string);
+			string value = cast(string) ptr[0 .. len];
+			row.add(key,type,value);
 		}
-		this.row = new Row(row);
-		this.row.resultSet = this;
+		this.row = row;
 	}
 }
 struct Describe 

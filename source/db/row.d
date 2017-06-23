@@ -6,14 +6,8 @@ string yield(string what) { return `if(auto result = dg(`~what~`)) return result
 
 class Row 
 {
-	private string[string] row;
 	private ResultSet _resultSet;
 	public Variant[string] vars;
-
-	this(string[string] row)
-	{
-		this.row = row;
-	}
 
 	this(ResultSet resultSet)
 	{
@@ -36,6 +30,12 @@ class Row
 			vars[name] = Variant();
 		vars[name] = val;
 	}
+	void add(string name,TypeInfo type,string val)
+	{
+		if (name !in vars)
+			vars[name] = Variant();
+		vars[name] = val;
+	}
 	Variant opDispatch(string name)()
 	{
 		if(name in vars)
@@ -43,24 +43,23 @@ class Row
 		return Variant.init;
 	}
 	string opIndex(string name, string file = __FILE__, int line = __LINE__) {
-		if(name !in row)
+		if(name !in vars)
 			throw new DatabaseException(text("no field ", name, " in result"), file, line);
-		return row[name];
+		return vars[name].to!string;
 	}
 
 	override string toString() {
-		return to!string(row);
+		return to!string(vars);
 	}
 
 	int opApply(int delegate(ref string, ref string) dg) {
 		foreach(a, b; toStringArray())
 			mixin(yield("a, b"));
-
 		return 0;
 	}
 
 	string[string] toStringArray() {
-		return row;
+		return cast(string[string])vars;
 	}
 }
 

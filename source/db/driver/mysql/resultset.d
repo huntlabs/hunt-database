@@ -72,9 +72,9 @@ class MysqlResult : ResultSet
 		auto row = new Row(this);
 		for(int a = 0; a < _columns; a++) {
 			auto key = _fieldNames[a];
+			auto type = fromSQLType(_fieldTypes[a]);
 			auto value = (*(r+a) is null) ? null : fromCstring(*(r+a), *(lengths +a));
-			//this.row.key = fromSQLType(keyType)(value);
-			row.add!string(key , value);
+			row.add(key,type,value);
 		}
 		this.row = row;
 	}
