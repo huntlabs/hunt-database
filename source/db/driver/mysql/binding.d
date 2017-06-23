@@ -19,6 +19,9 @@ import std.conv;
 import std.typecons;
 import core.stdc.config;
 
+
+auto fromSQLType(uint type){return typeid(string);}
+
 ///The MySQL server has gone away.
 enum CR_SERVER_GONE_ERROR = 2006;
 ///The connection to the server was lost during the query.

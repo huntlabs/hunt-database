@@ -82,14 +82,16 @@ class SqliteResult : ResultSet
 			index++;
 			firstLine = false;
 		}
-		string[string] row;
+		auto row = new Row(this);
 		for(int i = _columns * index;i<(_columns * (index + 1));i++)
 		{
-			row[_fieldNames[i % _columns ]] = cast(string)fromStringz(dbResult[i]);
+			//row[_fieldNames[i % _columns ]] = cast(string)fromStringz(dbResult[i]);
+			auto key = _fieldNames[i % _columns ];
+			auto type = typeid(string);
+			auto value = cast(string)fromStringz(dbResult[i]);
+			row.add(key,type,value);
 		}
 		index++;
-		
-		this.row = new Row(row);
-		this.row.resultSet = this;
+		this.row = row;
 	}
 }

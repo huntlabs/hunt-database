@@ -26,14 +26,6 @@ enum FieldType
     FIELD_TYPE_RAW
 }
 
-enum TypeInfo 
-{
-	BOOL,
-	NULL,
-	INTEGER,
-	STRING
-}
-
 enum ParamType
 {
 	PARAM_BOOL,

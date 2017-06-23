@@ -27,7 +27,7 @@ void main()
 	rs = stmt.fetchAll();
 	foreach(row;rs)
 	{
-		writeln(row.username,"\t",row.id);
+		writeln(row.username);
 	}
 
 	//sql = "select count(*) from user;";
