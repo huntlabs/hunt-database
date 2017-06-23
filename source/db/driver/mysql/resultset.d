@@ -9,6 +9,7 @@ class MysqlResult : ResultSet
 	private int _columns;
 	private int fetchIndex = 0;
 	private string[] _fieldNames;
+	private uint[] _fieldTypes;
 	private string _sql;
 
 	public Row row;
@@ -16,9 +17,9 @@ class MysqlResult : ResultSet
 	this(MYSQL_RES* res, string sql) 
 	{
 		this.result = res;
-		this._rows = rows();
-		this._columns = columns();
-		this._fieldNames = fieldNames();
+		rows();
+		columns();
+		fields();
 		this._sql = sql;
 
 		if(this._rows)
@@ -33,11 +34,13 @@ class MysqlResult : ResultSet
 
 	int rows() {
 		if(result is null)return 0;
-		return cast(int) mysql_num_rows(result);
+		if(!_rows)_rows = cast(int) mysql_num_rows(result);
+		return _rows;
 	}
 	int columns() {
 		if(result is null)return 0;
-		return cast(int) mysql_num_fields(result);
+		if(!_columns)_columns = cast(int) mysql_num_fields(result);
+		return _columns;
 	}
 
 	bool empty() 
@@ -66,27 +69,34 @@ class MysqlResult : ResultSet
 			throw new DatabaseException("there is no next row");
 		auto lengths = mysql_fetch_lengths(result);
 		
-		string[string] row;
+		auto row = new Row(this);
 		for(int a = 0; a < _columns; a++) {
-			row[_fieldNames[a]] = (*(r+a) is null) ? null : fromCstring(*(r+a), *(lengths +a));
+			auto key = _fieldNames[a];
+			auto value = (*(r+a) is null) ? null : fromCstring(*(r+a), *(lengths +a));
+			//this.row.key = fromSQLType(keyType)(value);
+			row.add!string(key , value);
 		}
-
-		this.row = new Row(row);
-		this.row.resultSet = this;
+		this.row = row;
 	}
 
 
-	string[] fieldNames() 
+	void fields() 
 	{
-		if(result is null)return null;
+		if(result is null)return;
 		auto fields = mysql_fetch_fields(result);
 
-		string[] names;
 		for(int i = 0; i < _columns; i++) {
-			names ~= fromCstring(fields[i].name, fields[i].name_length);
+			_fieldNames ~= fromCstring(fields[i].name, fields[i].name_length);
+			_fieldTypes ~= fields[i].type;
 		}
 
-		return names;
+		writeln(_fieldTypes);
+
+	}
+
+	string[] fieldNames()
+	{
+		return _fieldNames;
 	}
 }
 

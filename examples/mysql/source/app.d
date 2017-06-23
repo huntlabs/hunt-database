@@ -13,8 +13,6 @@ void main()
 	int result;
 	Statement stmt;
 	ResultSet rs;
-	Row row;
-
 	config = (new DatabaseConfig())
 		.addDatabaseSource("mysql://dev:111111@10.1.11.31:3306/blog?charset=utf-8")
 		.setMaxConnection(20)
@@ -27,14 +25,14 @@ void main()
 
 	stmt = db.query("SELECT * FROM user limit 10");
 	rs = stmt.fetchAll();
-	foreach(_row;rs)
+	foreach(row;rs)
 	{
-		writeln(_row);
+		writeln(row.username,"\t",row.id);
 	}
 
-	sql = "select count(*) from user;";
-	stmt = db.query(sql);
-	writeln(stmt.fetch());
+	//sql = "select count(*) from user;";
+	//stmt = db.query(sql);
+	//writeln(stmt.fetch());
 
 	db.close();
 }

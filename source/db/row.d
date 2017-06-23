@@ -6,16 +6,41 @@ string yield(string what) { return `if(auto result = dg(`~what~`)) return result
 
 class Row 
 {
-	public string[string] row;
-	public ResultSet resultSet;
+	private string[string] row;
+	private ResultSet _resultSet;
+	public Variant[string] vars;
 
 	this(string[string] row)
 	{
 		this.row = row;
 	}
 
+	this(ResultSet resultSet)
+	{
+		this._resultSet = resultSet;
+	}
+
 	~this()
 	{
+	}
+
+	void opDispatch(string name, T)(T val)
+	{
+		if (name !in vars)
+			vars[name] = Variant();
+		vars[name] = val;
+	}
+	void add(T)(string name,T val)
+	{
+		if (name !in vars)
+			vars[name] = Variant();
+		vars[name] = val;
+	}
+	Variant opDispatch(string name)()
+	{
+		if(name in vars)
+			return Variant(vars[name]);
+		return Variant.init;
 	}
 
 	string opIndex(string name, string file = __FILE__, int line = __LINE__) {
