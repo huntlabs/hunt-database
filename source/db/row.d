@@ -42,7 +42,6 @@ class Row
 			return Variant(vars[name]);
 		return Variant.init;
 	}
-
 	string opIndex(string name, string file = __FILE__, int line = __LINE__) {
 		if(name !in row)
 			throw new DatabaseException(text("no field ", name, " in result"), file, line);

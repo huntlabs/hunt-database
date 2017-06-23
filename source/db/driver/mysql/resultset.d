@@ -90,8 +90,6 @@ class MysqlResult : ResultSet
 			_fieldTypes ~= fields[i].type;
 		}
 
-		writeln(_fieldTypes);
-
 	}
 
 	string[] fieldNames()
