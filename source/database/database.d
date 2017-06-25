@@ -15,54 +15,54 @@ import database;
 
 class Database
 {
-	Pool _pool;
-	DatabaseOption _options;
+    Pool _pool;
+    DatabaseOption _options;
 
 
-	this(string url)
-	{
-		this._options = new DatabaseOption(url);
-		initPool();
-	}
+    this(string url)
+    {
+        this._options = new DatabaseOption(url);
+        initPool();
+    }
 
-	this(DatabaseOption options)
-	{
-		this._options = options;
-		initPool();
-	}
+    this(DatabaseOption options)
+    {
+        this._options = options;
+        initPool();
+    }
 
-	private void initPool()
-	{
-		_pool = new Pool(this._options);
-	}
+    private void initPool()
+    {
+        _pool = new Pool(this._options);
+    }
 
-	bool beginTransaction()
-	{
-		return false;
-	}
+    bool beginTransaction()
+    {
+        return false;
+    }
 
-	bool commit()
-	{
-		return false;
-	}
+    bool commit()
+    {
+        return false;
+    }
 
-	int error()
-	{
-		return 0;
-	}
+    int error()
+    {
+        return 0;
+    }
 
-	int execute(string sql)
-	{
-		return new Statement(_pool,sql).execute();
-	}
+    int execute(string sql)
+    {
+        return new Statement(_pool,sql).execute();
+    }
 
-	Statement query(string sql)
-	{
-		return new Statement(_pool, sql);
-	}
+    Statement query(string sql)
+    {
+        return new Statement(_pool, sql);
+    }
 
-	void close()
-	{
+    void close()
+    {
 
-	}
+    }
 }

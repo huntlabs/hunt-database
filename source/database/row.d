@@ -17,66 +17,66 @@ string yield(string what) { return `if(auto result = dg(`~what~`)) return result
 
 class Row 
 {
-	private ResultSet _resultSet;
-	public Variant[string] vars;
+    private ResultSet _resultSet;
+    public Variant[string] vars;
 
-	this(ResultSet resultSet)
-	{
-		this._resultSet = resultSet;
-	}
+    this(ResultSet resultSet)
+    {
+        this._resultSet = resultSet;
+    }
 
-	~this()
-	{
-	}
+    ~this()
+    {
+    }
 
-	void opDispatch(string name, T)(T val)
-	{
-		if (name !in vars)
-			vars[name] = Variant();
-		vars[name] = val;
-	}
+    void opDispatch(string name, T)(T val)
+    {
+        if (name !in vars)
+            vars[name] = Variant();
+        vars[name] = val;
+    }
 
-	void add(T)(string name,T val)
-	{
-		if (name !in vars)
-			vars[name] = Variant();
-		vars[name] = val;
-	}
+    void add(T)(string name,T val)
+    {
+        if (name !in vars)
+            vars[name] = Variant();
+        vars[name] = val;
+    }
 
-	void add(string name,TypeInfo type,string val)
-	{
-		if (name !in vars)
-			vars[name] = Variant();
-		vars[name] = val;
-	}
+    void add(string name,TypeInfo type,string val)
+    {
+        if (name !in vars)
+            vars[name] = Variant();
+        vars[name] = val;
+    }
 
-	Variant opDispatch(string name)()
-	{
-		if(name in vars)
-			return Variant(vars[name]);
-		return Variant.init;
-	}
+    Variant opDispatch(string name)()
+    {
+        if(name in vars)
+            return Variant(vars[name]);
+        return Variant.init;
+    }
 
-	string opIndex(string name, string file = __FILE__, int line = __LINE__) {
-		if(name !in vars)
-			throw new DatabaseException(text("no field ", name, " in result"), file, line);
-		return vars[name].to!string;
-	}
+    string opIndex(string name, string file = __FILE__, int line = __LINE__) {
+        if(name !in vars)
+            throw new DatabaseException(text("no field ", name, " in result"), file, line);
+        return vars[name].to!string;
+    }
 
-	override string toString()
-	{
-		return to!string(vars);
-	}
+    override string toString()
+    {
+        return to!string(vars);
+    }
 
-	int opApply(int delegate(ref string, ref string) dg) {
-		foreach(a, b; toStringArray())
-			mixin(yield("a, b"));
-		return 0;
-	}
+    int opApply(int delegate(ref string, ref string) dg) {
+        foreach(a, b; toStringArray())
+            mixin(yield("a, b"));
+        return 0;
+    }
 
-	string[string] toStringArray() {
-		return cast(string[string])vars;
-	}
+    string[string] toStringArray() {
+        return cast(string[string])vars;
+    }
 }
 
 

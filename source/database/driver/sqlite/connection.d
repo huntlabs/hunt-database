@@ -121,20 +121,20 @@ class SQLiteConnection : Connection
     {
         return sql;
     }
-	int lastInsertId()
-	{
-		return 0;
-	}
-	
-	int affectedRows()
-	{
-		return 0;
-	}
+    int lastInsertId()
+    {
+        return 0;
+    }
+    
+    int affectedRows()
+    {
+        return 0;
+    }
 
-	void ping()
-	{
-		
-	}
+    void ping()
+    {
+        
+    }
     private string getError()
     {
         return cast(string)fromStringz(sqlite3_errmsg(conn));

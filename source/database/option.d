@@ -16,56 +16,56 @@ import database.url;
 class DatabaseOption
 {
 
-	private int _maxLifetime = 30000;
-	private int _minimumPoolSize = 1;
-	private int _maximumPoolSize = 64;
-	private int _minldle = 1;
-	private int _connectionTimeout = 10000;
-	private URL _url;
-	
-	this()
-	{
-	
-	}
+    private int _maxLifetime = 30000;
+    private int _minimumPoolSize = 1;
+    private int _maximumPoolSize = 64;
+    private int _minldle = 1;
+    private int _connectionTimeout = 10000;
+    private URL _url;
+    
+    this()
+    {
+    
+    }
 
-	this(string url)
-	{
-		this._url = url.parseURL;
-	}
+    this(string url)
+    {
+        this._url = url.parseURL;
+    }
 
-	DatabaseOption addDatabaseSource(string url)
-	{
-		assert(url);
-		this._url = url.parseURL;
-		return this;
-	}
+    DatabaseOption addDatabaseSource(string url)
+    {
+        assert(url);
+        this._url = url.parseURL;
+        return this;
+    }
 
-	URL url()
-	{
-		return _url;
-	}
+    URL url()
+    {
+        return _url;
+    }
 
-	DatabaseOption setMaximumConnection(int num)
-	{
-		assert(num);
-		this._maximumPoolSize = num;
-		return this;
-	}
+    DatabaseOption setMaximumConnection(int num)
+    {
+        assert(num);
+        this._maximumPoolSize = num;
+        return this;
+    }
 
-	int maximumConnection()
-	{
-		return _maximumPoolSize;
-	}
-	
-	DatabaseOption setConnectionTimeout(int time)
-	{
-		assert(time);
-		this._connectionTimeout = time;
-		return this;
-	}
+    int maximumConnection()
+    {
+        return _maximumPoolSize;
+    }
+    
+    DatabaseOption setConnectionTimeout(int time)
+    {
+        assert(time);
+        this._connectionTimeout = time;
+        return this;
+    }
 
-	int connectionTimeout()
-	{
-		return _connectionTimeout;
-	}
+    int connectionTimeout()
+    {
+        return _connectionTimeout;
+    }
 }

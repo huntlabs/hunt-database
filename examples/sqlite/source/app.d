@@ -15,22 +15,22 @@ import database;
 
 void main()
 {
-	DatabaseOption options = new DatabaseOption("sqlite:///./testDB.db");
-	Database db = new Database(options);
+    DatabaseOption options = new DatabaseOption("sqlite:///./testDB.db");
+    Database db = new Database(options);
 
-	string sql = `insert into test(name,pass,age) values("testsdf","123",12);`;
+    string sql = `insert into test(name,pass,age) values("testsdf","123",12);`;
 
     db.execute(sql);
 
-	Statement statement = db.query("SELECT * FROM test");
+    Statement statement = db.query("SELECT * FROM test");
 
-	ResultSet rs = statement.fetchAll();
+    ResultSet rs = statement.fetchAll();
 
     
-	foreach(row;rs)
-	{
-		writeln(row);
-	}
+    foreach(row;rs)
+    {
+        writeln(row);
+    }
 
-	db.close();
+    db.close();
 }
