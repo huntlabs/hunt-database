@@ -1,6 +1,17 @@
-module db.driver.connection;
+/*
+ * Database - Database abstraction layer for D programing language.
+ *
+ * Copyright (C) 2017  Shanghai Putao Technology Co., Ltd
+ *
+ * Developer: HuntLabs
+ *
+ * Licensed under the Apache-2.0 License.
+ *
+ */
 
-import db;
+module database.driver.connection;
+
+import database;
 
 interface Connection
 {
@@ -19,7 +30,8 @@ interface Connection
 
     string escape(string sql);
 
-	ResultSet query(T...)(string sql, T t) {
+	ResultSet query(T...)(string sql, T t)
+	{
 		Variant[] args;
 		foreach(arg; t) {
 			Variant a;

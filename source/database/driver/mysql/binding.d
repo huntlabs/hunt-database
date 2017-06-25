@@ -1,4 +1,15 @@
-module db.driver.mysql.binding;
+/*
+ * Database - Database abstraction layer for D programing language.
+ *
+ * Copyright (C) 2017  Shanghai Putao Technology Co., Ltd
+ *
+ * Developer: HuntLabs
+ *
+ * Licensed under the Apache-2.0 License.
+ *
+ */
+
+module database.driver.mysql.binding;
 
 version(USE_MYSQL ):
 /*

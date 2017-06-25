@@ -1,7 +1,20 @@
-module db.driver.mysql.resultset;
+/*
+ * Database - Database abstraction layer for D programing language.
+ *
+ * Copyright (C) 2017  Shanghai Putao Technology Co., Ltd
+ *
+ * Developer: HuntLabs
+ *
+ * Licensed under the Apache-2.0 License.
+ *
+ */
 
-import db;
-version(USE_MYSQL): 
+module database.driver.mysql.resultset;
+
+import database;
+
+version(USE_MYSQL):
+
 class MysqlResult : ResultSet 
 {
 	private MYSQL_RES* result;

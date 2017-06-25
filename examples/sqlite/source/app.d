@@ -1,11 +1,22 @@
+/*
+ * Database - Database abstraction layer for D programing language.
+ *
+ * Copyright (C) 2017  Shanghai Putao Technology Co., Ltd
+ *
+ * Developer: HuntLabs
+ *
+ * Licensed under the Apache-2.0 License.
+ *
+ */
+
 import std.stdio;
 
-import db;
+import database;
 
 void main()
 {
-	DatabaseConfig config = new DatabaseConfig("sqlite:///./testDB.db");
-	Database db = new Database(config);
+	DatabaseOption options = new DatabaseOption("sqlite:///./testDB.db");
+	Database db = new Database(options);
 
 	string sql = `insert into test(name,pass,age) values("testsdf","123",12);`;
 

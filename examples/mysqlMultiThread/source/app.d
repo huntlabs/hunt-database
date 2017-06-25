@@ -1,5 +1,5 @@
 import std.stdio;
-import db;
+import database;
 
 import std.conv;
 import core.thread;
@@ -11,10 +11,10 @@ void main()
 	writeln("run");
 
 	__gshared Database db;
-	__gshared DatabaseConfig config;
-	config = (new DatabaseConfig())
+	__gshared DatabaseOption config;
+	config = (new DatabaseOption())
 		.addDatabaseSource("mysql://dev:111111@10.1.11.31:3306/blog?charset=utf-8")
-		.setMaxConnection(20)
+		.setMaximumConnection(20)
 		.setConnectionTimeout(5000);
 	db = new Database(config);
 

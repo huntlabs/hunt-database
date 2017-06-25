@@ -1,38 +1,23 @@
-import std.stdio;
-import db;
 
+import std.stdio;
 import std.experimental.logger;
+
+import database;
 
 void main()
 {
-	writeln("run");
+	writeln("run database MySQL demo.");
 
-	DatabaseConfig config;
-	Database db;
-	string sql;
-	int result;
-	Statement stmt;
-	ResultSet rs;
-	config = (new DatabaseConfig())
-		.addDatabaseSource("mysql://dev:111111@10.1.11.31:3306/blog?charset=utf-8")
-		.setMaxConnection(20)
-		.setConnectionTimeout(5000);
-	db = new Database(config);
+	Database db = new Database("mysql://dev:111111@10.1.11.31:3306/blog?charset=utf-8");
 
-	sql = `insert into user(username) values("testsdf1111");`;
-	result = db.execute(sql);
+	int result = db.execute(`INSERT INTO user(username) VALUES("test");`);
 	writeln(result);
 
-	stmt = db.query("SELECT * FROM user limit 10");
-	rs = stmt.fetchAll();
-	foreach(row;rs)
+	Statement stmt = db.query("SELECT * FROM user LIMIT 10");
+	foreach(row; stmt.fetchAll())
 	{
 		writeln(row.username);
 	}
-
-	//sql = "select count(*) from user;";
-	//stmt = db.query(sql);
-	//writeln(stmt.fetch());
 
 	db.close();
 }
