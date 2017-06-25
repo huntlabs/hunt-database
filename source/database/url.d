@@ -21,78 +21,78 @@ import std.utf;
 @safe:
 
 class URLException : Exception {
-	this(string msg) { super(msg); }
+    this(string msg) { super(msg); }
 }
 
 ushort[string] schemeToDefaultPort;
 
 static this() 
 {
-	schemeToDefaultPort = [
-		"aaa": 3868,
-		"aaas": 5658,
-		"acap": 674,
-		"amqp": 5672,
-		"cap": 1026,
-		"coap": 5683,
-		"coaps": 5684,
-		"dav": 443,
-		"dict": 2628,
-		"ftp": 21,
-		"git": 9418,
-		"go": 1096,
-		"gopher": 70,
-		"http": 80,
-		"https": 443,
-		"ws": 80,
-		"wss": 443,
-		"iac": 4569,
-		"icap": 1344,
-		"imap": 143,
-		"ipp": 631,
-		"ipps": 631,  // yes, they're both mapped to port 631
-		"irc": 6667,  // De facto default port, not the IANA reserved port.
-		"ircs": 6697,
-		"iris": 702,  // defaults to iris.beep
-		"iris.beep": 702,
-		"iris.lwz": 715,
-		"iris.xpc": 713,
-		"iris.xpcs": 714,
-		"jabber": 5222,  // client-to-server
-		"ldap": 389,
-		"ldaps": 636,
-		"msrp": 2855,
-		"msrps": 2855,
-		"mtqp": 1038,
-		"mupdate": 3905,
-		"news": 119,
-		"nfs": 2049,
-		"pop": 110,
-		"redis": 6379,
-		"reload": 6084,
-		"rsync": 873,
-		"rtmfp": 1935,
-		"rtsp": 554,
-		"shttp": 80,
-		"sieve": 4190,
-		"sip": 5060,
-		"sips": 5061,
-		"smb": 445,
-		"smtp": 25,
-		"snews": 563,
-		"snmp": 161,
-		"soap.beep": 605,
-		"ssh": 22,
-		"stun": 3478,
-		"stuns": 5349,
-		"svn": 3690,
-		"teamspeak": 9987,
-		"telnet": 23,
-		"tftp": 69,
-		"tip": 3372,
-		"mysql": 3306,
-		"postgresql": 5432
-	];
+    schemeToDefaultPort = [
+        "aaa": 3868,
+        "aaas": 5658,
+        "acap": 674,
+        "amqp": 5672,
+        "cap": 1026,
+        "coap": 5683,
+        "coaps": 5684,
+        "dav": 443,
+        "dict": 2628,
+        "ftp": 21,
+        "git": 9418,
+        "go": 1096,
+        "gopher": 70,
+        "http": 80,
+        "https": 443,
+        "ws": 80,
+        "wss": 443,
+        "iac": 4569,
+        "icap": 1344,
+        "imap": 143,
+        "ipp": 631,
+        "ipps": 631,  // yes, they're both mapped to port 631
+        "irc": 6667,  // De facto default port, not the IANA reserved port.
+        "ircs": 6697,
+        "iris": 702,  // defaults to iris.beep
+        "iris.beep": 702,
+        "iris.lwz": 715,
+        "iris.xpc": 713,
+        "iris.xpcs": 714,
+        "jabber": 5222,  // client-to-server
+        "ldap": 389,
+        "ldaps": 636,
+        "msrp": 2855,
+        "msrps": 2855,
+        "mtqp": 1038,
+        "mupdate": 3905,
+        "news": 119,
+        "nfs": 2049,
+        "pop": 110,
+        "redis": 6379,
+        "reload": 6084,
+        "rsync": 873,
+        "rtmfp": 1935,
+        "rtsp": 554,
+        "shttp": 80,
+        "sieve": 4190,
+        "sip": 5060,
+        "sips": 5061,
+        "smb": 445,
+        "smtp": 25,
+        "snews": 563,
+        "snmp": 161,
+        "soap.beep": 605,
+        "ssh": 22,
+        "stun": 3478,
+        "stuns": 5349,
+        "svn": 3690,
+        "teamspeak": 9987,
+        "telnet": 23,
+        "tftp": 69,
+        "tip": 3372,
+        "mysql": 3306,
+        "postgresql": 5432
+    ];
 }
 
 /**
@@ -101,58 +101,58 @@ static this()
  * This is effectively a multimap of string -> strings.
  */
 struct QueryParams {
-	import std.typecons;
-	alias Tuple!(string, "key", string, "value") Param;
-	Param[] params;
+    import std.typecons;
+    alias Tuple!(string, "key", string, "value") Param;
+    Param[] params;
 
-	@property size_t length() {
-		return params.length;
-	}
+    @property size_t length() {
+        return params.length;
+    }
 
-	/// Get a range over the query parameter values for the given key.
-	auto opIndex(string key) {
-		return params.find!(x => x.key == key).map!(x => x.value);
-	}
+    /// Get a range over the query parameter values for the given key.
+    auto opIndex(string key) {
+        return params.find!(x => x.key == key).map!(x => x.value);
+    }
 
-	/// Add a query parameter with the given key and value.
-	/// If one already exists, there will now be two query parameters with the given name.
-	void add(string key, string value) {
-		params ~= Param(key, value);
-	}
+    /// Add a query parameter with the given key and value.
+    /// If one already exists, there will now be two query parameters with the given name.
+    void add(string key, string value) {
+        params ~= Param(key, value);
+    }
 
-	/// Add a query parameter with the given key and value.
-	/// If there are any existing parameters with the same key, they are removed and overwritten.
-	void overwrite(string key, string value) {
-		for (int i = 0; i < params.length; i++) {
-			if (params[i].key == key) {
-				params[i] = params[$-1];
-				params.length--;
-			}
-		}
-		params ~= Param(key, value);
-	}
+    /// Add a query parameter with the given key and value.
+    /// If there are any existing parameters with the same key, they are removed and overwritten.
+    void overwrite(string key, string value) {
+        for (int i = 0; i < params.length; i++) {
+            if (params[i].key == key) {
+                params[i] = params[$-1];
+                params.length--;
+            }
+        }
+        params ~= Param(key, value);
+    }
 
-	private struct QueryParamRange {
-		size_t i;
-		const(Param)[] params;
-		bool empty() { return i >= params.length; }
-		void popFront() { i++; }
-		Param front() { return params[i]; }
-	}
+    private struct QueryParamRange {
+        size_t i;
+        const(Param)[] params;
+        bool empty() { return i >= params.length; }
+        void popFront() { i++; }
+        Param front() { return params[i]; }
+    }
 
-	/**
-	 * A range over the query parameters.
-	 *
-	 * Usage:
-	 * ---
-	 * foreach (key, value; url.queryParams) {}
-	 * ---
-	 */
-	auto range() {
-		return QueryParamRange(0, this.params);
-	}
-	/// ditto
-	alias range this;
+    /**
+     * A range over the query parameters.
+     *
+     * Usage:
+     * ---
+     * foreach (key, value; url.queryParams) {}
+     * ---
+     */
+    auto range() {
+        return QueryParamRange(0, this.params);
+    }
+    /// ditto
+    alias range this;
 }
 
 /**
@@ -161,229 +161,229 @@ struct QueryParams {
  * URLs can be parsed (see parseURL) and implicitly convert to strings.
  */
 struct URL {
-	/// The URL scheme. For instance, ssh, ftp, or https.
-	string scheme;
+    /// The URL scheme. For instance, ssh, ftp, or https.
+    string scheme;
 
-	/// The username in this URL. Usually absent. If present, there will also be a password.
-	string user;
+    /// The username in this URL. Usually absent. If present, there will also be a password.
+    string user;
 
-	/// The password in this URL. Usually absent.
-	string pass;
+    /// The password in this URL. Usually absent.
+    string pass;
 
-	/// The hostname.
-	string host;
+    /// The hostname.
+    string host;
 
-	/**
-	 * The port.
-	 *
-	 * This is inferred from the scheme if it isn't present in the URL itself.
-	 * If the scheme is not known and the port is not present, the port will be given as 0.
-	 * For some schemes, port will not be sensible -- for instance, file or chrome-extension.
-	 *
-	 * If you explicitly need to detect whether the user provided a port, check the providedPort
-	 * field.
-	 */
-	@property ushort port() {
-		if (providedPort != 0) {
-			return providedPort;
-		}
-		if (auto p = scheme in schemeToDefaultPort) {
-			return *p;
-		}
-		return 0;
-	}
+    /**
+     * The port.
+     *
+     * This is inferred from the scheme if it isn't present in the URL itself.
+     * If the scheme is not known and the port is not present, the port will be given as 0.
+     * For some schemes, port will not be sensible -- for instance, file or chrome-extension.
+     *
+     * If you explicitly need to detect whether the user provided a port, check the providedPort
+     * field.
+     */
+    @property ushort port() {
+        if (providedPort != 0) {
+            return providedPort;
+        }
+        if (auto p = scheme in schemeToDefaultPort) {
+            return *p;
+        }
+        return 0;
+    }
 
-	/**
-	 * Set the port.
-	 *
-	 * This sets the providedPort field and is provided for convenience.
-	 */
-	@property ushort port(ushort value) {
-		return providedPort = value;
-	}
+    /**
+     * Set the port.
+     *
+     * This sets the providedPort field and is provided for convenience.
+     */
+    @property ushort port(ushort value) {
+        return providedPort = value;
+    }
 
-	/// The port that was explicitly provided in the URL.
-	ushort providedPort;
+    /// The port that was explicitly provided in the URL.
+    ushort providedPort;
 
-	/**
-	 * The path.
-	 *
-	 * For instance, in the URL https://cnn.com/news/story/17774?visited=false, the path is
-	 * "/news/story/17774".
-	 */
-	string path;
+    /**
+     * The path.
+     *
+     * For instance, in the URL https://cnn.com/news/story/17774?visited=false, the path is
+     * "/news/story/17774".
+     */
+    string path;
 
-	/**
-	 * Deprecated: this disallows multiple values for the same query string. Please use queryParams
-	 * instead.
-	 * 
-	 * The query string elements.
-	 *
-	 * For instance, in the URL https://cnn.com/news/story/17774?visited=false, the query string
-	 * elements will be ["visited": "false"].
-	 *
-	 * Similarly, in the URL https://bbc.co.uk/news?item, the query string elements will be
-	 * ["item": ""].
-	 *
-	 * This field is mutable, so be cautious.
-	 */
-	deprecated("use queryParams") string[string] query;
+    /**
+     * Deprecated: this disallows multiple values for the same query string. Please use queryParams
+     * instead.
+     * 
+     * The query string elements.
+     *
+     * For instance, in the URL https://cnn.com/news/story/17774?visited=false, the query string
+     * elements will be ["visited": "false"].
+     *
+     * Similarly, in the URL https://bbc.co.uk/news?item, the query string elements will be
+     * ["item": ""].
+     *
+     * This field is mutable, so be cautious.
+     */
+    deprecated("use queryParams") string[string] query;
 
-	/**
-	 * The query parameters associated with this URL.
-	 */
-	QueryParams queryParams;
+    /**
+     * The query parameters associated with this URL.
+     */
+    QueryParams queryParams;
 
-	/**
-	 * The fragment. In web documents, this typically refers to an anchor element.
-	 * For instance, in the URL https://cnn.com/news/story/17774#header2, the fragment is "header2".
-	 */
-	string fragment;
+    /**
+     * The fragment. In web documents, this typically refers to an anchor element.
+     * For instance, in the URL https://cnn.com/news/story/17774#header2, the fragment is "header2".
+     */
+    string fragment;
 
-	/**
-	 * Convert this URL to a string.
-	 * The string is properly formatted and usable for, eg, a web request.
-	 */
-	string toString() {
-		return toString(false);
-	}
+    /**
+     * Convert this URL to a string.
+     * The string is properly formatted and usable for, eg, a web request.
+     */
+    string toString() {
+        return toString(false);
+    }
 
-	/**
-	 * Convert this URL to a string.
-	 * The string is intended to be human-readable rather than machine-readable.
-	 */
-	string toHumanReadableString() {
-		return toString(true);
-	}
+    /**
+     * Convert this URL to a string.
+     * The string is intended to be human-readable rather than machine-readable.
+     */
+    string toHumanReadableString() {
+        return toString(true);
+    }
 
-	private string toString(bool humanReadable) {
-		Appender!string s;
-		s ~= scheme;
-		s ~= "://";
-		if (user) {
-			s ~= humanReadable ? user : user.percentEncode;
-			s ~= ":";
-			s ~= humanReadable ? pass : pass.percentEncode;
-			s ~= "@";
-		}
-		s ~= humanReadable ? host : host.toPuny;
-		if (providedPort) {
-			if ((scheme in schemeToDefaultPort) == null || schemeToDefaultPort[scheme] != providedPort) {
-				s ~= ":";
-				s ~= providedPort.to!string;
-			}
-		}
-		string p = path;
-		if (p.length == 0 || p == "/") {
-			s ~= '/';
-		} else {
-			if (p[0] == '/') {
-				p = p[1..$];
-			}
-			if (humanReadable) {
-				s ~= p;
-			} else {
-				foreach (part; p.split('/')) {
-					s ~= '/';
-					s ~= part.percentEncode;
-				}
-			}
-		}
-		if (queryParams.length) {
-			bool first = true;
-			s ~= '?';
-			foreach (k, v; queryParams) {
-				if (!first) {
-					s ~= '&';
-				}
-				first = false;
-				s ~= k.percentEncode;
-				if (v.length > 0) {
-					s ~= '=';
-					s ~= v.percentEncode;
-				}
-			}
-		} else if (query) {
-			s ~= '?';
-			bool first = true;
-			foreach (k, v; query) {
-				if (!first) {
-					s ~= '&';
-				}
-				first = false;
-				s ~= k.percentEncode;
-				if (v.length > 0) {
-					s ~= '=';
-					s ~= v.percentEncode;
-				}
-			}
-		}
-		if (fragment) {
-			s ~= '#';
-			s ~= fragment.percentEncode;
-		}
-		return s.data;
-	}
+    private string toString(bool humanReadable) {
+        Appender!string s;
+        s ~= scheme;
+        s ~= "://";
+        if (user) {
+            s ~= humanReadable ? user : user.percentEncode;
+            s ~= ":";
+            s ~= humanReadable ? pass : pass.percentEncode;
+            s ~= "@";
+        }
+        s ~= humanReadable ? host : host.toPuny;
+        if (providedPort) {
+            if ((scheme in schemeToDefaultPort) == null || schemeToDefaultPort[scheme] != providedPort) {
+                s ~= ":";
+                s ~= providedPort.to!string;
+            }
+        }
+        string p = path;
+        if (p.length == 0 || p == "/") {
+            s ~= '/';
+        } else {
+            if (p[0] == '/') {
+                p = p[1..$];
+            }
+            if (humanReadable) {
+                s ~= p;
+            } else {
+                foreach (part; p.split('/')) {
+                    s ~= '/';
+                    s ~= part.percentEncode;
+                }
+            }
+        }
+        if (queryParams.length) {
+            bool first = true;
+            s ~= '?';
+            foreach (k, v; queryParams) {
+                if (!first) {
+                    s ~= '&';
+                }
+                first = false;
+                s ~= k.percentEncode;
+                if (v.length > 0) {
+                    s ~= '=';
+                    s ~= v.percentEncode;
+                }
+            }
+        } else if (query) {
+            s ~= '?';
+            bool first = true;
+            foreach (k, v; query) {
+                if (!first) {
+                    s ~= '&';
+                }
+                first = false;
+                s ~= k.percentEncode;
+                if (v.length > 0) {
+                    s ~= '=';
+                    s ~= v.percentEncode;
+                }
+            }
+        }
+        if (fragment) {
+            s ~= '#';
+            s ~= fragment.percentEncode;
+        }
+        return s.data;
+    }
 
-	/// Implicitly convert URLs to strings.
-	alias toString this;
+    /// Implicitly convert URLs to strings.
+    alias toString this;
 
-	/**
-	 * The append operator (~).
-	 *
-	 * The append operator for URLs returns a new URL with the given string appended as a path
-	 * element to the URL's path. It only adds new path elements (or sequences of path elements).
-	 *
-	 * Don't worry about path separators; whether you include them or not, it will just work.
-	 *
-	 * Query elements are copied.
-	 *
-	 * Examples:
-	 * ---
-	 * auto random = "http://testdata.org/random".parseURL;
-	 * auto randInt = random ~ "int";
-	 * writeln(randInt);  // prints "http://testdata.org/random/int"
-	 * ---
-	 */
-	URL opBinary(string op : "~")(string subsequentPath) {
-		URL other = this;
-		other ~= subsequentPath;
-		if (query) {
-			other.query = other.query.dup;
-		}
-		return other;
-	}
+    /**
+     * The append operator (~).
+     *
+     * The append operator for URLs returns a new URL with the given string appended as a path
+     * element to the URL's path. It only adds new path elements (or sequences of path elements).
+     *
+     * Don't worry about path separators; whether you include them or not, it will just work.
+     *
+     * Query elements are copied.
+     *
+     * Examples:
+     * ---
+     * auto random = "http://testdata.org/random".parseURL;
+     * auto randInt = random ~ "int";
+     * writeln(randInt);  // prints "http://testdata.org/random/int"
+     * ---
+     */
+    URL opBinary(string op : "~")(string subsequentPath) {
+        URL other = this;
+        other ~= subsequentPath;
+        if (query) {
+            other.query = other.query.dup;
+        }
+        return other;
+    }
 
-	/**
-	 * The append-in-place operator (~=).
-	 *
-	 * The append operator for URLs adds a path element to this URL. It only adds new path elements
-	 * (or sequences of path elements).
-	 *
-	 * Don't worry about path separators; whether you include them or not, it will just work.
-	 *
-	 * Examples:
-	 * ---
-	 * auto random = "http://testdata.org/random".parseURL;
-	 * random ~= "int";
-	 * writeln(random);  // prints "http://testdata.org/random/int"
-	 * ---
-	 */
-	URL opOpAssign(string op : "~")(string subsequentPath) {
-		if (path.endsWith("/")) {
-			if (subsequentPath.startsWith("/")) {
-				path ~= subsequentPath[1..$];
-			} else {
-				path ~= subsequentPath;
-			}
-		} else {
-			if (!subsequentPath.startsWith("/")) {
-				path ~= '/';
-			}
-			path ~= subsequentPath;
-		}
-		return this;
-	}
+    /**
+     * The append-in-place operator (~=).
+     *
+     * The append operator for URLs adds a path element to this URL. It only adds new path elements
+     * (or sequences of path elements).
+     *
+     * Don't worry about path separators; whether you include them or not, it will just work.
+     *
+     * Examples:
+     * ---
+     * auto random = "http://testdata.org/random".parseURL;
+     * random ~= "int";
+     * writeln(random);  // prints "http://testdata.org/random/int"
+     * ---
+     */
+    URL opOpAssign(string op : "~")(string subsequentPath) {
+        if (path.endsWith("/")) {
+            if (subsequentPath.startsWith("/")) {
+                path ~= subsequentPath[1..$];
+            } else {
+                path ~= subsequentPath;
+            }
+        } else {
+            if (!subsequentPath.startsWith("/")) {
+                path ~= '/';
+            }
+            path ~= subsequentPath;
+        }
+        return this;
+    }
 }
 
 /**
@@ -393,209 +393,209 @@ struct URL {
  * may be made. However, any URL in a correct format will be parsed correctly.
  */
 bool tryParseURL(string value, out URL url) {
-	url = URL.init;
-	// scheme:[//[user:password@]host[:port]][/]path[?query][#fragment]
-	// Scheme is optional in common use. We infer 'http' if it's not given.
-	auto i = value.indexOf("//");
-	if (i > -1) {
-		if (i > 1) {
-			url.scheme = value[0..i-1];
-		}
-		value = value[i+2 .. $];
-	} else {
-		url.scheme = "http";
-	}
-	// [user:password@]host[:port]][/]path[?query][#fragment
-	i = value.indexOfAny([':', '/']);
-	if (i == -1) {
-		// Just a hostname.
-		url.host = value.fromPuny;
-		return true;
-	}
+    url = URL.init;
+    // scheme:[//[user:password@]host[:port]][/]path[?query][#fragment]
+    // Scheme is optional in common use. We infer 'http' if it's not given.
+    auto i = value.indexOf("//");
+    if (i > -1) {
+        if (i > 1) {
+            url.scheme = value[0..i-1];
+        }
+        value = value[i+2 .. $];
+    } else {
+        url.scheme = "http";
+    }
+    // [user:password@]host[:port]][/]path[?query][#fragment
+    i = value.indexOfAny([':', '/']);
+    if (i == -1) {
+        // Just a hostname.
+        url.host = value.fromPuny;
+        return true;
+    }
 
-	if (value[i] == ':') {
-		// This could be between username and password, or it could be between host and port.
-		auto j = value.indexOfAny(['@', '/']);
-		if (j > -1 && value[j] == '@') {
-			try {
-				url.user = value[0..i].percentDecode;
-				url.pass = value[i+1 .. j].percentDecode;
-			} catch (URLException) {
-				return false;
-			}
-			value = value[j+1 .. $];
-		}
-	}
+    if (value[i] == ':') {
+        // This could be between username and password, or it could be between host and port.
+        auto j = value.indexOfAny(['@', '/']);
+        if (j > -1 && value[j] == '@') {
+            try {
+                url.user = value[0..i].percentDecode;
+                url.pass = value[i+1 .. j].percentDecode;
+            } catch (URLException) {
+                return false;
+            }
+            value = value[j+1 .. $];
+        }
+    }
 
-	// It's trying to be a host/port, not a user/pass.
-	i = value.indexOfAny([':', '/']);
-	if (i == -1) {
-		url.host = value.fromPuny;
-		return true;
-	}
-	url.host = value[0..i].fromPuny;
-	value = value[i .. $];
-	if (value[0] == ':') {
-		auto end = value.indexOf('/');
-		if (end == -1) {
-			end = value.length;
-		}
-		try {
-			url.port = value[1 .. end].to!ushort;
-		} catch (ConvException) {
-			return false;
-		}
-		value = value[end .. $];
-		if (value.length == 0) {
-			return true;
-		}
-	}
+    // It's trying to be a host/port, not a user/pass.
+    i = value.indexOfAny([':', '/']);
+    if (i == -1) {
+        url.host = value.fromPuny;
+        return true;
+    }
+    url.host = value[0..i].fromPuny;
+    value = value[i .. $];
+    if (value[0] == ':') {
+        auto end = value.indexOf('/');
+        if (end == -1) {
+            end = value.length;
+        }
+        try {
+            url.port = value[1 .. end].to!ushort;
+        } catch (ConvException) {
+            return false;
+        }
+        value = value[end .. $];
+        if (value.length == 0) {
+            return true;
+        }
+    }
 
-	i = value.indexOfAny("?#");
-	if (i == -1) {
-		url.path = value.percentDecode;
-		return true;
-	}
+    i = value.indexOfAny("?#");
+    if (i == -1) {
+        url.path = value.percentDecode;
+        return true;
+    }
 
-	try {
-		url.path = value[0..i].percentDecode;
-	} catch (URLException) {
-		return false;
-	}
-	auto c = value[i];
-	value = value[i + 1 .. $];
-	if (c == '?') {
-		i = value.indexOf('#');
-		string query;
-		if (i < 0) {
-			query = value;
-			value = null;
-		} else {
-			query = value[0..i];
-			value = value[i + 1 .. $];
-		}
-		auto queries = query.split('&');
-		foreach (q; queries) {
-			auto j = q.indexOf('=');
-			string key, val;
-			if (j < 0) {
-				key = q;
-			} else {
-				key = q[0..j];
-				val = q[j + 1 .. $];
-			}
-			try {
-				key = key.percentDecode;
-				val = val.percentDecode;
-			} catch (URLException) {
-				return false;
-			}
-			url.query[key] = val;
-			url.queryParams.add(key, val);
-		}
-	}
+    try {
+        url.path = value[0..i].percentDecode;
+    } catch (URLException) {
+        return false;
+    }
+    auto c = value[i];
+    value = value[i + 1 .. $];
+    if (c == '?') {
+        i = value.indexOf('#');
+        string query;
+        if (i < 0) {
+            query = value;
+            value = null;
+        } else {
+            query = value[0..i];
+            value = value[i + 1 .. $];
+        }
+        auto queries = query.split('&');
+        foreach (q; queries) {
+            auto j = q.indexOf('=');
+            string key, val;
+            if (j < 0) {
+                key = q;
+            } else {
+                key = q[0..j];
+                val = q[j + 1 .. $];
+            }
+            try {
+                key = key.percentDecode;
+                val = val.percentDecode;
+            } catch (URLException) {
+                return false;
+            }
+            url.query[key] = val;
+            url.queryParams.add(key, val);
+        }
+    }
 
-	try {
-		url.fragment = value.percentDecode;
-	} catch (URLException) {
-		return false;
-	}
+    try {
+        url.fragment = value.percentDecode;
+    } catch (URLException) {
+        return false;
+    }
 
-	return true;
+    return true;
 }
 
 unittest {
-	{
-		// Basic.
-		URL url;
-		with (url) {
-			scheme = "https";
-			host = "example.org";
-			path = "/foo/bar";
-			query["hello"] = "world";
-			query["gibe"] = "clay";
-			fragment = "frag";
-		}
-		assert(
-				// Not sure what order it'll come out in.
-				url.toString == "https://example.org/foo/bar?hello=world&gibe=clay#frag" ||
-				url.toString == "https://example.org/foo/bar?gibe=clay&hello=world#frag",
-				url.toString);
-	}
-	{
-		// Percent encoded.
-		URL url;
-		with (url) {
-			scheme = "https";
-			host = "example.org";
-			path = "/f☃o";
-			query["❄"] = "❀";
-			query["["] = "]";
-			fragment = "ş";
-		}
-		assert(
-				// Not sure what order it'll come out in.
-				url.toString == "https://example.org/f%E2%98%83o?%E2%9D%84=%E2%9D%80&%5B=%5D#%C5%9F" ||
-				url.toString == "https://example.org/f%E2%98%83o?%5B=%5D&%E2%9D%84=%E2%9D%80#%C5%9F",
-				url.toString);
-	}
-	{
-		// Port, user, pass.
-		URL url;
-		with (url) {
-			scheme = "https";
-			host = "example.org";
-			user = "dhasenan";
-			pass = "itsasecret";
-			port = 17;
-		}
-		assert(
-				url.toString == "https://dhasenan:itsasecret@example.org:17/",
-				url.toString);
-	}
-	{
-		// Query with no path.
-		URL url;
-		with (url) {
-			scheme = "https";
-			host = "example.org";
-			query["hi"] = "bye";
-		}
-		assert(
-				url.toString == "https://example.org/?hi=bye",
-				url.toString);
-	}
+    {
+        // Basic.
+        URL url;
+        with (url) {
+            scheme = "https";
+            host = "example.org";
+            path = "/foo/bar";
+            query["hello"] = "world";
+            query["gibe"] = "clay";
+            fragment = "frag";
+        }
+        assert(
+                // Not sure what order it'll come out in.
+                url.toString == "https://example.org/foo/bar?hello=world&gibe=clay#frag" ||
+                url.toString == "https://example.org/foo/bar?gibe=clay&hello=world#frag",
+                url.toString);
+    }
+    {
+        // Percent encoded.
+        URL url;
+        with (url) {
+            scheme = "https";
+            host = "example.org";
+            path = "/f☃o";
+            query["❄"] = "❀";
+            query["["] = "]";
+            fragment = "ş";
+        }
+        assert(
+                // Not sure what order it'll come out in.
+                url.toString == "https://example.org/f%E2%98%83o?%E2%9D%84=%E2%9D%80&%5B=%5D#%C5%9F" ||
+                url.toString == "https://example.org/f%E2%98%83o?%5B=%5D&%E2%9D%84=%E2%9D%80#%C5%9F",
+                url.toString);
+    }
+    {
+        // Port, user, pass.
+        URL url;
+        with (url) {
+            scheme = "https";
+            host = "example.org";
+            user = "dhasenan";
+            pass = "itsasecret";
+            port = 17;
+        }
+        assert(
+                url.toString == "https://dhasenan:itsasecret@example.org:17/",
+                url.toString);
+    }
+    {
+        // Query with no path.
+        URL url;
+        with (url) {
+            scheme = "https";
+            host = "example.org";
+            query["hi"] = "bye";
+        }
+        assert(
+                url.toString == "https://example.org/?hi=bye",
+                url.toString);
+    }
 }
 
 unittest
 {
-	auto url = "//foo/bar".parseURL;
-	assert(url.host == "foo", "expected host foo, got " ~ url.host);
-	assert(url.path == "/bar");
+    auto url = "//foo/bar".parseURL;
+    assert(url.host == "foo", "expected host foo, got " ~ url.host);
+    assert(url.path == "/bar");
 }
 
 unittest
 {
-	auto url = "localhost:5984".parseURL;
-	auto url2 = url ~ "db1";
-	assert(url2.toString == "http://localhost:5984/db1", url2.toString);
-	auto url3 = url2 ~ "_all_docs";
-	assert(url3.toString == "http://localhost:5984/db1/_all_docs", url3.toString);
+    auto url = "localhost:5984".parseURL;
+    auto url2 = url ~ "db1";
+    assert(url2.toString == "http://localhost:5984/db1", url2.toString);
+    auto url3 = url2 ~ "_all_docs";
+    assert(url3.toString == "http://localhost:5984/db1/_all_docs", url3.toString);
 }
 
 ///
 unittest {
-	{
-		// Basic.
-		URL url;
-		with (url) {
-			scheme = "https";
-			host = "example.org";
-			path = "/foo/bar";
-			queryParams.add("hello", "world");
-			queryParams.add("gibe", "clay");
-			fragment = "frag";
-		}
+    {
+        // Basic.
+        URL url;
+        with (url) {
+            scheme = "https";
+            host = "example.org";
+            path = "/foo/bar";
+            queryParams.add("hello", "world");
+            queryParams.add("gibe", "clay");
+            fragment = "frag";
+        }
 		assert(
 				// Not sure what order it'll come out in.
 				url.toString == "https://example.org/foo/bar?hello=world&gibe=clay#frag" ||

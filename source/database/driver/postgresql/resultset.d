@@ -16,116 +16,116 @@ version(USE_POSTGRESQL):
 
 class PostgresqlResult : ResultSet 
 {
-	private PGresult* res;
-	private Describe[] describes;
-	private string[] fields;
-	private int _rows;
-	private int fetchIndex;
-	private int _columns;
-	public bool[] columnIsNull;
-	public Row row;
+    private PGresult* res;
+    private Describe[] describes;
+    private string[] fields;
+    private int _rows;
+    private int fetchIndex;
+    private int _columns;
+    public bool[] columnIsNull;
+    public Row row;
 
-	this(PGresult* res)
-	{
-		this.res = res;
-		_columns = columns();
-		_rows = rows();
-		makeFieldInfo();
-		if(this._rows)
-			fetchNext();
-	}
-	~this()
-	{
-		PQclear(res);	
-	}
-	void makeFieldInfo()
-	{
-		for (int col = 0; col < _columns; col++) 
-		{
-			Describe d = Describe();
-			d.dbType = cast(int) PQftype(res, col);
-			d.fmt = PQfformat(res, col);
-			d.name = to!string(PQfname(res, col));
-			this.describes ~= d;
-			this.fields ~= d.name;
-		}
-	}
-	string[] fieldNames()
-	{
-		return fields;
-	}
-	bool empty()
-	{
-		return fetchIndex == _rows;
-	}
-	Row front()
-	{
-		return row;
-	}
-	void popFront()
-	{
-		fetchIndex++;
-		if(fetchIndex < _rows) 
-		{
-			fetchNext();
-		}
-	}
-	int columns()
-	{
-		if(res is null)return 0;
-		return PQnfields(res);
-	}
-	int rows()
-	{
-		if(res is null)return 0;
-		return PQntuples(res);
-	}
+    this(PGresult* res)
+    {
+        this.res = res;
+        _columns = columns();
+        _rows = rows();
+        makeFieldInfo();
+        if(this._rows)
+            fetchNext();
+    }
+    ~this()
+    {
+        PQclear(res);    
+    }
+    void makeFieldInfo()
+    {
+        for (int col = 0; col < _columns; col++) 
+        {
+            Describe d = Describe();
+            d.dbType = cast(int) PQftype(res, col);
+            d.fmt = PQfformat(res, col);
+            d.name = to!string(PQfname(res, col));
+            this.describes ~= d;
+            this.fields ~= d.name;
+        }
+    }
+    string[] fieldNames()
+    {
+        return fields;
+    }
+    bool empty()
+    {
+        return fetchIndex == _rows;
+    }
+    Row front()
+    {
+        return row;
+    }
+    void popFront()
+    {
+        fetchIndex++;
+        if(fetchIndex < _rows) 
+        {
+            fetchNext();
+        }
+    }
+    int columns()
+    {
+        if(res is null)return 0;
+        return PQnfields(res);
+    }
+    int rows()
+    {
+        if(res is null)return 0;
+        return PQntuples(res);
+    }
 
-	private void fetchNext()
-	{
-		auto row = new Row(this);
-		for(int n=0;n<_columns;n++){
-			void* dt = PQgetvalue(res, fetchIndex, n);
-			int len = PQgetlength(res, fetchIndex,n);
-			immutable char* ptr = cast(immutable char*) dt;
-			auto key = fieldNames[n];
-			auto type = typeid(string);
-			string value = cast(string) ptr[0 .. len];
-			row.add(key,type,value);
-		}
-		this.row = row;
-	}
+    private void fetchNext()
+    {
+        auto row = new Row(this);
+        for(int n=0;n<_columns;n++){
+            void* dt = PQgetvalue(res, fetchIndex, n);
+            int len = PQgetlength(res, fetchIndex,n);
+            immutable char* ptr = cast(immutable char*) dt;
+            auto key = fieldNames[n];
+            auto type = typeid(string);
+            string value = cast(string) ptr[0 .. len];
+            row.add(key,type,value);
+        }
+        this.row = row;
+    }
 }
 struct Describe 
 {
-	int dbType;
-	int fmt;
-	string name;
+    int dbType;
+    int fmt;
+    string name;
 }
 
 enum ValueType {
-	Char,
+    Char,
 
-	Short,
-	Int,
-	Long,
+    Short,
+    Int,
+    Long,
 
-	Float,
-	Double,
+    Float,
+    Double,
 
-	String,
+    String,
 
-	Date,
-	Time,
-	DateTime,
+    Date,
+    Time,
+    DateTime,
 
-	Raw,
+    Raw,
 
-	UNKnown
+    UNKnown
 }
 
 struct Bind 
 {
-	ValueType type;
-	int idx;
+    ValueType type;
+    int idx;
 }

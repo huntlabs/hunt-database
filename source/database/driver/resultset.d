@@ -14,10 +14,10 @@ module database.driver.resultset;
 import database;
 
 interface ResultSet {
-	string[] fieldNames();
-	bool empty() @property;
-	Row front() @property;
-	void popFront() ;
-	int rows() @property;
-	int columns() @property;
+    string[] fieldNames();
+    bool empty() @property;
+    Row front() @property;
+    void popFront() ;
+    int rows() @property;
+    int columns() @property;
 }

@@ -2,12 +2,12 @@
     "name": "database",
     "license": "Apache-2.0",
     "copyright": "Copyright (C) 2015-2017 Shanghai Putao Technology Co., Ltd",
-	"description": "Database abstraction layer for D programing language, support PostgreSQL / MySQL / SQLite.",
-	"configurations": [
-		{
-			"name": "default",
+    "description": "Database abstraction layer for D programing language, support PostgreSQL / MySQL / SQLite.",
+    "configurations": [
+        {
+            "name": "default",
             "targetType": "library"
-		},
+        },
         {
             "name": "mysql",
             "targetType": "library",
@@ -28,18 +28,18 @@
                 "pq"
             ]
         },
-		{
-			"name": "sqlite",
+        {
+            "name": "sqlite",
             "targetType": "library",
-			"versions": [
-				"USE_SQLITE"
-			],
-			"libs-posix": [
-				"sqlite3"
-			],
-			"libs-windows": [
-				"sqlite3"
-			]
-		}
-	]
+            "versions": [
+                "USE_SQLITE"
+            ],
+            "libs-posix": [
+                "sqlite3"
+            ],
+            "libs-windows": [
+                "sqlite3"
+            ]
+        }
+    ]
 }

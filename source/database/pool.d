@@ -16,69 +16,69 @@ import core.sync.rwmutex;
 
 class Pool
 {
-	Connection _conn;
-	Array!Connection _conns;
-	DatabaseOption _config;
-	ReadWriteMutex _mutex;
+    Connection _conn;
+    Array!Connection _conns;
+    DatabaseOption _config;
+    ReadWriteMutex _mutex;
 
-	this(DatabaseOption config)
-	{
-		this._config = config;
-		_mutex = new ReadWriteMutex();
-		int i = 0;
-		while(i < _config.maximumConnection)
-		{
-			_conns.insertBack(initConnection);
-			i++;
-		}
-	}
+    this(DatabaseOption config)
+    {
+        this._config = config;
+        _mutex = new ReadWriteMutex();
+        int i = 0;
+        while(i < _config.maximumConnection)
+        {
+            _conns.insertBack(initConnection);
+            i++;
+        }
+    }
 
-	~this()
-	{
-		_mutex.destroy();
-	}
+    ~this()
+    {
+        _mutex.destroy();
+    }
 
-	private Connection initConnection()
-	{
-		switch (_config.url.scheme)
-		{
-			version (USE_POSTGRESQL)
-			{
-				case "postgresql":
-					return new PostgresqlConnection(_config.url);
-			}
-			version (USE_MYSQL)
-			{
-				case "mysql":
-					return new MysqlConnection(_config.url);
-			}
-			version(USE_SQLITE){
-				case "sqlite":
-					_config.setMaximumConnection = 1;
-					return new SQLiteConnection(_config.url);
-			}
-			default:
-			throw new Exception("Don't support database driver: %s", _config.url.scheme);
-		}
-	}
+    private Connection initConnection()
+    {
+        switch (_config.url.scheme)
+        {
+            version (USE_POSTGRESQL)
+            {
+                case "postgresql":
+                    return new PostgresqlConnection(_config.url);
+            }
+            version (USE_MYSQL)
+            {
+                case "mysql":
+                    return new MysqlConnection(_config.url);
+            }
+            version(USE_SQLITE){
+                case "sqlite":
+                    _config.setMaximumConnection = 1;
+                    return new SQLiteConnection(_config.url);
+            }
+            default:
+            throw new Exception("Don't support database driver: %s", _config.url.scheme);
+        }
+    }
 
-	Connection getConnection()
-	{
-		_mutex.writer.lock();
-		scope(exit) {
-			_conns.linearRemove(_conns[0..1]);
-			_mutex.writer.unlock();
-		}
-		if(!_conns.length)_conns.insertBack(initConnection);
-		version(USE_MYSQL){_conns.front.ping();}
-		return _conns.front;
-	}
+    Connection getConnection()
+    {
+        _mutex.writer.lock();
+        scope(exit) {
+            _conns.linearRemove(_conns[0..1]);
+            _mutex.writer.unlock();
+        }
+        if(!_conns.length)_conns.insertBack(initConnection);
+        version(USE_MYSQL){_conns.front.ping();}
+        return _conns.front;
+    }
 
-	void release(Connection conn)
-	{
-		_mutex.writer.lock();
-		scope(exit)_mutex.writer.unlock();
+    void release(Connection conn)
+    {
+        _mutex.writer.lock();
+        scope(exit)_mutex.writer.unlock();
 
-		_conns.insertBack(conn);
-	}	
+        _conns.insertBack(conn);
+    }    
 }
