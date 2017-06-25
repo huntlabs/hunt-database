@@ -1,46 +1,67 @@
-import std.stdio;
-import database;
+/*
+ * Database - Database abstraction layer for D programing language.
+ *
+ * Copyright (C) 2017  Shanghai Putao Technology Co., Ltd
+ *
+ * Developer: HuntLabs
+ *
+ * Licensed under the Apache-2.0 License.
+ *
+ */
 
+import std.stdio;
 import std.conv;
-import core.thread;
 import std.process;
 import std.parallelism;
+
+import core.thread;
+
+import database;
 
 void main()
 {
     writeln("run");
 
     __gshared Database db;
-    __gshared DatabaseOption config;
-    config = (new DatabaseOption())
-        .addDatabaseSource("mysql://dev:111111@10.1.11.31:3306/blog?charset=utf-8")
+    __gshared DatabaseOption options;
+
+    options = (new DatabaseOption())
+        .addDatabaseSource("mysql://root:123456@localhost:3306/blog?charset=utf-8")
         .setMaximumConnection(20)
         .setConnectionTimeout(5000);
-    db = new Database(config);
+
+    db = new Database(options);
 
     int i = 0;
-    while(i < 1000){
+    while(i < 1000)
+	{
         taskPool.put(task!threadTest(db,i));
         i++;
     }
+
     taskPool.finish(true);
+
     db.close();
 }
-void threadTest(Database db,int i)
+
+void threadTest(Database db, int i)
 {
-    writeln("start.........",thisThreadID);
+    writeln("start.........", thisThreadID);
     string key = i.to!string;
-    string sql = `insert into user(username) values("`~key~`");`;
+    string sql = `INSERT INTO user(username) VALUES("`~key~`");`;
     db.execute(sql);
 
-    Statement statement = db.query("SELECT * FROM user where username = '"~key~"' limit 10");
+    Statement statement = db.query("SELECT * FROM user WHERE username = '"~key~"' LIMIT 10");
 
     ResultSet rs = statement.fetchAll();
     auto user  = statement.fetch();
+
     user['id'];
-    foreach(row;rs)
+
+    foreach(row; rs)
     {
         writeln(row);
     }
+
     writeln("end...",thisThreadID);
 }
