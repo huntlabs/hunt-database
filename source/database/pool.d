@@ -1,21 +1,32 @@
-module db.pool;
+/*
+ * Database - Database abstraction layer for D programing language.
+ *
+ * Copyright (C) 2017  Shanghai Putao Technology Co., Ltd
+ *
+ * Developer: HuntLabs
+ *
+ * Licensed under the Apache-2.0 License.
+ *
+ */
 
-import db;
+module database.pool;
+
+import database;
 import core.sync.rwmutex;
 
 class Pool
 {
 	Connection _conn;
 	Array!Connection _conns;
-	DatabaseConfig _config;
+	DatabaseOption _config;
 	ReadWriteMutex _mutex;
 
-	this(DatabaseConfig config)
+	this(DatabaseOption config)
 	{
 		this._config = config;
 		_mutex = new ReadWriteMutex();
 		int i = 0;
-		while(i < _config.maxConnection)
+		while(i < _config.maximumConnection)
 		{
 			_conns.insertBack(initConnection);
 			i++;
@@ -43,7 +54,7 @@ class Pool
 			}
 			version(USE_SQLITE){
 				case "sqlite":
-					_config.setMaxConnection = 1;
+					_config.setMaximumConnection = 1;
 					return new SQLiteConnection(_config.url);
 			}
 			default:

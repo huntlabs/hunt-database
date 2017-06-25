@@ -1,6 +1,17 @@
-module db.driver.postgresql.resultset;
+/*
+ * Database - Database abstraction layer for D programing language.
+ *
+ * Copyright (C) 2017  Shanghai Putao Technology Co., Ltd
+ *
+ * Developer: HuntLabs
+ *
+ * Licensed under the Apache-2.0 License.
+ *
+ */
 
-import db;
+module database.driver.postgresql.resultset;
+
+import database;
 version(USE_POSTGRESQL):
 
 class PostgresqlResult : ResultSet 

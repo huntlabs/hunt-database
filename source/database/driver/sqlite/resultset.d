@@ -1,7 +1,20 @@
-module db.driver.sqlite.resultset;
+/*
+ * Database - Database abstraction layer for D programing language.
+ *
+ * Copyright (C) 2017  Shanghai Putao Technology Co., Ltd
+ *
+ * Developer: HuntLabs
+ *
+ * Licensed under the Apache-2.0 License.
+ *
+ */
+
+module database.driver.sqlite.resultset;
 
 version(USE_SQLITE):
-import db;
+
+import database;
+
 import core.stdc.string : strlen;
 
 class SqliteResult : ResultSet
@@ -18,6 +31,7 @@ class SqliteResult : ResultSet
 	private int nCount;
 	private int fetchIndex;
 	private int index;
+	
 	public Row row;
 
 	this(sqlite3* conn,string sql)

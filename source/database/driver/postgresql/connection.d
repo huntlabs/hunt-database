@@ -1,6 +1,17 @@
-module db.driver.postgresql.connection;
+/*
+ * Database - Database abstraction layer for D programing language.
+ *
+ * Copyright (C) 2017  Shanghai Putao Technology Co., Ltd
+ *
+ * Developer: HuntLabs
+ *
+ * Licensed under the Apache-2.0 License.
+ *
+ */
 
-import db;
+module database.driver.postgresql.connection;
+
+import database;
 version(USE_POSTGRESQL):
 pragma(lib, "pq");
 pragma(lib, "pgtypes");

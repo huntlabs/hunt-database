@@ -1,6 +1,18 @@
-module db.type;
+/*
+ * Database - Database abstraction layer for D programing language.
+ *
+ * Copyright (C) 2017  Shanghai Putao Technology Co., Ltd
+ *
+ * Developer: HuntLabs
+ *
+ * Licensed under the Apache-2.0 License.
+ *
+ */
 
-import db;
+module database.type;
+
+import database;
+
 import std.datetime;
 import std.variant;
 

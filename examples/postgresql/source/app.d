@@ -1,5 +1,5 @@
 import std.stdio;
-import db;
+import database;
 
 import std.experimental.logger;
 
@@ -7,8 +7,8 @@ void main()
 {
 	writeln("run...");
 
-	DatabaseConfig config = new DatabaseConfig("postgresql://postgres:123456@10.1.11.44:5432/test?charset=utf-8");
-	Database db = new Database(config);
+	DatabaseOption options = new DatabaseOption("postgresql://postgres:123456@10.1.11.44:5432/test?charset=utf-8");
+	Database db = new Database(options);
 
 	string sql = `INSERT INTO public.test(id, name) VALUES (1, 1);`;
 	int result = db.execute(sql);
