@@ -59,7 +59,7 @@ class Row
 
     string opIndex(string name, string file = __FILE__, int line = __LINE__) {
         if(name !in vars)
-            throw new DatabaseException(text("no field ", name, " in result"), file, line);
+            throw new DatabaseException("no field "~name~" in result", file, line);
         return vars[name].to!string;
     }
 
