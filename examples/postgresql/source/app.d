@@ -1,14 +1,25 @@
+/*
+ * Database - Database abstraction layer for D programing language.
+ *
+ * Copyright (C) 2017  Shanghai Putao Technology Co., Ltd
+ *
+ * Developer: HuntLabs
+ *
+ * Licensed under the Apache-2.0 License.
+ *
+ */
+
 import std.stdio;
+import std.experimental.logger;
+
 import database;
 
-import std.experimental.logger;
 
 void main()
 {
-    writeln("run...");
+    writeln("run Database for PostgreSQL demo.");
 
-    DatabaseOption options = new DatabaseOption("postgresql://postgres:123456@10.1.11.44:5432/test?charset=utf-8");
-    Database db = new Database(options);
+    Database db = new Database("postgresql://postgres:123456@localhost:5432/test?charset=utf-8");
 
     string sql = `INSERT INTO public.test(id, name) VALUES (1, 1);`;
     int result = db.execute(sql);
@@ -18,7 +29,7 @@ void main()
 
     ResultSet rs = statement.fetchAll();
 
-    foreach(row;rs)
+    foreach(row; rs)
     {
         writeln(row);
     }

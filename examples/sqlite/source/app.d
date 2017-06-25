@@ -15,10 +15,11 @@ import database;
 
 void main()
 {
-    DatabaseOption options = new DatabaseOption("sqlite:///./testDB.db");
-    Database db = new Database(options);
+    writeln("run Database for SQLite demo.");
 
-    string sql = `insert into test(name,pass,age) values("testsdf","123",12);`;
+    Database db = new Database("sqlite:///./testDB.db");
+
+    string sql = `INSERT INTO test(name, pass, age) VALUES("test", "123", 12)`;
 
     db.execute(sql);
 
@@ -26,8 +27,7 @@ void main()
 
     ResultSet rs = statement.fetchAll();
 
-    
-    foreach(row;rs)
+    foreach(row; rs)
     {
         writeln(row);
     }
