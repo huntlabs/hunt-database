@@ -11,6 +11,10 @@
 
 module database;
 
+public import std.conv;
+public import std.variant;
+public import std.container.array;
+
 public import database.url;
 public import database.database;
 public import database.statement;

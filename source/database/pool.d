@@ -12,6 +12,7 @@
 module database.pool;
 
 import database;
+import std.container.array;
 import core.sync.rwmutex;
 
 class Pool
@@ -58,7 +59,7 @@ class Pool
                     return new SQLiteConnection(_config.url);
             }
             default:
-            throw new Exception("Don't support database driver: %s", _config.url.scheme);
+            throw new DatabaseException("Don't support database driver: %s", _config.url.scheme);
         }
     }
 
@@ -81,4 +82,13 @@ class Pool
 
         _conns.insertBack(conn);
     }    
+
+	void close()
+	{
+        _mutex.writer.lock();
+        scope(exit)_mutex.writer.unlock();
+		foreach(c;_conns){
+			c.close();
+		}	
+	}
 }

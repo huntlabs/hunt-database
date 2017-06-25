@@ -63,6 +63,6 @@ class Database
 
     void close()
     {
-
+		_pool.close();	
     }
 }
