@@ -28,3 +28,12 @@ void main()
 }
 
 ```
+
+## API
+
+- Database.execute(string sql): Returns number of rows affected (like INSERT/UPDATE/CREATE/etc).
+- Database.query(string sql): Return Statement object for query(like SELECT).
+- Database.prepare(string sql): Create a prepared statement object.
+- Statement.fetchAll(): Return ResultSet object.
+- Statement.fetch(): Return a row;
+
