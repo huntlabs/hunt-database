@@ -3,7 +3,7 @@
     "authors": ["putao"],
     "targetType": "executable",
     "dependencies": {
-        "db": {"path":"../../"}
+        "database": {"path":"../../"}
     },
     "description": "A minimal D application.",
     "copyright": "Copyright © 2017, Zhang",
@@ -12,7 +12,7 @@
         {
             "name": "default",
             "subConfigurations": {
-                "db": "postgresql"
+                "database": "postgresql"
             }
         }
     ]
