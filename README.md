@@ -28,6 +28,13 @@ void main()
 
 ```
 
+## Use DatabaseOption to instantiate a Database object
+```D
+    DatabaseOption option = new DatabaseOption("mysql://root:123456@localhost:3306/test?charset=utf-8");
+    option.setMaximumConnection = 5;
+    Database db = new Database(option);
+```
+
 ## API
 
 - Database.execute(sql) -> Statement.execute(sql) : Return number of rows affected (INSERT/UPDATE/DELETE).
