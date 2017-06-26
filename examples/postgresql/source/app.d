@@ -25,7 +25,7 @@ void main()
     int result = db.execute(sql);
     writeln(result);
     
-    Statement statement = db.query("SELECT * FROM public.test");
+    Statement statement = db.prepare("SELECT * FROM public.test limit 10");
 
     ResultSet rs = statement.fetchAll();
 

@@ -23,7 +23,7 @@ void main()
 
     db.execute(sql);
 
-    Statement statement = db.query("SELECT * FROM test");
+    Statement statement = db.prepare("SELECT * FROM test");
 
     ResultSet rs = statement.fetchAll();
 

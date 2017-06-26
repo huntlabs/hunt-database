@@ -18,7 +18,6 @@ class Database
     Pool _pool;
     DatabaseOption _options;
 
-
     this(string url)
     {
         this._options = new DatabaseOption(url);
@@ -56,7 +55,12 @@ class Database
         return new Statement(_pool,sql).execute();
     }
 
-    Statement query(string sql)
+    ResultSet query(string sql)
+    {
+        return (new Statement(_pool, sql)).fetchAll();
+    }
+
+    Statement prepare(string sql)
     {
         return new Statement(_pool, sql);
     }
