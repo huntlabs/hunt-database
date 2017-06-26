@@ -71,14 +71,9 @@ class PostgresqlConnection :  Connection
 
     private void connect() 
     {
-        string conninfo;
-        conninfo ~= "host=" ~ _host;
-        if(_port > 0) conninfo ~= " port=" ~ to!string(_port);
-        conninfo ~= " dbname=" ~ _db;
-        if(_user.length) conninfo ~= " user=" ~ _user;
-        if(_pass.length) conninfo ~= " password=" ~ _pass;
-        trace("link string is : ", conninfo);
-        con = PQconnectdb(toStringz(conninfo));
+		con = PQsetdbLogin(toStringz(_host),toStringz(to!string(_port)),
+				null,null,toStringz(_db),toStringz(_user),toStringz(_pass));
+		trace(CONNECTION_OK," status:",PQstatus(con),"\t",con);
         if (PQstatus(con) != CONNECTION_OK)
 			throw new DatabaseException("login error");
     }

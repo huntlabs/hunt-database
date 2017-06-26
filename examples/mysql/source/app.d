@@ -24,9 +24,9 @@ void main()
     int result = db.execute(`INSERT INTO user(username) VALUES("test")`);
     writeln(result);
 
-    Statement stmt = db.query("SELECT * FROM user LIMIT 10");
+    Statement stmt = db.prepare("SELECT * FROM user LIMIT 10");
 
-	ResultSet rs = stmt.fetchAll();
+    ResultSet rs = stmt.fetchAll();
 
     foreach(row; rs)
     {

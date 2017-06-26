@@ -61,7 +61,10 @@ class MysqlConnection : Connection
     {
         assert(mysql);
         auto v = toCstring(sql);
-        return mysql_query(mysql, v);
+        int resulti = mysql_query(mysql, v);
+		if(result != 0)
+			throw new DatabaseException("DB status : "~result.to!string~" EXECUTE ERROR");
+		return result;
     }
 
     void startTransaction() 

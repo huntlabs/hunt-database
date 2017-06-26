@@ -19,6 +19,7 @@ class PostgresqlResult : ResultSet
     private PGresult* res;
     private Describe[] describes;
     private string[] fields;
+    private int[] fieldTypes;
     private int _rows;
     private int fetchIndex;
     private int _columns;
@@ -48,6 +49,7 @@ class PostgresqlResult : ResultSet
             d.name = to!string(PQfname(res, col));
             this.describes ~= d;
             this.fields ~= d.name;
+            this.fieldTypes ~= d.dbType;
         }
     }
     string[] fieldNames()
@@ -89,7 +91,7 @@ class PostgresqlResult : ResultSet
             int len = PQgetlength(res, fetchIndex,n);
             immutable char* ptr = cast(immutable char*) dt;
             auto key = fieldNames[n];
-            auto type = typeid(string);
+            auto type = fromSQLType(fieldTypes[n]);
             string value = cast(string) ptr[0 .. len];
             row.add(key,type,value);
         }
