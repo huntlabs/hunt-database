@@ -12,6 +12,7 @@ __test__*__
 /bin
 *_demo
 libdb.a
+libdatabase.a
 db-test-db_lib
 mysql_demo
 pgsql_demo

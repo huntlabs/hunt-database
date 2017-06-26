@@ -54,7 +54,7 @@ class Statement
         _conn = _pool.getConnection();
         scope(exit){_pool.release(_conn);}
         int result = _conn.execute(sql);
-        if(result != 0)throw new DatabaseException("DB EXECUTE ERROR");
+        if(result != 0)throw new DatabaseException("DB status : "~result.to!string~" EXECUTE ERROR");
         _lastInsertId = _conn.lastInsertId();
         return _conn.affectedRows();
     }
