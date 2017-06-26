@@ -51,12 +51,9 @@ void threadTest(Database db, int i)
     string sql = `INSERT INTO user(username) VALUES("`~key~`");`;
     db.execute(sql);
 
-    Statement statement = db.query("SELECT * FROM user WHERE username = '"~key~"' LIMIT 10");
+    Statement statement = db.prepare("SELECT * FROM user WHERE username = '"~key~"' LIMIT 10");
 
     ResultSet rs = statement.fetchAll();
-    auto user  = statement.fetch();
-
-    user['id'];
 
     foreach(row; rs)
     {
