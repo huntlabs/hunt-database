@@ -52,12 +52,12 @@ class Database
 
     int execute(string sql)
     {
-        return new Statement(_pool,sql).execute();
+        return new Statement(_pool, sql).execute();
     }
 
     ResultSet query(string sql)
     {
-        return (new Statement(_pool, sql)).fetchAll();
+        return (new Statement(_pool, sql)).query();
     }
 
     Statement prepare(string sql)

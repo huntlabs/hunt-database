@@ -21,6 +21,7 @@ class Statement
     private bool _isUsed = false;
     private int _lastInsertId;
 	private int _affectRows;
+    private ResultSet _rs;
     
     this(Pool pool)
     {
@@ -52,6 +53,7 @@ class Statement
     int execute()
     {
         isUsed();
+        assert(sql);
         _conn = _pool.getConnection();
         scope(exit){_pool.release(_conn);}
         int status = _conn.execute(sql);
@@ -72,15 +74,24 @@ class Statement
     
     Row fetch()
     {
-        return fetchAll().front();
+        if(!_rs)_rs = query();
+        scope(exit){
+            if(!_rs.empty)
+                _rs.popFront();
+            else 
+                throw new DatabaseException("ResultSet is empty");
+        }
+        return _rs.front();
     }
 
-    ResultSet fetchAll()
+    ResultSet query()
     {
         isUsed();
+        assert(sql);
         _conn = _pool.getConnection();
         scope(exit){_pool.release(_conn);}
-        return _conn.query(sql);
+        _rs = _conn.query(sql);
+        return _rs;
     }
 
     void close()
