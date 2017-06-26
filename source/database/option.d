@@ -13,6 +13,7 @@ module database.option;
 
 import database.url;
 
+alias DatabaseConfig = DatabaseOption;
 class DatabaseOption
 {
 

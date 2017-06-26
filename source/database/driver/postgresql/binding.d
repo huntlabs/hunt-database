@@ -123,6 +123,10 @@ extern(System) {
     struct PGconn {};
 
     PGconn* PQconnectdb(const char*);
+    PGconn* PQsetdbLogin(const char*,const char*,
+			const char*,const char*,
+			const char*,const char*,
+			const char*);
     PGconn *PQconnectdbParams(const char **keywords, const char **values, int expand_dbname);
     void PQfinish(PGconn*);
 
