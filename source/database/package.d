@@ -11,6 +11,7 @@
 
 module database;
 
+public import std.string;
 public import std.conv;
 public import std.variant;
 public import std.container.array;
