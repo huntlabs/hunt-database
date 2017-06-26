@@ -146,6 +146,8 @@ extern(System) {
 
     PGresult * PQexec(PGconn *conn, const char *command);
     
+	char *PQcmdTuples(PGresult *res);
+	
     PGresult *PQexecParams(
             PGconn *conn,
             const char *command,

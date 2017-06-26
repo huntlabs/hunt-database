@@ -16,34 +16,6 @@ version(USE_POSTGRESQL):
 pragma(lib, "pq");
 pragma(lib, "pgtypes");
 
-void error(string file = __FILE__, size_t line = __LINE__)(PGconn* con, string msg) {
-    import std.conv;
-
-    auto s = msg ~ to!string(PQerrorMessage(con));
-    throw new DatabaseException(s,file,line);
-}
-
-void error(string file = __FILE__, size_t line = __LINE__)(PGconn* con, string msg, int result) {
-    import std.conv;
-
-    auto s = "error:" ~ msg ~ ": " ~ to!string(result) ~ ": " ~ to!string(PQerrorMessage(con));
-    throw new DatabaseException(s,file,line);
-}
-
-int check(string file = __FILE__, size_t line = __LINE__)(PGconn* con, string msg, int result) {
-    info(msg, ": ", result);
-    if (result != 1)
-    error!(file,line)(con, msg, result);
-    return result;
-}
-
-int checkForZero(string file = __FILE__, size_t line = __LINE__)(PGconn* con, string msg, int result) {
-    info(msg, ": ", result);
-    if (result != 0)
-    error!(file,line)(con, msg, result);
-    return result;
-}
-
 class PostgresqlConnection :  Connection 
 {
     public string dbname;
@@ -73,9 +45,8 @@ class PostgresqlConnection :  Connection
     {
 		con = PQsetdbLogin(toStringz(_host),toStringz(to!string(_port)),
 				null,null,toStringz(_db),toStringz(_user),toStringz(_pass));
-		trace(CONNECTION_OK," status:",PQstatus(con),"\t",con);
         if (PQstatus(con) != CONNECTION_OK)
-			throw new DatabaseException("login error");
+			throw new DatabaseException("login error " ~ to!string(PQerrorMessage(con)));
     }
 
     ~this() {
@@ -99,12 +70,14 @@ class PostgresqlConnection :  Connection
     {
         PGresult* res;
         res = PQexec(con,toStringz(sql));
-        return PQresultStatus(res);
+		if (PQresultStatus(res) != PGRES_COMMAND_OK)
+			throw new DatabaseException("DB status : "~PQresultStatus(res).to!string~
+					" EXECUTE ERROR " ~ to!string(PQerrorMessage(con)));
+		return to!int(std.string.fromStringz(PQcmdTuples(res)));
     }
 
     ResultSet queryImpl(string sql, Variant[] args...) 
     {
-        trace("query sql: ", sql);
         PGresult* res;
         res = PQexec(con,toStringz(sql));
         return new PostgresqlResult(res);
@@ -122,7 +95,7 @@ class PostgresqlConnection :  Connection
     
     int affectedRows()
     {
-        return 0;
+		return 0;
     }
 
     void ping()
