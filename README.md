@@ -37,10 +37,12 @@ void main()
 
 ## API
 
-- Database.execute(sql) -> Statement.execute(sql) : Return number of rows affected (INSERT/UPDATE/DELETE).
-- Database.query(sql) -> Statement.query(sql) : Return Statement object for query(SELECT).
+- ### int Database.execute(string sql)  Return number of execute result.
+```D
+    int result = db.execute("SELECT * FROM user LIMIT 10");
+```
+- Database.query(sql) -> ResultSet : Return ResultSet object for query(SELECT).
 - Database.prepare(sql) -> Statement.prepare(sql) : Create a prepared Statement object.
-- Statement.prepare(sql) : Create a prepared Statement object.
 - Statement.execute(sql) : Return number of rows affected (like INSERT/UPDATE/CREATE).
 - Statement.execute() : For Database.prepare(sql), return number of rows affected.
 - Statement.query(string) : Return ResultSet object, for query(like SELECT).
