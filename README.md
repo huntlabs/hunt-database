@@ -30,14 +30,14 @@ void main()
 
 ## API
 
-- Database.execute(string sql): Return number of rows affected (like INSERT/UPDATE/CREATE).
-- Database.query(string sql): Return Statement object for query(like SELECT).
-- Database.prepare(string sql): Create a prepared Statement object.
-- Database.createStatement(): Create a Statement object.
-- Statement.fetchAll(): Return ResultSet object, for Database.prepare(string sql).
-- Statement.fetch(): Return a row, for Database.prepare(string sql);
-- Statement.execute(string sql); Return number of rows affected (like INSERT/UPDATE/CREATE).
-- Statement.query(string sql); Return Statement object for query(like SELECT).
-- Statement.execute(); For Database.prepare(string sql), return number of rows affected.
-- Statement.query(); For Database.prepare(string sql), return ResultSet.
-- Statement.lastInsertId(); Statement.execute() for insert sql, return lastInsertId.
+- Database.execute(sql) -> Statement.execute(sql) : Return number of rows affected (INSERT/UPDATE/DELETE).
+- Database.query(sql) -> Statement.query(sql) : Return Statement object for query(SELECT).
+- Database.prepare(sql) -> Statement.prepare(sql) : Create a prepared Statement object.
+- Statement.prepare(sql) : Create a prepared Statement object.
+- Statement.execute(sql) : Return number of rows affected (like INSERT/UPDATE/CREATE).
+- Statement.execute() : For Database.prepare(sql), return number of rows affected.
+- Statement.query(string) : Return ResultSet object, for query(like SELECT).
+- Statement.query() : For Database.prepare(sql), return ResultSet object.
+- Statement.fetch() : Return ResultSet pop() one row, for Statement.query();
+- Statement.lastInsertId() : Statement.execute() for insert sql, return lastInsertId.
+- Statement.bind(param, value) : bind param value to :param for sql.
