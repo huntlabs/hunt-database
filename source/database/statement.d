@@ -20,6 +20,7 @@ class Statement
     private string _sql;
     private bool _isUsed = false;
     private int _lastInsertId;
+	private int _affectRows;
     
     this(Pool pool)
     {
@@ -53,14 +54,20 @@ class Statement
         isUsed();
         _conn = _pool.getConnection();
         scope(exit){_pool.release(_conn);}
-        _conn.execute(sql);
+        int status = _conn.execute(sql);
         _lastInsertId = _conn.lastInsertId();
-        return _conn.affectedRows();
+		_affectRows = _conn.affectedRows();
+        return status;
     }
 
     int lastInsertId()
     {
         return _lastInsertId;    
+    }
+    
+	int affectedRows()
+    {
+        return _affectRows;    
     }
     
     Row fetch()

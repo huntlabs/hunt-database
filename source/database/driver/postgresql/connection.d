@@ -28,6 +28,8 @@ class PostgresqlConnection :  Connection
     private QueryParams _querys;
     private PGconn* con;
 
+    private int _affectRows;
+
     this(URL url)
     {
         this._url = url;
@@ -68,12 +70,15 @@ class PostgresqlConnection :  Connection
 
     int execute(string sql)
     {
+        _affectRows = 0;
         PGresult* res;
         res = PQexec(con,toStringz(sql));
-		if (PQresultStatus(res) != PGRES_COMMAND_OK)
-			throw new DatabaseException("DB status : "~PQresultStatus(res).to!string~
-					" EXECUTE ERROR " ~ to!string(PQerrorMessage(con)));
-		return to!int(std.string.fromStringz(PQcmdTuples(res)));
+        int result = PQresultStatus(res);
+		if (result != PGRES_COMMAND_OK)
+			throw new DatabaseException("DB status : "~to!string(result)~
+					" EXECUTE ERROR " ~ to!string(result));
+		_affectRows = to!int(std.string.fromStringz(PQcmdTuples(res)));
+        return result;
     }
 
     ResultSet queryImpl(string sql, Variant[] args...) 
@@ -95,7 +100,7 @@ class PostgresqlConnection :  Connection
     
     int affectedRows()
     {
-		return 0;
+        return _affectRows;
     }
 
     void ping()
