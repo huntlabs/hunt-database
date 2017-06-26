@@ -39,20 +39,21 @@ void main()
 
 -  int Database.execute(string sql)  Return number of execute result.
 ```D
-    int result = db.execute('INSERT INTO user(username) VALUES("test")');
+    int result = db.execute('INSERT INTO user(username) VALUES("Brian")');
     // if execute error ,db will throw an DatabaseException
 ```
 -  ResultSet Database.query(sql) Return ResultSet object for query(SELECT).
 ```D
-    ResultSet rs = db.query("SELECT * FROM user LIMIT 10")
+    ResultSet rs = db.query("SELECT * FROM user LIMIT 10");
 ```
 -  Statement Database.prepare(sql) Create a prepared Statement object.
 ```D
-   Statement stmt = db.prepare("SELECT * FROM user where username = :username and password = :password LIMIT 10")
+   Statement stmt = db.prepare("SELECT * FROM user where username = :username and age = :age LIMIT 10")
 ```
-- Statement.bind(param, value) : bind param value to :param for sql.
+- Statement.bind(param, value) : bind param's value to :param for sql.
 ```D
-   stmt.bind(":username","viile");
+   stmt.bind("username", "viile");
+   stmt.bind("age", 18);
 ```
 - ResultSet Statement.query()  Return ResultSet 
 ```D
@@ -63,8 +64,8 @@ void main()
     Row row = stmt.fetch();
     writeln(row["username"]);
 ```
-- int Statement.execute()  Return number of execute result. 
+- int Statement.execute() : return execute status for prepared Statement object. 
 ```D
-    Row row = stmt.execute();
+    int result = stmt.execute();
 ```
 - Statement.lastInsertId() : Statement.execute() for insert sql, return lastInsertId.
