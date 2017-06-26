@@ -19,16 +19,18 @@ void main()
 {
     writeln("run database MySQL demo.");
 
-    Database db = new Database("mysql://root:123456@localhost:3306/blog?charset=utf-8");
+    Database db = new Database("mysql://dev:111111@10.1.11.31:3306/blog?charset=utf-8");
 
     int result = db.execute(`INSERT INTO user(username) VALUES("test")`);
     writeln(result);
 
     Statement stmt = db.query("SELECT * FROM user LIMIT 10");
 
-    foreach(row; stmt.fetchAll())
+	ResultSet rs = stmt.fetchAll();
+
+    foreach(row; rs)
     {
-        writeln(row.username);
+        writeln(row.usernamee);
     }
 
     db.close();
