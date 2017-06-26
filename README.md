@@ -30,14 +30,14 @@ void main()
 
 ## API
 
-- Database.execute(string sql) -> Statement.execute(string sql) : Return number of rows affected (like INSERT/UPDATE/CREATE).
-- Database.query(string sql) -> Statement.query(string sql) : Return Statement object for query(like SELECT).
+- Database.execute(string) -> Statement.execute(string) : Return number of rows affected (INSERT/UPDATE/DELETE).
+- Database.query(string) -> Statement.query(string) : Return Statement object for query(SELECT).
 - Database.createStatement() : Create a Statement object.
-- Database.prepare(string sql) -> Statement.prepare(string sql) : Create a prepared Statement object.
-- Statement.prepare(string sql) : Create a prepared Statement object.
-- Statement.execute(string sql) : Return number of rows affected (like INSERT/UPDATE/CREATE).
-- Statement.execute() : For Database.prepare(string sql), return number of rows affected.
-- Statement.query(string sql) : Return ResultSet object, for query(like SELECT).
-- Statement.query() : For Database.prepare(string sql), return ResultSet object.
+- Database.prepare(string) -> Statement.prepare(string) : Create a prepared Statement object.
+- Statement.prepare(string) : Create a prepared Statement object.
+- Statement.execute(string) : Return number of rows affected (like INSERT/UPDATE/CREATE).
+- Statement.execute() : For Database.prepare(string), return number of rows affected.
+- Statement.query(string) : Return ResultSet object, for query(like SELECT).
+- Statement.query() : For Database.prepare(string), return ResultSet object.
 - Statement.fetch() : Return ResultSet pop() one row, for Statement.query();
 - Statement.lastInsertId() : Statement.execute() for insert sql, return lastInsertId.
