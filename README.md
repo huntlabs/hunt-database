@@ -32,7 +32,6 @@ void main()
 
 - Database.execute(sql) -> Statement.execute(sql) : Return number of rows affected (INSERT/UPDATE/DELETE).
 - Database.query(sql) -> Statement.query(sql) : Return Statement object for query(SELECT).
-- Database.createStatement() : Create a Statement object.
 - Database.prepare(sql) -> Statement.prepare(sql) : Create a prepared Statement object.
 - Statement.prepare(sql) : Create a prepared Statement object.
 - Statement.execute(sql) : Return number of rows affected (like INSERT/UPDATE/CREATE).
