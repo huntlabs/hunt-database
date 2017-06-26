@@ -54,12 +54,17 @@ void main()
 ```D
    stmt.bind(":username","viile");
 ```
-- ResultSet Statement.fetchAll()  Return ResultSet 
+- ResultSet Statement.query()  Return ResultSet 
 ```D
-    ResultSet rs = stmt.fetchAll();
+    ResultSet rs = stmt.query();
 ```
 - Row Statement.fetch()  Return Row 
 ```D
-    ResultSet rs = stmt.fetch();
+    Row row = stmt.fetch();
+    writeln(row["username"]);
+```
+- int Statement.execute()  Return number of execute result. 
+```D
+    Row row = stmt.execute();
 ```
 - Statement.lastInsertId() : Statement.execute() for insert sql, return lastInsertId.
