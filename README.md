@@ -30,14 +30,15 @@ void main()
 
 ## API
 
-- Database.execute(string) -> Statement.execute(string) : Return number of rows affected (INSERT/UPDATE/DELETE).
-- Database.query(string) -> Statement.query(string) : Return Statement object for query(SELECT).
+- Database.execute(sql) -> Statement.execute(sql) : Return number of rows affected (INSERT/UPDATE/DELETE).
+- Database.query(sql) -> Statement.query(sql) : Return Statement object for query(SELECT).
 - Database.createStatement() : Create a Statement object.
-- Database.prepare(string) -> Statement.prepare(string) : Create a prepared Statement object.
-- Statement.prepare(string) : Create a prepared Statement object.
-- Statement.execute(string) : Return number of rows affected (like INSERT/UPDATE/CREATE).
-- Statement.execute() : For Database.prepare(string), return number of rows affected.
+- Database.prepare(sql) -> Statement.prepare(sql) : Create a prepared Statement object.
+- Statement.prepare(sql) : Create a prepared Statement object.
+- Statement.execute(sql) : Return number of rows affected (like INSERT/UPDATE/CREATE).
+- Statement.execute() : For Database.prepare(sql), return number of rows affected.
 - Statement.query(string) : Return ResultSet object, for query(like SELECT).
-- Statement.query() : For Database.prepare(string), return ResultSet object.
+- Statement.query() : For Database.prepare(sql), return ResultSet object.
 - Statement.fetch() : Return ResultSet pop() one row, for Statement.query();
 - Statement.lastInsertId() : Statement.execute() for insert sql, return lastInsertId.
+- Statement.bind(param, value) : bind param value to :param for sql.
