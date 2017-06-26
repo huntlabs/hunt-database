@@ -37,16 +37,29 @@ void main()
 
 ## API
 
-- ### int Database.execute(string sql)  Return number of execute result.
+-  int Database.execute(string sql)  Return number of execute result.
 ```D
-    int result = db.execute("SELECT * FROM user LIMIT 10");
+    int result = db.execute('INSERT INTO user(username) VALUES("test")');
+    // if execute error ,db will throw an DatabaseException
 ```
-- Database.query(sql) -> ResultSet : Return ResultSet object for query(SELECT).
-- Database.prepare(sql) -> Statement.prepare(sql) : Create a prepared Statement object.
-- Statement.execute(sql) : Return number of rows affected (like INSERT/UPDATE/CREATE).
-- Statement.execute() : For Database.prepare(sql), return number of rows affected.
-- Statement.query(string) : Return ResultSet object, for query(like SELECT).
-- Statement.query() : For Database.prepare(sql), return ResultSet object.
-- Statement.fetch() : Return ResultSet pop() one row, for Statement.query();
-- Statement.lastInsertId() : Statement.execute() for insert sql, return lastInsertId.
+-  ResultSet Database.query(sql) Return ResultSet object for query(SELECT).
+```D
+    ResultSet rs = db.query("SELECT * FROM user LIMIT 10")
+```
+-  Statement Database.prepare(sql) Create a prepared Statement object.
+```D
+   Statement stmt = db.prepare("SELECT * FROM user where username = :username and password = :password LIMIT 10")
+```
 - Statement.bind(param, value) : bind param value to :param for sql.
+```D
+   stmt.bind(":username","viile");
+```
+- ResultSet Statement.fetchAll()  Return ResultSet 
+```D
+    ResultSet rs = stmt.fetchAll();
+```
+- Row Statement.fetch()  Return Row 
+```D
+    ResultSet rs = stmt.fetch();
+```
+- Statement.lastInsertId() : Statement.execute() for insert sql, return lastInsertId.
