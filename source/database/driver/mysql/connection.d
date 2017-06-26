@@ -65,6 +65,7 @@ class MysqlConnection : Connection
 		if(result != 0)
 			throw new DatabaseException("DB status : "~result.to!string~" EXECUTE ERROR");
 		return result;
+		//return affectedRows();
     }
 
     void startTransaction() 
