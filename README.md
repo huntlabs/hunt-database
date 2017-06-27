@@ -13,7 +13,7 @@ void main()
 {
     writeln("run database MySQL demo.");
 
-    Database db = new Database("mysql://root:123456@localhost:3306/test?charset=utf-8");
+    auto db = new Database("mysql://root:123456@localhost:3306/test?charset=utf-8");
 
     int result = db.execute(`INSERT INTO user(username) VALUES("test")`);
     writeln(result);
@@ -30,10 +30,10 @@ void main()
 
 ## Use DatabaseOption to instantiate a Database object
 ```D
-DatabaseOption options = new DatabaseOption("mysql://root:123456@localhost:3306/test");
+auto options = new DatabaseOption("mysql://root:123456@localhost:3306/test");
 options.setMaximumConnection(5);
 
-Database db = new Database(options);
+auto db = new Database(options);
 
 db.execute("SET NAMES utf8");
 ```
