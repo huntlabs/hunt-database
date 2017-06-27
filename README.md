@@ -30,9 +30,9 @@ void main()
 
 ## Use DatabaseOption to instantiate a Database object
 ```D
-    DatabaseOption option = new DatabaseOption("mysql://root:123456@localhost:3306/test?charset=utf-8");
-    option.setMaximumConnection = 5;
-    Database db = new Database(option);
+DatabaseOption options = new DatabaseOption("mysql://root:123456@localhost:3306/test?charset=utf-8");
+options.setMaximumConnection(5);
+Database db = new Database(options);
 ```
 
 ## API
