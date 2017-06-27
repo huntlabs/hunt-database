@@ -30,9 +30,11 @@ void main()
 
 ## Use DatabaseOption to instantiate a Database object
 ```D
-DatabaseOption options = new DatabaseOption("mysql://root:123456@localhost:3306/test?charset=utf-8");
+DatabaseOption options = new DatabaseOption("mysql://root:123456@localhost:3306/test");
 options.setMaximumConnection(5);
 Database db = new Database(options);
+
+db.execute("SET NAMES utf8");
 ```
 
 ## API
