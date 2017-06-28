@@ -51,7 +51,7 @@ db.execute("SET NAMES utf8");
 ```
 -  Statement Database.prepare(sql) Create a prepared Statement object.
 ```D
-   Statement stmt = db.prepare("SELECT * FROM user where username = :username and age = :age LIMIT 10")
+   Statement stmt = db.prepare("SELECT * FROM user where username = :username and age = :age LIMIT 10");
 ```
 - Statement.bind(param, value) : bind param's value to :param for sql.
 ```D
