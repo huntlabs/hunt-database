@@ -61,6 +61,10 @@ db.execute("SET NAMES utf8");
 - ResultSet Statement.query()  Return ResultSet 
 ```D
     ResultSet rs = stmt.query();
+    foreach(row; rs)
+    {
+        writeln(row["username"]);
+    }
 ```
 - Row Statement.fetch()  Return Row 
 ```D
