@@ -26,7 +26,7 @@ void main()
 
     Statement stmt = db.prepare("SELECT * FROM user LIMIT 10");
 
-    ResultSet rs = stmt.fetchAll();
+    ResultSet rs = stmt.query();
 
     foreach(row; rs)
     {

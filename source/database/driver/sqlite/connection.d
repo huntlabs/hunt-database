@@ -94,7 +94,7 @@ class SQLiteConnection : Connection
 
         int res = sqlite3_close(conn);
         if (res != SQLITE_OK)
-        throw new SQLException("SQLite Error " ~ to!string(
+        throw new DatabaseException("SQLite Error " ~ to!string(
             res) ~ " while trying to close DB " ~ filename ~ " : " ~ getError());
         closed = true;
         conn = null;

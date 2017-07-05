@@ -27,7 +27,7 @@ void main()
     
     Statement statement = db.prepare("SELECT * FROM public.test limit 10");
 
-    ResultSet rs = statement.fetchAll();
+    ResultSet rs = statement.query();
 
     foreach(row; rs)
     {
