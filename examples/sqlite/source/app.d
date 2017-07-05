@@ -25,7 +25,7 @@ void main()
 
     Statement statement = db.prepare("SELECT * FROM test");
 
-    ResultSet rs = statement.fetchAll();
+    ResultSet rs = statement.query();
 
     foreach(row; rs)
     {
