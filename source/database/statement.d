@@ -39,10 +39,10 @@ class Statement
         this._sql = sql;
     }
 
-    void bind(ParamType type = ParamType.PARAM_STR ,T = string)
-        (string key,T value)
+    void setParameter(ParamType type = ParamType.PARAM_STR, T = string)
+        (string key, T value)
     {
-        
+        // bind param value to sql
     }
 
     string sql()
