@@ -53,10 +53,10 @@ db.execute("SET NAMES utf8");
 ```D
    Statement stmt = db.prepare("SELECT * FROM user where username = :username and age = :age LIMIT 10");
 ```
-- Statement.bind(param, value) : bind param's value to :param for sql.
+- Statement.setParameter(param, value) : bind param's value to :param for sql.
 ```D
-   stmt.bind("username", "viile");
-   stmt.bind("age", 18);
+   stmt.setParameter("username", "viile");
+   stmt.setParameter("age", 18);
 ```
 - ResultSet Statement.query()  Return ResultSet 
 ```D
