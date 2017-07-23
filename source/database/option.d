@@ -69,4 +69,17 @@ class DatabaseOption
     {
         return _connectionTimeout;
     }
+
+	bool isMysql()
+	{
+		return _url.scheme == "mysql";
+	}
+	bool isPgsql()
+	{
+		return _url.scheme == "pgsql";
+	}
+	bool isSqlite()
+	{
+		return _url.scheme == "sqlite";
+	}
 }
