@@ -28,7 +28,7 @@ class PostgresqlConnection :  Connection
     private QueryParams _querys;
     private PGconn* con;
 
-    private int _affectRows;
+    private int _affectRows = 0;
 
     this(URL url)
     {
@@ -74,9 +74,9 @@ class PostgresqlConnection :  Connection
         PGresult* res;
         res = PQexec(con,toStringz(sql));
         int result = PQresultStatus(res);
-		if (result != PGRES_COMMAND_OK)
-			throw new DatabaseException("DB status : "~to!string(result)~
-					" EXECUTE ERROR " ~ to!string(result));
+		//if (result != PGRES_COMMAND_OK)
+		//	throw new DatabaseException("DB status : "~to!string(result)~
+		//			" EXECUTE ERROR " ~ to!string(result));
 		_affectRows = to!int(std.string.fromStringz(PQcmdTuples(res)));
         return result;
     }
