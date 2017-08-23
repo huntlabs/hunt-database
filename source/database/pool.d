@@ -59,7 +59,7 @@ class Pool
                     return new SQLiteConnection(_config.url);
             }
             default:
-            throw new DatabaseException("Don't support database driver: %s", _config.url.scheme);
+            throw new DatabaseException("Don't support database driver: "~ _config.url.scheme);
         }
     }
 
