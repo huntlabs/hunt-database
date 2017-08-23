@@ -76,7 +76,7 @@ class DatabaseOption
 	}
 	bool isPgsql()
 	{
-		return _url.scheme == "pgsql";
+		return _url.scheme == "postgresql";
 	}
 	bool isSqlite()
 	{
