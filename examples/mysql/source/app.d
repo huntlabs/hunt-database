@@ -19,7 +19,7 @@ void main()
 {
     writeln("run database MySQL demo.");
 
-    Database db = new Database("mysql://root:123456@localhost:3306/blog?charset=utf-8");
+    Database db = new Database("mysql://root:123456@10.1.11.31:3306/blog?charset=utf-8");
 
     int result = db.execute(`INSERT INTO user(username) VALUES("test")`);
     writeln(result);
