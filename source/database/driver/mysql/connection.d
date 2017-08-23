@@ -54,6 +54,8 @@ class MysqlConnection : Connection
         //mysql_options(mysql, mysql_option.MYSQL_OPT_RECONNECT, &reconnect);
         mysql_real_connect(mysql, toCstring(_host), toCstring(_user), 
                 toCstring(_pass), toCstring(_db), _port, null, 0);
+        if(!mysql)
+            throw new DatabaseException("DB connect error" ~ error());
         mysql_set_character_set(mysql, toCstring("utf8"));
     }
 
