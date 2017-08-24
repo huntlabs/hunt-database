@@ -75,8 +75,8 @@ class PostgresqlConnection :  Connection
         res = PQexec(con,toStringz(sql));
         int result = PQresultStatus(res);
 		if (result != PGRES_COMMAND_OK)
-			throw new DatabaseException("DB status : "~to!string(result)~
-					" EXECUTE ERROR " ~ to!string(result));
+            throw new DatabaseException("DB SQL : " ~ sql ~"\rDB status : "~to!string(result)~
+                    " \rEXECUTE ERROR : " ~ to!string(result));
 		_affectRows = to!int(std.string.fromStringz(PQcmdTuples(res)));
         return result;
     }

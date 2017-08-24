@@ -64,7 +64,7 @@ class MysqlConnection : Connection
         auto v = toCstring(sql);
         int result = mysql_query(mysql, v);
 		if(result != 0)
-			throw new DatabaseException("DB status : "~result.to!string~" EXECUTE ERROR :" ~ error());
+			throw new DatabaseException("SQL : " ~ sql ~" \rDB status : "~result.to!string~" \rEXECUTE ERROR :" ~ error());
 		return result;
     }
 
