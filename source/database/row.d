@@ -49,6 +49,16 @@ class Row
 			throw new DatabaseException("no field "~name~" in result", file, line);
 		return vars[name];
 	}
+	
+	string opIndex(int index,string file = __FILE__,int line = __LINE__) {
+		int i = 0;
+		foreach(k,v;vars){
+			if(i == index)
+				return v;
+			i++;
+		}
+		throw new DatabaseException("no index "~index.to!string~" in result", file, line);
+	}
 
 	string opIndex(string name, string file = __FILE__, int line = __LINE__) {
 		if(name !in vars)

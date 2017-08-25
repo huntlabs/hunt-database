@@ -18,6 +18,7 @@ public import std.traits;
 public import std.typecons;
 public import std.variant;
 public import std.conv;
+public import std.regex;
 public import std.string;
 public import std.exception;
 public import std.container.array;
