@@ -24,7 +24,7 @@ class PostgresqlResult : ResultSet
     private int fetchIndex;
     private int _columns;
     public bool[] columnIsNull;
-    public Row row;
+    public Row row = null;
 
     this(PGresult* res)
     {
