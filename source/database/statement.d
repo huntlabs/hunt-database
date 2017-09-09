@@ -62,6 +62,17 @@ class Statement
         return status;
     }
 
+    int count()
+    {
+        isUsed();
+        assert(sql);
+        _conn = _pool.getConnection();
+        scope(exit){_pool.release(_conn);}
+        auto r = _conn.query(sql);
+        auto res = r.front();
+        return res[0].to!int;
+    }
+
     int lastInsertId()
     {
         return _lastInsertId;    
