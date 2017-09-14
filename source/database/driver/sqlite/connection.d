@@ -117,7 +117,7 @@ class SQLiteConnection : Connection
     int execute(string sql)
     {
         int code = sqlite3_exec(conn,toStringz(sql),&myCallback,null,null);
-        _last_insert_id = sqlite3_last_insert_rowid(conn);
+        _last_insert_id = cast(int)sqlite3_last_insert_rowid(conn);
         _affectRows = sqlite3_changes(conn);
         return code;
     }
