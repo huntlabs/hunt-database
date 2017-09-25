@@ -70,7 +70,8 @@ class Pool
             _conns.linearRemove(_conns[0..1]);
             _mutex.writer.unlock();
         }
-        if(!_conns.length)_conns.insertBack(initConnection);
+        //if(!_conns.length)_conns.insertBack(initConnection);
+        if(!_conns.length)return null;
         version(USE_MYSQL){_conns.front.ping();}
         return _conns.front;
     }
