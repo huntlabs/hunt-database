@@ -68,10 +68,18 @@ class MysqlConnection : Connection
 		return result;
     }
 
-    void startTransaction() 
-    {
-        query("START TRANSACTION");
-    }
+	void begin()
+	{
+		execute("begin");
+	}
+	void rollback()
+	{
+		execute("rollback");
+	}
+	void commit()
+	{
+		execute("commit");
+	}
 
     string clientInfo()
     {

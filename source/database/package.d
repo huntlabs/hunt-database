@@ -25,6 +25,7 @@ public import std.container.array;
 public import std.experimental.logger;
 
 public import database.url;
+public import database.transaction;
 public import database.database;
 public import database.statement;
 public import database.row;
