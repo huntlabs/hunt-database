@@ -17,7 +17,6 @@ class Database
 {
     Pool _pool;
     DatabaseOption _options;
-    private Connection _conn = null;
 
     this(string url)
     {
@@ -36,23 +35,12 @@ class Database
         _pool = new Pool(this._options);
     }
 
-    bool beginTransaction()
+    Transaction beginTransaction()
     {
-        if(_conn is null)
-            _conn = _pool.getConnection();
-        return false;
-    }
-
-    bool commit()
-    {
-        scope(exit){_pool.release(_conn);_conn = null;}
-        return false;
-    }
-
-    bool rollback()
-    {
-        scope(exit){_pool.release(_conn);_conn = null;}
-        return false; 
+        Connection _conn = _pool.getConnection();
+		Transaction tran = new Transaction(this,_pool,_conn);
+		tran.begin();
+		return tran;
     }
 
     int error()
@@ -62,10 +50,7 @@ class Database
 
     int execute(string sql)
     {
-        if(_conn is null)
-            return new Statement(_pool, sql).execute();
-        else 
-            return _conn.execute(sql);
+        return new Statement(_pool, sql).execute();
     }
 
     ResultSet query(string sql)

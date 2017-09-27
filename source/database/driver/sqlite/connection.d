@@ -121,6 +121,19 @@ class SQLiteConnection : Connection
         _affectRows = sqlite3_changes(conn);
         return code;
     }
+	
+	void begin()
+	{
+		execute("begin");
+	}
+	void rollback()
+	{
+		execute("rollback");
+	}
+	void commit()
+	{
+		execute("commit");
+	}
 
     string escape(string sql)
     {

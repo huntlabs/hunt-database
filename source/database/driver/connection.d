@@ -43,4 +43,8 @@ interface Connection
         }
         return queryImpl(sql, args);
     }
+
+    void begin(); 
+	void rollback();
+	void commit();
 }

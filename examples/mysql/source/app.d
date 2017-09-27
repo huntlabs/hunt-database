@@ -35,6 +35,8 @@ void main()
         writeln(row.response);
     }
 
-
+    auto tran = db.beginTransaction();
+    tran.execute("insert into blog(uid,title,content) values(12,'111111dddd','fffffff');");
+    tran.rollback();
     db.close();
 }

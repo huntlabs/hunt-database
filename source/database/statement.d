@@ -16,9 +16,10 @@ import database;
 class Statement
 {
     private Pool _pool;
-    private Connection _conn;
+    private Connection _conn = null;
     private string _sql;
     private bool _isUsed = false;
+	private bool _isTransaction = false;
     private int _lastInsertId;
 	private int _affectRows;
     private ResultSet _rs;
@@ -33,6 +34,14 @@ class Statement
         this._pool = pool;
         this._sql = sql;
     }
+
+	this(Pool pool,Connection conn,string sql)
+	{
+		this._pool = pool;
+		this._conn = conn;
+		this._sql = sql;
+		this._isTransaction = true;
+	}
 
     void prepare(string sql)
     {
@@ -54,11 +63,10 @@ class Statement
     {
         isUsed();
         assert(sql);
-        _conn = _pool.getConnection();
-        scope(exit){_pool.release(_conn);}
-        int status = _conn.execute(sql);
-        _lastInsertId = _conn.lastInsertId();
-		_affectRows = _conn.affectedRows();
+        scope(exit){releaseConnection();}
+        int status = getConnection.execute(sql);
+        _lastInsertId = getConnection.lastInsertId();
+		_affectRows = getConnection.affectedRows();
         return status;
     }
 
@@ -66,9 +74,8 @@ class Statement
     {
         isUsed();
         assert(sql);
-        _conn = _pool.getConnection();
-        scope(exit){_pool.release(_conn);}
-        auto r = _conn.query(sql);
+        scope(exit){releaseConnection();}
+        auto r = getConnection.query(sql);
         auto res = r.front();
         return res[0].to!int;
     }
@@ -109,6 +116,19 @@ class Statement
     {
 
     }
+
+	private Connection getConnection()
+	{
+		if(_conn is null)	
+			_conn = _pool.getConnection();
+		return _conn;
+	}
+
+	private void releaseConnection()
+	{
+		if(!_isTransaction && _conn !is null)
+			_pool.release(_conn);
+	}
 
     private void isUsed()
     {
