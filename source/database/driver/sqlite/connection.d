@@ -53,6 +53,9 @@ class SQLiteConnection : Connection
         sqlite3_stmt* st;
         bool closed;
         bool autocommit;
+
+        int _last_insert_id;
+        int _affectRows;
     }
 
     this(URL url)
@@ -114,8 +117,23 @@ class SQLiteConnection : Connection
     int execute(string sql)
     {
         int code = sqlite3_exec(conn,toStringz(sql),&myCallback,null,null);
+        _last_insert_id = cast(int)sqlite3_last_insert_rowid(conn);
+        _affectRows = sqlite3_changes(conn);
         return code;
     }
+	
+	void begin()
+	{
+		execute("begin");
+	}
+	void rollback()
+	{
+		execute("rollback");
+	}
+	void commit()
+	{
+		execute("commit");
+	}
 
     string escape(string sql)
     {
@@ -123,12 +141,12 @@ class SQLiteConnection : Connection
     }
     int lastInsertId()
     {
-        return 0;
+        return _last_insert_id;
     }
     
     int affectedRows()
     {
-        return 0;
+        return _affectRows;
     }
 
     void ping()

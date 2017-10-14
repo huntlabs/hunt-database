@@ -52,8 +52,9 @@ class MysqlConnection : Connection
         mysql = mysql_init(null);
         //my_bool reconnect = 1;
         //mysql_options(mysql, mysql_option.MYSQL_OPT_RECONNECT, &reconnect);
-        mysql_real_connect(mysql, toCstring(_host), toCstring(_user), 
-                toCstring(_pass), toCstring(_db), _port, null, 0);
+        if(!mysql_real_connect(mysql, toCstring(_host), toCstring(_user), 
+                toCstring(_pass), toCstring(_db), _port, null, 0))
+            throw new DatabaseException("DB connect error " ~ error());
         mysql_set_character_set(mysql, toCstring("utf8"));
     }
 
@@ -63,15 +64,22 @@ class MysqlConnection : Connection
         auto v = toCstring(sql);
         int result = mysql_query(mysql, v);
 		if(result != 0)
-			throw new DatabaseException("DB status : "~result.to!string~" EXECUTE ERROR");
+			throw new DatabaseException("SQL : " ~ sql ~" \rDB status : "~result.to!string~" \rEXECUTE ERROR :" ~ error());
 		return result;
-		//return affectedRows();
     }
 
-    void startTransaction() 
-    {
-        query("START TRANSACTION");
-    }
+	void begin()
+	{
+		execute("begin");
+	}
+	void rollback()
+	{
+		execute("rollback");
+	}
+	void commit()
+	{
+		execute("commit");
+	}
 
     string clientInfo()
     {

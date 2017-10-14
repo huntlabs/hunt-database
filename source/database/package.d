@@ -18,12 +18,14 @@ public import std.traits;
 public import std.typecons;
 public import std.variant;
 public import std.conv;
+public import std.regex;
 public import std.string;
 public import std.exception;
 public import std.container.array;
 public import std.experimental.logger;
 
 public import database.url;
+public import database.transaction;
 public import database.database;
 public import database.statement;
 public import database.row;
