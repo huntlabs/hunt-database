@@ -28,7 +28,8 @@ class PostgresqlConnection :  Connection
     private QueryParams _querys;
     private PGconn* con;
 
-    private int _affectRows;
+    private int _affectRows = 0;
+    private int _last_insert_id = 0;
 
     this(URL url)
     {
@@ -74,11 +75,19 @@ class PostgresqlConnection :  Connection
         PGresult* res;
         res = PQexec(con,toStringz(sql));
         int result = PQresultStatus(res);
-		if (result != PGRES_COMMAND_OK)
-			throw new DatabaseException("DB status : "~to!string(result)~
-					" EXECUTE ERROR " ~ to!string(result));
 		_affectRows = to!int(std.string.fromStringz(PQcmdTuples(res)));
-        return result;
+		if (result == PGRES_FATAL_ERROR)
+            throw new DatabaseException("DB SQL : " ~ sql ~"\rDB status : "~to!string(result)~
+                    " \rEXECUTE ERROR : " ~ to!string(result));
+        {
+            auto reg = regex(r"[I|i][N|n][S|s][E|e][R|r][T|t].*[I|i][N|n][T|t][O|o].*.*[R|r][E|e][T|t][U|u][R|r][N|n][I|i][N|n][G|g].*");
+            if(match(sql,reg)){
+                auto data = new PostgresqlResult(res);
+                _last_insert_id = data.front[0].to!int;
+                return 1;
+            }
+            return result;
+        }
     }
 
     ResultSet queryImpl(string sql, Variant[] args...) 
@@ -95,7 +104,7 @@ class PostgresqlConnection :  Connection
 
     int lastInsertId()
     {
-        return 0;
+        return _last_insert_id;
     }
     
     int affectedRows()
@@ -107,4 +116,17 @@ class PostgresqlConnection :  Connection
     {
     
     }
+    
+	void begin()
+	{
+		execute("begin");
+	}
+	void rollback()
+	{
+		execute("rollback");
+	}
+	void commit()
+	{
+		execute("commit");
+	}
 }

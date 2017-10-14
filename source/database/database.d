@@ -35,14 +35,12 @@ class Database
         _pool = new Pool(this._options);
     }
 
-    bool beginTransaction()
+    Transaction beginTransaction()
     {
-        return false;
-    }
-
-    bool commit()
-    {
-        return false;
+        Connection _conn = _pool.getConnection();
+		Transaction tran = new Transaction(this,_pool,_conn);
+		tran.begin();
+		return tran;
     }
 
     int error()
