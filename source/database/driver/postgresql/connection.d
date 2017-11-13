@@ -119,14 +119,14 @@ class PostgresqlConnection :  Connection
     
 	void begin()
 	{
-		execute("begin");
+        PQexec(con,toStringz("begin"));
 	}
 	void rollback()
 	{
-		execute("rollback");
+        PQexec(con,toStringz("rollback"));
 	}
 	void commit()
 	{
-		execute("commit");
+        PQexec(con,toStringz("commit"));
 	}
 }

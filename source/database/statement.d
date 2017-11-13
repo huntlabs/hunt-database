@@ -63,6 +63,7 @@ class Statement
     {
         isUsed();
         assert(sql);
+        log(sql);
         scope(exit){releaseConnection();}
         int status = getConnection.execute(sql);
         _lastInsertId = getConnection.lastInsertId();
