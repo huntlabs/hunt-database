@@ -52,6 +52,12 @@ class PostgresqlConnection :  Connection
 			throw new DatabaseException("login error " ~ to!string(PQerrorMessage(con)));
     }
 
+    private void reconnect()
+    {
+        if (PQstatus(con) != CONNECTION_OK)
+            connect(); 
+    }
+
     ~this() {
         PQfinish(con);
     }
@@ -71,6 +77,7 @@ class PostgresqlConnection :  Connection
 
     int execute(string sql)
     {
+        reconnect();
         _affectRows = 0;
         PGresult* res;
         res = PQexec(con,toStringz(sql));
@@ -92,6 +99,7 @@ class PostgresqlConnection :  Connection
 
     ResultSet queryImpl(string sql, Variant[] args...) 
     {
+        reconnect();
         PGresult* res;
         res = PQexec(con,toStringz(sql));
         return new PostgresqlResult(res);
@@ -119,14 +127,20 @@ class PostgresqlConnection :  Connection
     
 	void begin()
 	{
-        PQexec(con,toStringz("begin"));
+        execute_sql("begin");
 	}
 	void rollback()
 	{
-        PQexec(con,toStringz("rollback"));
+        execute_sql("rollback");
 	}
 	void commit()
 	{
-        PQexec(con,toStringz("commit"));
+        execute_sql("commit");
 	}
+
+    private void execute_sql(string sql)
+    {
+        reconnect();
+        PQexec(con,toStringz(sql));
+    }
 }
