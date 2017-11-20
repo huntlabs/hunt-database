@@ -227,7 +227,7 @@ struct URL {
      *
      * This field is mutable, so be cautious.
      */
-    deprecated("use queryParams") string[string] query;
+    string[string] query;
 
     /**
      * The query parameters associated with this URL.
