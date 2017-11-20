@@ -75,7 +75,7 @@ class PostgresqlConnection :  Connection
         PGresult* res;
         res = PQexec(con,toStringz(sql));
         int result = PQresultStatus(res);
-		_affectRows = to!int(std.string.fromStringz(PQcmdTuples(res)));
+		_affectRows = safeConvert!(char[],int)(std.string.fromStringz(PQcmdTuples(res)));
 		if (result == PGRES_FATAL_ERROR)
             throw new DatabaseException("DB SQL : " ~ sql ~"\rDB status : "~to!string(result)~
                     " \rEXECUTE ERROR : " ~ to!string(result));
@@ -83,7 +83,7 @@ class PostgresqlConnection :  Connection
             auto reg = regex(r"[I|i][N|n][S|s][E|e][R|r][T|t].*[I|i][N|n][T|t][O|o].*.*[R|r][E|e][T|t][U|u][R|r][N|n][I|i][N|n][G|g].*");
             if(match(sql,reg)){
                 auto data = new PostgresqlResult(res);
-                _last_insert_id = data.front[0].to!int;
+                _last_insert_id = safeConvert!(string,int)(data.front[0]);
                 return 1;
             }
             return result;
