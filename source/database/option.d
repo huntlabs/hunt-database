@@ -19,7 +19,7 @@ class DatabaseOption
 
     private int _maxLifetime = 30000;
     private int _minimumPoolSize = 1;
-    private int _maximumPoolSize = 8;
+    private int _maximumPoolSize = 2;
     private int _minldle = 1;
     private int _connectionTimeout = 10000;
     private URL _url;
@@ -50,6 +50,12 @@ class DatabaseOption
     {
         assert(num);
         this._maximumPoolSize = num;
+        return this;
+    }
+    DatabaseOption setMinimumConnection(int num)
+    {
+        assert(num);
+        this._minimumPoolSize = num;
         return this;
     }
 
