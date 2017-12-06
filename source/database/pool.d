@@ -21,17 +21,19 @@ class Pool
     Array!Connection _conns;
     DatabaseOption _config;
     ReadWriteMutex _mutex;
+	int _pool_length;
 
     this(DatabaseOption config)
     {
         this._config = config;
         _mutex = new ReadWriteMutex();
         int i = 0;
-        while(i < _config.maximumConnection)
+        while(i <= _config.minimumConnection)
         {
             _conns.insertBack(initConnection);
             i++;
         }
+		_pool_length = i;
     }
 
     ~this()
@@ -73,7 +75,13 @@ class Pool
         }
         Connection conn;
         if(!_conns.length)
-            conn = initConnection();
+			if(_pool_length < _config.maximumConnection){
+				conn = initConnection();
+				_conns.insertBack(conn);
+				_pool_length++;
+			} else {
+				throw new DatabaseException("sorry, too many clients already");
+			}
         else
             conn = _conns.front;
         version(USE_MYSQL){conn.ping();}

@@ -57,6 +57,11 @@ class DatabaseOption
     {
         return _maximumPoolSize;
     }
+
+    int minimumConnection()
+    {
+        return _minimumPoolSize;
+    }
     
     DatabaseOption setConnectionTimeout(int time)
     {
