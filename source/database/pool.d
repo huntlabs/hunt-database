@@ -75,13 +75,11 @@ class Pool
         }
         Connection conn;
         if(!_conns.length)
-			if(_pool_length < _config.maximumConnection){
-				conn = initConnection();
-				_conns.insertBack(conn);
-				_pool_length++;
-			} else {
-				throw new DatabaseException("sorry, too many clients already");
-			}
+        {
+            conn = initConnection();
+            _conns.insertBack(conn);
+            _pool_length++;
+        }
         else
             conn = _conns.front;
         version(USE_MYSQL){conn.ping();}
