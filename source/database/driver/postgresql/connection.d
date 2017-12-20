@@ -52,6 +52,12 @@ class PostgresqlConnection :  Connection
 			throw new DatabaseException("login error " ~ to!string(PQerrorMessage(con)));
     }
 
+    private void reconnect()
+    {
+        if (PQstatus(con) != CONNECTION_OK)
+            connect(); 
+    }
+
     ~this() {
         PQfinish(con);
     }
@@ -71,19 +77,20 @@ class PostgresqlConnection :  Connection
 
     int execute(string sql)
     {
+        reconnect();
         _affectRows = 0;
         PGresult* res;
         res = PQexec(con,toStringz(sql));
         int result = PQresultStatus(res);
-		_affectRows = to!int(std.string.fromStringz(PQcmdTuples(res)));
+		_affectRows = safeConvert!(char[],int)(std.string.fromStringz(PQcmdTuples(res)));
 		if (result == PGRES_FATAL_ERROR)
-            throw new DatabaseException("DB SQL : " ~ sql ~"\rDB status : "~to!string(result)~
-                    " \rEXECUTE ERROR : " ~ to!string(result));
+            throw new DatabaseException("DB SQL : " ~ sql ~"\r\nDB status : "~to!string(result)~
+                    " \r\nEXECUTE ERROR : " ~ to!string(result) ~"\r\n"~cast(string)fromStringz(PQresultErrorMessage(res)));
         {
             auto reg = regex(r"[I|i][N|n][S|s][E|e][R|r][T|t].*[I|i][N|n][T|t][O|o].*.*[R|r][E|e][T|t][U|u][R|r][N|n][I|i][N|n][G|g].*");
             if(match(sql,reg)){
                 auto data = new PostgresqlResult(res);
-                _last_insert_id = data.front[0].to!int;
+                _last_insert_id = safeConvert!(string,int)(data.front[0]);
                 return 1;
             }
             return result;
@@ -92,6 +99,7 @@ class PostgresqlConnection :  Connection
 
     ResultSet queryImpl(string sql, Variant[] args...) 
     {
+        reconnect();
         PGresult* res;
         res = PQexec(con,toStringz(sql));
         return new PostgresqlResult(res);
@@ -119,14 +127,20 @@ class PostgresqlConnection :  Connection
     
 	void begin()
 	{
-		execute("begin");
+        execute_sql("begin");
 	}
 	void rollback()
 	{
-		execute("rollback");
+        execute_sql("rollback");
 	}
 	void commit()
 	{
-		execute("commit");
+        execute_sql("commit");
 	}
+
+    private void execute_sql(string sql)
+    {
+        reconnect();
+        PQexec(con,toStringz(sql));
+    }
 }

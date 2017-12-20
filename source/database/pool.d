@@ -21,17 +21,19 @@ class Pool
     Array!Connection _conns;
     DatabaseOption _config;
     ReadWriteMutex _mutex;
+	int _pool_length;
 
     this(DatabaseOption config)
     {
         this._config = config;
         _mutex = new ReadWriteMutex();
         int i = 0;
-        while(i < _config.maximumConnection)
+        while(i < _config.minimumConnection)
         {
             _conns.insertBack(initConnection);
             i++;
         }
+		_pool_length = i;
     }
 
     ~this()
@@ -56,6 +58,7 @@ class Pool
             version(USE_SQLITE){
                 case "sqlite":
                     _config.setMaximumConnection = 1;
+                    _config.setMinimumConnection = 1;
                     return new SQLiteConnection(_config.url);
             }
             default:
@@ -67,14 +70,21 @@ class Pool
     {
         _mutex.writer.lock();
         scope(exit) {
-            _conns.linearRemove(_conns[0..1]);
+            if(_conns.length)
+                _conns.linearRemove(_conns[0..1]);
             _mutex.writer.unlock();
         }
-        if(!_conns.length)_conns.insertBack(initConnection);
-        //if(!_conns.length)
-        //    throw new DatabaseException("database connection pool available connection is 0");
-        version(USE_MYSQL){_conns.front.ping();}
-        return _conns.front;
+        Connection conn;
+        if(!_conns.length)
+        {
+            conn = initConnection();
+            _conns.insertBack(conn);
+            _pool_length++;
+        }
+        else
+            conn = _conns.front;
+        version(USE_MYSQL){conn.ping();}
+        return conn;
     }
 
     void release(Connection conn)
