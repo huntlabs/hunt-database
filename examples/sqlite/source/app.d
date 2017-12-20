@@ -19,11 +19,15 @@ void main()
 
     Database db = new Database("sqlite:///./testDB.db");
 
-    string sql = `INSERT INTO test(name, pass, age) VALUES("test", "123", 12)`;
+    string sql = q{
+        INSERT INTO  user(name,email,money,status) VALUES("viile","viile@dlang.org",10.5,1);
+    };
 
-    db.execute(sql);
+    auto r = db.execute(sql);
 
-    Statement statement = db.prepare("SELECT * FROM test");
+    writeln(r);
+
+    Statement statement = db.prepare("SELECT * FROM user");
 
     ResultSet rs = statement.query();
 
