@@ -23,6 +23,9 @@ class Statement
     private int _lastInsertId;
 	private int _affectRows;
     private ResultSet _rs;
+	private string[] sql_prepare;
+	private int[string] param_key;
+	private string[string] param_value;
     
     this(Pool pool)
     {
@@ -45,11 +48,16 @@ class Statement
 
     void prepare(string sql)
     {
+		assert(sql.length);
         this._sql = sql;
+		int length = cast(int)sql.length;
+		int index = 0;
+		while(index < length){
+			
+		}
     }
 
-    void setParameter(ParamType type = ParamType.PARAM_STR, T = string)
-        (string key, T value)
+    void setParameter(T = string)(string key, T value)
     {
         // bind param value to sql
     }
@@ -141,4 +149,39 @@ class Statement
         _conn = null;
         _sql = null;
     }
+}
+
+enum ExprElementType : uint {
+	start = 0,
+	element = 1,
+	key = 2
+}
+
+class exprStatus
+{
+	ExprElementType type = ExprElementType.start;
+	string result;
+	char[] buf;
+	
+
+	int append(char c)
+	{
+		if(type == ExprElementType.start){
+			if(c == ' '){				
+			}else if(c == ':'){
+				type = ExprElementType.key;
+
+			}else{
+				type = ExprElementType.element;
+			}
+			
+		}else if(type == ExprElementType.element){
+
+		
+		}else{
+		
+		}
+
+		return 0;
+	}
 }
