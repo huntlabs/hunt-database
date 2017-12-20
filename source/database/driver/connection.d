@@ -32,6 +32,7 @@ interface Connection
 
     ResultSet query(T...)(string sql, T t)
     {
+        log(sql);
         Variant[] args;
         foreach(arg; t) {
             Variant a;

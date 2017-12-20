@@ -33,6 +33,7 @@ public import database.exception;
 public import database.option;
 public import database.pool;
 public import database.type;
+public import database.utils;
 
 public import database.driver.connection;
 public import database.driver.resultset;
