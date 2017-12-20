@@ -28,7 +28,7 @@ class Pool
         this._config = config;
         _mutex = new ReadWriteMutex();
         int i = 0;
-        while(i <= _config.minimumConnection)
+        while(i < _config.minimumConnection)
         {
             _conns.insertBack(initConnection);
             i++;
@@ -58,6 +58,7 @@ class Pool
             version(USE_SQLITE){
                 case "sqlite":
                     _config.setMaximumConnection = 1;
+                    _config.setMinimumConnection = 1;
                     return new SQLiteConnection(_config.url);
             }
             default:
