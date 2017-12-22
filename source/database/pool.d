@@ -22,11 +22,13 @@ class Pool
     DatabaseOption _config;
     ReadWriteMutex _mutex;
 	int _pool_length;
+	Dialect dialect;
 
     this(DatabaseOption config)
     {
         this._config = config;
         _mutex = new ReadWriteMutex();
+		dialect = initDialect();
         int i = 0;
         while(i < _config.minimumConnection)
         {
@@ -41,29 +43,36 @@ class Pool
         _mutex.destroy();
     }
 
+	private Dialect initDialect()
+	{
+		version (USE_POSTGRESQL){
+			return new MysqlDialect();
+		}else version (USE_MYSQL){
+			return new PostgresqlDialect;
+		}else version(USE_SQLITE){
+			return new SqliteDialect();
+		}else
+			throw new DatabaseException("Don't support database driver: "~ _config.url.scheme);
+	
+	}
+
     private Connection initConnection()
     {
-        switch (_config.url.scheme)
-        {
-            version (USE_POSTGRESQL)
-            {
-                case "postgresql":
-                    return new PostgresqlConnection(_config.url);
-            }
-            version (USE_MYSQL)
-            {
-                case "mysql":
-                    return new MysqlConnection(_config.url);
-            }
-            version(USE_SQLITE){
-                case "sqlite":
-                    _config.setMaximumConnection = 1;
-                    _config.setMinimumConnection = 1;
-                    return new SQLiteConnection(_config.url);
-            }
-            default:
-            throw new DatabaseException("Don't support database driver: "~ _config.url.scheme);
-        }
+		version (USE_POSTGRESQL)
+		{
+			return new PostgresqlConnection(_config.url);
+		}
+		else version (USE_MYSQL)
+		{
+			return new MysqlConnection(_config.url);
+		}
+		else version(USE_SQLITE){
+			_config.setMaximumConnection = 1;
+			_config.setMinimumConnection = 1;
+			return new SQLiteConnection(_config.url);
+		}
+		else
+			throw new DatabaseException("Don't support database driver: "~ _config.url.scheme);
     }
 
     Connection getConnection()

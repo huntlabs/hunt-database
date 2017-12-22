@@ -23,9 +23,9 @@ class Statement
     private int _lastInsertId;
 	private int _affectRows;
     private ResultSet _rs;
-	public ExprElement[] sql_prepare;
-	public string[string] param_value;
-    
+	private ExprElement[] sql_prepare;
+	private string[string] param_value;
+
     this(Pool pool)
     {
         this._pool = pool;
@@ -68,7 +68,7 @@ class Statement
     void setParameter(T = string)(string key, T value)
     {
         assert(key in param_value);
-        param_value[key] = value.to!string;
+        param_value[key] = _pool.dialect.openQuote ~ value.to!string ~ _pool.dialect.closeQuote;
     }
 
     string sql()
