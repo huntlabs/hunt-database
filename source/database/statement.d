@@ -23,9 +23,8 @@ class Statement
     private int _lastInsertId;
 	private int _affectRows;
     private ResultSet _rs;
-	private string[] sql_prepare;
-	private int[string] param_key;
-	private string[string] param_value;
+	public ExprElement[] sql_prepare;
+	public string[string] param_value;
     
     this(Pool pool)
     {
@@ -35,14 +34,14 @@ class Statement
     this(Pool pool,string sql)
     {
         this._pool = pool;
-        this._sql = sql;
+        prepare(sql);
     }
 
 	this(Pool pool,Connection conn,string sql)
 	{
 		this._pool = pool;
 		this._conn = conn;
-		this._sql = sql;
+        prepare(sql);
 		this._isTransaction = true;
 	}
 
@@ -52,18 +51,36 @@ class Statement
         this._sql = sql;
 		int length = cast(int)sql.length;
 		int index = 0;
+        auto expr = new ExprStatus;
 		while(index < length){
-			
+            auto status = expr.append(sql[index]);
+            if(status){
+                sql_prepare ~= ExprElement(cast(ExprElementType)status,expr.result);
+                if(status == ExprElementType.key){
+                    param_value[expr.result] = expr.result;
+                }
+            }
+           index++; 
 		}
     }
 
     void setParameter(T = string)(string key, T value)
     {
-        // bind param value to sql
+        assert(key in param_value);
+        param_value[key] = value.to!string;
     }
 
     string sql()
     {
+        string str;
+        foreach(element;sql_prepare){
+            if(element.type == ExprElementType.key){
+                str ~= param_value[element.value] ~ " ";
+            }else{
+                str ~= element.value ~ " ";
+            }
+        }
+        _sql = str;
         return _sql;
     }
 
@@ -151,13 +168,19 @@ class Statement
     }
 }
 
+struct ExprElement
+{
+    ExprElementType type;
+    string value;
+}
+
 enum ExprElementType : uint {
 	start = 0,
 	element = 1,
 	key = 2
 }
 
-class exprStatus
+class ExprStatus
 {
 	ExprElementType type = ExprElementType.start;
 	string result;
@@ -167,21 +190,33 @@ class exprStatus
 	int append(char c)
 	{
 		if(type == ExprElementType.start){
+            buf ~= c;
 			if(c == ' '){				
+				type = ExprElementType.element;
 			}else if(c == ':'){
 				type = ExprElementType.key;
-
 			}else{
 				type = ExprElementType.element;
 			}
-			
 		}else if(type == ExprElementType.element){
-
-		
+			if(c == ' '){				
+                result = cast(string)buf;
+                buf = [];
+                type = ExprElementType.start;
+                return cast(int)ExprElementType.element;
+            }else{
+                buf ~= c;
+            }
 		}else{
-		
+			if(c == ' '){				
+                result = cast(string)buf;
+                buf = [];
+                type = ExprElementType.start;
+                return cast(int)ExprElementType.key;
+            }else{
+                buf ~= c; 
+            }
 		}
-
-		return 0;
+		return cast(int)ExprElementType.start;
 	}
 }
