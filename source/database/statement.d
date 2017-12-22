@@ -49,6 +49,7 @@ class Statement
     {
 		assert(sql.length);
         this._sql = sql;
+        sql ~= " ";
 		int length = cast(int)sql.length;
 		int index = 0;
         auto expr = new ExprStatus;
