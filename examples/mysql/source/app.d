@@ -24,7 +24,11 @@ void main()
     int result = db.execute(`insert into ugc_common_response(rid, response, weight, age, roleid, rolename, groupid) values(1106, 'you are welcome', 34, 18, 1037, 'man', 56);`);
     writeln(result);
 
-    Statement stmt = db.prepare("SELECT * FROM ugc_common_response LIMIT 10");
+    Statement stmt = db.prepare("SELECT * FROM ugc_common_response where username = :username and age = :age LIMIT 10");
+    stmt.setParameter(":username","viile");
+    stmt.setParameter(":age",10);
+
+    writeln(stmt.sql);
 
 
     ResultSet rs = stmt.query();
