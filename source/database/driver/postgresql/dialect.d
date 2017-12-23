@@ -6,16 +6,34 @@ class PostgresqlDialect : Dialect
 {
 	string closeQuote() { return "'"; }
 	string openQuote()  { return "'"; }
-    string toSqlValueImpl(DlangDataType type,Variant value)
+	Variant fromSqlValue(DlangDataType type,Variant value)
+	{
+		if(typeid(type) == typeid(dBoolType)){
+			if(*value.peek!string == "true")
+				return Variant(true);
+			else
+				return Variant(false);
+		}else if(typeid(type) == typeid(dFloatType))
+			return Variant(safeConvert!(string,float)(*value.peek!string));
+		else if(typeid(type) == typeid(dDoubleType))
+			return Variant(safeConvert!(string,double)(*value.peek!string));
+		else if(typeid(type) == typeid(dIntType))
+			return Variant(safeConvert!(string,int)(*value.peek!string));
+		else if(typeid(type) == typeid(dLongType))
+			return Variant(safeConvert!(string,long)(*value.peek!string));
+		else
+			return value;
+	}
+	string toSqlValueImpl(DlangDataType type,Variant value)
 	{
 		if(typeid(type) == typeid(dBoolType))
-				return value.get!(bool) ? "TRUE" : "FALSE";
+			return value.get!(bool) ? "TRUE" : "FALSE";
 		else if(typeid(type) == typeid(dFloatType))
-                return safeConvert!(float,string)(*value.peek!float);
+			return safeConvert!(float,string)(*value.peek!float);
 		else if(typeid(type) == typeid(dDoubleType))
-                return safeConvert!(double,string)(*value.peek!double);
+			return safeConvert!(double,string)(*value.peek!double);
 		else if(typeid(type) == typeid(dIntType))
-				return value.toString;
+			return value.toString;
 		else
 			return openQuote ~ value.toString ~ closeQuote;
 	}
@@ -23,7 +41,7 @@ class PostgresqlDialect : Dialect
 }
 
 string[] PGSQL_RESERVED_WORDS = [
-	"ABORT",
+"ABORT",
 	"ACTION",
 	"ADD",
 	"AFTER",

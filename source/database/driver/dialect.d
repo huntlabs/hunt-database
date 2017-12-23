@@ -6,6 +6,7 @@ interface Dialect
 {
     string closeQuote(); 
     string  openQuote();
+	Variant fromSqlValue(DlangDataType fieldType,Variant fieldValue);
     string toSqlValueImpl(DlangDataType type,Variant value);
     string toSqlValue(T)(T val)
     {

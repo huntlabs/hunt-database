@@ -6,19 +6,37 @@ class MysqlDialect : Dialect
 {
 	string closeQuote() { return "\""; }
 	string openQuote()  { return "\""; }
-    string toSqlValueImpl(DlangDataType type,Variant value)
+	Variant fromSqlValue(DlangDataType type,Variant value)
+	{
+		if(typeid(type) == typeid(dBoolType)){
+			if(*value.peek!string == "1")
+				return Variant(true);
+			else
+				return Variant(false);
+		}else if(typeid(type) == typeid(dFloatType))
+			return Variant(safeConvert!(string,float)(*value.peek!string));
+		else if(typeid(type) == typeid(dDoubleType))
+			return Variant(safeConvert!(string,double)(*value.peek!string));
+		else if(typeid(type) == typeid(dIntType))
+			return Variant(safeConvert!(string,int)(*value.peek!string));
+		else if(typeid(type) == typeid(dLongType))
+			return Variant(safeConvert!(string,long)(*value.peek!string));
+		else
+			return value;
+	}
+	string toSqlValueImpl(DlangDataType type,Variant value)
 	{
 		if(typeid(type) == typeid(dBoolType))
-				return value.get!(bool) ? "1" : "0";
+			return value.get!(bool) ? "1" : "0";
 		else if(typeid(type) == typeid(dFloatType))
-				//return isNaN(*value.peek!float) ? "0" : *value.peek!string;
-                return (*value.peek!float).to!string;
+			//return isNaN(*value.peek!float) ? "0" : *value.peek!string;
+			return (*value.peek!float).to!string;
 		else if(typeid(type) == typeid(dDoubleType)){
-                return (*value.peek!double).to!string;
-				//return isNaN(*value.peek!double) ? "0" : *value.peek!string;
-        }
+			return (*value.peek!double).to!string;
+			//return isNaN(*value.peek!double) ? "0" : *value.peek!string;
+		}
 		else if(typeid(type) == typeid(dIntType))
-				return value.toString;
+			return value.toString;
 		else
 			return openQuote ~ value.toString ~ closeQuote;
 	}
@@ -26,7 +44,7 @@ class MysqlDialect : Dialect
 
 string[] MYSQL_RESERVED_WORDS = 
 [
-	"ACCESSIBLE", "ADD", "ALL",
+"ACCESSIBLE", "ADD", "ALL",
 	"ALTER", "ANALYZE", "AND",
 	"AS", "ASC", "ASENSITIVE",
 	"BEFORE", "BETWEEN", "BIGINT",
@@ -106,5 +124,5 @@ string[] MYSQL_RESERVED_WORDS =
 	"GET", "IO_AFTER_GTIDS", "IO_BEFORE_GTIDS",
 	"MASTER_BIND", "ONE_SHOT", "PARTITION",
 	"SQL_AFTER_GTIDS", "SQL_BEFORE_GTIDS",
-];
+	];
 
