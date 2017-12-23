@@ -41,6 +41,7 @@ public import database.driver.dialect;
 public import database.driver.builder;
 public import database.driver.syntax;
 public import database.driver.expression;
+public import database.driver.factory;
 
 public import database.driver.mysql.connection;
 public import database.driver.mysql.binding;

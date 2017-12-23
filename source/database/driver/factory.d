@@ -12,7 +12,7 @@ class SqlFactory : IFactory
     SqlBuilder createBuilder()
     {
 		version(USE_POSTGRESQL){
-			return new PgSqlBuilder();
+			return new PostgresqlSqlBuilder();
 		}
 		else version(USE_SQLITE){
 			return new SqliteBuilder();
@@ -25,7 +25,7 @@ class SqlFactory : IFactory
     {
         return new MySqlBuilder();
     }
-    SqlBuilder createPgSqlBuilder()
+    SqlBuilder createPostgresqlSqlBuilder()
     {
         return new PostgresqlSqlBuilder();
     }
