@@ -145,7 +145,7 @@ class PostgresqlSqlSyntax : SqlSyntax
 				str ~= limitExpr();
 				break;
 			case Method.Insert:
-				str ~= Method.Insert ~ " into " ~ _builder.tableName;
+				str ~= Method.Insert ~ builder.tableName;
 				str ~= insertExpr();
 				str ~= autoIncreaseExpr();
 				break;
