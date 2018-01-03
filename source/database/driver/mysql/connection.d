@@ -188,6 +188,18 @@ class MysqlConnection : Connection
     string toSql(long s) {
         return to!string(s);
     }
+
+    string escapeLiteral(string msg)
+    {
+        // FIXME: Escape value properly to prevent accidental SQL injection
+        return `"` ~ msg ~ `"`;
+    }
+
+    string escapeIdentifier(string msg)
+    {
+        // FIXME: Escape db identifier properly to prevent accidental SQL injection
+        return msg;
+    }
 }
 
 cstring toCstring(string c) 

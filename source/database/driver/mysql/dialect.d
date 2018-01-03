@@ -4,8 +4,8 @@ import database;
 
 class MysqlDialect : Dialect
 {
-	string closeQuote() { return "\""; }
-	string openQuote()  { return "\""; }
+	string closeQuote() { return `"`; }
+	string openQuote()  { return `"`; }
 	Variant fromSqlValue(DlangDataType type,Variant value)
 	{
 		if(typeid(type) == typeid(dBoolType)){
