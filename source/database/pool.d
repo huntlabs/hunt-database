@@ -46,11 +46,11 @@ class Pool
 	private Dialect initDialect()
 	{
 		version (USE_POSTGRESQL){
-			return new MysqlDialect();
-		}else version (USE_MYSQL){
 			return new PostgresqlDialect;
+		}else version (USE_MYSQL){
+			return new MysqlDialect;
 		}else version(USE_SQLITE){
-			return new SqliteDialect();
+			return new SqliteDialect;
 		}else
 			throw new DatabaseException("Don't support database driver: "~ _config.url.scheme);
 	
