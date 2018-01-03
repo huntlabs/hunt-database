@@ -200,6 +200,9 @@ extern(System) {
 
     char *PQresultErrorMessage(const PGresult *res);
 
+    char *PQescapeLiteral(PGconn*,const(char)*,size_t);
+    char *PQescapeIdentifier(PGconn*,const(char)*,size_t);
+
     // date
 
     /* see pgtypes_date.h */

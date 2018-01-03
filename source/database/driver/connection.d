@@ -46,6 +46,9 @@ interface Connection
     }
 
     void begin(); 
-	void rollback();
-	void commit();
+    void rollback();
+    void commit();
+
+    string escapeLiteral(string msg);
+    string escapeIdentifier(string msg);
 }
