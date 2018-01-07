@@ -165,6 +165,18 @@ class SQLiteConnection : Connection
         if (closed)
         throw new DatabaseException("Connection is already closed");
     }
+
+    string escapeLiteral(string msg)
+    {
+        // FIXME: Escape value properly to prevent accidental SQL injection
+        return `"` ~ msg ~ `"`;
+    }
+
+    string escapeIdentifier(string msg)
+    {
+        // FIXME: Escape db identifier properly to prevent accidental SQL injection
+        return msg;
+    }
 }  
 extern(C) int myCallback(void *a_parm, int argc, char **argv,
                          char **column)

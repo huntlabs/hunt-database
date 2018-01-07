@@ -6,6 +6,7 @@ class PostgresqlDialect : Dialect
 {
 	string closeQuote() { return "'"; }
 	string openQuote()  { return "'"; }
+
 	Variant fromSqlValue(DlangDataType type,Variant value)
 	{
 		if(typeid(type) == typeid(dBoolType)){
@@ -37,7 +38,6 @@ class PostgresqlDialect : Dialect
 		else
 			return openQuote ~ value.toString ~ closeQuote;
 	}
-
 }
 
 string[] PGSQL_RESERVED_WORDS = [
