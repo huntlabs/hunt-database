@@ -29,11 +29,13 @@ class Statement
     this(Pool pool)
     {
         this._pool = pool;
+        this._conn = pool.getConnection();
     }
 
     this(Pool pool,string sql)
     {
         this._pool = pool;
+        this._conn = pool.getConnection();
         prepare(sql);
     }
 
@@ -68,7 +70,7 @@ class Statement
     void setParameter(T = string)(string key, T value)
     {
         assert(key in param_value);
-        param_value[key] = _pool.dialect.openQuote ~ value.to!string ~ _pool.dialect.closeQuote;
+        param_value[key] = _conn.escapeLiteral(value.to!string);
     }
 
     string sql()

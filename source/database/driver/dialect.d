@@ -4,9 +4,7 @@ import database;
 
 interface Dialect
 {
-    string closeQuote(); 
-    string  openQuote();
-	Variant fromSqlValue(DlangDataType fieldType,Variant fieldValue);
+    Variant fromSqlValue(DlangDataType fieldType,Variant fieldValue);
     string toSqlValueImpl(DlangDataType type,Variant value);
     string toSqlValue(T)(T val)
     {
@@ -14,5 +12,4 @@ interface Dialect
         DlangDataType type = getDlangDataType!T(val);
         return toSqlValueImpl(type, value);
     }
-
 }

@@ -13,8 +13,6 @@ module database.driver.postgresql.connection;
 
 import database;
 version(USE_POSTGRESQL):
-pragma(lib, "pq");
-pragma(lib, "pgtypes");
 
 class PostgresqlConnection :  Connection 
 {
@@ -125,22 +123,48 @@ class PostgresqlConnection :  Connection
     
     }
     
-	void begin()
-	{
+    void begin()
+    {
         execute_sql("begin");
-	}
-	void rollback()
-	{
+    }
+
+    void rollback()
+    {
         execute_sql("rollback");
-	}
-	void commit()
-	{
+    }
+
+    void commit()
+    {
         execute_sql("commit");
-	}
+    }
 
     private void execute_sql(string sql)
     {
         reconnect();
         PQexec(con,toStringz(sql));
+    }
+
+    string escapeLiteral(string msg)
+    {
+        auto buf = PQescapeLiteral(con, msg.toStringz, msg.length);
+        if (buf is null)
+            throw new DatabaseException("Unable to escape value: " ~ msg);
+
+        string res = buf.fromStringz.to!string;
+        PQfreemem(buf);
+
+        return res;
+    }
+
+    string escapeIdentifier(string msg)
+    {
+        auto buf = PQescapeIdentifier(con, msg.toStringz, msg.length);
+        if (buf is null)
+            throw new DatabaseException("Unable to escape value: " ~ msg);
+
+        string res = buf.fromStringz.to!string;
+        PQfreemem(buf);
+
+        return res;
     }
 }
