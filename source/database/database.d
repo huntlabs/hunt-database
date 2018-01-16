@@ -70,7 +70,7 @@ class Database
 
 	SqlBuilder createSqlBuilder()
 	{
-		return (new SqlFactory()).createMySqlBuilder();
+		return (new SqlFactory()).createBuilder();
 	}
 
 	Dialect createDialect()
