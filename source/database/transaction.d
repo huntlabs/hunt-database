@@ -35,7 +35,7 @@ class Transaction
 
     void release()
     {
-        if(_conn is null){
+        if(_conn !is null){
             _pool.release(_conn);
             _conn = null;
         }
