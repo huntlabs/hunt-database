@@ -13,6 +13,8 @@ module database.statement;
 
 import database;
 
+import std.stdio;
+
 class Statement
 {
     private Pool _pool;
@@ -92,10 +94,10 @@ class Statement
         isUsed();
         assert(sql);
         log(sql);
+        int status = this._conn.execute(sql);
+        _lastInsertId = this._conn.lastInsertId();
+		_affectRows = this._conn.affectedRows();
         scope(exit){releaseConnection();}
-        int status = getConnection.execute(sql);
-        _lastInsertId = getConnection.lastInsertId();
-		_affectRows = getConnection.affectedRows();
         return status;
     }
 
@@ -103,8 +105,8 @@ class Statement
     {
         isUsed();
         assert(sql);
+        auto r = this._conn.query(sql);
         scope(exit){releaseConnection();}
-        auto r = getConnection.query(sql);
         auto res = r.front();
         return res[0].to!int;
     }
@@ -135,9 +137,8 @@ class Statement
     {
         isUsed();
         assert(sql);
-        _conn = _pool.getConnection();
-        scope(exit){_pool.release(_conn);}
-        _rs = _conn.query(sql);
+        _rs = this._conn.query(sql);
+        scope(exit){releaseConnection();}
         return _rs;
     }
 

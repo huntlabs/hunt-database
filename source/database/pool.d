@@ -100,7 +100,6 @@ class Pool
     {
         _mutex.writer.lock();
         scope(exit)_mutex.writer.unlock();
-
         _conns.insertBack(conn);
     }    
 
