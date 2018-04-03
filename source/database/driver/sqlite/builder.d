@@ -1,8 +1,11 @@
 module database.driver.sqlite.builder;
 
-import database;
+public import database.driver.builder;
+import database.defined;
+import database.driver.expression;
+import database.driver.sqlite.syntax;
 
-class SqliteBuilder : SqlBuilder 
+class SqliteSqlBuilder : SqlBuilder 
 {
 	Method _method;
 	string _tableName;

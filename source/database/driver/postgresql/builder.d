@@ -1,6 +1,10 @@
 module database.driver.postgresql.builder;
 
-import database;
+public import database.driver.builder;
+import database.defined;
+import database.driver.expression;
+import database.driver.postgresql.syntax;
+
 
 class PostgresqlSqlBuilder : SqlBuilder 
 {

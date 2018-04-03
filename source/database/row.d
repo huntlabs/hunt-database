@@ -11,7 +11,10 @@
 
 module database.row;
 
-import database;
+import std.conv : to;
+
+import database.driver.resultset;
+import database.exception;
 
 class Row 
 {

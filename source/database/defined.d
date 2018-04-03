@@ -11,8 +11,6 @@
 
 module database.defined;
 
-import database;
-
 import std.datetime;
 import std.variant;
 import std.json;

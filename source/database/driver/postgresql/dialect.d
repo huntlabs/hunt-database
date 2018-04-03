@@ -1,6 +1,6 @@
 module database.driver.postgresql.dialect;
 
-import database;
+public import database.driver.dialect;
 
 class PostgresqlDialect : Dialect
 {

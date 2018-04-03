@@ -11,7 +11,8 @@
 
 module database.driver.postgresql.connection;
 
-import database;
+public import database.driver.connection;
+
 version(USE_POSTGRESQL):
 
 class PostgresqlConnection :  Connection 

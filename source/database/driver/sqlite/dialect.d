@@ -1,6 +1,8 @@
 module database.driver.sqlite.dialect;
 
-import database;
+import std.conv : to;
+
+public import database.driver.dialect;
 
 class SqliteDialect : Dialect
 {

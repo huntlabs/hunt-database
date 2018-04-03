@@ -1,6 +1,13 @@
 module database.driver.builder;
 
-import database;
+public import std.array;
+public import std.string;
+
+import database.defined;
+import database.driver.expression;
+import database.driver.syntax;
+
+public import database.exception;
 
 interface SqlBuilder
 {

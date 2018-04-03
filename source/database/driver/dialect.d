@@ -1,6 +1,10 @@
 module database.driver.dialect;
 
-import database;
+public import std.variant;
+
+public import database.defined;
+public import database.util;
+public import database.exception;
 
 interface Dialect
 {

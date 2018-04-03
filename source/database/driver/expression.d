@@ -1,6 +1,7 @@
 module database.driver.expression;
 
-import database;
+public import database.defined;
+public import database.exception;
 
 class Expression
 {

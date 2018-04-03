@@ -1,6 +1,10 @@
 module database.driver.postgresql.syntax;
 
-import database;
+import std.conv : to;
+
+import database.defined;
+import database.driver.syntax;
+import database.driver.postgresql.builder;
 
 class PostgresqlSqlSyntax : SqlSyntax
 {

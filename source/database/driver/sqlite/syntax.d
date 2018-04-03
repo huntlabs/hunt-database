@@ -1,12 +1,16 @@
 module database.driver.sqlite.syntax;
 
-import database;
+import std.conv : to;
+
+import database.defined;
+import database.driver.sqlite.builder;
+import database.driver.syntax;
 
 class SqliteSyntax : SqlSyntax
 {
 	SqlBuilder _builder;
 
-	this(SqliteBuilder builder)
+	this(SqliteSqlBuilder builder)
 	{
 		this._builder = builder;
 	}

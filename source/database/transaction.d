@@ -11,19 +11,20 @@
 
 module database.transaction;
 
-import database;
+import database.pool;
+import database.statement;
+import database.driver.connection;
+import database.driver.resultset;
 
 class Transaction
 {
-    private Database _db;
     private Pool _pool;
     private Connection _conn;
     private bool _released = false;
     private bool _isExpire = false;
 
-    this(Database db,Pool pool,Connection conn)
+    this(Pool pool, Connection conn)
     {
-        this._db = db;
         this._pool = pool;
         this._conn = conn;
     }
