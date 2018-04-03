@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/huntlabs/database.svg?branch=master)](https://travis-ci.org/huntlabs/database)
+
 ## Database
 Database abstraction layer for D programing language, support PostgreSQL / MySQL / SQLite.
 
