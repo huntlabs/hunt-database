@@ -124,9 +124,9 @@ extern(System) {
 
     PGconn* PQconnectdb(const char*);
     PGconn* PQsetdbLogin(const char*,const char*,
-			const char*,const char*,
-			const char*,const char*,
-			const char*);
+            const char*,const char*,
+            const char*,const char*,
+            const char*);
     PGconn *PQconnectdbParams(const char **keywords, const char **values, int expand_dbname);
     void PQfinish(PGconn*);
 
@@ -146,8 +146,8 @@ extern(System) {
 
     PGresult * PQexec(PGconn *conn, const char *command);
     
-	char *PQcmdTuples(PGresult *res);
-	
+    char *PQcmdTuples(PGresult *res);
+    
     PGresult *PQexecParams(
             PGconn *conn,
             const char *command,

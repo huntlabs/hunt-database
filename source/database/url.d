@@ -596,153 +596,153 @@ unittest {
             queryParams.add("gibe", "clay");
             fragment = "frag";
         }
-		assert(
-				// Not sure what order it'll come out in.
-				url.toString == "https://example.org/foo/bar?hello=world&gibe=clay#frag" ||
-				url.toString == "https://example.org/foo/bar?gibe=clay&hello=world#frag",
-				url.toString);
-	}
-	{
-		// Passing an array of query values.
-		URL url;
-		with (url) {
-			scheme = "https";
-			host = "example.org";
-			path = "/foo/bar";
-			queryParams.add("hello", "world");
-			queryParams.add("hello", "aether");
-			fragment = "frag";
-		}
-		assert(
-				// Not sure what order it'll come out in.
-				url.toString == "https://example.org/foo/bar?hello=world&hello=aether#frag" ||
-				url.toString == "https://example.org/foo/bar?hello=aether&hello=world#frag",
-				url.toString);
-	}
-	{
-		// Percent encoded.
-		URL url;
-		with (url) {
-			scheme = "https";
-			host = "example.org";
-			path = "/f☃o";
-			queryParams.add("❄", "❀");
-			queryParams.add("[", "]");
-			fragment = "ş";
-		}
-		assert(
-				// Not sure what order it'll come out in.
-				url.toString == "https://example.org/f%E2%98%83o?%E2%9D%84=%E2%9D%80&%5B=%5D#%C5%9F" ||
-				url.toString == "https://example.org/f%E2%98%83o?%5B=%5D&%E2%9D%84=%E2%9D%80#%C5%9F",
-				url.toString);
-	}
-	{
-		// Port, user, pass.
-		URL url;
-		with (url) {
-			scheme = "https";
-			host = "example.org";
-			user = "dhasenan";
-			pass = "itsasecret";
-			port = 17;
-		}
-		assert(
-				url.toString == "https://dhasenan:itsasecret@example.org:17/",
-				url.toString);
-	}
-	{
-		// Query with no path.
-		URL url;
-		with (url) {
-			scheme = "https";
-			host = "example.org";
-			queryParams.add("hi", "bye");
-		}
-		assert(
-				url.toString == "https://example.org/?hi=bye",
-				url.toString);
-	}
+        assert(
+                // Not sure what order it'll come out in.
+                url.toString == "https://example.org/foo/bar?hello=world&gibe=clay#frag" ||
+                url.toString == "https://example.org/foo/bar?gibe=clay&hello=world#frag",
+                url.toString);
+    }
+    {
+        // Passing an array of query values.
+        URL url;
+        with (url) {
+            scheme = "https";
+            host = "example.org";
+            path = "/foo/bar";
+            queryParams.add("hello", "world");
+            queryParams.add("hello", "aether");
+            fragment = "frag";
+        }
+        assert(
+                // Not sure what order it'll come out in.
+                url.toString == "https://example.org/foo/bar?hello=world&hello=aether#frag" ||
+                url.toString == "https://example.org/foo/bar?hello=aether&hello=world#frag",
+                url.toString);
+    }
+    {
+        // Percent encoded.
+        URL url;
+        with (url) {
+            scheme = "https";
+            host = "example.org";
+            path = "/f☃o";
+            queryParams.add("❄", "❀");
+            queryParams.add("[", "]");
+            fragment = "ş";
+        }
+        assert(
+                // Not sure what order it'll come out in.
+                url.toString == "https://example.org/f%E2%98%83o?%E2%9D%84=%E2%9D%80&%5B=%5D#%C5%9F" ||
+                url.toString == "https://example.org/f%E2%98%83o?%5B=%5D&%E2%9D%84=%E2%9D%80#%C5%9F",
+                url.toString);
+    }
+    {
+        // Port, user, pass.
+        URL url;
+        with (url) {
+            scheme = "https";
+            host = "example.org";
+            user = "dhasenan";
+            pass = "itsasecret";
+            port = 17;
+        }
+        assert(
+                url.toString == "https://dhasenan:itsasecret@example.org:17/",
+                url.toString);
+    }
+    {
+        // Query with no path.
+        URL url;
+        with (url) {
+            scheme = "https";
+            host = "example.org";
+            queryParams.add("hi", "bye");
+        }
+        assert(
+                url.toString == "https://example.org/?hi=bye",
+                url.toString);
+    }
 }
 
 unittest {
-	// Percent decoding.
+    // Percent decoding.
 
-	// http://#:!:@
-	auto urlString = "http://%23:%21%3A@example.org/%7B/%7D?%3B&%26=%3D#%23hash";
-	auto url = urlString.parseURL;
-	assert(url.user == "#");
-	assert(url.pass == "!:");
-	assert(url.host == "example.org");
-	assert(url.path == "/{/}");
-	assert(url.queryParams[";"].front == "");
-	assert(url.queryParams["&"].front == "=");
-	assert(url.fragment == "#hash");
+    // http://#:!:@
+    auto urlString = "http://%23:%21%3A@example.org/%7B/%7D?%3B&%26=%3D#%23hash";
+    auto url = urlString.parseURL;
+    assert(url.user == "#");
+    assert(url.pass == "!:");
+    assert(url.host == "example.org");
+    assert(url.path == "/{/}");
+    assert(url.queryParams[";"].front == "");
+    assert(url.queryParams["&"].front == "=");
+    assert(url.fragment == "#hash");
 
-	// Round trip.
-	assert(urlString == urlString.parseURL.toString, urlString.parseURL.toString);
-	assert(urlString == urlString.parseURL.toString.parseURL.toString);
+    // Round trip.
+    assert(urlString == urlString.parseURL.toString, urlString.parseURL.toString);
+    assert(urlString == urlString.parseURL.toString.parseURL.toString);
 }
 
 unittest {
-	auto url = "https://xn--m3h.xn--n3h.org/?hi=bye".parseURL;
-	assert(url.host == "☂.☃.org", url.host);
+    auto url = "https://xn--m3h.xn--n3h.org/?hi=bye".parseURL;
+    assert(url.host == "☂.☃.org", url.host);
 }
 
 unittest {
-	auto url = "https://xn--m3h.xn--n3h.org/?hi=bye".parseURL;
-	assert(url.toString == "https://xn--m3h.xn--n3h.org/?hi=bye", url.toString);
-	assert(url.toHumanReadableString == "https://☂.☃.org/?hi=bye", url.toString);
+    auto url = "https://xn--m3h.xn--n3h.org/?hi=bye".parseURL;
+    assert(url.toString == "https://xn--m3h.xn--n3h.org/?hi=bye", url.toString);
+    assert(url.toHumanReadableString == "https://☂.☃.org/?hi=bye", url.toString);
 }
 
 unittest {
-	auto url = "https://☂.☃.org/?hi=bye".parseURL;
-	assert(url.toString == "https://xn--m3h.xn--n3h.org/?hi=bye");
+    auto url = "https://☂.☃.org/?hi=bye".parseURL;
+    assert(url.toString == "https://xn--m3h.xn--n3h.org/?hi=bye");
 }
 
 ///
 unittest {
-	// There's an existing path.
-	auto url = parseURL("http://example.org/foo");
-	URL url2;
-	// No slash? Assume it needs a slash.
-	assert((url ~ "bar").toString == "http://example.org/foo/bar");
-	// With slash? Don't add another.
-	url2 = url ~ "/bar";
-	assert(url2.toString == "http://example.org/foo/bar", url2.toString);
-	url ~= "bar";
-	assert(url.toString == "http://example.org/foo/bar");
+    // There's an existing path.
+    auto url = parseURL("http://example.org/foo");
+    URL url2;
+    // No slash? Assume it needs a slash.
+    assert((url ~ "bar").toString == "http://example.org/foo/bar");
+    // With slash? Don't add another.
+    url2 = url ~ "/bar";
+    assert(url2.toString == "http://example.org/foo/bar", url2.toString);
+    url ~= "bar";
+    assert(url.toString == "http://example.org/foo/bar");
 
-	// Path already ends with a slash; don't add another.
-	url = parseURL("http://example.org/foo/");
-	assert((url ~ "bar").toString == "http://example.org/foo/bar");
-	// Still don't add one even if you're appending with a slash.
-	assert((url ~ "/bar").toString == "http://example.org/foo/bar");
-	url ~= "/bar";
-	assert(url.toString == "http://example.org/foo/bar");
+    // Path already ends with a slash; don't add another.
+    url = parseURL("http://example.org/foo/");
+    assert((url ~ "bar").toString == "http://example.org/foo/bar");
+    // Still don't add one even if you're appending with a slash.
+    assert((url ~ "/bar").toString == "http://example.org/foo/bar");
+    url ~= "/bar";
+    assert(url.toString == "http://example.org/foo/bar");
 
-	// No path.
-	url = parseURL("http://example.org");
-	assert((url ~ "bar").toString == "http://example.org/bar");
-	assert((url ~ "/bar").toString == "http://example.org/bar");
-	url ~= "bar";
-	assert(url.toString == "http://example.org/bar");
+    // No path.
+    url = parseURL("http://example.org");
+    assert((url ~ "bar").toString == "http://example.org/bar");
+    assert((url ~ "/bar").toString == "http://example.org/bar");
+    url ~= "bar";
+    assert(url.toString == "http://example.org/bar");
 
-	// Path is just a slash.
-	url = parseURL("http://example.org/");
-	assert((url ~ "bar").toString == "http://example.org/bar");
-	assert((url ~ "/bar").toString == "http://example.org/bar");
-	url ~= "bar";
-	assert(url.toString == "http://example.org/bar", url.toString);
+    // Path is just a slash.
+    url = parseURL("http://example.org/");
+    assert((url ~ "bar").toString == "http://example.org/bar");
+    assert((url ~ "/bar").toString == "http://example.org/bar");
+    url ~= "bar";
+    assert(url.toString == "http://example.org/bar", url.toString);
 
-	// No path, just fragment.
-	url = "ircs://irc.freenode.com/#d".parseURL;
-	assert(url.toString == "ircs://irc.freenode.com/#d", url.toString);
+    // No path, just fragment.
+    url = "ircs://irc.freenode.com/#d".parseURL;
+    assert(url.toString == "ircs://irc.freenode.com/#d", url.toString);
 }
 
 unittest {
-	import std.net.curl;
-	auto url = "http://example.org".parseURL;
-	assert(is(typeof(std.net.curl.get(url))));
+    import std.net.curl;
+    auto url = "http://example.org".parseURL;
+    assert(is(typeof(std.net.curl.get(url))));
 }
 
 /**
@@ -752,125 +752,125 @@ unittest {
  *   URLException if the string was in an incorrect format.
  */
 URL parseURL(string value) {
-	URL url;
-	if (tryParseURL(value, url)) {
-		return url;
-	}
-	throw new URLException("failed to parse URL " ~ value);
+    URL url;
+    if (tryParseURL(value, url)) {
+        return url;
+    }
+    throw new URLException("failed to parse URL " ~ value);
 }
 
 ///
 unittest {
-	{
-		// Infer scheme
-		auto u1 = parseURL("example.org");
-		assert(u1.scheme == "http");
-		assert(u1.host == "example.org");
-		assert(u1.path == "");
-		assert(u1.port == 80);
-		assert(u1.providedPort == 0);
-		assert(u1.fragment == "");
-	}
-	{
-		// Simple host and scheme
-		auto u1 = parseURL("https://example.org");
-		assert(u1.scheme == "https");
-		assert(u1.host == "example.org");
-		assert(u1.path == "");
-		assert(u1.port == 443);
-		assert(u1.providedPort == 0);
-	}
-	{
-		// With path
-		auto u1 = parseURL("https://example.org/foo/bar");
-		assert(u1.scheme == "https");
-		assert(u1.host == "example.org");
-		assert(u1.path == "/foo/bar", "expected /foo/bar but got " ~ u1.path);
-		assert(u1.port == 443);
-		assert(u1.providedPort == 0);
-	}
-	{
-		// With explicit port
-		auto u1 = parseURL("https://example.org:1021/foo/bar");
-		assert(u1.scheme == "https");
-		assert(u1.host == "example.org");
-		assert(u1.path == "/foo/bar", "expected /foo/bar but got " ~ u1.path);
-		assert(u1.port == 1021);
-		assert(u1.providedPort == 1021);
-	}
-	{
-		// With user
-		auto u1 = parseURL("https://bob:secret@example.org/foo/bar");
-		assert(u1.scheme == "https");
-		assert(u1.host == "example.org");
-		assert(u1.path == "/foo/bar");
-		assert(u1.port == 443);
-		assert(u1.user == "bob");
-		assert(u1.pass == "secret");
-	}
-	{
-		// With user, URL-encoded
-		auto u1 = parseURL("https://bob%21:secret%21%3F@example.org/foo/bar");
-		assert(u1.scheme == "https");
-		assert(u1.host == "example.org");
-		assert(u1.path == "/foo/bar");
-		assert(u1.port == 443);
-		assert(u1.user == "bob!");
-		assert(u1.pass == "secret!?");
-	}
-	{
-		// With user and port and path
-		auto u1 = parseURL("https://bob:secret@example.org:2210/foo/bar");
-		assert(u1.scheme == "https");
-		assert(u1.host == "example.org");
-		assert(u1.path == "/foo/bar");
-		assert(u1.port == 2210);
-		assert(u1.user == "bob");
-		assert(u1.pass == "secret");
-		assert(u1.fragment == "");
-	}
-	{
-		// With query string
-		auto u1 = parseURL("https://example.org/?login=true");
-		assert(u1.scheme == "https");
-		assert(u1.host == "example.org");
-		assert(u1.path == "/", "expected path: / actual path: " ~ u1.path);
-		assert(u1.queryParams["login"].front == "true");
-		assert(u1.fragment == "");
-	}
-	{
-		// With query string and fragment
-		auto u1 = parseURL("https://example.org/?login=true#justkidding");
-		assert(u1.scheme == "https");
-		assert(u1.host == "example.org");
-		assert(u1.path == "/", "expected path: / actual path: " ~ u1.path);
-		assert(u1.queryParams["login"].front == "true");
-		assert(u1.fragment == "justkidding");
-	}
-	{
-		// With URL-encoded values
-		auto u1 = parseURL("https://example.org/%E2%98%83?%E2%9D%84=%3D#%5E");
-		assert(u1.scheme == "https");
-		assert(u1.host == "example.org");
-		assert(u1.path == "/☃", "expected path: /☃ actual path: " ~ u1.path);
-		assert(u1.queryParams["❄"].front == "=");
-		assert(u1.fragment == "^");
-	}
+    {
+        // Infer scheme
+        auto u1 = parseURL("example.org");
+        assert(u1.scheme == "http");
+        assert(u1.host == "example.org");
+        assert(u1.path == "");
+        assert(u1.port == 80);
+        assert(u1.providedPort == 0);
+        assert(u1.fragment == "");
+    }
+    {
+        // Simple host and scheme
+        auto u1 = parseURL("https://example.org");
+        assert(u1.scheme == "https");
+        assert(u1.host == "example.org");
+        assert(u1.path == "");
+        assert(u1.port == 443);
+        assert(u1.providedPort == 0);
+    }
+    {
+        // With path
+        auto u1 = parseURL("https://example.org/foo/bar");
+        assert(u1.scheme == "https");
+        assert(u1.host == "example.org");
+        assert(u1.path == "/foo/bar", "expected /foo/bar but got " ~ u1.path);
+        assert(u1.port == 443);
+        assert(u1.providedPort == 0);
+    }
+    {
+        // With explicit port
+        auto u1 = parseURL("https://example.org:1021/foo/bar");
+        assert(u1.scheme == "https");
+        assert(u1.host == "example.org");
+        assert(u1.path == "/foo/bar", "expected /foo/bar but got " ~ u1.path);
+        assert(u1.port == 1021);
+        assert(u1.providedPort == 1021);
+    }
+    {
+        // With user
+        auto u1 = parseURL("https://bob:secret@example.org/foo/bar");
+        assert(u1.scheme == "https");
+        assert(u1.host == "example.org");
+        assert(u1.path == "/foo/bar");
+        assert(u1.port == 443);
+        assert(u1.user == "bob");
+        assert(u1.pass == "secret");
+    }
+    {
+        // With user, URL-encoded
+        auto u1 = parseURL("https://bob%21:secret%21%3F@example.org/foo/bar");
+        assert(u1.scheme == "https");
+        assert(u1.host == "example.org");
+        assert(u1.path == "/foo/bar");
+        assert(u1.port == 443);
+        assert(u1.user == "bob!");
+        assert(u1.pass == "secret!?");
+    }
+    {
+        // With user and port and path
+        auto u1 = parseURL("https://bob:secret@example.org:2210/foo/bar");
+        assert(u1.scheme == "https");
+        assert(u1.host == "example.org");
+        assert(u1.path == "/foo/bar");
+        assert(u1.port == 2210);
+        assert(u1.user == "bob");
+        assert(u1.pass == "secret");
+        assert(u1.fragment == "");
+    }
+    {
+        // With query string
+        auto u1 = parseURL("https://example.org/?login=true");
+        assert(u1.scheme == "https");
+        assert(u1.host == "example.org");
+        assert(u1.path == "/", "expected path: / actual path: " ~ u1.path);
+        assert(u1.queryParams["login"].front == "true");
+        assert(u1.fragment == "");
+    }
+    {
+        // With query string and fragment
+        auto u1 = parseURL("https://example.org/?login=true#justkidding");
+        assert(u1.scheme == "https");
+        assert(u1.host == "example.org");
+        assert(u1.path == "/", "expected path: / actual path: " ~ u1.path);
+        assert(u1.queryParams["login"].front == "true");
+        assert(u1.fragment == "justkidding");
+    }
+    {
+        // With URL-encoded values
+        auto u1 = parseURL("https://example.org/%E2%98%83?%E2%9D%84=%3D#%5E");
+        assert(u1.scheme == "https");
+        assert(u1.host == "example.org");
+        assert(u1.path == "/☃", "expected path: /☃ actual path: " ~ u1.path);
+        assert(u1.queryParams["❄"].front == "=");
+        assert(u1.fragment == "^");
+    }
 }
 
 unittest {
-	assert(parseURL("http://example.org").port == 80);
-	assert(parseURL("http://example.org:5326").port == 5326);
+    assert(parseURL("http://example.org").port == 80);
+    assert(parseURL("http://example.org:5326").port == 5326);
 
-	auto url = parseURL("redis://admin:password@redisbox.local:2201/path?query=value#fragment");
-	assert(url.scheme == "redis");
-	assert(url.user == "admin");
-	assert(url.pass == "password");
+    auto url = parseURL("redis://admin:password@redisbox.local:2201/path?query=value#fragment");
+    assert(url.scheme == "redis");
+    assert(url.user == "admin");
+    assert(url.pass == "password");
 
-	assert(parseURL("example.org").toString == "http://example.org/");
-	assert(parseURL("http://example.org:80").toString == "http://example.org/");
+    assert(parseURL("example.org").toString == "http://example.org/");
+    assert(parseURL("http://example.org:80").toString == "http://example.org/");
 
-	assert(parseURL("localhost:8070").toString == "http://localhost:8070/");
+    assert(parseURL("localhost:8070").toString == "http://localhost:8070/");
 }
 
 /**
@@ -881,43 +881,43 @@ unittest {
  * everything else, there is percent encoding.
  */
 string percentEncode(string raw) {
-	// We *must* encode these characters: :/?#[]@!$&'()*+,;="
-	// We *can* encode any other characters.
-	// We *should not* encode alpha, numeric, or -._~.
-	Appender!string app;
-	foreach (dchar d; raw) {
-		if (('a' <= d && 'z' >= d) ||
-				('A' <= d && 'Z' >= d) ||
-				('0' <= d && '9' >= d) ||
-				d == '-' || d == '.' || d == '_' || d == '~') {
-			app ~= d;
-			continue;
-		}
-		// Something simple like a space character? Still in 7-bit ASCII?
-		// Then we get a single-character string out of it and just encode
-		// that one bit.
-		// Something not in 7-bit ASCII? Then we percent-encode each octet
-		// in the UTF-8 encoding (and hope the server understands UTF-8).
-		char[] c;
-		encode(c, d);
-		auto bytes = cast(ubyte[])c;
-		foreach (b; bytes) {
-			app ~= format("%%%02X", b);
-		}
-	}
-	return cast(string)app.data;
+    // We *must* encode these characters: :/?#[]@!$&'()*+,;="
+    // We *can* encode any other characters.
+    // We *should not* encode alpha, numeric, or -._~.
+    Appender!string app;
+    foreach (dchar d; raw) {
+        if (('a' <= d && 'z' >= d) ||
+                ('A' <= d && 'Z' >= d) ||
+                ('0' <= d && '9' >= d) ||
+                d == '-' || d == '.' || d == '_' || d == '~') {
+            app ~= d;
+            continue;
+        }
+        // Something simple like a space character? Still in 7-bit ASCII?
+        // Then we get a single-character string out of it and just encode
+        // that one bit.
+        // Something not in 7-bit ASCII? Then we percent-encode each octet
+        // in the UTF-8 encoding (and hope the server understands UTF-8).
+        char[] c;
+        encode(c, d);
+        auto bytes = cast(ubyte[])c;
+        foreach (b; bytes) {
+            app ~= format("%%%02X", b);
+        }
+    }
+    return cast(string)app.data;
 }
 
 ///
 unittest {
-	assert(percentEncode("IDontNeedNoPercentEncoding") == "IDontNeedNoPercentEncoding");
-	assert(percentEncode("~~--..__") == "~~--..__");
-	assert(percentEncode("0123456789") == "0123456789");
+    assert(percentEncode("IDontNeedNoPercentEncoding") == "IDontNeedNoPercentEncoding");
+    assert(percentEncode("~~--..__") == "~~--..__");
+    assert(percentEncode("0123456789") == "0123456789");
 
-	string e;
+    string e;
 
-	e = percentEncode("☃");
-	assert(e == "%E2%98%83", "expected %E2%98%83 but got" ~ e);
+    e = percentEncode("☃");
+    assert(e == "%E2%98%83", "expected %E2%98%83 but got" ~ e);
 }
 
 /**
@@ -930,28 +930,28 @@ unittest {
  * This explicitly ensures that the result is a valid UTF-8 string.
  */
 @trusted string percentDecode(string encoded) {
-	ubyte[] raw = percentDecodeRaw(encoded);
-	// This cast is not considered @safe because it converts from one pointer type to another.
-	// However, it's 1-byte values in either case, no reference types, so this won't result in any
-	// memory safety errors. We also check for validity immediately.
-	auto s = cast(string) raw;
-	if (!s.isValid) {
-		// TODO(dhasenan): 
-		throw new URLException("input contains invalid UTF data");
-	}
-	return s;
+    ubyte[] raw = percentDecodeRaw(encoded);
+    // This cast is not considered @safe because it converts from one pointer type to another.
+    // However, it's 1-byte values in either case, no reference types, so this won't result in any
+    // memory safety errors. We also check for validity immediately.
+    auto s = cast(string) raw;
+    if (!s.isValid) {
+        // TODO(dhasenan): 
+        throw new URLException("input contains invalid UTF data");
+    }
+    return s;
 }
 
 ///
 unittest {
-	assert(percentDecode("IDontNeedNoPercentDecoding") == "IDontNeedNoPercentDecoding");
-	assert(percentDecode("~~--..__") == "~~--..__");
-	assert(percentDecode("0123456789") == "0123456789");
+    assert(percentDecode("IDontNeedNoPercentDecoding") == "IDontNeedNoPercentDecoding");
+    assert(percentDecode("~~--..__") == "~~--..__");
+    assert(percentDecode("0123456789") == "0123456789");
 
-	string e;
+    string e;
 
-	e = percentDecode("%E2%98%83");
-	assert(e == "☃", "expected a snowman but got" ~ e);
+    e = percentDecode("%E2%98%83");
+    assert(e == "☃", "expected a snowman but got" ~ e);
 }
 
 /**
@@ -965,75 +965,75 @@ unittest {
  * formatted input string will result in a URLException.
  */
 ubyte[] percentDecodeRaw(string encoded) {
-	// We're dealing with possibly incorrectly encoded UTF-8. Mark it down as ubyte[] for now.
-	Appender!(ubyte[]) app;
-	for (int i = 0; i < encoded.length; i++) {
-		if (encoded[i] != '%') {
-			app ~= encoded[i];
-			continue;
-		}
-		if (i >= encoded.length - 2) {
-			throw new URLException("Invalid percent encoded value: expected two characters after " ~
-					"percent symbol. Error at index " ~ i.to!string);
-		}
-		auto b = cast(ubyte)("0123456789ABCDEF".indexOf(encoded[i + 1]));
-		auto c = cast(ubyte)("0123456789ABCDEF".indexOf(encoded[i + 2]));
-		app ~= cast(ubyte)((b << 4) | c);
-		i += 2;
-	}
-	return app.data;
+    // We're dealing with possibly incorrectly encoded UTF-8. Mark it down as ubyte[] for now.
+    Appender!(ubyte[]) app;
+    for (int i = 0; i < encoded.length; i++) {
+        if (encoded[i] != '%') {
+            app ~= encoded[i];
+            continue;
+        }
+        if (i >= encoded.length - 2) {
+            throw new URLException("Invalid percent encoded value: expected two characters after " ~
+                    "percent symbol. Error at index " ~ i.to!string);
+        }
+        auto b = cast(ubyte)("0123456789ABCDEF".indexOf(encoded[i + 1]));
+        auto c = cast(ubyte)("0123456789ABCDEF".indexOf(encoded[i + 2]));
+        app ~= cast(ubyte)((b << 4) | c);
+        i += 2;
+    }
+    return app.data;
 }
 
 private string toPuny(string unicodeHostname) {
-	bool mustEncode = false;
-	foreach (i, dchar d; unicodeHostname) {
-		auto c = cast(uint) d;
-		if (c > 0x80) {
-			mustEncode = true;
-			break;
-		}
-		if (c < 0x2C || (c >= 0x3A && c <= 40) || (c >= 0x5B && c <= 0x60) || (c >= 0x7B)) {
-			throw new URLException(
-					format(
-						"domain name '%s' contains illegal character '%s' at position %s",
-						unicodeHostname, d, i));
-		}
-	}
-	if (!mustEncode) {
-		return unicodeHostname;
-	}
-	return unicodeHostname.split('.').map!punyEncode.join(".");
+    bool mustEncode = false;
+    foreach (i, dchar d; unicodeHostname) {
+        auto c = cast(uint) d;
+        if (c > 0x80) {
+            mustEncode = true;
+            break;
+        }
+        if (c < 0x2C || (c >= 0x3A && c <= 40) || (c >= 0x5B && c <= 0x60) || (c >= 0x7B)) {
+            throw new URLException(
+                    format(
+                        "domain name '%s' contains illegal character '%s' at position %s",
+                        unicodeHostname, d, i));
+        }
+    }
+    if (!mustEncode) {
+        return unicodeHostname;
+    }
+    return unicodeHostname.split('.').map!punyEncode.join(".");
 }
 
 private string fromPuny(string hostname) {
-	return hostname.split('.').map!punyDecode.join(".");
+    return hostname.split('.').map!punyDecode.join(".");
 }
 
 private {
-	enum delimiter = '-';
-	enum marker = "xn--";
-	enum ulong damp = 700;
-	enum ulong tmin = 1;
-	enum ulong tmax = 26;
-	enum ulong skew = 38;
-	enum ulong base = 36;
-	enum ulong initialBias = 72;
-	enum dchar initialN = cast(dchar)128;
+    enum delimiter = '-';
+    enum marker = "xn--";
+    enum ulong damp = 700;
+    enum ulong tmin = 1;
+    enum ulong tmax = 26;
+    enum ulong skew = 38;
+    enum ulong base = 36;
+    enum ulong initialBias = 72;
+    enum dchar initialN = cast(dchar)128;
 
-	ulong adapt(ulong delta, ulong numPoints, bool firstTime) {
-		if (firstTime) {
-			delta /= damp;
-		} else {
-			delta /= 2;
-		}
-		delta += delta / numPoints;
-		ulong k = 0;
-		while (delta > ((base - tmin) * tmax) / 2) {
-			delta /= (base - tmin);
-			k += base;
-		}
-		return k + (((base - tmin + 1) * delta) / (delta + skew));
-	}
+    ulong adapt(ulong delta, ulong numPoints, bool firstTime) {
+        if (firstTime) {
+            delta /= damp;
+        } else {
+            delta /= 2;
+        }
+        delta += delta / numPoints;
+        ulong k = 0;
+        while (delta > ((base - tmin) * tmax) / 2) {
+            delta /= (base - tmin);
+            k += base;
+        }
+        return k + (((base - tmin + 1) * delta) / (delta + skew));
+    }
 }
 
 /**
@@ -1051,80 +1051,80 @@ private {
  * ---
  */
 string punyEncode(string input) {
-	ulong delta = 0;
-	dchar n = initialN;
-	auto i = 0;
-	auto bias = initialBias;
-	Appender!string output;
-	output ~= marker;
-	auto pushed = 0;
-	auto codePoints = 0;
-	foreach (dchar c; input) {
-		codePoints++;
-		if (c <= initialN) {
-			output ~= c;
-			pushed++;
-		}
-	}
-	if (pushed < codePoints) {
-		if (pushed > 0) {
-			output ~= delimiter;
-		}
-	} else {
-		// No encoding to do.
-		return input;
-	}
-	bool first = true;
-	while (pushed < codePoints) {
-		auto best = dchar.max;
-		foreach (dchar c; input) {
-			if (n <= c && c < best) {
-				best = c;
-			}
-		}
-		if (best == dchar.max) {
-			throw new URLException("failed to find a new codepoint to process during punyencode");
-		}
-		delta += (best - n) * (pushed + 1);
-		if (delta > uint.max) {
-			// TODO better error message
-			throw new URLException("overflow during punyencode");
-		}
-		n = best;
-		foreach (dchar c; input) {
-			if (c < n) {
-				delta++;
-			}
-			if (c == n) {
-				ulong q = delta;
-				auto k = base;
-				while (true) {
-					ulong t;
-					if (k <= bias) {
-						t = tmin;
-					} else if (k >= bias + tmax) {
-						t = tmax;
-					} else {
-						t = k - bias;
-					}
-					if (q < t) {
-						break;
-					}
-					output ~= digitToBasic(t + ((q - t) % (base - t)));
-					q = (q - t) / (base - t);
-					k += base;
-				}
-				output ~= digitToBasic(q);
-				pushed++;
-				bias = adapt(delta, pushed, first);
-				first = false;
-				delta = 0;
-			}
-		}
-		delta++;
-		n++;
-	}
-	return cast(string)output.data;
+    ulong delta = 0;
+    dchar n = initialN;
+    auto i = 0;
+    auto bias = initialBias;
+    Appender!string output;
+    output ~= marker;
+    auto pushed = 0;
+    auto codePoints = 0;
+    foreach (dchar c; input) {
+        codePoints++;
+        if (c <= initialN) {
+            output ~= c;
+            pushed++;
+        }
+    }
+    if (pushed < codePoints) {
+        if (pushed > 0) {
+            output ~= delimiter;
+        }
+    } else {
+        // No encoding to do.
+        return input;
+    }
+    bool first = true;
+    while (pushed < codePoints) {
+        auto best = dchar.max;
+        foreach (dchar c; input) {
+            if (n <= c && c < best) {
+                best = c;
+            }
+        }
+        if (best == dchar.max) {
+            throw new URLException("failed to find a new codepoint to process during punyencode");
+        }
+        delta += (best - n) * (pushed + 1);
+        if (delta > uint.max) {
+            // TODO better error message
+            throw new URLException("overflow during punyencode");
+        }
+        n = best;
+        foreach (dchar c; input) {
+            if (c < n) {
+                delta++;
+            }
+            if (c == n) {
+                ulong q = delta;
+                auto k = base;
+                while (true) {
+                    ulong t;
+                    if (k <= bias) {
+                        t = tmin;
+                    } else if (k >= bias + tmax) {
+                        t = tmax;
+                    } else {
+                        t = k - bias;
+                    }
+                    if (q < t) {
+                        break;
+                    }
+                    output ~= digitToBasic(t + ((q - t) % (base - t)));
+                    q = (q - t) / (base - t);
+                    k += base;
+                }
+                output ~= digitToBasic(q);
+                pushed++;
+                bias = adapt(delta, pushed, first);
+                first = false;
+                delta = 0;
+            }
+        }
+        delta++;
+        n++;
+    }
+    return cast(string)output.data;
 }
 
 /**
@@ -1142,157 +1142,157 @@ string punyEncode(string input) {
  * ---
  */
 string punyDecode(string input) {
-	if (!input.startsWith(marker)) {
-		return input;
-	}
-	input = input[marker.length..$];
+    if (!input.startsWith(marker)) {
+        return input;
+    }
+    input = input[marker.length..$];
 
-	// let n = initial_n
-	dchar n = cast(dchar)128;
+    // let n = initial_n
+    dchar n = cast(dchar)128;
 
-	// let i = 0
-	// let bias = initial_bias
-	// let output = an empty string indexed from 0
-	size_t i = 0;
-	auto bias = initialBias;
-	dchar[] output;
-	// This reserves a bit more than necessary, but it should be more efficient overall than just
-	// appending and inserting volo-nolo.
-	output.reserve(input.length);
+    // let i = 0
+    // let bias = initial_bias
+    // let output = an empty string indexed from 0
+    size_t i = 0;
+    auto bias = initialBias;
+    dchar[] output;
+    // This reserves a bit more than necessary, but it should be more efficient overall than just
+    // appending and inserting volo-nolo.
+    output.reserve(input.length);
 
-	// consume all code points before the last delimiter (if there is one)
-	//   and copy them to output, fail on any non-basic code point
-	// if more than zero code points were consumed then consume one more
-	//   (which will be the last delimiter)
-	auto end = input.lastIndexOf(delimiter);
-	if (end > -1) {
-		foreach (dchar c; input[0..end]) {
-			output ~= c;
-		}
-		input = input[end+1 .. $];
-	}
+    // consume all code points before the last delimiter (if there is one)
+    //   and copy them to output, fail on any non-basic code point
+    // if more than zero code points were consumed then consume one more
+    //   (which will be the last delimiter)
+    auto end = input.lastIndexOf(delimiter);
+    if (end > -1) {
+        foreach (dchar c; input[0..end]) {
+            output ~= c;
+        }
+        input = input[end+1 .. $];
+    }
 
-	// while the input is not exhausted do begin
-	size_t pos = 0;
-	while (pos < input.length) {
-		//   let oldi = i
-		//   let w = 1
-		auto oldi = i;
-		auto w = 1;
-		//   for k = base to infinity in steps of base do begin
-		for (ulong k = base; k < uint.max; k += base) {
-			//     consume a code point, or fail if there was none to consume
-			// Note that the input is all ASCII, so we can simply index the input string bytewise.
-			auto c = input[pos];
-			pos++;
-			//     let digit = the code point's digit-value, fail if it has none
-			auto digit = basicToDigit(c);
-			//     let i = i + digit * w, fail on overflow
-			i += digit * w;
-			//     let t = tmin if k <= bias {+ tmin}, or
-			//             tmax if k >= bias + tmax, or k - bias otherwise
-			ulong t;
-			if (k <= bias) {
-				t = tmin;
-			} else if (k >= bias + tmax) {
-				t = tmax;
-			} else {
-				t = k - bias;
-			}
-			//     if digit < t then break
-			if (digit < t) {
-				break;
-			}
-			//     let w = w * (base - t), fail on overflow
-			w *= (base - t);
-			//   end
-		}
-		//   let bias = adapt(i - oldi, length(output) + 1, test oldi is 0?)
-		bias = adapt(i - oldi, output.length + 1, oldi == 0);
-		//   let n = n + i div (length(output) + 1), fail on overflow
-		n += i / (output.length + 1);
-		//   let i = i mod (length(output) + 1)
-		i %= (output.length + 1);
-		//   {if n is a basic code point then fail}
-		// (We aren't actually going to fail here; it's clear what this means.)
-		//   insert n into output at position i
-		(() @trusted { output.insertInPlace(i, cast(dchar)n); })();  // should be @safe but isn't marked
-		//   increment i
-		i++;
-		// end
-	}
-	return output.to!string;
+    // while the input is not exhausted do begin
+    size_t pos = 0;
+    while (pos < input.length) {
+        //   let oldi = i
+        //   let w = 1
+        auto oldi = i;
+        auto w = 1;
+        //   for k = base to infinity in steps of base do begin
+        for (ulong k = base; k < uint.max; k += base) {
+            //     consume a code point, or fail if there was none to consume
+            // Note that the input is all ASCII, so we can simply index the input string bytewise.
+            auto c = input[pos];
+            pos++;
+            //     let digit = the code point's digit-value, fail if it has none
+            auto digit = basicToDigit(c);
+            //     let i = i + digit * w, fail on overflow
+            i += digit * w;
+            //     let t = tmin if k <= bias {+ tmin}, or
+            //             tmax if k >= bias + tmax, or k - bias otherwise
+            ulong t;
+            if (k <= bias) {
+                t = tmin;
+            } else if (k >= bias + tmax) {
+                t = tmax;
+            } else {
+                t = k - bias;
+            }
+            //     if digit < t then break
+            if (digit < t) {
+                break;
+            }
+            //     let w = w * (base - t), fail on overflow
+            w *= (base - t);
+            //   end
+        }
+        //   let bias = adapt(i - oldi, length(output) + 1, test oldi is 0?)
+        bias = adapt(i - oldi, output.length + 1, oldi == 0);
+        //   let n = n + i div (length(output) + 1), fail on overflow
+        n += i / (output.length + 1);
+        //   let i = i mod (length(output) + 1)
+        i %= (output.length + 1);
+        //   {if n is a basic code point then fail}
+        // (We aren't actually going to fail here; it's clear what this means.)
+        //   insert n into output at position i
+        (() @trusted { output.insertInPlace(i, cast(dchar)n); })();  // should be @safe but isn't marked
+        //   increment i
+        i++;
+        // end
+    }
+    return output.to!string;
 }
 
 // Lifted from punycode.js.
 private dchar digitToBasic(ulong digit) {
-	return cast(dchar)(digit + 22 + 75 * (digit < 26));
+    return cast(dchar)(digit + 22 + 75 * (digit < 26));
 }
 
 // Lifted from punycode.js.
 private uint basicToDigit(char c) {
-	auto codePoint = cast(uint)c;
-	if (codePoint - 48 < 10) {
-		return codePoint - 22;
-	}
-	if (codePoint - 65 < 26) {
-		return codePoint - 65;
-	}
-	if (codePoint - 97 < 26) {
-		return codePoint - 97;
-	}
-	return base;
+    auto codePoint = cast(uint)c;
+    if (codePoint - 48 < 10) {
+        return codePoint - 22;
+    }
+    if (codePoint - 65 < 26) {
+        return codePoint - 65;
+    }
+    if (codePoint - 97 < 26) {
+        return codePoint - 97;
+    }
+    return base;
 }
 
 unittest {
-	{
-		auto a = "b\u00FCcher";
-		assert(punyEncode(a) == "xn--bcher-kva");
-	}
-	{
-		auto a = "b\u00FCc\u00FCher";
-		assert(punyEncode(a) == "xn--bcher-kvab");
-	}
-	{
-		auto a = "ýbücher";
-		auto b = punyEncode(a);
-		assert(b == "xn--bcher-kvaf", b);
-	}
+    {
+        auto a = "b\u00FCcher";
+        assert(punyEncode(a) == "xn--bcher-kva");
+    }
+    {
+        auto a = "b\u00FCc\u00FCher";
+        assert(punyEncode(a) == "xn--bcher-kvab");
+    }
+    {
+        auto a = "ýbücher";
+        auto b = punyEncode(a);
+        assert(b == "xn--bcher-kvaf", b);
+    }
 
-	{
-		auto a = "mañana";
-		assert(punyEncode(a) == "xn--maana-pta");
-	}
+    {
+        auto a = "mañana";
+        assert(punyEncode(a) == "xn--maana-pta");
+    }
 
-	{
-		auto a = "\u0644\u064A\u0647\u0645\u0627\u0628\u062A\u0643\u0644"
-			~ "\u0645\u0648\u0634\u0639\u0631\u0628\u064A\u061F";
-		auto b = punyEncode(a);
-		assert(b == "xn--egbpdaj6bu4bxfgehfvwxn", b);
-	}
-	import std.stdio;
+    {
+        auto a = "\u0644\u064A\u0647\u0645\u0627\u0628\u062A\u0643\u0644"
+            ~ "\u0645\u0648\u0634\u0639\u0631\u0628\u064A\u061F";
+        auto b = punyEncode(a);
+        assert(b == "xn--egbpdaj6bu4bxfgehfvwxn", b);
+    }
+    import std.stdio;
 }
 
 unittest {
-	{
-		auto b = punyDecode("xn--egbpdaj6bu4bxfgehfvwxn");
-		assert(b == "ليهمابتكلموشعربي؟", b);
-	}
-	{
-		assert(punyDecode("xn--maana-pta") == "mañana");
-	}
+    {
+        auto b = punyDecode("xn--egbpdaj6bu4bxfgehfvwxn");
+        assert(b == "ليهمابتكلموشعربي؟", b);
+    }
+    {
+        assert(punyDecode("xn--maana-pta") == "mañana");
+    }
 }
 
 unittest {
-	import std.string, std.algorithm, std.array, std.range;
-	{
-		auto domain = "xn--m3h.xn--n3h.com";
-		auto decodedDomain = domain.splitter(".").map!(punyDecode).join(".");
-		assert(decodedDomain == "☂.☃.com", decodedDomain);
-	}
-	{
-		auto domain = "☂.☃.com";
-		auto decodedDomain = domain.splitter(".").map!(punyEncode).join(".");
-		assert(decodedDomain == "xn--m3h.xn--n3h.com", decodedDomain);
-	}
+    import std.string, std.algorithm, std.array, std.range;
+    {
+        auto domain = "xn--m3h.xn--n3h.com";
+        auto decodedDomain = domain.splitter(".").map!(punyDecode).join(".");
+        assert(decodedDomain == "☂.☃.com", decodedDomain);
+    }
+    {
+        auto domain = "☂.☃.com";
+        auto decodedDomain = domain.splitter(".").map!(punyEncode).join(".");
+        assert(decodedDomain == "xn--m3h.xn--n3h.com", decodedDomain);
+    }
 }

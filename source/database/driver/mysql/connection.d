@@ -70,24 +70,24 @@ class MysqlConnection : Connection
         auto v = toCstring(sql);
         int result = mysql_query(mysql, v);
         
-		if(result != 0)
-			throw new DatabaseException("SQL : " ~ sql ~" \rDB status : "~ result.to!string ~" \rEXECUTE ERROR :" ~ error());
+        if(result != 0)
+            throw new DatabaseException("SQL : " ~ sql ~" \rDB status : "~ result.to!string ~" \rEXECUTE ERROR :" ~ error());
 
-		return result;
+        return result;
     }
 
-	void begin()
-	{
-		execute("begin");
-	}
-	void rollback()
-	{
-		execute("rollback");
-	}
-	void commit()
-	{
-		execute("commit");
-	}
+    void begin()
+    {
+        execute("begin");
+    }
+    void rollback()
+    {
+        execute("rollback");
+    }
+    void commit()
+    {
+        execute("commit");
+    }
 
     string clientInfo()
     {

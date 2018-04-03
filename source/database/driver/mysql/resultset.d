@@ -50,14 +50,14 @@ class MysqlResult : ResultSet
     }
 
     int rows()
-	{
+    {
         if(result is null)return 0;
         if(!_rows)_rows = cast(int) mysql_num_rows(result);
         return _rows;
     }
 
     int columns()
-	{
+    {
         if(result is null)return 0;
         if(!_columns)_columns = cast(int) mysql_num_fields(result);
         return _columns;
