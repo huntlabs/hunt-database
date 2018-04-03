@@ -25,68 +25,68 @@ import database.driver.dialect;
 
 class Database
 {
-	Pool _pool;
-	DatabaseOption _options;
-	Factory _factory;
+    Pool _pool;
+    DatabaseOption _options;
+    Factory _factory;
 
-	this(string url)
-	{
-		this._options = new DatabaseOption(url);
-		initObjects();
-	}
+    this(string url)
+    {
+        this._options = new DatabaseOption(url);
+        initObjects();
+    }
 
-	this(DatabaseOption options)
-	{
-		this._options = options;
-		initObjects();
-	}
+    this(DatabaseOption options)
+    {
+        this._options = options;
+        initObjects();
+    }
 
-	private void initObjects()
-	{
-		_factory = new Factory(this._options.url.scheme);
-		_pool = new Pool(this._options, _factory);
-	}
+    private void initObjects()
+    {
+        _factory = new Factory(this._options.url.scheme);
+        _pool = new Pool(this._options, _factory);
+    }
 
-	Transaction beginTransaction()
-	{
-		Connection conn = _pool.getConnection();
-		Transaction tran = new Transaction(_pool, conn);
-		tran.begin();
-		return tran;
-	}
+    Transaction beginTransaction()
+    {
+        Connection conn = _pool.getConnection();
+        Transaction tran = new Transaction(_pool, conn);
+        tran.begin();
+        return tran;
+    }
 
-	int error()
-	{
-		return 0;
-	}
+    int error()
+    {
+        return 0;
+    }
 
-	int execute(string sql)
-	{
-		return new Statement(_pool, sql).execute();
-	}
+    int execute(string sql)
+    {
+        return new Statement(_pool, sql).execute();
+    }
 
-	ResultSet query(string sql)
-	{
-		return (new Statement(_pool, sql)).query();
-	}
+    ResultSet query(string sql)
+    {
+        return (new Statement(_pool, sql)).query();
+    }
 
-	Statement prepare(string sql)
-	{
-		return new Statement(_pool, sql);
-	}
+    Statement prepare(string sql)
+    {
+        return new Statement(_pool, sql);
+    }
 
-	void close()
-	{
-		_pool.close();	
-	}
+    void close()
+    {
+        _pool.close();    
+    }
 
-	SqlBuilder createSqlBuilder()
-	{
-		return this._factory.createSqlBuilder();
-	}
+    SqlBuilder createSqlBuilder()
+    {
+        return this._factory.createSqlBuilder();
+    }
 
-	Dialect createDialect()
-	{
-		return this._factory.createDialect();
-	}
+    Dialect createDialect()
+    {
+        return this._factory.createDialect();
+    }
 }
