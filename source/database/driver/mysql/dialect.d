@@ -1,12 +1,15 @@
 module database.driver.mysql.dialect;
 
-import database;
+import std.conv : to;
+
+public import database.driver.dialect;
 
 class MysqlDialect : Dialect
 {
 	string closeQuote() { return `"`; }
 	string openQuote()  { return `"`; }
-	Variant fromSqlValue(DlangDataType type,Variant value)
+
+	Variant fromSqlValue(DlangDataType type, Variant value)
 	{
 		if(typeid(type) == typeid(dBoolType)){
 			if(*value.peek!string == "1")

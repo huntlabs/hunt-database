@@ -11,34 +11,46 @@
 
 module database.database;
 
-import database;
+import database.factory;
+import database.option;
+import database.pool;
+import database.statement;
+import database.transaction;
+
+import database.driver.connection;
+import database.driver.resultset;
+import database.driver.builder;
+import database.driver.dialect;
+
 
 class Database
 {
 	Pool _pool;
 	DatabaseOption _options;
+	Factory _factory;
 
 	this(string url)
 	{
 		this._options = new DatabaseOption(url);
-		initPool();
+		initObjects();
 	}
 
 	this(DatabaseOption options)
 	{
 		this._options = options;
-		initPool();
+		initObjects();
 	}
 
-	private void initPool()
+	private void initObjects()
 	{
-		_pool = new Pool(this._options);
+		_factory = new Factory(this._options.url.scheme);
+		_pool = new Pool(this._options, _factory);
 	}
 
 	Transaction beginTransaction()
 	{
-		Connection _conn = _pool.getConnection();
-		Transaction tran = new Transaction(this,_pool,_conn);
+		Connection conn = _pool.getConnection();
+		Transaction tran = new Transaction(_pool, conn);
 		tran.begin();
 		return tran;
 	}
@@ -70,23 +82,11 @@ class Database
 
 	SqlBuilder createSqlBuilder()
 	{
-		return (new SqlFactory()).createBuilder();
+		return this._factory.createSqlBuilder();
 	}
 
 	Dialect createDialect()
 	{
-		version(USE_MYSQL){
-			return new MysqlDialect();
-		}
-        else version(USE_POSTGRESQL)
-		{
-			return new PostgresqlDialect(); 
-		}
-		else version(USE_SQLITE)
-		{
-			return new SqliteDialect(); 
-		}
-        else
-			throw new DatabaseException("Unknow Dialect");
+		return this._factory.createDialect();
 	}
 }

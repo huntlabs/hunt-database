@@ -1,8 +1,12 @@
 module database.driver.mysql.builder;
 
-import database;
+public import database.driver.builder;
+import database.defined;
+import database.driver.expression;
+import database.driver.mysql.syntax;
 
-class MySqlBuilder : SqlBuilder 
+
+class MysqlSqlBuilder : SqlBuilder 
 {
 	Method _method;
 	string _tableName;

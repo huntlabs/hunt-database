@@ -1,12 +1,16 @@
 module database.driver.mysql.syntax;
 
-import database;
+import std.conv : to;
+
+import database.defined;
+import database.driver.syntax;
+import database.driver.mysql.builder;
 
 class MySqlSyntax : SqlSyntax
 {
 	SqlBuilder _builder;
 
-	this(MySqlBuilder builder)
+	this(MysqlSqlBuilder builder)
 	{
 		this._builder = builder;
 	}

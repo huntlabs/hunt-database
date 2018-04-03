@@ -12,8 +12,9 @@
 module database.driver.sqlite.resultset;
 
 version(USE_SQLITE):
+import database.driver.resultset;
+import database.row;
 
-import database;
 
 import core.stdc.string : strlen;
 

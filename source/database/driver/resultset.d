@@ -10,8 +10,8 @@
  */
 
 module database.driver.resultset;
+import database.row;
 
-import database;
 
 interface ResultSet {
     string[] fieldNames();

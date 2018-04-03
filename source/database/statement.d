@@ -11,7 +11,13 @@
 
 module database.statement;
 
-import database;
+import std.conv : to;
+import std.experimental.logger;
+
+import database.pool;
+import database.row;
+import database.driver.connection;
+import database.driver.resultset;
 
 import std.stdio;
 

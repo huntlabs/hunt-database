@@ -11,7 +11,11 @@
 
 module database.driver.mysql.resultset;
 
-import database;
+import database.driver.mysql.binding;
+import database.driver.resultset;
+import database.row;
+import database.exception;
+import database.util;
 
 version(USE_MYSQL):
 

@@ -13,7 +13,7 @@ module database.driver.sqlite.connection;
 
 version(USE_SQLITE):
 
-import database;
+public import database.driver.connection;
 
 version (Windows)
 {
