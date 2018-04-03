@@ -1,7 +1,5 @@
 module database.driver.syntax;
 
-import database;
-
 interface SqlSyntax
 {
     string toString();
@@ -17,4 +15,3 @@ interface SqlSyntax
     string insertExpr();
     string autoIncreaseExpr();
 }
-
