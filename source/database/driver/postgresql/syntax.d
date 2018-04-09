@@ -8,9 +8,9 @@ import database.driver.postgresql.builder;
 
 class PostgresqlSqlSyntax : SqlSyntax
 {
-    SqlBuilder _builder;
+    QueryBuilder _builder;
 
-    this(PostgresqlSqlBuilder builder)
+    this(PostgresqlQueryBuilder builder)
     {
         this._builder = builder;
     }

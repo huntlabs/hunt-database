@@ -11,9 +11,17 @@
 
 module database.driver.postgresql.connection;
 
+version(USE_POSTGRESQL):
+
 public import database.driver.connection;
 
-version(USE_POSTGRESQL):
+import database.driver.postgresql.resultset;
+import database.driver.postgresql.binding;
+import database.util;
+
+import std.string : toStringz, fromStringz;
+import std.conv : to;
+import std.regex;
 
 class PostgresqlConnection :  Connection 
 {

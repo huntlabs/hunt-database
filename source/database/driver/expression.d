@@ -108,47 +108,54 @@ class MultiWhereExpression : Expression
         expr =  new WhereExpression(key,"!=",value);
         return this;
     }
+    
     MultiWhereExpression gt(string key,string value)
     {
         expr =  new WhereExpression(key,">",value);
         return this;
     }
+
     MultiWhereExpression lt(string key,string value)
     {
         expr = new WhereExpression(key,"<",value);
         return this;
     }
+
     MultiWhereExpression ge(string key,string value)
     {
         expr = new WhereExpression(key,">=",value);
         return this;
     }
-MultiWhereExpression le(string key,string value)
-{
-    expr = new WhereExpression(key,"<=",value);
-    return this;
-}
-MultiWhereExpression like(string key,string value)
-{
-    expr = new WhereExpression(key,"like",value);
-    return this;
-}
-MultiWhereExpression andX(T...)(T args)
-{
-    _relation = Relation.And; 
-    foreach(v;args)
+
+    MultiWhereExpression le(string key,string value)
     {
-        childs ~= v;
+        expr = new WhereExpression(key,"<=",value);
+        return this;
     }
-    return this;
-}
-MultiWhereExpression orX(T...)(T args)
-{
-    _relation = Relation.Or; 
-    foreach(v;args)
+
+    MultiWhereExpression like(string key,string value)
     {
-        childs ~= v;
+        expr = new WhereExpression(key,"like",value);
+        return this;
     }
-    return this;
-}
+
+    MultiWhereExpression andX(T...)(T args)
+    {
+        _relation = Relation.And; 
+        foreach(v;args)
+        {
+            childs ~= v;
+        }
+        return this;
+    }
+
+    MultiWhereExpression orX(T...)(T args)
+    {
+        _relation = Relation.Or; 
+        foreach(v;args)
+        {
+            childs ~= v;
+        }
+        return this;
+    }
 }

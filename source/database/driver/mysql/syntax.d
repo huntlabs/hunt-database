@@ -8,9 +8,9 @@ import database.driver.mysql.builder;
 
 class MySqlSyntax : SqlSyntax
 {
-    SqlBuilder _builder;
+    QueryBuilder _builder;
 
-    this(MysqlSqlBuilder builder)
+    this(MysqlQueryBuilder builder)
     {
         this._builder = builder;
     }
