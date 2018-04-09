@@ -20,6 +20,8 @@ import database.driver.postgresql;
 import database.driver.mysql;
 import database.driver.sqlite;
 
+import database.driver.connection;
+
 class Pool
 {
     Connection _conn;

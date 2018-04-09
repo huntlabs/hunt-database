@@ -9,10 +9,10 @@ import database.driver.syntax;
 
 public import database.exception;
 
-interface SqlBuilder
+interface QueryBuilder
 {
-    SqlBuilder from(string tableName,string tableNameAlias = null);
-    SqlBuilder select(T...)(T args)
+    QueryBuilder from(string tableName, string tableNameAlias = null);
+    QueryBuilder select(T...)(T args)
     {
         string[] arr;
         foreach(arg;args){
@@ -20,70 +20,70 @@ interface SqlBuilder
         }
         return selectImpl(arr);
     }
-    SqlBuilder selectImpl(string[] args);
-    SqlBuilder insert(string tableName);
-    SqlBuilder update(string tableName);
-    SqlBuilder remove(string tableName);
-    SqlBuilder where(string expression);
+    QueryBuilder selectImpl(string[] args);
+    QueryBuilder insert(string tableName);
+    QueryBuilder update(string tableName);
+    QueryBuilder remove(string tableName);
+    QueryBuilder where(string expression);
     alias total = count;
-    SqlBuilder count();
-    SqlBuilder having(string expression);
-    SqlBuilder eq(T)(string key,T value)
+    QueryBuilder count();
+    QueryBuilder having(string expression);
+    QueryBuilder eq(T)(string key,T value)
     {
-        return whereImpl(key,CompareType.eq,value.to!string);
+        return whereImpl(key, CompareType.eq, value.to!string);
     }
-    SqlBuilder ne(T)(string key,T value)
+    QueryBuilder ne(T)(string key, T value)
     {
-        return whereImpl(key,CompareType.ne,value.to!string);
+        return whereImpl(key, CompareType.ne, value.to!string);
     }
-    SqlBuilder gt(T)(string key,T value)
+    QueryBuilder gt(T)(string key,T value)
     {
-        return whereImpl(key,CompareType.gt,value.to!string);
+        return whereImpl(key, CompareType.gt, value.to!string);
     }
-    SqlBuilder lt(T)(string key,T value)
+    QueryBuilder lt(T)(string key, T value)
     {
-        return whereImpl(key,CompareType.lt,value.to!string);
+        return whereImpl(key, CompareType.lt, value.to!string);
     }
-    SqlBuilder ge(T)(string key,T value)
+    QueryBuilder ge(T)(string key, T value)
     {
-        return whereImpl(key,CompareType.ge,value.to!string);
+        return whereImpl(key, CompareType.ge, value.to!string);
     }
-    SqlBuilder le(T)(string key,T value)
+    QueryBuilder le(T)(string key, T value)
     {
-        return whereImpl(key,CompareType.le,value.to!string);
+        return whereImpl(key, CompareType.le, value.to!string);
     }
-    SqlBuilder like(T)(string key,T value)
+    QueryBuilder like(T)(string key, T value)
     {
-        return whereImpl(key,CompareType.like,value.to!string);
+        return whereImpl(key, CompareType.like, value.to!string);
     }
-    SqlBuilder where(T)(string key,CompareType type,T value)
+    QueryBuilder where(T)(string key, CompareType type, T value)
     {
-        return whereImpl(key,type,value.to!string);
+        return whereImpl(key, type, value.to!string);
     }
-    SqlBuilder whereImpl(string key,CompareType type,string value);
-    SqlBuilder where(MultiWhereExpression expr);
+    QueryBuilder whereImpl(string key, CompareType type, string value);
+    QueryBuilder where(MultiWhereExpression expr);
     MultiWhereExpression expr();
-    SqlBuilder join(JoinMethod joinMethod,string table,string tablealias,string joinWhere);
-    SqlBuilder join(JoinMethod joinMethod,string table,string joinWhere);
-    SqlBuilder innerJoin(string table,string tablealias,string joinWhere);
-    SqlBuilder innerJoin(string table,string joinWhere);
-    SqlBuilder leftJoin(string table,string tableAlias,string joinWhere);
-    SqlBuilder leftJoin(string table,string joinWhere);
-    SqlBuilder rightJoin(string table,string tableAlias,string joinWhere);
-    SqlBuilder rightJoin(string table,string joinWhere);
-    SqlBuilder fullJoin(string table,string tableAlias,string joinWhere);
-    SqlBuilder fullJoin(string table,string joinWhere);
-    SqlBuilder crossJoin(string table,string tableAlias);
-    SqlBuilder crossJoin(string table);
-    SqlBuilder groupBy(string expression);
-    SqlBuilder orderBy (string key,string order = "DESC");
-    SqlBuilder offset(int offset);
-    SqlBuilder limit(int limit);
-    SqlBuilder values(string[string] arr);
-    SqlBuilder set(string key,string value);
-    SqlBuilder setParameter(int index,string value);
+    QueryBuilder join(JoinMethod joinMethod, string table,string tablealias,string joinWhere);
+    QueryBuilder join(JoinMethod joinMethod, string table,string joinWhere);
+    QueryBuilder innerJoin(string table, string tablealias,string joinWhere);
+    QueryBuilder innerJoin(string table, string joinWhere);
+    QueryBuilder leftJoin(string table, string tableAlias,string joinWhere);
+    QueryBuilder leftJoin(string table, string joinWhere);
+    QueryBuilder rightJoin(string table, string tableAlias,string joinWhere);
+    QueryBuilder rightJoin(string table, string joinWhere);
+    QueryBuilder fullJoin(string table, string tableAlias,string joinWhere);
+    QueryBuilder fullJoin(string table, string joinWhere);
+    QueryBuilder crossJoin(string table, string tableAlias);
+    QueryBuilder crossJoin(string table);
+    QueryBuilder groupBy(string expression);
+    QueryBuilder orderBy (string key, string order = "DESC");
+    QueryBuilder offset(int offset);
+    QueryBuilder limit(int limit);
+    QueryBuilder values(string[string] arr);
+    QueryBuilder set(string key, string value);
+    QueryBuilder setParameter(int index, string value);
     
-    SqlBuilder setAutoIncrease(string key);
+    QueryBuilder setAutoIncrease(string key);
     
     string tableName();
     string tableNameAlias();
@@ -103,4 +103,3 @@ interface SqlBuilder
     
     SqlSyntax build();
 }
-

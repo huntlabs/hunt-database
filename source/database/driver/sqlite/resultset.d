@@ -12,11 +12,13 @@
 module database.driver.sqlite.resultset;
 
 version(USE_SQLITE):
+import database.driver.sqlite.binding;
 import database.driver.resultset;
 import database.row;
-
+import database.exception;
 
 import core.stdc.string : strlen;
+import std.string : toStringz, fromStringz;
 
 class SqliteResult : ResultSet
 {

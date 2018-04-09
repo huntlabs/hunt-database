@@ -16,3 +16,4 @@ public import database.exception;
 public import database.option;
 public import database.statement;
 public import database.defined;
+public import database.driver.resultset;

@@ -16,18 +16,18 @@ class Factory
         this._driver = driver;
     }
 
-    SqlBuilder createSqlBuilder()
+    QueryBuilder createQueryBuilder()
     {
         switch(this._driver)
         {
             default:
             throw new DatabaseException("Unknow database driver" ~ this._driver);
             case "mysql":
-            return new MysqlSqlBuilder();
+            return new MysqlQueryBuilder();
             case "postgresql":
-            return new PostgresqlSqlBuilder();
+            return new PostgresqlQueryBuilder();
             case "sqlite":
-            return new SqliteSqlBuilder();
+            return new SqliteQueryBuilder();
         }
     }
 

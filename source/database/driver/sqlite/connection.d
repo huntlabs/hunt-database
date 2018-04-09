@@ -15,6 +15,13 @@ version(USE_SQLITE):
 
 public import database.driver.connection;
 
+import database.driver.sqlite.binding;
+import database.driver.sqlite.resultset;
+
+import std.string : toStringz, fromStringz;
+import std.conv : to;
+import std.path : buildPath, dirName, thisExePath;
+
 version (Windows)
 {
     pragma(lib, "sqlite3");

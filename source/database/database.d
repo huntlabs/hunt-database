@@ -80,9 +80,9 @@ class Database
         _pool.close();    
     }
 
-    SqlBuilder createSqlBuilder()
+    QueryBuilder createQueryBuilder()
     {
-        return this._factory.createSqlBuilder();
+        return this._factory.createQueryBuilder();
     }
 
     Dialect createDialect()

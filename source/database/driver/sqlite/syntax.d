@@ -8,9 +8,9 @@ import database.driver.syntax;
 
 class SqliteSyntax : SqlSyntax
 {
-    SqlBuilder _builder;
+    QueryBuilder _builder;
 
-    this(SqliteSqlBuilder builder)
+    this(SqliteQueryBuilder builder)
     {
         this._builder = builder;
     }
