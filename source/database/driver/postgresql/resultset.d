@@ -11,11 +11,8 @@
 
 module database.driver.postgresql.resultset;
 
+import database;
 version(USE_POSTGRESQL):
-
-import database.driver.postgresql.binding;
-import database.driver.resultset;
-import database.row;
 
 class PostgresqlResult : ResultSet 
 {

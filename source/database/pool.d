@@ -11,42 +11,31 @@
 
 module database.pool;
 
-import database.option;
-import database.factory;
+import database;
 import std.container.array;
 import core.sync.rwmutex;
-
-import database.driver.postgresql;
-import database.driver.mysql;
-import database.driver.sqlite;
-
-import database.driver.connection;
 
 class Pool
 {
     Connection _conn;
     Array!Connection _conns;
-    DatabaseOption _options;
+    DatabaseOption _config;
     ReadWriteMutex _mutex;
-    int _poolLength;
-    Dialect dialect;
-    Factory _factory;
+	int _pool_length;
+	Dialect dialect;
 
-    this(DatabaseOption options, Factory factory)
+    this(DatabaseOption config)
     {
-        this._options = options;
-        this._factory = factory;
-
+        this._config = config;
         _mutex = new ReadWriteMutex();
-        dialect = initDialect();
-
+		dialect = initDialect();
         int i = 0;
-        while(i < _options.minimumConnection)
+        while(i < _config.minimumConnection)
         {
             _conns.insertBack(initConnection);
             i++;
         }
-        _poolLength = i;
+		_pool_length = i;
     }
 
     ~this()
@@ -54,36 +43,36 @@ class Pool
         _mutex.destroy();
     }
 
-    private Dialect initDialect()
-    {
-        version (USE_POSTGRESQL){
-            return new PostgresqlDialect;
-        }else version (USE_MYSQL){
-            return new MysqlDialect;
-        }else version(USE_SQLITE){
-            return new SqliteDialect;
-        }else
-            throw new DatabaseException("Don't support database driver: "~ _options.url.scheme);
-    
-    }
+	private Dialect initDialect()
+	{
+		version (USE_POSTGRESQL){
+			return new PostgresqlDialect;
+		}else version (USE_MYSQL){
+			return new MysqlDialect;
+		}else version(USE_SQLITE){
+			return new SqliteDialect;
+		}else
+			throw new DatabaseException("Don't support database driver: "~ _config.url.scheme);
+	
+	}
 
     private Connection initConnection()
     {
-        version (USE_POSTGRESQL)
-        {
-            return new PostgresqlConnection(_options.url);
-        }
-        else version (USE_MYSQL)
-        {
-            return new MysqlConnection(_options.url);
-        }
-        else version(USE_SQLITE){
-            _options.setMaximumConnection = 1;
-            _options.setMinimumConnection = 1;
-            return new SQLiteConnection(_options.url);
-        }
-        else
-            throw new DatabaseException("Don't support database driver: "~ _options.url.scheme);
+		version (USE_POSTGRESQL)
+		{
+			return new PostgresqlConnection(_config.url);
+		}
+		else version (USE_MYSQL)
+		{
+			return new MysqlConnection(_config.url);
+		}
+		else version(USE_SQLITE){
+			_config.setMaximumConnection = 1;
+			_config.setMinimumConnection = 1;
+			return new SQLiteConnection(_config.url);
+		}
+		else
+			throw new DatabaseException("Don't support database driver: "~ _config.url.scheme);
     }
 
     Connection getConnection()
@@ -99,7 +88,7 @@ class Pool
         {
             conn = initConnection();
             _conns.insertBack(conn);
-            _poolLength++;
+            _pool_length++;
         }
         else
             conn = _conns.front;
@@ -114,12 +103,12 @@ class Pool
         _conns.insertBack(conn);
     }    
 
-    void close()
-    {
+	void close()
+	{
         _mutex.writer.lock();
         scope(exit)_mutex.writer.unlock();
-        foreach(c;_conns){
-            c.close();
-        }    
-    }
+		foreach(c;_conns){
+			c.close();
+		}	
+	}
 }

@@ -11,13 +11,7 @@
 
 module database.driver.mysql.connection;
 
-import std.conv : to;
-import std.string : indexOf, toStringz;
-
-import database.driver.connection;
-import database.driver.mysql.binding;
-import database.driver.mysql.resultset;
-import database.util;
+import database;
 
 version(USE_MYSQL):
 
@@ -69,25 +63,23 @@ class MysqlConnection : Connection
         assert(mysql);
         auto v = toCstring(sql);
         int result = mysql_query(mysql, v);
-        
-        if(result != 0)
-            throw new DatabaseException("SQL : " ~ sql ~" \rDB status : "~ result.to!string ~" \rEXECUTE ERROR :" ~ error());
-
-        return result;
+		if(result != 0)
+			throw new DatabaseException("SQL : " ~ sql ~" \rDB status : "~result.to!string~" \rEXECUTE ERROR :" ~ error());
+		return result;
     }
 
-    void begin()
-    {
-        execute("begin");
-    }
-    void rollback()
-    {
-        execute("rollback");
-    }
-    void commit()
-    {
-        execute("commit");
-    }
+	void begin()
+	{
+		execute("begin");
+	}
+	void rollback()
+	{
+		execute("rollback");
+	}
+	void commit()
+	{
+		execute("commit");
+	}
 
     string clientInfo()
     {
@@ -209,3 +201,26 @@ class MysqlConnection : Connection
         return msg;
     }
 }
+
+cstring toCstring(string c) 
+{
+    return toStringz(c);
+}
+string fromCstring(cstring c, size_t len = size_t.max) {
+    string ret;
+    if(c is null)return null;
+    if(len == 0)return "";
+    if(len == size_t.max) {
+        auto iterator = c;
+        len =0;
+        while(*iterator)
+        {
+            iterator++;
+            len++;
+        }
+        assert(len >= 0);
+    }
+    ret = cast(string) (c[0 .. len].idup);
+    return ret;
+}
+

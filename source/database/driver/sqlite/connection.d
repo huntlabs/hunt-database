@@ -13,14 +13,7 @@ module database.driver.sqlite.connection;
 
 version(USE_SQLITE):
 
-public import database.driver.connection;
-
-import database.driver.sqlite.binding;
-import database.driver.sqlite.resultset;
-
-import std.string : toStringz, fromStringz;
-import std.conv : to;
-import std.path : buildPath, dirName, thisExePath;
+import database;
 
 version (Windows)
 {
@@ -124,25 +117,25 @@ class SQLiteConnection : Connection
     int execute(string sql)
     {
         int code = sqlite3_exec(conn,toStringz(sql),&myCallback,null,null);
-        if(code != 0)
-            throw new DatabaseException("SQL : " ~ sql ~" \rDB status : "~code.to!string~" \rEXECUTE ERROR :" ~ getError());
+		if(code != 0)
+			throw new DatabaseException("SQL : " ~ sql ~" \rDB status : "~code.to!string~" \rEXECUTE ERROR :" ~ getError());
         _last_insert_id = cast(int)sqlite3_last_insert_rowid(conn);
         _affectRows = sqlite3_changes(conn);
         return code;
     }
-    
-    void begin()
-    {
-        execute("begin");
-    }
-    void rollback()
-    {
-        execute("rollback");
-    }
-    void commit()
-    {
-        execute("commit");
-    }
+	
+	void begin()
+	{
+		execute("begin");
+	}
+	void rollback()
+	{
+		execute("rollback");
+	}
+	void commit()
+	{
+		execute("commit");
+	}
 
     string escape(string sql)
     {

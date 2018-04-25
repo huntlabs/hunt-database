@@ -11,70 +11,52 @@
 
 module database.transaction;
 
-import database.pool;
-import database.statement;
-import database.driver.connection;
-import database.driver.resultset;
+import database;
 
 class Transaction
 {
-    private Pool _pool;
     private Connection _conn;
-    private bool _released = false;
     private bool _isExpire = false;
 
-    this(Pool pool, Connection conn)
+    this(Connection conn)
     {
-        this._pool = pool;
         this._conn = conn;
     }
-
-    ~this()
-    {
-        release();
-    }
-
-    void release()
-    {
-        if(_conn !is null){
-            _pool.release(_conn);
-            _conn = null;
-        }
-    }
-    
+ 
     void begin()
     {
         _conn.begin;
+        _isExpire = false;
     }
 
     void commit()
     {
-        scope(exit){_isExpire=true;release();}
         _conn.commit;
+        _isExpire = true;
     }
 
     void rollback()
     {
-        scope(exit){_isExpire=true;release();}
         _conn.rollback;
+        _isExpire = true;
     }
 
     int execute(string sql)
     {
         isExpire();
-        return new Statement(_pool,_conn ,sql).execute();
+        return new Statement(_conn ,sql).execute();
     }
 
     ResultSet query(string sql)
     {
         isExpire();
-        return (new Statement(_pool,_conn, sql)).query();
+        return new Statement(_conn ,sql).query();
     }
 
     Statement prepare(string sql)
     {
         isExpire();
-        return new Statement(_pool,_conn, sql);
+        return new Statement(_conn, sql);
     }
     
     private void isExpire()

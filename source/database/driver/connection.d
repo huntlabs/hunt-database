@@ -11,12 +11,7 @@
 
 module database.driver.connection;
 
-public import std.variant;
-public import std.experimental.logger;
-
-public import database.url;
-public import database.exception;
-public import database.driver.resultset;
+import database;
 
 interface Connection
 {
