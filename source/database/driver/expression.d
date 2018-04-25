@@ -1,7 +1,6 @@
 module database.driver.expression;
 
-public import database.defined;
-public import database.exception;
+import database;
 
 class Expression
 {
@@ -108,54 +107,47 @@ class MultiWhereExpression : Expression
         expr =  new WhereExpression(key,"!=",value);
         return this;
     }
-    
     MultiWhereExpression gt(string key,string value)
     {
         expr =  new WhereExpression(key,">",value);
         return this;
     }
-
     MultiWhereExpression lt(string key,string value)
     {
         expr = new WhereExpression(key,"<",value);
         return this;
     }
-
     MultiWhereExpression ge(string key,string value)
     {
         expr = new WhereExpression(key,">=",value);
         return this;
     }
-
-    MultiWhereExpression le(string key,string value)
+MultiWhereExpression le(string key,string value)
+{
+    expr = new WhereExpression(key,"<=",value);
+    return this;
+}
+MultiWhereExpression like(string key,string value)
+{
+    expr = new WhereExpression(key,"like",value);
+    return this;
+}
+MultiWhereExpression andX(T...)(T args)
+{
+    _relation = Relation.And; 
+    foreach(v;args)
     {
-        expr = new WhereExpression(key,"<=",value);
-        return this;
+        childs ~= v;
     }
-
-    MultiWhereExpression like(string key,string value)
+    return this;
+}
+MultiWhereExpression orX(T...)(T args)
+{
+    _relation = Relation.Or; 
+    foreach(v;args)
     {
-        expr = new WhereExpression(key,"like",value);
-        return this;
+        childs ~= v;
     }
-
-    MultiWhereExpression andX(T...)(T args)
-    {
-        _relation = Relation.And; 
-        foreach(v;args)
-        {
-            childs ~= v;
-        }
-        return this;
-    }
-
-    MultiWhereExpression orX(T...)(T args)
-    {
-        _relation = Relation.Or; 
-        foreach(v;args)
-        {
-            childs ~= v;
-        }
-        return this;
-    }
+    return this;
+}
 }

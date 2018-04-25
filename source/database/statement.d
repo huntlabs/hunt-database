@@ -11,59 +11,41 @@
 
 module database.statement;
 
-import std.conv : to;
-import std.experimental.logger;
-
-import database.pool;
-import database.row;
-import database.driver.connection;
-import database.driver.resultset;
+import database;
 
 import std.stdio;
 
 class Statement
 {
-    private Pool _pool;
     private Connection _conn = null;
     private string _sql;
     private bool _isUsed = false;
-    private bool _isTransaction = false;
     private int _lastInsertId;
-    private int _affectRows;
+	private int _affectRows;
     private ResultSet _rs;
-    private ExprElement[] sql_prepare;
-    private string[string] param_value;
+	private ExprElement[] sql_prepare;
+	private string[string] param_value;
 
-    this(Pool pool)
+    this(Connection conn)
     {
-        this._pool = pool;
-        this._conn = pool.getConnection();
+        _conn = conn;
     }
 
-    this(Pool pool,string sql)
+    this(Connection conn, string sql)
     {
-        this._pool = pool;
-        this._conn = pool.getConnection();
+        _conn = conn;
         prepare(sql);
-    }
-
-    this(Pool pool,Connection conn,string sql)
-    {
-        this._pool = pool;
-        this._conn = conn;
-        prepare(sql);
-        this._isTransaction = true;
     }
 
     void prepare(string sql)
     {
-        assert(sql.length);
+		assert(sql.length);
         this._sql = sql;
         sql ~= " ";
-        int length = cast(int)sql.length;
-        int index = 0;
+		int length = cast(int)sql.length;
+		int index = 0;
         auto expr = new ExprStatus;
-        while(index < length){
+		while(index < length){
             auto status = expr.append(sql[index]);
             if(status){
                 sql_prepare ~= ExprElement(cast(ExprElementType)status,expr.result);
@@ -72,7 +54,7 @@ class Statement
                 }
             }
            index++; 
-        }
+		}
     }
 
     void setParameter(T = string)(string key, T value)
@@ -102,9 +84,9 @@ class Statement
         log(sql);
         int status = this._conn.execute(sql);
         _lastInsertId = this._conn.lastInsertId();
-        _affectRows = this._conn.affectedRows();
-        scope(exit){releaseConnection();}
-        return status;
+		_affectRows = this._conn.affectedRows();
+        // return status;
+        return _affectRows;
     }
 
     int count()
@@ -112,7 +94,6 @@ class Statement
         isUsed();
         assert(sql);
         auto r = this._conn.query(sql);
-        scope(exit){releaseConnection();}
         auto res = r.front();
         return res[0].to!int;
     }
@@ -122,7 +103,7 @@ class Statement
         return _lastInsertId;    
     }
     
-    int affectedRows()
+	int affectedRows()
     {
         return _affectRows;    
     }
@@ -144,7 +125,6 @@ class Statement
         isUsed();
         assert(sql);
         _rs = this._conn.query(sql);
-        scope(exit){releaseConnection();}
         return _rs;
     }
 
@@ -153,29 +133,12 @@ class Statement
 
     }
 
-    private Connection getConnection()
-    {
-        if(_conn is null)    
-            _conn = _pool.getConnection();
-        return _conn;
-    }
-
-    private void releaseConnection()
-    {
-        if(!_isTransaction && _conn !is null)
-            _pool.release(_conn);
-    }
-
     private void isUsed()
     {
         scope(exit)_isUsed=true;
         if(_isUsed)throw new DatabaseException("statement was used");
     }
-    ~this()
-    {
-        _conn = null;
-        _sql = null;
-    }
+
 }
 
 struct ExprElement
@@ -185,31 +148,31 @@ struct ExprElement
 }
 
 enum ExprElementType : uint {
-    start = 0,
-    element = 1,
-    key = 2
+	start = 0,
+	element = 1,
+	key = 2
 }
 
 class ExprStatus
 {
-    ExprElementType type = ExprElementType.start;
-    string result;
-    char[] buf;
-    
+	ExprElementType type = ExprElementType.start;
+	string result;
+	char[] buf;
+	
 
-    int append(char c)
-    {
-        if(type == ExprElementType.start){
+	int append(char c)
+	{
+		if(type == ExprElementType.start){
             buf ~= c;
-            if(c == ' '){                
-                type = ExprElementType.element;
-            }else if(c == ':'){
-                type = ExprElementType.key;
-            }else{
-                type = ExprElementType.element;
-            }
-        }else if(type == ExprElementType.element){
-            if(c == ' '){                
+			if(c == ' '){				
+				type = ExprElementType.element;
+			}else if(c == ':'){
+				type = ExprElementType.key;
+			}else{
+				type = ExprElementType.element;
+			}
+		}else if(type == ExprElementType.element){
+			if(c == ' '){				
                 result = cast(string)buf;
                 buf = [];
                 type = ExprElementType.start;
@@ -217,8 +180,8 @@ class ExprStatus
             }else{
                 buf ~= c;
             }
-        }else{
-            if(c == ' '){                
+		}else{
+			if(c == ' '){				
                 result = cast(string)buf;
                 buf = [];
                 type = ExprElementType.start;
@@ -226,7 +189,7 @@ class ExprStatus
             }else{
                 buf ~= c; 
             }
-        }
-        return cast(int)ExprElementType.start;
-    }
+		}
+		return cast(int)ExprElementType.start;
+	}
 }

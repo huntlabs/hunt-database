@@ -11,17 +11,8 @@
 
 module database.driver.postgresql.connection;
 
+import database;
 version(USE_POSTGRESQL):
-
-public import database.driver.connection;
-
-import database.driver.postgresql.resultset;
-import database.driver.postgresql.binding;
-import database.util;
-
-import std.string : toStringz, fromStringz;
-import std.conv : to;
-import std.regex;
 
 class PostgresqlConnection :  Connection 
 {
@@ -53,10 +44,10 @@ class PostgresqlConnection :  Connection
 
     private void connect() 
     {
-        con = PQsetdbLogin(toStringz(_host),toStringz(to!string(_port)),
-                null,null,toStringz(_db),toStringz(_user),toStringz(_pass));
+		con = PQsetdbLogin(toStringz(_host),toStringz(to!string(_port)),
+				null,null,toStringz(_db),toStringz(_user),toStringz(_pass));
         if (PQstatus(con) != CONNECTION_OK)
-            throw new DatabaseException("login error " ~ to!string(PQerrorMessage(con)));
+			throw new DatabaseException("login error " ~ to!string(PQerrorMessage(con)));
     }
 
     private void reconnect()
@@ -89,8 +80,8 @@ class PostgresqlConnection :  Connection
         PGresult* res;
         res = PQexec(con,toStringz(sql));
         int result = PQresultStatus(res);
-        _affectRows = safeConvert!(char[],int)(std.string.fromStringz(PQcmdTuples(res)));
-        if (result == PGRES_FATAL_ERROR)
+		_affectRows = safeConvert!(char[],int)(std.string.fromStringz(PQcmdTuples(res)));
+		if (result == PGRES_FATAL_ERROR)
             throw new DatabaseException("DB SQL : " ~ sql ~"\r\nDB status : "~to!string(result)~
                     " \r\nEXECUTE ERROR : " ~ to!string(result) ~"\r\n"~cast(string)fromStringz(PQresultErrorMessage(res)));
         {

@@ -11,82 +11,112 @@
 
 module database.database;
 
-import database.factory;
-import database.option;
-import database.pool;
-import database.statement;
-import database.transaction;
-
-import database.driver.connection;
-import database.driver.resultset;
-import database.driver.builder;
-import database.driver.dialect;
-
+import database;
 
 class Database
 {
-    Pool _pool;
-    DatabaseOption _options;
-    Factory _factory;
+	Pool _pool;
+	DatabaseOption _options;
 
-    this(string url)
-    {
-        this._options = new DatabaseOption(url);
-        initObjects();
-    }
+	this(string url)
+	{
+		this._options = new DatabaseOption(url);
+		initPool();
+	}
 
-    this(DatabaseOption options)
-    {
-        this._options = options;
-        initObjects();
-    }
+	this(DatabaseOption options)
+	{
+		this._options = options;
+		initPool();
+	}
 
-    private void initObjects()
-    {
-        _factory = new Factory(this._options.url.scheme);
-        _pool = new Pool(this._options, _factory);
-    }
+	Transaction getTransaction(Connection conn) {
+		return new Transaction(conn);
+	}
+	
 
-    Transaction beginTransaction()
-    {
-        Connection conn = _pool.getConnection();
-        Transaction tran = new Transaction(_pool, conn);
-        tran.begin();
-        return tran;
-    }
+	Connection getConnection() {
+		return _pool.getConnection();
+	}
 
-    int error()
-    {
-        return 0;
-    }
+	void closeConnection(Connection conn) {
+		_pool.release(conn);
+	}
 
-    int execute(string sql)
-    {
-        return new Statement(_pool, sql).execute();
-    }
 
-    ResultSet query(string sql)
-    {
-        return (new Statement(_pool, sql)).query();
-    }
+	
+	private void initPool()
+	{
+		_pool = new Pool(this._options);
+	}
 
-    Statement prepare(string sql)
-    {
-        return new Statement(_pool, sql);
-    }
+	// Transaction beginTransaction()
+	// {
+	// 	Connection _conn = _pool.getConnection();
+	// 	Transaction tran = new Transaction(this,_pool,_conn);
+	// 	tran.begin();
+	// 	return tran;
+	// }
 
-    void close()
-    {
-        _pool.close();    
-    }
+	int error()
+	{
+		return 0;
+	}
 
-    QueryBuilder createQueryBuilder()
-    {
-        return this._factory.createQueryBuilder();
-    }
+	int execute(string sql)
+	{
+		Connection conn = _pool.getConnection();
+		int ret = new Statement(conn, sql).execute();
+		_pool.release(conn);
+		return ret;
+	}
 
-    Dialect createDialect()
-    {
-        return this._factory.createDialect();
-    }
+	int execute(Connection conn, string sql)
+	{
+		return new Statement(conn, sql).execute();
+	}
+
+
+	ResultSet query(string sql)
+	{
+		Connection conn = _pool.getConnection();
+		ResultSet ret = (new Statement(conn, sql)).query();
+		_pool.release(conn);
+		return ret;
+	}
+
+	Statement prepare(string sql)
+	{
+		Connection conn = _pool.getConnection();
+		Statement ret = new Statement(conn, sql);
+		_pool.release(conn);
+		return ret;
+	}
+
+	void close()
+	{
+		_pool.close();	
+	}
+
+	SqlBuilder createSqlBuilder()
+	{
+		return (new SqlFactory()).createBuilder();
+	}
+
+	Dialect createDialect()
+	{
+		version(USE_MYSQL){
+			return new MysqlDialect();
+		}
+        else version(USE_POSTGRESQL)
+		{
+			return new PostgresqlDialect(); 
+		}
+		else version(USE_SQLITE)
+		{
+			return new SqliteDialect(); 
+		}
+        else
+			throw new DatabaseException("Unknow Dialect");
+	}
 }

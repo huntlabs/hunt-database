@@ -81,16 +81,16 @@ class DatabaseOption
         return _connectionTimeout;
     }
 
-    bool isMysql()
-    {
-        return _url.scheme == "mysql";
-    }
-    bool isPgsql()
-    {
-        return _url.scheme == "postgresql";
-    }
-    bool isSqlite()
-    {
-        return _url.scheme == "sqlite";
-    }
+	bool isMysql()
+	{
+		return _url.scheme == "mysql";
+	}
+	bool isPgsql()
+	{
+		return _url.scheme == "postgresql";
+	}
+	bool isSqlite()
+	{
+		return _url.scheme == "sqlite";
+	}
 }
