@@ -299,4 +299,9 @@ class PostgresqlSqlBuilder : SqlBuilder
 		_method = Method.ShowTables;
 		return this;
 	}
+	SqlBuilder descTable(string tableName) {
+		_method = Method.DescTable;
+		_tableName = tableName;
+		return this;
+	}
 }

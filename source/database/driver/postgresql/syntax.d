@@ -140,6 +140,9 @@ class PostgresqlSqlSyntax : SqlSyntax
 	{
 		return "select tablename from pg_tables where schemaname = 'public'";
 	}
+	string descTable() {
+		return "SELECT column_name as Field, data_type FROM information_schema.columns WHERE table_schema='public' and table_name='"~_builder.tableName~"'";
+	}
 
 	override string toString()
 	{
@@ -182,6 +185,9 @@ class PostgresqlSqlSyntax : SqlSyntax
 				break;
 			case Method.ShowTables:
 				str ~= showTables();
+				break;
+			case Method.DescTable:
+				str ~= descTable();
 				break;
 			default:
 				throw new DatabaseException("query build method not found");

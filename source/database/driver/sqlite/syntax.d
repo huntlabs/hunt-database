@@ -139,6 +139,9 @@ class SqliteSyntax : SqlSyntax
 	{
 		return "show tables";
 	}
+	string descTable() {
+		return "select * from sqlite_master where type=\"table\" and name=\""~_builder.tableName~"\"";
+	}
 	override string toString()
 	{
 		if(!_builder.tableName.length)
@@ -179,6 +182,9 @@ class SqliteSyntax : SqlSyntax
 				break;
 			case Method.ShowTables:
 				str ~= showTables();
+				break;
+			case Method.DescTable:
+				str ~= descTable();
 				break;
 			default:
 				throw new DatabaseException("query build method not found");
