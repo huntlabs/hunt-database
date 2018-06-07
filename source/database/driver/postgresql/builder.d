@@ -294,4 +294,9 @@ class PostgresqlSqlBuilder : SqlBuilder
 	{
 		return new PostgresqlSqlSyntax(this);
 	}
+	SqlBuilder showTables()
+	{
+		_method = Method.ShowTables;
+		return this;
+	}
 }

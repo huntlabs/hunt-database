@@ -545,7 +545,8 @@ enum Method : string {
     Insert = " INSERT INTO ",
     Update = " UPDATE ",
     Delete = " DELETE FROM",
-	Count = " SELECT count(*) FROM "
+	Count = " SELECT count(*) FROM ",
+	ShowTables = "",
 }
 enum Relation : string {
     And = " AND ", 
