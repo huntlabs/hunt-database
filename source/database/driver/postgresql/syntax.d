@@ -136,6 +136,11 @@ class PostgresqlSqlSyntax : SqlSyntax
 		return "(" ~ keys[0.. $-1] ~ ") VALUES("~ values[0..$-1]  ~")";
 	}
 
+	string showTables()
+	{
+		return "select tablename from pg_tables where schemaname = 'public'";
+	}
+
 	override string toString()
 	{
 		if(!_builder.tableName.length)
@@ -174,6 +179,9 @@ class PostgresqlSqlSyntax : SqlSyntax
 				break;
 			case Method.Count:
 				str ~= Method.Count ~ _builder.tableName ~ whereExpr(); 
+				break;
+			case Method.ShowTables:
+				str ~= showTables();
 				break;
 			default:
 				throw new DatabaseException("query build method not found");

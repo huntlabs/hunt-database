@@ -289,4 +289,9 @@ class SqliteBuilder : SqlBuilder
 	{
 		return new SqliteSyntax(this);
 	}
+	SqlBuilder showTables()
+	{
+		_method = Method.ShowTables;
+		return this;
+	}
 }

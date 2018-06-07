@@ -135,6 +135,10 @@ class SqliteSyntax : SqlSyntax
 	{
 		return "";
 	}
+	string showTables()
+	{
+		return "show tables";
+	}
 	override string toString()
 	{
 		if(!_builder.tableName.length)
@@ -172,6 +176,9 @@ class SqliteSyntax : SqlSyntax
 				break;
 			case Method.Count:
 				str ~= Method.Count ~ _builder.tableName ~ whereExpr(); 
+				break;
+			case Method.ShowTables:
+				str ~= showTables();
 				break;
 			default:
 				throw new DatabaseException("query build method not found");

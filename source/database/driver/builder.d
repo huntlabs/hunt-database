@@ -89,5 +89,8 @@ interface SqlBuilder
     void setDistinct(bool b);
     
     SqlSyntax build();
+
+    SqlBuilder showTables();
+    
 }
 

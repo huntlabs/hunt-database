@@ -288,4 +288,10 @@ class MySqlBuilder : SqlBuilder
 	{
 		return new MySqlSyntax(this);
 	}
+
+	SqlBuilder showTables()
+	{
+		_method = Method.ShowTables;
+		return this;
+	}
 }
