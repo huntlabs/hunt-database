@@ -17,5 +17,6 @@ interface SqlSyntax
 	string insertExpr();
 	string autoIncreaseExpr();
 	string showTables();
+	string descTable();
 }
 

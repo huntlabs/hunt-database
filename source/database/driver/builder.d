@@ -91,6 +91,8 @@ interface SqlBuilder
     SqlSyntax build();
 
     SqlBuilder showTables();
-    
+    SqlBuilder descTable(string tableName);
+
+
 }
 

@@ -141,6 +141,9 @@ class MySqlSyntax : SqlSyntax
 	string showTables() {
 		return "show tables";
 	}
+	string descTable() {
+		return "desc "~_builder.tableName;
+	}
 
 	override string toString()
 	{
@@ -182,6 +185,9 @@ class MySqlSyntax : SqlSyntax
 				break;
 			case Method.ShowTables:
 				str ~= showTables();
+				break;
+			case Method.DescTable:
+				str ~= descTable();
 				break;
 			default:
 				throw new DatabaseException("query build method not found");
