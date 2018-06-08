@@ -9,16 +9,6 @@
             "targetType": "library"
         },
         {
-            "name": "mysql",
-            "targetType": "library",
-            "versions": [
-                "USE_MYSQL"
-            ],
-            "libs-posix": ["mysqlclient"],
-            "sourceFiles-windows-x86_64-dmd":["libmysql.lib"],
-            "copyFiles-windows-x86_64-dmd":["libmysql.dll"]
-        },
-        {
             "name": "postgresql",
             "targetType": "library",
             "versions": [
@@ -26,7 +16,18 @@
             ],
             "libs": [
                 "pq"
-            ]
+            ],
+            "copyFiles-windows-x86_64": [ "lib/win64/libpq.dll"]
+        },
+        {
+            "name": "mysql",
+            "targetType": "library",
+            "versions": [
+                "USE_MYSQL"
+            ],
+            "libs-posix": ["mysqlclient"],
+            "sourceFiles-windows-x86_64-dmd":["lib/win64/libmysql.lib"],
+            "copyFiles-windows-x86_64-dmd":["lib/win64/libmysql.dll"]
         },
         {
             "name": "sqlite",
@@ -39,7 +40,10 @@
             ],
             "libs-windows": [
                 "sqlite3"
-            ]
+            ],
+            "lflags-osx": ["-L/usr/local/opt/sqlite3/lib/"],
+            "copyFiles-windows-x86_64": [ "lib/win64/sqlite3.dll" ],
+            "sourceFiles-windows-x86_64" : [ "lib/win64/sqlite3.lib" ]
         }
     ]
 }
