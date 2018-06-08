@@ -14,9 +14,8 @@
             "versions": [
                 "USE_MYSQL"
             ],
-            "libs": [
-                "mysqlclient"
-            ]
+            "libs-posix": ["mysqlclient"],
+            "libs-windows": ["libmysql"]
         },
         {
             "name": "postgresql",
