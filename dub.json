@@ -15,7 +15,8 @@
                 "USE_MYSQL"
             ],
             "libs-posix": ["mysqlclient"],
-            "libs-windows": ["libmysql"]
+            "sourceFiles-windows-x86_64-dmd":["libmysql.lib"],
+            "copyFiles-windows-x86_64-dmd":["libmysql.dll"]
         },
         {
             "name": "postgresql",
