@@ -379,7 +379,7 @@ class dTimeType : DlangDataType {
 }
 
 
-DlangDataType getDlangDataType(T)(T val)
+DlangDataType getDlangDataType(T)()
 {
 	static if(is(T == int))
 		 return new dIntType();
@@ -564,3 +564,36 @@ enum CompareType : string {
     nenull = " is not ",
     like = " like "
 }
+
+
+enum PropertyMemberType : int {
+    BOOL_TYPE,    // bool
+    BYTE_TYPE,    // byte
+    SHORT_TYPE,   // short
+    INT_TYPE,     // int
+    LONG_TYPE,    // long
+    UBYTE_TYPE,   // ubyte
+    USHORT_TYPE,  // ushort
+    UINT_TYPE,    // uint
+    ULONG_TYPE,   // ulong
+    FLOAT_TYPE,   // float
+    DOUBLE_TYPE,   // double
+    STRING_TYPE,   // string
+}
+
+enum PropertyMemberType[string] DTypeToPropertyType = [
+	"bool" : PropertyMemberType.BOOL_TYPE,
+	"short" : PropertyMemberType.SHORT_TYPE,
+	"ushort" : PropertyMemberType.USHORT_TYPE,
+	"int" : PropertyMemberType.INT_TYPE,
+	"uint" : PropertyMemberType.UINT_TYPE,
+	"long" : PropertyMemberType.LONG_TYPE,
+	"ulong" : PropertyMemberType.ULONG_TYPE,
+	"byte" : PropertyMemberType.BYTE_TYPE,
+	"ubyte" : PropertyMemberType.UBYTE_TYPE,
+	"float" : PropertyMemberType.FLOAT_TYPE,
+	"double" : PropertyMemberType.DOUBLE_TYPE,
+	"string" : PropertyMemberType.STRING_TYPE
+];
+
+

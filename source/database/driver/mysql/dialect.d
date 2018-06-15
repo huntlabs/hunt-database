@@ -1,6 +1,7 @@
 module database.driver.mysql.dialect;
 
 import database;
+import database.defined;
 
 class MysqlDialect : Dialect
 {
@@ -40,7 +41,107 @@ class MysqlDialect : Dialect
 		else
 			return openQuote ~ value.toString ~ closeQuote;
 	}
+	string getColumnDefinition(ColumnDefinitionInfo info) {
+		if (!(info.dType in DTypeToPropertyType))
+			throw new Exception("unsupport type %d of %s".format(info.dType,info.name));
+		SqlSingleTypeInfo sqlInfo = DTypeToSqlInfo[DTypeToPropertyType[info.dType]];
+		string unsigned = sqlInfo.unsigned ? " UNSIGNED" : "";
+		string nullable = info.isNullable ? "" : " NOT NULL";
+		string primaryKey = info.isId ? " PRIMARY KEY" : "";
+		string autoIncrease = info.isAuto ? " AUTO_INCREMENT" : "";
+		int len = info.len == 0 ? sqlInfo.len : info.len;
+		string modifiers = unsigned ~ nullable ~ primaryKey ~ autoIncrease;
+		string lenmodifiers = "("~to!string(len > 0 ? len : 255)~")"~modifiers;
+		switch (sqlInfo.sqlType) {
+            case SqlType.BIGINT:
+                return "BIGINT" ~ modifiers;
+            case SqlType.BIT:
+                return "TINYINT" ~ modifiers;
+                ///sometimes referred to as a type code, that identifies the generic SQL type BLOB.
+            case SqlType.BLOB:
+                return "BLOB";
+                ///somtimes referred to as a type code, that identifies the generic SQL type BOOLEAN.
+            case SqlType.BOOLEAN:
+                return "BIT" ~ modifiers;
+                ///sometimes referred to as a type code, that identifies the generic SQL type CHAR.
+            case SqlType.CHAR:
+                return "CHAR" ~ lenmodifiers;
+                ///sometimes referred to as a type code, that identifies the generic SQL type CLOB.
+            case SqlType.CLOB:
+                return "MEDIUMTEXT";
+                //somtimes referred to as a type code, that identifies the generic SQL type DATALINK.
+                    //DATALINK,
+                    ///sometimes referred to as a type code, that identifies the generic SQL type DATE.
+            case SqlType.DATE:
+                return "DATE" ~ modifiers;
+                ///sometimes referred to as a type code, that identifies the generic SQL type DATETIME.
+            case SqlType.DATETIME:
+                return "DATETIME" ~ modifiers;
+                ///sometimes referred to as a type code, that identifies the generic SQL type DECIMAL.
+            case SqlType.DECIMAL:
+                return "DOUBLE" ~ modifiers;
+                //sometimes referred to as a type code, that identifies the generic SQL type DISTINCT.
+                    //DISTINCT,
+                    ///sometimes referred to as a type code, that identifies the generic SQL type DOUBLE.
+            case SqlType.DOUBLE:
+                return "DOUBLE" ~ modifiers;
+                ///sometimes referred to as a type code, that identifies the generic SQL type FLOAT.
+            case SqlType.FLOAT:
+                return "FLOAT" ~ modifiers;
+                ///sometimes referred to as a type code, that identifies the generic SQL type INTEGER.
+            case SqlType.INTEGER:
+                return "INT" ~ modifiers;
+                //sometimes referred to as a type code, that identifies the generic SQL type JAVA_OBJECT.
+                    //JAVA_OBJECT,
+                    ///sometimes referred to as a type code, that identifies the generic SQL type LONGNVARCHAR.
+            case SqlType.LONGNVARCHAR:
+                return "VARCHAR" ~ lenmodifiers;
+                ///sometimes referred to as a type code, that identifies the generic SQL type LONGVARBINARY.
+            case SqlType.LONGVARBINARY:
+                return "VARCHAR" ~ lenmodifiers;
+                ///sometimes referred to as a type code, that identifies the generic SQL type LONGVARCHAR.
+            case SqlType.LONGVARCHAR:
+                return "VARCHAR" ~ lenmodifiers;
+                ///sometimes referred to as a type code, that identifies the generic SQL type NCHAR
+            case SqlType.NCHAR:
+                return "NCHAR" ~ lenmodifiers;
+                ///sometimes referred to as a type code, that identifies the generic SQL type NCLOB.
+            case SqlType.NCLOB:
+                return "MEDIUMTEXT";
+                ///sometimes referred to as a type code, that identifies the generic SQL type NUMERIC.
+            case SqlType.NUMERIC:
+                return "DOUBLE" ~ modifiers;
+                ///sometimes referred to as a type code, that identifies the generic SQL type NVARCHAR.
+            case SqlType.NVARCHAR:
+                return "NVARCHAR" ~ lenmodifiers;
+                ///sometimes referred to as a type code, that identifies the generic SQL type SMALLINT.
+            case SqlType.SMALLINT:
+                return "SMALLINT" ~ modifiers;
+                //sometimes referred to as a type code, that identifies the generic SQL type XML.
+                    //SQLXML,
+                    //sometimes referred to as a type code, that identifies the generic SQL type STRUCT.
+                    //STRUCT,
+                    ///sometimes referred to as a type code, that identifies the generic SQL type TIME.
+            case SqlType.TIME:
+                return "TIME" ~ modifiers;
+                //sometimes referred to as a type code, that identifies the generic SQL type TIMESTAMP.
+                    //TIMESTAMP,
+                    ///sometimes referred to as a type code, that identifies the generic SQL type TINYINT.
+            case SqlType.TINYINT:
+                return "TINYINT" ~ modifiers;
+                ///sometimes referred to as a type code, that identifies the generic SQL type VARBINARY.
+            case SqlType.VARBINARY:
+                return "VARCHAR" ~ lenmodifiers;
+                ///sometimes referred to as a type code, that identifies the generic SQL type VARCHAR.
+            case SqlType.VARCHAR:
+                return "VARCHAR" ~ lenmodifiers;
+            default:
+                return "VARCHAR(255)";
+		}
+	}
 }
+
+
 
 string[] MYSQL_RESERVED_WORDS = 
 [

@@ -38,6 +38,68 @@ class PostgresqlDialect : Dialect
 		else
 			return openQuote ~ value.toString ~ closeQuote;
 	}
+	string getColumnDefinition(ColumnDefinitionInfo info) {
+		if (!(info.dType in DTypeToPropertyType))
+			throw new Exception("unsupport type %d of %s".format(info.dType,info.name));
+		SqlSingleTypeInfo sqlInfo = DTypeToSqlInfo[DTypeToPropertyType[info.dType]];
+
+		string nullable = info.isNullable ? "" : " NOT NULL";
+		string primaryKey = info.isId ? " PRIMARY KEY" : "";
+		string autoIncrease;
+		if (info.isAuto) {
+			if (sqlInfo.sqlType == SqlType.SMALLINT || sqlInfo.sqlType == SqlType.TINYINT)
+                autoIncrease = "SERIAL PRIMARY KEY";
+            if (sqlInfo.sqlType == SqlType.INTEGER)
+                autoIncrease = "SERIAL PRIMARY KEY";
+			else 
+            	autoIncrease = "BIGSERIAL PRIMARY KEY";
+		}
+		int len = info.len == 0 ? sqlInfo.len : info.len;
+		string modifiers = nullable ~ primaryKey ~ autoIncrease;
+		string lenmodifiers = "("~to!string(len > 0 ? len : 255)~")"~modifiers;
+		switch (sqlInfo.sqlType) {
+			case SqlType.BIGINT:
+                return "BIGINT" ~ modifiers;
+            case SqlType.BIT:
+            case SqlType.BOOLEAN:
+                return "BOOLEAN" ~ modifiers;
+            case SqlType.INTEGER:
+                return "INT" ~ modifiers;
+            case SqlType.NUMERIC:
+                return "INT" ~ modifiers;
+            case SqlType.SMALLINT:
+                return "SMALLINT" ~ modifiers;
+            case SqlType.TINYINT:
+                return "SMALLINT" ~ modifiers;
+            case SqlType.FLOAT:
+                return "FLOAT(24)" ~ modifiers;
+            case SqlType.DOUBLE:
+                return "FLOAT(53)" ~ modifiers;
+            case SqlType.DECIMAL:
+                return "REAL" ~ modifiers;
+            case SqlType.DATE:
+                return "DATE" ~ modifiers;
+            case SqlType.DATETIME:
+                return "TIMESTAMP" ~ modifiers;
+            case SqlType.TIME:
+                return "TIME" ~ modifiers;
+            case SqlType.CHAR:
+            case SqlType.CLOB:
+            case SqlType.LONGNVARCHAR:
+            case SqlType.LONGVARBINARY:
+            case SqlType.LONGVARCHAR:
+            case SqlType.NCHAR:
+            case SqlType.NCLOB:
+            case SqlType.VARBINARY:
+            case SqlType.VARCHAR:
+            case SqlType.NVARCHAR:
+                return "TEXT" ~ modifiers;
+            case SqlType.BLOB:
+                return "BYTEA";
+            default:
+                return "TEXT";
+		}
+	}
 }
 
 string[] PGSQL_RESERVED_WORDS = [
