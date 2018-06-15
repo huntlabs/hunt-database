@@ -41,6 +41,10 @@ class SqliteDialect : Dialect
 		else
 			return openQuote ~ value.toString ~ closeQuote;
 	}
+	string getColumnDefinition(ColumnDefinitionInfo info) {
+		//TODO
+		return "";
+	}
 }
 
 string[] SQLITE_RESERVED_WORDS = 
