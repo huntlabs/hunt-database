@@ -79,7 +79,7 @@ class PostgresqlSqlSyntax : SqlSyntax
 	string orderExpr()
 	{
 		if(_builder.orderBy.length && _builder.order.length) {
-			string s = "ORDER BY";
+			string s = " ORDER BY";
 			foreach(k,v; _builder.orderBy) {
 				if (k != 0)
 					s ~= ",";
