@@ -146,7 +146,7 @@ class PostgresqlSqlSyntax : SqlSyntax
 
 	override string toString()
 	{
-		if(!_builder.tableName.length)
+		if(!_builder.tableName.length && _builder.method != Method.ShowTables)
 			throw new DatabaseException("query build table name not exists");
 		string str;
 		switch(_builder.method){
