@@ -106,7 +106,7 @@ class Row
 		return vars[name].to!string;
 	}
 
-	bool exsit(string name) {
+	bool exist(string name) {
 		return (name in vars) !is null;
 	}
 
