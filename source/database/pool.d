@@ -43,16 +43,28 @@ class Pool
         _mutex.destroy();
     }
 
+//	bool isMysql()
+//	bool isPgsql()
+//	bool isSqlite()
+
 	private Dialect initDialect()
 	{
 		version (USE_POSTGRESQL){
-			return new PostgresqlDialect;
-		}else version (USE_MYSQL){
-			return new MysqlDialect;
-		}else version(USE_SQLITE){
-			return new SqliteDialect;
-		}else
-			throw new DatabaseException("Don't support database driver: "~ _config.url.scheme);
+            if(_config.isPgsql)
+			    return new PostgresqlDialect;
+		}
+        
+        version (USE_MYSQL){
+            if(_config.isMysql)
+			    return new MysqlDialect;
+		}
+        
+        version(USE_SQLITE){
+            if(_config.isSqlite)
+			    return new SqliteDialect;
+		}
+
+		throw new DatabaseException("Don't support database driver: "~ _config.url.scheme);
 	
 	}
 
@@ -60,18 +72,21 @@ class Pool
     {
 		version (USE_POSTGRESQL)
 		{
-			return new PostgresqlConnection(_config.url);
+            if(_config.isPgsql)
+			    return new PostgresqlConnection(_config.url);
 		}
-		else version (USE_MYSQL)
+		version (USE_MYSQL)
 		{
+            if(_config.isMysql)
 			return new MysqlConnection(_config.url);
 		}
-		else version(USE_SQLITE){
+		version(USE_SQLITE){
 			_config.setMaximumConnection = 1;
 			_config.setMinimumConnection = 1;
+            if(_config.isSqlite)
 			return new SQLiteConnection(_config.url);
 		}
-		else
+		
 			throw new DatabaseException("Don't support database driver: "~ _config.url.scheme);
     }
 
