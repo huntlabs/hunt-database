@@ -15,3 +15,4 @@ public T safeConvert(F,T)(F value)
     }
 }
 
+auto fromSQLType(uint type){return typeid(string);}

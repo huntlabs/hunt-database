@@ -14,7 +14,7 @@ module database.driver.postgresql.binding;
 import core.stdc.stdio;
 
 version(USE_POSTGRESQL):
-auto fromSQLType(uint type){return typeid(string);}
+
 pragma(lib, "pq");
 pragma(lib, "pgtypes");
 extern(System) {

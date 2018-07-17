@@ -100,23 +100,31 @@ class Database
 
 	SqlBuilder createSqlBuilder()
 	{
-		return (new SqlFactory()).createBuilder();
+		return (new SqlFactory(_options)).createBuilder();
 	}
+
+	///
+	/////	bool isMysql()
+//	bool isPgsql()
+//	bool isSqlite()
+	///
 
 	Dialect createDialect()
 	{
 		version(USE_MYSQL){
+			if(_options.isMysql)
 			return new MysqlDialect();
 		}
-        else version(USE_POSTGRESQL)
+         version(USE_POSTGRESQL)
 		{
+			if(_options.isPgsql)
 			return new PostgresqlDialect(); 
 		}
-		else version(USE_SQLITE)
+		 version(USE_SQLITE)
 		{
+			if(_options.isSqlite)
 			return new SqliteDialect(); 
 		}
-        else
-			throw new DatabaseException("Unknow Dialect");
+        throw new DatabaseException("Unknow Dialect");
 	}
 }
