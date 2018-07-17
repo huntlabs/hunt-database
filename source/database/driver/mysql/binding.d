@@ -12,14 +12,12 @@
 module database.driver.mysql.binding;
 
 version(USE_MYSQL ):
-/*
- * 
- */
+
 version(Windows) {
     pragma(lib, "libmysql");
 }
-else {
-    pragma(msg,"use mysqlclient in linux");
+else
+{
     pragma(lib, "mysqlclient");
 }
 
