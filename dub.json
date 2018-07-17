@@ -3,19 +3,25 @@
     "license": "Apache-2.0",
     "copyright": "Copyright (C) 2015-2017 Shanghai Putao Technology Co., Ltd",
     "description": "Database abstraction layer for D programing language, support PostgreSQL / MySQL / SQLite.",
+    "authors": [
+        "zoujiaqing",
+        "zhangyuchun",
+        "wulishan",
+        "zhudejiang"
+    ],
     "configurations": [
         {
-            "name":"default",
+            "name": "default",
             "targetType": "library"
         },
         {
             "name": "full",
             "targetType": "library",
-            "versions":["USE_POSTGRESQL" , "USE_MYSQL" , "USE_SQLITE"],
-            "libs-posix": ["mysqlclient"],
-            "sourceFiles-windows-x86_64-dmd":["lib/win64/libmysql.lib"],
-            "copyFiles-windows-x86_64-dmd":["lib/win64/libmysql.dll"],
-            "libs": ["pq","sqlite3"]
+            "versions": [ "USE_POSTGRESQL", "USE_MYSQL", "USE_SQLITE" ],
+            "libs-posix": [ "mysqlclient" ],
+            "sourceFiles-windows-x86_64-dmd": [ "lib/win64/libmysql.lib" ],
+            "copyFiles-windows-x86_64-dmd": [ "lib/win64/libmysql.dll" ],
+            "libs": [ "pq", "sqlite3" ]
         },
         {
             "name": "postgresql",
@@ -26,7 +32,7 @@
             "libs": [
                 "pq"
             ],
-            "copyFiles-windows-x86_64": [ "lib/win64/libpq.dll"]
+            "copyFiles-windows-x86_64": [ "lib/win64/libpq.dll" ]
         },
         {
             "name": "mysql",
@@ -34,9 +40,9 @@
             "versions": [
                 "USE_MYSQL"
             ],
-            "libs-posix": ["mysqlclient"],
-            "sourceFiles-windows-x86_64-dmd":["lib/win64/libmysql.lib"],
-            "copyFiles-windows-x86_64-dmd":["lib/win64/libmysql.dll"]
+            "libs-posix": [ "mysqlclient" ],
+            "sourceFiles-windows-x86_64-dmd": [ "lib/win64/libmysql.lib" ],
+            "copyFiles-windows-x86_64-dmd": [ "lib/win64/libmysql.dll" ]
         },
         {
             "name": "sqlite",
