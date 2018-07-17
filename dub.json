@@ -5,8 +5,17 @@
     "description": "Database abstraction layer for D programing language, support PostgreSQL / MySQL / SQLite.",
     "configurations": [
         {
-            "name": "default",
+            "name":"default",
             "targetType": "library"
+        },
+        {
+            "name": "full",
+            "targetType": "library",
+            "versions":["USE_POSTGRESQL" , "USE_MYSQL" , "USE_SQLITE"],
+            "libs-posix": ["mysqlclient"],
+            "sourceFiles-windows-x86_64-dmd":["lib/win64/libmysql.lib"],
+            "copyFiles-windows-x86_64-dmd":["lib/win64/libmysql.dll"],
+            "libs": ["pq","sqlite3"]
         },
         {
             "name": "postgresql",

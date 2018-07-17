@@ -2,6 +2,8 @@ module database.driver.factory;
 
 import database;
 
+ import database.option;
+
 interface IFactory
 {
 
@@ -9,17 +11,31 @@ interface IFactory
 
 class SqlFactory : IFactory
 {
+    DatabaseOption _config;
+    this(DatabaseOption config)
+    {
+        _config = config;
+    }
+
+    //	bool isMysql()
+//	bool isPgsql()
+//	bool isSqlite()
+
     SqlBuilder createBuilder()
     {
 		version(USE_POSTGRESQL){
-			return new PostgresqlSqlBuilder();
+            if(_config.isPgsql)
+			    return new PostgresqlSqlBuilder();
 		}
-		else version(USE_SQLITE){
-			return new SqliteBuilder();
+		 version(USE_SQLITE){
+            if(_config.isSqlite)
+			    return new SqliteBuilder();
 		}
-        else {
-			return new MySqlBuilder();
+        version(USE_MYSQL) {
+            if(_config.isMysql)
+			    return new MySqlBuilder();
         }
+        throw new DatabaseException("Don't support database driver: "~ _config.url.scheme);
     }
     SqlBuilder createMySqlBuilder()
     {
