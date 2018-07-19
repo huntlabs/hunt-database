@@ -92,7 +92,7 @@ class PostgresqlResult : ResultSet
             immutable char* ptr = cast(immutable char*) dt;
             auto key = fieldNames[n];
             auto type = fromSQLType(fieldTypes[n]);
-            string value = cast(string) ptr[0 .. len];
+            string value = cast(string) ptr[0 .. len].dup;
             row.add(key,type,value);
         }
         this.row = row;
