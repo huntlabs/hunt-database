@@ -101,9 +101,16 @@ class PostgresqlConnection :  Connection
         return new PostgresqlResult(res);
     }
 
-    string escape(string sql)
+    string escape(string msg)
     {
-        return sql;
+        auto buf = PQescapeString(con, msg.toStringz, msg.length);
+        if (buf is null)
+            throw new DatabaseException("Unable to escape value: " ~ msg);
+
+        string res = buf.fromStringz.to!string;
+        PQfreemem(buf);
+
+        return res;
     }
 
     int lastInsertId()

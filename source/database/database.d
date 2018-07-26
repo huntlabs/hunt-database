@@ -76,6 +76,29 @@ class Database
 		return new Statement(conn, sql).execute();
 	}
 
+	string escape(string sql){
+		Connection conn = _pool.getConnection();
+		string str = conn.escape(sql);
+		_pool.release(conn);
+		return str;
+	}
+
+
+
+    string escapeLiteral(string msg){
+		Connection conn = _pool.getConnection();
+		string str = conn.escapeLiteral(msg);
+		_pool.release(conn);
+		return str;
+	}
+
+    string escapeIdentifier(string msg){
+		Connection conn = _pool.getConnection();
+		string str = conn.escapeIdentifier(msg);
+		_pool.release(conn);
+		return str;
+	}
+
 
 	ResultSet query(string sql)
 	{
@@ -100,7 +123,7 @@ class Database
 
 	SqlBuilder createSqlBuilder()
 	{
-		return (new SqlFactory(_options)).createBuilder();
+		return (new SqlFactory(_options)).createBuilder(this);
 	}
 
 	///

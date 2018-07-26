@@ -200,6 +200,7 @@ extern(System) {
 
     char *PQresultErrorMessage(const PGresult *res);
 
+    char *PQescapeString(PGconn*,const(char)*,size_t);
     char *PQescapeLiteral(PGconn*,const(char)*,size_t);
     char *PQescapeIdentifier(PGconn*,const(char)*,size_t);
 

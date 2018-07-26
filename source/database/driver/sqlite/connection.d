@@ -137,6 +137,7 @@ class SQLiteConnection : Connection
 
     string escape(string sql)
     {
+        // FIXME: Escape value properly to prevent accidental SQL injection
         return sql;
     }
     int lastInsertId()
