@@ -113,8 +113,8 @@ bool tryParseURL(string value, out URL url) {
         url.port = to!ushort(arr[1]);
     }
 
-    //path[?query][#fragment
-    value = value[i + 1 .. $];
+    // /path[?query][#fragment
+    value = value[i  .. $];
  
     i = value.indexOf("#");
     if( i > 0)
@@ -124,7 +124,6 @@ bool tryParseURL(string value, out URL url) {
     }
 
     //path[?query]
-    value = value[ i + 1 .. $];
     i = value.indexOf("?");
     if( i == -1)
     {
@@ -164,8 +163,11 @@ URL parseURL(string value) {
 unittest {
     import std.stdio;
    
-    writeln(parseURL("mysql://root:123456@127.0.0.1/test?charset=utf"));
+    writeln(parseURL("mysql://root:123456@127.0.0.1/test?charset=utf#test"));
     writeln(parseURL("mysql://root@127.0.0.1:3435/test?charset=utf"));
     writeln(parseURL("mysql://root:%324#4543sdf=@127.0.0.1:3435/test?charset=utf"));
+    writeln(parseURL("postgresql://user@host:123/database"));
+
+
 }
 
