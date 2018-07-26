@@ -55,7 +55,10 @@ class MysqlConnection : Connection
         if(!mysql_real_connect(mysql, toCstring(_host), toCstring(_user), 
                 toCstring(_pass), toCstring(_db), _port, null, 0))
             throw new DatabaseException("DB connect error " ~ error());
-        mysql_set_character_set(mysql, toCstring("utf8"));
+        if(_url.chartset == string.init)
+            mysql_set_character_set(mysql, toCstring("utf8mb4"));
+        else
+            mysql_set_character_set(mysql, toCstring(_url.chartset)); 
     }
 
     int execute(string sql)
