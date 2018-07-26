@@ -192,8 +192,7 @@ class MysqlConnection : Connection
 
     string escapeLiteral(string msg)
     {
-        // FIXME: Escape value properly to prevent accidental SQL injection
-        return `"` ~ msg ~ `"`;
+        return "'" ~ escape(msg) ~ "'";
     }
 
     string escapeIdentifier(string msg)

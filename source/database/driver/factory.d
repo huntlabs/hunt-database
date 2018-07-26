@@ -17,36 +17,23 @@ class SqlFactory : IFactory
         _config = config;
     }
 
-    //	bool isMysql()
-//	bool isPgsql()
-//	bool isSqlite()
 
-    SqlBuilder createBuilder()
+    SqlBuilder createBuilder(Database db)
     {
 		version(USE_POSTGRESQL){
             if(_config.isPgsql)
-			    return new PostgresqlSqlBuilder();
+			    return new PostgresqlSqlBuilder(db);
 		}
 		 version(USE_SQLITE){
             if(_config.isSqlite)
-			    return new SqliteBuilder();
+			    return new SqliteBuilder(db);
 		}
         version(USE_MYSQL) {
             if(_config.isMysql)
-			    return new MySqlBuilder();
+			    return new MySqlBuilder(db);
         }
         throw new DatabaseException("Don't support database driver: "~ _config.url.scheme);
     }
-    SqlBuilder createMySqlBuilder()
-    {
-        return new MySqlBuilder();
-    }
-    SqlBuilder createPostgresqlSqlBuilder()
-    {
-        return new PostgresqlSqlBuilder();
-    }
-    SqlBuilder createSqliteBuilder()
-    {
-        return new SqliteBuilder();
-    }
+    
+
 }

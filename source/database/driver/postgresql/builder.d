@@ -20,9 +20,12 @@ class PostgresqlSqlBuilder : SqlBuilder
 	ValueExpression[string] _values;
 	ValueExpression[] _valuesParameters;
 	JoinExpression[] _joins;
-
+	Database		 _db;
 	string _autoIncreaseKey;
-
+	this(Database db)
+	{
+		_db = db;
+	}
 
 	bool _distinct;
 	bool getDistinct() {
