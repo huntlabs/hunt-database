@@ -48,7 +48,6 @@ class SQLiteConnection : Connection
         string _db;
         uint _port;
 
-        QueryParams _querys;
         sqlite3* conn;
         sqlite3_stmt* st;
         bool closed;
@@ -72,7 +71,6 @@ class SQLiteConnection : Connection
         this.filename = buildPath(dirName(thisExePath), p);
 
         this._pass = url.pass;
-        this._querys = url.queryParams;
         closed = false;
 
         trace("Trying to open a sqlite file:", filename);

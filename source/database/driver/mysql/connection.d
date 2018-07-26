@@ -24,7 +24,6 @@ class MysqlConnection : Connection
     private string _pass;
     private string _db;
     private uint _port;
-    private QueryParams _querys;
     private MYSQL* mysql;
 
     this(URL url) 
@@ -35,7 +34,6 @@ class MysqlConnection : Connection
         this._user = url.user;
         this._db = (url.path)[1..$];
         this._pass = url.pass;
-        this._querys = url.queryParams;
         this.dbname = this._db;
         connect();
     }
