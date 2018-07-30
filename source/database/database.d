@@ -136,17 +136,17 @@ class Database
 	{
 		version(USE_MYSQL){
 			if(_options.isMysql)
-			return new MysqlDialect();
+			return new MysqlDialect(this);
 		}
          version(USE_POSTGRESQL)
 		{
 			if(_options.isPgsql)
-			return new PostgresqlDialect(); 
+			return new PostgresqlDialect(this); 
 		}
 		 version(USE_SQLITE)
 		{
 			if(_options.isSqlite)
-			return new SqliteDialect(); 
+			return new SqliteDialect(this); 
 		}
         throw new DatabaseException("Unknow Dialect");
 	}

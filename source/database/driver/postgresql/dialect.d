@@ -4,8 +4,11 @@ import database;
 
 class PostgresqlDialect : Dialect
 {
-	string closeQuote() { return "'"; }
-	string openQuote()  { return "'"; }
+	Database _db;
+	this(Database db)
+	{
+		_db = db;
+	}
 
 	Variant fromSqlValue(DlangDataType type,Variant value)
 	{
@@ -36,7 +39,7 @@ class PostgresqlDialect : Dialect
 		else if(typeid(type) == typeid(dIntType))
 			return value.toString;
 		else
-			return openQuote ~ value.toString ~ closeQuote;
+			return _db.escapeIdentifier(value.toString);
 	}
 	string getColumnDefinition(ColumnDefinitionInfo info) {
 		if (!(info.dType in DTypeToPropertyType))

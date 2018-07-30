@@ -22,13 +22,11 @@ class Pool
     DatabaseOption _config;
     ReadWriteMutex _mutex;
 	int _pool_length;
-	Dialect dialect;
 
     this(DatabaseOption config)
     {
         this._config = config;
         _mutex = new ReadWriteMutex();
-		dialect = initDialect();
         int i = 0;
         while(i < _config.minimumConnection)
         {
@@ -43,30 +41,7 @@ class Pool
         _mutex.destroy();
     }
 
-//	bool isMysql()
-//	bool isPgsql()
-//	bool isSqlite()
 
-	private Dialect initDialect()
-	{
-		version (USE_POSTGRESQL){
-            if(_config.isPgsql)
-			    return new PostgresqlDialect;
-		}
-        
-        version (USE_MYSQL){
-            if(_config.isMysql)
-			    return new MysqlDialect;
-		}
-        
-        version(USE_SQLITE){
-            if(_config.isSqlite)
-			    return new SqliteDialect;
-		}
-
-		throw new DatabaseException("Don't support database driver: "~ _config.url.scheme);
-	
-	}
 
     private Connection initConnection()
     {
