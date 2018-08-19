@@ -1,8 +1,36 @@
 language: d
 sudo: false
+
 os:
  - linux
  - osx
+
 d:
   - dmd
   - ldc
+
+addons:
+  apt:
+    packages:
+    - pkg-config
+    - libpq-dev
+    - libsqlite3-dev
+    - libmysqlclient-dev
+
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then pyenv global system 3.6; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then pip3 install 'meson>=0.46'; fi
+
+install:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then mkdir .ntmp && curl -L https://github.com/ninja-build/ninja/releases/download/v1.8.2/ninja-linux.zip -o .ntmp/ninja-linux.zip; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then unzip .ntmp/ninja-linux.zip -d .ntmp; fi
+
+before_script:
+  - export PATH=$PATH:$PWD/.ntmp
+
+script:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then meson build && ninja -j8 -C build; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then ninja -j8 -C build test -v; fi
+  - dub --help | tail -n 1
+  - dub build --compiler=$DC
+  - dub test --compiler=$DC
