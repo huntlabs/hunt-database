@@ -70,7 +70,11 @@ foreach driver : get_option('drivers')
         lib_description = 'Database abstraction layer for D - Built for PostgreSQL.'
 
     elif driver == 'mysql'
-        mysql_dep = dependency('mysqlclient')
+        mysql_dep = dependency('mysqlclient', required: false)
+        if not mysql_dep.found()
+            warning('Unable to find libmysqlclient, continuing anyway, assuming it exists.')
+            mysql_dep = declare_dependency(link_args: '-lmysqlclient')
+        endif
         lib_deps = [mysql_dep]
 
         lib_name = 'hunt-database-mysql'
@@ -87,8 +91,12 @@ foreach driver : get_option('drivers')
 
     elif driver == 'multi'
         pq_dep = dependency('libpq', version: '>= 9.6')
-        mysql_dep = dependency('mysqlclient')
         sqlite_dep = dependency('sqlite3')
+
+        if not mysql_dep.found()
+            warning('Unable to find libmysqlclient, continuing anyway, assuming it exists.')
+            mysql_dep = declare_dependency(link_args: '-lmysqlclient')
+        endif
         lib_deps = [pq_dep, mysql_dep, sqlite_dep]
 
         lib_name = 'hunt-database-multi'
