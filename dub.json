@@ -1,5 +1,5 @@
 {
-    "name": "hunt-database",
+    "name": "database",
     "license": "Apache-2.0",
     "copyright": "Copyright (C) 2015-2017 Shanghai Putao Technology Co., Ltd",
     "description": "Database abstraction layer for D programing language, support PostgreSQL / MySQL / SQLite.",
