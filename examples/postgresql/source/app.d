@@ -12,7 +12,7 @@
 import std.stdio;
 import std.experimental.logger;
 
-import database;
+import hunt.database;
 
 
 void main()

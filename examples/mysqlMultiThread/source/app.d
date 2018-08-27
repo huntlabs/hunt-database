@@ -16,7 +16,7 @@ import std.parallelism;
 
 import core.thread;
 
-import database;
+import hunt.database;
 
 void main()
 {

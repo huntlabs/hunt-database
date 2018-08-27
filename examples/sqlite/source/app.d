@@ -11,7 +11,7 @@
 
 import std.stdio;
 
-import database;
+import hunt.database;
 
 void main()
 {
