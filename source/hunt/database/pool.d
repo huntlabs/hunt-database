@@ -12,6 +12,7 @@
 module hunt.database.pool;
 
 import hunt.database;
+
 import std.container.array;
 import core.sync.rwmutex;
 
