@@ -8,7 +8,7 @@ Database abstraction layer for D programing language, support PostgreSQL / MySQL
 
 import std.stdio;
 
-import database;
+import hunt.database;
 
 void main()
 {
