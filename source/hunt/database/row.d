@@ -12,6 +12,7 @@
 module hunt.database.row;
 
 import hunt.database;
+
 import std.algorithm.comparison;
 import std.regex;
 
