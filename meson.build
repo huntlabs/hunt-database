@@ -48,7 +48,7 @@ database_src = [
     'source/hunt/database/url.d',
     'source/hunt/database/utils.d'
 ]
-install_subdir('source/database', install_dir: 'include/d/hunt-database/')
+install_subdir('source/hunt/', install_dir: 'include/d/hunt-database/')
 
 # determine the right version flag for the compiler we use
 dc = meson.get_compiler('d')
