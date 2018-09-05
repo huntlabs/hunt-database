@@ -56,6 +56,7 @@ class PostgresqlDialect : Dialect
                 autoIncrease = "SERIAL PRIMARY KEY";
 			else 
             	autoIncrease = "BIGSERIAL PRIMARY KEY";
+			return autoIncrease;
 		}
 		int len = info.len == 0 ? sqlInfo.len : info.len;
 		string modifiers = nullable ~ primaryKey ~ autoIncrease;
