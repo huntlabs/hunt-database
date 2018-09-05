@@ -2,7 +2,7 @@ project('hunt-database', 'd',
     meson_version: '>=0.46',
     license: 'Apache-2.0',
 
-    version: '0.1.8'
+    version: '0.2.1'
 )
 
 project_soversion = '0'
@@ -48,7 +48,7 @@ database_src = [
     'source/hunt/database/url.d',
     'source/hunt/database/utils.d'
 ]
-install_subdir('source/database', install_dir: 'include/d/hunt-database/')
+install_subdir('source/hunt/', install_dir: 'include/d/hunt-database/')
 
 # determine the right version flag for the compiler we use
 dc = meson.get_compiler('d')
