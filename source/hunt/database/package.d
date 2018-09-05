@@ -9,7 +9,7 @@
  *
  */
 
-module database;
+module hunt.database;
 
 public import std.path;
 public import std.file;
