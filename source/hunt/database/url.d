@@ -75,11 +75,20 @@ bool tryParseURL(string value, out URL url) {
    
     url.scheme = value[0 .. i - 1];
 
+    /// special
+    if(url.scheme == "sqlite")
+    {
+        url.path = value[i + 2 .. $];
+        return true;
+    }
+
     value = value[i + 2 .. $];
 
     i = value.indexOf("@");
     if( i == -1) // no user or password
+    {    
         return false;
+    }
     
     //user:password
     auto userpass = value[0 .. i];
@@ -167,7 +176,7 @@ unittest {
     writeln(parseURL("mysql://root@127.0.0.1:3435/test?charset=utf"));
     writeln(parseURL("mysql://root:%324#4543sdf=@127.0.0.1:3435/test?charset=utf"));
     writeln(parseURL("postgresql://user@host:123/database"));
-
+    writeln(parseURL("sqlite:///./testDB.db"));
 
 }
 
