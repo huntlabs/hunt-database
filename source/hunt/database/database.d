@@ -30,6 +30,11 @@ class Database
 		initPool();
 	}
 
+	DatabaseOption getOption()
+	{
+		return _options;
+	}
+
 	Transaction getTransaction(Connection conn) {
 		return new Transaction(conn);
 	}
