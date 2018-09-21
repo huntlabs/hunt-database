@@ -78,7 +78,13 @@ bool tryParseURL(string value, out URL url) {
     /// special
     if(url.scheme == "sqlite")
     {
-        url.path = value[i + 2 .. $];
+        value = value[i + 2 .. $];
+        i = value.indexOf("/");
+        auto j = value.indexOf("?");
+        if( j > i)
+            url.path = value[i .. j];
+        else
+            url.path  = value[i .. $];
         return true;
     }
 
@@ -172,11 +178,12 @@ URL parseURL(string value) {
 unittest {
     import std.stdio;
    
-    writeln(parseURL("mysql://root:123456@127.0.0.1/test?charset=utf#test"));
+    /*writeln(parseURL("mysql://root:123456@127.0.0.1/test?charset=utf#test"));
     writeln(parseURL("mysql://root@127.0.0.1:3435/test?charset=utf"));
     writeln(parseURL("mysql://root:%324#4543sdf=@127.0.0.1:3435/test?charset=utf"));
     writeln(parseURL("postgresql://user@host:123/database"));
     writeln(parseURL("sqlite:///./testDB.db"));
-
+    writeln(parseURL("sqlite://root:123123@127.0.0.1:32423/./testDB.db?charset=uft"));
+    writeln(parseURL("sqlite://root:123123@127.0.0.1:32423/./testDB.db"));*/
 }
 

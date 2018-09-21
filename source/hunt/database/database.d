@@ -156,3 +156,13 @@ class Database
         throw new DatabaseException("Unknow Dialect");
 	}
 }
+
+unittest{
+
+	/*auto db = new Database("mysql://root:123456@127.0.0.1:3306/hunt_test?charset=utf8mb4");
+	Statement statement = db.prepare(`INSERT INTO users ( email , first_name , last_name ) VALUES ( :email , :firstName , :lastName )`);
+	statement.setParameter(`:email`, "me@example.com");
+	statement.setParameter(`:firstName`, "John");
+	statement.setParameter(`:lastName`, "Doe");
+	statement.execute();*/
+}
