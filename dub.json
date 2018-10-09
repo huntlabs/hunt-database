@@ -9,6 +9,11 @@
         "wulishan",
         "zhudejiang"
     ],
+    "dependencies": {
+        "hunt-sql": {
+            "path":"../hunt-sql"
+        }
+    },
     "configurations": [
         {
             "name": "default",
