@@ -46,6 +46,8 @@ class Row
 
 	private int count;
 
+	enum defaultTable = "fb4bdfd8e016548d";
+
 	this(ResultSet resultSet)
 	{
 		this._resultSet = resultSet;
@@ -77,12 +79,21 @@ class Row
 				rowData[nameFields[0]] = new RowData();
 			rowData[nameFields[0]].addData(nameFields[2], data); 
 		}
+		else if(nameFields.length == 1)
+		{
+			RowDataS data = new RowDataS;
+			data.type = type;
+			data.value = val;
+			
+			if (defaultTable !in rowData)
+				rowData[defaultTable] = new RowData();
+			rowData[defaultTable].addData(nameFields[0], data);
+		}
 	}
 
 	RowData getAllRowData(string table) {
-		return rowData.get(table, null);
+		return rowData.get(table, null) is null ? rowData.get(defaultTable, null) : null;
 	}
-
 
 	string opDispatch(string name, string file = __FILE__,int line = __LINE__)()
 	{
