@@ -78,6 +78,7 @@ class Row
 			if (nameFields[0] !in rowData)
 				rowData[nameFields[0]] = new RowData();
 			rowData[nameFields[0]].addData(nameFields[2], data); 
+			
 		}
 		else if(nameFields.length == 1)
 		{
@@ -92,7 +93,7 @@ class Row
 	}
 
 	RowData getAllRowData(string table) {
-		return rowData.get(table, null) is null ? rowData.get(defaultTable, null) : null;
+		return rowData.get(table, null) is null ? rowData.get(defaultTable, null) : rowData.get(table, null);
 	}
 
 	string opDispatch(string name, string file = __FILE__,int line = __LINE__)()
