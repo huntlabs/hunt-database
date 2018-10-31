@@ -13,6 +13,8 @@ module hunt.database.database;
 
 import hunt.database;
 
+import hunt.sql;
+
 class Database
 {
 	Pool _pool;
@@ -129,6 +131,11 @@ class Database
 	SqlBuilder createSqlBuilder()
 	{
 		return (new SqlFactory(_options)).createBuilder(this);
+	}
+
+	QueryBuilder createQueryBuilder()
+	{
+		return (new SqlFactory(_options)).createQueryBuilder(this);
 	}
 
 	///

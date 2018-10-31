@@ -1,10 +1,13 @@
 module hunt.database.driver.mysql.syntax;
 
 import hunt.database;
+import hunt.sql;
 
 class MySqlSyntax : SqlSyntax
 {
 	SqlBuilder _builder;
+
+	SQLBuilder _sqlBuilder;
 
 	this(MySqlBuilder builder)
 	{
