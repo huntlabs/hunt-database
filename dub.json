@@ -10,10 +10,8 @@
         "zhudejiang"
     ],
     "dependencies": {
-        "hunt-sql": {
-            "path":"../hunt-sql"
-        }
-    },
+        "hunt-sql": "~master"
+	},
     "configurations": [
         {
             "name": "default",
