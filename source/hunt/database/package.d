@@ -63,3 +63,5 @@ public import hunt.database.driver.sqlite.resultset;
 public import hunt.database.driver.sqlite.dialect;
 public import hunt.database.driver.sqlite.syntax;
 public import hunt.database.driver.sqlite.builder;
+
+public import hunt.database.QueryBuilder;
