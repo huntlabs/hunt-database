@@ -5,6 +5,7 @@ import hunt.database.query.Common;
 import hunt.lang;
 import std.conv;
 
+
 class Comparison(T)
 {
     private string _var;

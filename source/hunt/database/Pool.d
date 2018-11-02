@@ -12,7 +12,7 @@
 module hunt.database.Pool;
 
 import hunt.database;
-
+import hunt.logging;
 import std.container.array;
 import core.sync.rwmutex;
 
@@ -77,6 +77,7 @@ class Pool
         Connection conn;
         if(!_conns.length)
         {
+            logWarning("too many connect!");
             conn = initConnection();
             _conns.insertBack(conn);
             _pool_length++;
