@@ -12,8 +12,10 @@
 module hunt.database.Statement;
 
 import hunt.database;
-
+import hunt.logging;
+import hunt.lang;
 import std.stdio;
+import std.regex;
 
 class Statement
 {
@@ -24,7 +26,7 @@ class Statement
 	private int _affectRows;
     private ResultSet _rs;
 	private ExprElement[] sql_prepare;
-	private string[string] param_value;
+    private Object[string] _parameters;
 
     this(Connection conn)
     {
@@ -41,40 +43,67 @@ class Statement
     {
 		assert(sql.length);
         this._sql = sql;
-        sql ~= " ";
-		int length = cast(int)sql.length;
-		int index = 0;
-        auto expr = new ExprStatus;
-		while(index < length){
-            auto status = expr.append(sql[index]);
-            if(status){
-                sql_prepare ~= ExprElement(cast(ExprElementType)status,expr.result);
-                if(status == ExprElementType.key){
-                    param_value[expr.result] = expr.result;
-                }
-            }
-           index++; 
-		}
     }
-
-    void setParameter(T = string)(string key, T value)
+     public void setParameter(R)(string key, R param)
     {
-        assert(key in param_value);
-        param_value[key] = _conn.escapeLiteral(value.to!string);
+        static if (is(R == int) || is(R == uint))
+        {
+            _parameters[key] = new Integer(param);
+        }
+        else static if (is(R == string) || is(R == char) || is(R == byte[]))
+        {
+            _parameters[key] = new String(param);
+        }
+        else static if (is(R == bool))
+        {
+            _parameters[key] = new Boolean(param);
+        }
+        else static if (is(R == double))
+        {
+            _parameters[key] = new Double(param);
+        }
+        else static if (is(R == float))
+        {
+            _parameters[key] = new Float(param);
+        }
+        else static if (is(R == short) || is(R == ushort))
+        {
+            _parameters[key] = new Short(param);
+        }
+        else static if (is(R == long) || is(R == ulong))
+        {
+            _parameters[key] = new Long(param);
+        }
+        else static if (is(R == byte) || is(R == ubyte))
+        {
+            _parameters[key] = new Byte(param);
+        }
+        else static if(is(R == class))
+        {
+            _parameters[key] = param;
+        }
+        else
+        {
+            throw new Exception("IllegalArgument not support : " ~ R.stringof);
+        }
     }
 
     string sql()
     {
-        string str;
-        foreach(element;sql_prepare){
-            if(element.type == ExprElementType.key){
-                str ~= param_value[element.value] ~ " ";
-            }else{
-                str ~= element.value ~ " ";
+        string str = _sql;
+        foreach (k, v; _parameters)
+        {
+            auto re = regex(r":" ~ k ~ r"([^\w])", "g");
+            if (cast(String) v !is null)
+            {
+                str = str.replaceAll(re, "'" ~ _conn.escape(v.toString()) ~ "'" ~ "$1");
+            }
+            else
+            {
+                str = str.replaceAll(re, v.toString() ~ "$1" );
             }
         }
-        _sql = str;
-        return _sql;
+        return str;
     }
 
     int execute()
@@ -181,7 +210,7 @@ class ExprStatus
                 buf ~= c;
             }
 		}else{
-			if(c == ' '){				
+			if(c == ' ' || c == ','){				
                 result = cast(string)buf;
                 buf = [];
                 type = ExprElementType.start;

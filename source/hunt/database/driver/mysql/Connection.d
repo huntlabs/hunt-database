@@ -134,6 +134,7 @@ class MysqlConnection : Connection
         ubyte[] buffer = new ubyte[str.length * 2 + 1];
         buffer.length = mysql_real_escape_string(mysql, buffer.ptr, 
                 cast(cstring) str.ptr, cast(uint) str.length);
+
         return cast(string) buffer;
     }
 
@@ -183,7 +184,7 @@ class MysqlConnection : Connection
 
     string toSql(string s) {
         if(s is null)return "NULL";
-        return '\'' ~ escape(s) ~ '\'';
+        return "\"" ~ escape(s) ~ "\"";
     }
 
     string toSql(long s) {
@@ -192,13 +193,13 @@ class MysqlConnection : Connection
 
     string escapeLiteral(string msg)
     {
-        return "'" ~ escape(msg) ~ "'";
+        return "\"" ~ escape(msg) ~ "\"";
     }
 
     string escapeIdentifier(string msg)
     {
         // FIXME: Escape db identifier properly to prevent accidental SQL injection
-        return "'" ~ escape(msg) ~ "'";
+        return "\"" ~ escape(msg) ~ "\"";
 
         // return msg;
     }
