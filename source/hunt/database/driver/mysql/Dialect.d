@@ -29,6 +29,7 @@ class MysqlDialect : Dialect
 		else
 			return value;
 	}
+	
 	string toSqlValueImpl(DlangDataType type,Variant value)
 	{
 		if(typeid(type) == typeid(dBoolType))
@@ -42,9 +43,18 @@ class MysqlDialect : Dialect
 		}
 		else if(typeid(type) == typeid(dIntType))
 			return value.toString;
+		else if(typeid(type) == typeid(dStringType))
+			return _db.escapeIdentifier(quoteString(value.toString));
 		else
-			return _db.escapeIdentifier( value.toString);
+			return _db.escapeIdentifier(value.toString);
 	}
+
+	string quoteString(in string str) {
+		import std.array : replace;
+
+		return "'" ~ str.replace("'", "''") ~ "'";
+	}
+
 	string getColumnDefinition(ColumnDefinitionInfo info) {
 		if (!(info.dType in DTypeToPropertyType))
 			throw new Exception("unsupport type %d of %s".format(info.dType,info.name));
@@ -147,7 +157,7 @@ class MysqlDialect : Dialect
 
 
 
-string[] MYSQL_RESERVED_WORDS = 
+string[] MYSQL_RESERVED_WORDS =
 [
 "ACCESSIBLE", "ADD", "ALL",
 	"ALTER", "ANALYZE", "AND",
