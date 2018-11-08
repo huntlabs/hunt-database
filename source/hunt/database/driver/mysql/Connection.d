@@ -203,6 +203,11 @@ class MysqlConnection : Connection
 
         // return msg;
     }
+
+    string getDBType()
+    {
+        return "mysql";
+    }
 }
 
 cstring toCstring(string c) 

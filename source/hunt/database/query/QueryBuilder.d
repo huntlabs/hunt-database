@@ -56,7 +56,7 @@ class QueryBuilder
         _db = db;
         if (_db.getOption().isPgsql())
             _dbType = DBType.POSTGRESQL.name;
-        else if (_db.getOption().isPgsql())
+        else if (_db.getOption().isSqlite())
             _dbType = DBType.SQLITE.name;
         else
             _dbType = DBType.MYSQL.name;
@@ -230,7 +230,7 @@ class QueryBuilder
     private string getExprStr(T)(Comparison!T comExpr)
     {
         static if (is(T == string) || is(T == String))
-            return comExpr.variant ~ " " ~ comExpr.operator ~ " " ~ _db.escapeLiteral(
+            return comExpr.variant ~ " " ~ comExpr.operator ~ " " ~ quoteSqlString(
                     comExpr.value.to!string);
         else
             return comExpr.variant ~ " " ~ comExpr.operator ~ " " ~ comExpr.value.to!string;
@@ -238,6 +238,7 @@ class QueryBuilder
 
     public QueryBuilder where(string expression)
     {
+        // logDebug("where(string) : ",expression);
         _where = expression;
         return this;
     }
@@ -584,7 +585,7 @@ class QueryBuilder
                 break;
             case QUERY_TYPE.INSERT:
                 {
-                    str ~= " insert " ~ _table;
+                    str ~= " insert into " ~ _table;
                     string keys;
                     string values;
                     foreach (k, v; _values)

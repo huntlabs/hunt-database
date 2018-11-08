@@ -51,4 +51,6 @@ interface Connection
 
     string escapeLiteral(string msg);
     string escapeIdentifier(string msg);
+
+    string getDBType();
 }

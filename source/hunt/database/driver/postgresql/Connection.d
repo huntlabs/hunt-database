@@ -12,6 +12,8 @@
 module hunt.database.driver.postgresql.Connection;
 
 import hunt.database;
+import hunt.logging;
+
 version(USE_POSTGRESQL):
 
 class PostgresqlConnection :  Connection 
@@ -158,6 +160,7 @@ class PostgresqlConnection :  Connection
         string res = buf.fromStringz.to!string;
         PQfreemem(buf);
 
+        // logDebug("escapeLiteral : ",res);
         return res;
     }
 
@@ -170,6 +173,12 @@ class PostgresqlConnection :  Connection
         string res = buf.fromStringz.to!string;
         PQfreemem(buf);
 
+        // logDebug("escapeIdentifier : ",res);
         return res;
+    }
+
+    string getDBType()
+    {
+        return "postgresql";
     }
 }

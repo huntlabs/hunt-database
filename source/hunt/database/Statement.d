@@ -25,7 +25,6 @@ class Statement
     private int _lastInsertId;
 	private int _affectRows;
     private ResultSet _rs;
-	private ExprElement[] sql_prepare;
     private Object[string] _parameters;
 
     this(Connection conn)
@@ -96,7 +95,10 @@ class Statement
             auto re = regex(r":" ~ k ~ r"([^\w])", "g");
             if (cast(String) v !is null)
             {
-                str = str.replaceAll(re, "'" ~ _conn.escape(v.toString()) ~ "'" ~ "$1");
+                if(_conn.getDBType() == "postgresql")
+                    str = str.replaceAll(re, _conn.escapeLiteral(v.toString())  ~ "$1");
+                else
+                   str = str.replaceAll(re, "'" ~ _conn.escape(v.toString()) ~ "'"  ~ "$1"); 
             }
             else
             {
@@ -170,55 +172,3 @@ class Statement
 
 }
 
-struct ExprElement
-{
-    ExprElementType type;
-    string value;
-}
-
-enum ExprElementType : uint {
-	start = 0,
-	element = 1,
-	key = 2
-}
-
-class ExprStatus
-{
-	ExprElementType type = ExprElementType.start;
-	string result;
-	char[] buf;
-	
-
-	int append(char c)
-	{
-		if(type == ExprElementType.start){
-            buf ~= c;
-			if(c == ' '){				
-				type = ExprElementType.element;
-			}else if(c == ':'){
-				type = ExprElementType.key;
-			}else{
-				type = ExprElementType.element;
-			}
-		}else if(type == ExprElementType.element){
-			if(c == ' '){				
-                result = cast(string)buf;
-                buf = [];
-                type = ExprElementType.start;
-                return cast(int)ExprElementType.element;
-            }else{
-                buf ~= c;
-            }
-		}else{
-			if(c == ' ' || c == ','){				
-                result = cast(string)buf;
-                buf = [];
-                type = ExprElementType.start;
-                return cast(int)ExprElementType.key;
-            }else{
-                buf ~= c; 
-            }
-		}
-		return cast(int)ExprElementType.start;
-	}
-}

@@ -176,6 +176,11 @@ class SQLiteConnection : Connection
         // FIXME: Escape db identifier properly to prevent accidental SQL injection
         return msg;
     }
+
+    string getDBType()
+    {
+        return "sqlite";
+    }
 }  
 extern(C) int myCallback(void *a_parm, int argc, char **argv,
                          char **column)

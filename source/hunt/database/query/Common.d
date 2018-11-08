@@ -1,6 +1,8 @@
 
 module hunt.database.query.Common;
 
+import std.conv;
+
 enum QUERY_TYPE : byte
 {
     SELECT,
@@ -51,4 +53,12 @@ string quoteSqlString(string s)
 		res ~= "\"";
 		//writeln("quoted " ~ s ~ " is " ~ res);
 		return res;
+}
+
+string quoteSqlStringIfNeed(T)(T t)
+{
+    static if(is(T == string))
+        return quoteSqlString(t);
+    else
+        return t.to!string;
 }

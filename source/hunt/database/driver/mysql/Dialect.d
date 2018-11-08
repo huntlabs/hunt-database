@@ -43,7 +43,7 @@ class MysqlDialect : Dialect
 		else if(typeid(type) == typeid(dIntType))
 			return value.toString;
 		else
-			return _db.escapeIdentifier( value.toString);
+			return _db.escapeLiteral( value.toString);
 	}
 	string getColumnDefinition(ColumnDefinitionInfo info) {
 		if (!(info.dType in DTypeToPropertyType))
