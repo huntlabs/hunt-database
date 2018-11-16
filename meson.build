@@ -2,12 +2,12 @@ project('hunt-database', 'd',
     meson_version: '>=0.46',
     license: 'Apache-2.0',
 
-    version: '1.0.0'
+    version: '1.0.1'
 )
 
 project_soversion = '0'
 
-hunt_sql_required_version = '>= 1.0.0'
+hunt_sql_required_version = '>= 1.0.1'
 
 src_dir = include_directories('source/')
 pkgc = import('pkgconfig')
@@ -57,6 +57,10 @@ if dc.get_id() == 'llvm'
 elif dc.get_id() == 'dmd'
     dc_version_arg = '-version='
 endif
+
+hunt_sql_prj = subproject('hunt-sql',
+                         version: hunt_sql_required_version
+              )
 
 # construct a bunch of libraries for each selected driver
 foreach driver : get_option('drivers')
