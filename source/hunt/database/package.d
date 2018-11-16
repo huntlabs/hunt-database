@@ -15,7 +15,6 @@ public import std.path;
 public import std.file;
 public import std.stdio;
 public import std.traits;
-public import std.typecons;
 public import std.variant;
 public import std.conv;
 public import std.regex;

@@ -229,7 +229,7 @@ class QueryBuilder
 
     private string getExprStr(T)(Comparison!T comExpr)
     {
-        static if (is(T == string) || is(T == String))
+        static if (is(T == string) || is(T == String) || is(T == Nullable!string))
             return comExpr.variant ~ " " ~ comExpr.operator ~ " " ~ quoteSqlString(
                     comExpr.value.to!string);
         else
@@ -402,7 +402,7 @@ class QueryBuilder
         foreach (k, v; params)
         {
             auto re = regex(r":" ~ k ~ r"([^\w])", "g");
-            if (cast(String) v !is null)
+            if ((cast(String) v !is null) || (cast(Nullable!string)v !is null) )
             {
                 sql = sql.replaceAll(re, _db.escapeLiteral(v.toString()) ~ "$1");
             }
@@ -591,7 +591,7 @@ class QueryBuilder
                     foreach (k, v; _values)
                     {
                         keys ~= k ~ ",";
-                        if (cast(String)(v.value) !is null)
+                        if ((cast(String)(v.value) !is null) || (cast(Nullable!string)(v.value) !is null))
                         {
                             // logDebug("---Insert(%s , %s )".format(k,v.value));
                             values ~= _db.escapeLiteral(v.value.toString()) ~ ",";

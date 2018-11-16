@@ -93,7 +93,7 @@ class Statement
         foreach (k, v; _parameters)
         {
             auto re = regex(r":" ~ k ~ r"([^\w])", "g");
-            if (cast(String) v !is null)
+            if ((cast(String) v !is null) || (cast(Nullable!string)v !is null))
             {
                 if(_conn.getDBType() == "postgresql")
                     str = str.replaceAll(re, _conn.escapeLiteral(v.toString())  ~ "$1");

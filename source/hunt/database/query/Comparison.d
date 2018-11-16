@@ -36,7 +36,7 @@ class Comparison(T)
 
     override string toString()
     {
-        static if(is(T == string) || is(T == String))
+        static if(is(T == string) || is(T == String) || is(T == Nullable!string))
             return _var ~ " " ~ _op ~ " "~ quoteSqlString(_value.to!string);
         else
             return _var ~ " " ~ _op ~ " "~ _value.to!string;

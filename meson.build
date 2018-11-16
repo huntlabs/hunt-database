@@ -2,10 +2,12 @@ project('hunt-database', 'd',
     meson_version: '>=0.46',
     license: 'Apache-2.0',
 
-    version: '0.2.2'
+    version: '1.0.0'
 )
 
 project_soversion = '0'
+
+hunt_sql_required_version = '>= 1.0.0'
 
 src_dir = include_directories('source/')
 pkgc = import('pkgconfig')
@@ -59,7 +61,7 @@ endif
 # construct a bunch of libraries for each selected driver
 foreach driver : get_option('drivers')
     if driver == 'postgres'
-        pq_dep = dependency('libpq', version: '>= 9.6')
+        pq_dep = dependency('libpq', version: '>= 11.0')
         lib_deps = [pq_dep]
 
         lib_name = 'hunt-database-postgres'
