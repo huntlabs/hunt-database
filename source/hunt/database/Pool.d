@@ -77,7 +77,7 @@ class Pool
         Connection conn;
         if(!_conns.length)
         {
-            logWarning("too many connect!");
+            // logWarning("too many connect!");
             conn = initConnection();
             _conns.insertBack(conn);
             _pool_length++;

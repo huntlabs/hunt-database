@@ -401,7 +401,7 @@ class QueryBuilder
     {
         foreach (k, v; params)
         {
-            auto re = regex(r":" ~ k ~ r"([^\w])", "g");
+            auto re = regex(r":" ~ k ~ r"([^\w]*)", "g");
             if ((cast(String) v !is null) || (cast(Nullable!string)v !is null) )
             {
                 sql = sql.replaceAll(re, _db.escapeLiteral(v.toString()) ~ "$1");
