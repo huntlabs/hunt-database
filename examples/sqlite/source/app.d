@@ -19,6 +19,13 @@ void main()
 
     Database db = new Database("sqlite:///./testDB.db");
 
+    db.execute(`CREATE TABLE user(
+            name CAHR(50),
+            email CAHR(100),
+            money REAL,
+            status INT
+            );`);
+
     string sql = q{
         INSERT INTO  user(name,email,money,status) VALUES("viile","viile@dlang.org",10.5,1);
     };
