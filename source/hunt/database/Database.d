@@ -17,7 +17,7 @@ import hunt.sql;
 
 class Database
 {
-	Pool _pool;
+	Pool!Connection _pool;
 	DatabaseOption _options;
 
 	this(string url)
@@ -43,19 +43,50 @@ class Database
 	
 
 	Connection getConnection() {
-		return _pool.getConnection();
+		return _pool.invoke();
 	}
 
 	void closeConnection(Connection conn) {
-		_pool.release(conn);
+		_pool.revoke(conn);
 	}
 
+	void relaseConnection(Connection conn)
+	{
+		_pool.revoke(conn);
+	}
+
+	int getPoolSize()
+	{
+		return _pool.size;
+	}
 
 	
 	private void initPool()
 	{
-		_pool = new Pool(this._options);
+		_pool = new Pool!Connection(this._options.minimumConnection,this._options.maximumConnection,&this.createConnection);
 	}
+
+	private Connection createConnection()
+    {
+		version (USE_POSTGRESQL)
+		{
+            if(_options.isPgsql)
+			    return new PostgresqlConnection(_options.url);
+		}
+		version (USE_MYSQL)
+		{
+            if(_options.isMysql)
+			return new MysqlConnection(_options.url);
+		}
+		version(USE_SQLITE){
+			_options.setMaximumConnection = 1;
+			_options.setMinimumConnection = 1;
+            if(_options.isSqlite)
+			return new SQLiteConnection(_options.url);
+		}
+		
+			throw new DatabaseException("Don't support database driver: "~ _options.url.scheme);
+    }
 
 	// Transaction beginTransaction()
 	// {
@@ -72,54 +103,48 @@ class Database
 
 	int execute(string sql)
 	{
-		Connection conn = _pool.getConnection();
-		int ret = new Statement(conn, sql).execute();
-		_pool.release(conn);
+		int ret = new Statement(this, sql).execute();
 		return ret;
 	}
 
 	int execute(Connection conn, string sql)
 	{
-		return new Statement(conn, sql).execute();
+		return new Statement(this, sql).execute();
 	}
 
 	string escape(string sql){
-		Connection conn = _pool.getConnection();
+		Connection conn = _pool.invoke();
 		string str = conn.escape(sql);
-		_pool.release(conn);
+		_pool.revoke(conn);
 		return str;
 	}
 
 
 
     string escapeLiteral(string msg){
-		Connection conn = _pool.getConnection();
+		Connection conn = _pool.invoke();
 		string str = conn.escapeLiteral(msg);
-		_pool.release(conn);
+		_pool.revoke(conn);
 		return str;
 	}
 
     string escapeIdentifier(string msg){
-		Connection conn = _pool.getConnection();
+		Connection conn = _pool.invoke();
 		string str = conn.escapeIdentifier(msg);
-		_pool.release(conn);
+		_pool.revoke(conn);
 		return str;
 	}
 
 
 	ResultSet query(string sql)
 	{
-		Connection conn = _pool.getConnection();
-		ResultSet ret = (new Statement(conn, sql)).query();
-		_pool.release(conn);
+		ResultSet ret = (new Statement(this, sql)).query();
 		return ret;
 	}
 
 	Statement prepare(string sql)
 	{
-		Connection conn = _pool.getConnection();
-		Statement ret = new Statement(conn, sql);
-		_pool.release(conn);
+		Statement ret = new Statement(this, sql);
 		return ret;
 	}
 

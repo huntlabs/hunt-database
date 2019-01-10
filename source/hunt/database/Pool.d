@@ -1,106 +1,130 @@
-/*
- * Database - Database abstraction layer for D programing language.
- *
- * Copyright (C) 2017  Shanghai Putao Technology Co., Ltd
- *
- * Developer: HuntLabs
- *
- * Licensed under the Apache-2.0 License.
- *
- */
-
 module hunt.database.Pool;
 
-import hunt.database;
+import core.sync.mutex;
+import hunt.container;
+import hunt.lang.common;
 import hunt.logging;
-import std.container.array;
-import core.sync.rwmutex;
 
-class Pool
+class Pool(T : Closeable)
 {
-    Connection _conn;
-    Array!Connection _conns;
-    DatabaseOption _config;
-    ReadWriteMutex _mutex;
-	int _pool_length;
+    alias ObjectFactory = T delegate();
+    private Mutex _mutex;
+    private int _minSize;
+    private int _maxSize;
+    private ObjectFactory _objectFactory;
+    private LinkedList!T _list;
 
-    this(DatabaseOption config)
+    this(int minSize,int maxSize, ObjectFactory fac)
     {
-        this._config = config;
-        _mutex = new ReadWriteMutex();
-        int i = 0;
-        while(i < _config.minimumConnection)
+        _mutex = new Mutex();
+        _minSize = minSize;
+        _maxSize = maxSize;
+        _objectFactory = fac;
+        _list = new LinkedList!(T)();
+        init();
+    }
+
+    private void init()
+    {
+        for(int i = 0 ; i < _minSize ; i++)
         {
-            _conns.insertBack(initConnection);
-            i++;
+            _list.add(_objectFactory());
         }
-		_pool_length = i;
     }
 
-    ~this()
+    T invoke()
     {
-        _mutex.destroy();
-    }
+        _mutex.lock();
+        scope (exit)
+            _mutex.unlock();
 
-
-
-    private Connection initConnection()
-    {
-		version (USE_POSTGRESQL)
-		{
-            if(_config.isPgsql)
-			    return new PostgresqlConnection(_config.url);
-		}
-		version (USE_MYSQL)
-		{
-            if(_config.isMysql)
-			return new MysqlConnection(_config.url);
-		}
-		version(USE_SQLITE){
-			_config.setMaximumConnection = 1;
-			_config.setMinimumConnection = 1;
-            if(_config.isSqlite)
-			return new SQLiteConnection(_config.url);
-		}
-		
-			throw new DatabaseException("Don't support database driver: "~ _config.url.scheme);
-    }
-
-    Connection getConnection()
-    {
-        _mutex.writer.lock();
-        scope(exit) {
-            if(_conns.length)
-                _conns.linearRemove(_conns[0..1]);
-            _mutex.writer.unlock();
-        }
-        Connection conn;
-        if(!_conns.length)
+        if (_list.size > 0)
         {
-            // logWarning("too many connect!");
-            conn = initConnection();
-            _conns.insertBack(conn);
-            _pool_length++;
+            return _list.pollFirst();
         }
         else
-            conn = _conns.front;
-        version(USE_MYSQL){conn.ping();}
-        return conn;
+        {
+            auto t = _objectFactory();
+            if (_list.size < _maxSize)
+                _list.add(t);
+            return t;
+        }
     }
 
-    void release(Connection conn)
+    void revoke(T t)
     {
-        _mutex.writer.lock();
-        scope(exit)_mutex.writer.unlock();
-        _conns.insertBack(conn);
-    }    
+        // logDebug(" revoke object : ",(cast(Object)t).toHash);
+        _mutex.lock();
+        scope (exit)
+            _mutex.unlock();
 
-	void close()
-	{
-        _mutex.writer.lock();
-        scope(exit)_mutex.writer.unlock();
-		foreach(c;_conns){
-			c.close();
-		}	
-	}
+        if (_list.size < _maxSize)
+            _list.add(t);
+        else
+            t.close();
+    }
+
+    int size()
+    {
+        _mutex.lock();
+        scope (exit)
+            _mutex.unlock();
+        return _list.size;
+    }
+
+    void close()
+    {
+        while (_list.size > 0)
+        {
+            auto t = _list.pollFirst();
+            t.close();
+        }
+    }
+
+}
+
+unittest
+{
+    import std.stdio;
+    import std.random;
+    import core.thread;
+
+    class DBConnect : Closeable
+    {
+        void close()
+        {
+            writeln("db close");
+        }
+
+        void doJob()
+        {
+            writeln("do something");
+            Thread.sleep(dur!("msecs")(uniform(1, 5)));
+        }
+    }
+
+    DBConnect createDBConnect()
+    {
+        return new DBConnect();
+    }
+
+    Pool!DBConnect pool = new Pool!DBConnect(1,5, &createDBConnect);
+
+    auto group = new ThreadGroup();
+    foreach (_; 0 .. 9)
+    {
+        group.create(() { 
+                auto t = pool.invoke();
+                scope(exit) pool.revoke(t); 
+                t.doJob();
+            });
+    }
+    group.joinAll();
+
+    writeln("pool size : ",pool.size);
+
+    pool.close();
+
+    writeln("after close ,pool size : ",pool.size);
+
 }

@@ -19,7 +19,7 @@ import std.regex;
 
 class Statement
 {
-    private Connection _conn = null;
+    private Database _db = null;
     private string _sql;
     private bool _isUsed = false;
     private int _lastInsertId;
@@ -27,14 +27,14 @@ class Statement
     private ResultSet _rs;
     private Object[string] _parameters;
 
-    this(Connection conn)
+    this(Database db)
     {
-        _conn = conn;
+        _db = db;
     }
 
-    this(Connection conn, string sql)
+    this(Database db, string sql)
     {
-        _conn = conn;
+        _db = db;
         prepare(sql);
     }
 
@@ -90,15 +90,18 @@ class Statement
     string sql()
     {
         string str = _sql;
+        auto conn = _db.getConnection();
+        scope(exit) _db.relaseConnection(conn);
+
         foreach (k, v; _parameters)
         {
             auto re = regex(r":" ~ k ~ r"([^\w]*)", "g");
             if ((cast(String) v !is null) || (cast(Nullable!string)v !is null))
             {
-                if(_conn.getDBType() == "postgresql")
-                    str = str.replaceAll(re, _conn.escapeLiteral(v.toString())  ~ "$1");
+                if(conn.getDBType() == "postgresql")
+                    str = str.replaceAll(re, conn.escapeLiteral(v.toString())  ~ "$1");
                 else
-                   str = str.replaceAll(re, "'" ~ _conn.escape(v.toString()) ~ "'"  ~ "$1"); 
+                   str = str.replaceAll(re, "'" ~ conn.escape(v.toString()) ~ "'"  ~ "$1"); 
             }
             else
             {
@@ -113,9 +116,12 @@ class Statement
         isUsed();
         assert(sql);
         log(sql);
-        int status = this._conn.execute(sql);
-        _lastInsertId = this._conn.lastInsertId();
-		_affectRows = this._conn.affectedRows();
+        auto conn = _db.getConnection();
+        scope(exit) _db.relaseConnection(conn);
+
+        int status = conn.execute(sql);
+        _lastInsertId = conn.lastInsertId();
+		_affectRows = conn.affectedRows();
         // return status;
         return _affectRows;
     }
@@ -124,7 +130,10 @@ class Statement
     {
         isUsed();
         assert(sql);
-        auto r = this._conn.query(sql);
+        auto conn = _db.getConnection();
+        scope(exit) _db.relaseConnection(conn);
+
+        auto r = conn.query(sql);
         auto res = r.front();
         return res[0].to!int;
     }
@@ -155,7 +164,10 @@ class Statement
     {
         isUsed();
         assert(sql);
-        _rs = this._conn.query(sql);
+        auto conn = _db.getConnection();
+        scope(exit) _db.relaseConnection(conn);
+
+        _rs = conn.query(sql);
         return _rs;
     }
 

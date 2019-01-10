@@ -41,23 +41,23 @@ class Transaction
         _isExpire = true;
     }
 
-    int execute(string sql)
-    {
-        isExpire();
-        return new Statement(_conn ,sql).execute();
-    }
+    // int execute(string sql)
+    // {
+    //     isExpire();
+    //     return new Statement(_conn ,sql).execute();
+    // }
 
-    ResultSet query(string sql)
-    {
-        isExpire();
-        return new Statement(_conn ,sql).query();
-    }
+    // ResultSet query(string sql)
+    // {
+    //     isExpire();
+    //     return new Statement(_conn ,sql).query();
+    // }
 
-    Statement prepare(string sql)
-    {
-        isExpire();
-        return new Statement(_conn, sql);
-    }
+    // Statement prepare(string sql)
+    // {
+    //     isExpire();
+    //     return new Statement(_conn, sql);
+    // }
     
     private void isExpire()
     {

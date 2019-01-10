@@ -12,8 +12,9 @@
 module hunt.database.driver.Connection;
 
 import hunt.database;
+import hunt.lang.common;
 
-interface Connection
+interface Connection : Closeable
 {
     // return affected line quantity
     int execute(string sql);
@@ -32,7 +33,7 @@ interface Connection
 
     ResultSet query(T...)(string sql, T t)
     {
-        log(sql);
+        // log(sql);
         Variant[] args;
         foreach(arg; t) {
             Variant a;
@@ -53,4 +54,5 @@ interface Connection
     string escapeIdentifier(string msg);
 
     string getDBType();
+
 }

@@ -123,6 +123,8 @@ class MysqlConnection : Connection
 
     override ResultSet queryImpl(string sql, Variant[] args...) 
     {
+        // import std.stdio;
+        // writeln("connection hash : ",this.toHash());
         assert(mysql);
         sql = escapedVariants(sql, args);
         mysql_query(mysql, toCstring(sql));
