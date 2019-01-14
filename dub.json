@@ -1,13 +1,11 @@
 {
     "name": "hunt-database",
     "license": "Apache-2.0",
-    "copyright": "Copyright (C) 2015-2017 Shanghai Putao Technology Co., Ltd",
+    "copyright": "Copyright (C) 2018-2019, HuntLabs",
+    "homepage": "https://www.huntlabs.net/",
     "description": "Database abstraction layer for D programing language, support PostgreSQL / MySQL / SQLite.",
-    "authors": [
-        "huntlabs.net"
-    ],
     "dependencies": {
-        "hunt-sql": "~>1.0.3"
+        "hunt-sql": "~>1.0.4"
 	},
     "configurations": [
         {

@@ -1,24 +1,31 @@
+# Visual Studio Code
+#.vscode/
+
+# Compiled Object files
+*.o
+*.obj
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.a
+*.lib
+
+# Executables
+*.exe
+
+# DUB
 .dub
+dub.selections.json
 docs.json
 __dummy.html
-*.o
-*.obj
-__test__*__
-*.o
-*.a
-*.so
-*.obj
-/obj
-/bin
-*_demo
-libdb.a
-libdatabase.a
-db-test-db_lib
-mysql_demo
-pgsql_demo
-sqlite_demo
-testDB.db
-db.lib
-database.lib
-dub.selections.json
-postgresql_demo
+docs/
+
+# Code coverage
+*.lst
+
+# Examples
+hunt-database-test-default
