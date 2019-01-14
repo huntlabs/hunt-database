@@ -1,8 +1,8 @@
 module hunt.database.Pool;
 
 import core.sync.mutex;
-import hunt.container;
-import hunt.lang.common;
+import hunt.collection;
+import hunt.util.Common;
 import hunt.logging;
 
 class Pool(T : Closeable)

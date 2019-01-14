@@ -7,7 +7,7 @@
         "huntlabs.net"
     ],
     "dependencies": {
-        "hunt-sql": "~>1.0.1"
+        "hunt-sql": "~>1.0.3"
 	},
     "configurations": [
         {

@@ -13,7 +13,14 @@ module hunt.database.Statement;
 
 import hunt.database;
 import hunt.logging;
-import hunt.lang;
+import hunt.String;
+import hunt.Integer;
+import hunt.Long;
+import hunt.Double;
+import hunt.Float;
+import hunt.Byte;
+import hunt.Short;
+import hunt.Nullable;
 import std.stdio;
 import std.regex;
 

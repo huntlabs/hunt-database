@@ -12,7 +12,7 @@
 module hunt.database.driver.Connection;
 
 import hunt.database;
-import hunt.lang.common;
+import hunt.util.Common;
 
 interface Connection : Closeable
 {

@@ -2,7 +2,8 @@ module hunt.database.query.Comparison;
 
 import hunt.database.Defined;
 import hunt.database.query.Common;
-import hunt.lang;
+import hunt.String;
+import hunt.Nullable;
 import std.conv;
 
 
