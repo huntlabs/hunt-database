@@ -11,17 +11,10 @@
 
 module hunt.database;
 
-public import std.path;
-public import std.file;
-public import std.stdio;
-public import std.traits;
 public import std.variant;
 public import std.conv;
 public import std.regex;
 public import std.string;
-public import std.exception;
-public import std.container.array;
-public import std.experimental.logger;
 
 public import hunt.database.Url;
 public import hunt.database.Transaction;

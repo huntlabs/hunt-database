@@ -122,7 +122,7 @@ class Statement
     {
         isUsed();
         assert(sql);
-        log(sql);
+        version(HUNT_DEBUG)logDebug(sql);
         auto conn = _db.getConnection();
         scope(exit) _db.relaseConnection(conn);
 

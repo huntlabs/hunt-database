@@ -10,7 +10,7 @@
  */
 
 import std.stdio;
-import std.experimental.logger;
+import hunt.logging;
 
 import hunt.database;
 
