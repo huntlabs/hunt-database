@@ -43,7 +43,10 @@ class Database
 	
 
 	Connection getConnection() {
-		return _pool.invoke();
+		auto conn = _pool.invoke();
+		if(conn !is null)
+			conn.ping();
+		return conn;
 	}
 
 	void closeConnection(Connection conn) {
@@ -113,25 +116,25 @@ class Database
 	}
 
 	string escape(string sql){
-		Connection conn = _pool.invoke();
+		auto conn = getConnection();
+        scope(exit) relaseConnection(conn);
 		string str = conn.escape(sql);
-		_pool.revoke(conn);
 		return str;
 	}
 
 
 
     string escapeLiteral(string msg){
-		Connection conn = _pool.invoke();
+		auto conn = getConnection();
+        scope(exit) relaseConnection(conn);
 		string str = conn.escapeLiteral(msg);
-		_pool.revoke(conn);
 		return str;
 	}
 
     string escapeIdentifier(string msg){
-		Connection conn = _pool.invoke();
+		auto conn = getConnection();
+        scope(exit) relaseConnection(conn);
 		string str = conn.escapeIdentifier(msg);
-		_pool.revoke(conn);
 		return str;
 	}
 
