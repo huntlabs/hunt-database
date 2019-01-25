@@ -7,7 +7,6 @@ os:
 
 d:
   - dmd
-  - ldc
 
 # addons:
 #   apt:
