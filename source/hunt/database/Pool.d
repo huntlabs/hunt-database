@@ -44,10 +44,7 @@ class Pool(T : Closeable)
         }
         else
         {
-            auto t = _objectFactory();
-            if (_list.size < _maxSize)
-                _list.add(t);
-            return t;
+            return _objectFactory();
         }
     }
 
