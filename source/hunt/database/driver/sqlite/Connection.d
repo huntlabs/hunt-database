@@ -14,6 +14,9 @@ module hunt.database.driver.sqlite.Connection;
 version(USE_SQLITE):
 
 import hunt.database;
+import hunt.logging;
+import std.path;
+import std.file;
 
 version (Windows)
 {
