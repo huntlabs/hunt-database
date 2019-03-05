@@ -48,13 +48,11 @@ class DatabaseOption
 
     DatabaseOption setMaximumConnection(int num)
     {
-        assert(num);
         this._maximumPoolSize = num;
         return this;
     }
     DatabaseOption setMinimumConnection(int num)
     {
-        assert(num);
         this._minimumPoolSize = num;
         return this;
     }

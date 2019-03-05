@@ -12,7 +12,6 @@
 module hunt.database.Database;
 
 import hunt.database;
-
 import hunt.sql;
 
 class Database
@@ -66,6 +65,9 @@ class Database
 	
 	private void initPool()
 	{
+		if(_options.minimumConnection> _options.maximumConnection) {
+			throw new Exception("Out of range");
+		}
 		_pool = new Pool!Connection(this._options.minimumConnection,this._options.maximumConnection,&this.createConnection);
 	}
 

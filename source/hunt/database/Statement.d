@@ -49,7 +49,12 @@ class Statement
     {
 		assert(sql.length);
         this._sql = sql;
+        _needReset = true;
+
     }
+
+    private bool _needReset =false;
+
      public void setParameter(R)(string key, R param)
     {
         static if (is(R == int) || is(R == uint))
@@ -92,13 +97,17 @@ class Statement
         {
             throw new Exception("IllegalArgument not support : " ~ R.stringof);
         }
+        _needReset = true;
     }
 
-    string sql()
+    private string sql(Connection conn)
     {
+        if(!_needReset)
+            return _str;
+
         string str = _sql;
-        auto conn = _db.getConnection();
-        scope(exit) _db.relaseConnection(conn);
+        // auto conn = _db.getConnection();
+        // scope(exit) _db.relaseConnection(conn);
 
         foreach (k, v; _parameters)
         {
@@ -115,18 +124,24 @@ class Statement
                 str = str.replaceAll(re, v.toString() ~ "$1" );
             }
         }
+
+        _needReset = false;  
+        _str = str;
         return str;
     }
+    private string _str;
 
     int execute()
     {
         isUsed();
-        assert(sql);
-        version(HUNT_DEBUG)logDebug(sql);
+        
         auto conn = _db.getConnection();
         scope(exit) _db.relaseConnection(conn);
+        string execSql = sql(conn);
+        assert(execSql);
+        version(HUNT_DEBUG)logDebug(execSql);
 
-        int status = conn.execute(sql);
+        int status = conn.execute(execSql);
         _lastInsertId = conn.lastInsertId();
 		_affectRows = conn.affectedRows();
         // return status;
@@ -136,11 +151,12 @@ class Statement
     int count()
     {
         isUsed();
-        assert(sql);
         auto conn = _db.getConnection();
         scope(exit) _db.relaseConnection(conn);
+        string execSql = sql(conn);
+        assert(execSql);
 
-        auto r = conn.query(sql);
+        auto r = conn.query(execSql);
         auto res = r.front();
         return res[0].to!int;
     }
@@ -170,13 +186,18 @@ class Statement
     ResultSet query()
     {
         isUsed();
-        assert(sql);
-        version(HUNT_DEBUG)logDebug(sql);
-
         auto conn = _db.getConnection();
         scope(exit) _db.relaseConnection(conn);
 
-        _rs = conn.query(sql);
+        string execSql = sql(conn);
+        assert(execSql);
+        version(HUNT_DEBUG)logDebug(execSql);
+
+        _rs = conn.query(execSql);
+        // conn.close();
+        // import core.thread;
+        // import core.time;
+        // Thread.sleep(1.seconds);
         return _rs;
     }
 

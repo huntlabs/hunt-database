@@ -3,7 +3,7 @@ module hunt.database.Pool;
 import core.sync.mutex;
 import hunt.collection;
 import hunt.util.Common;
-import hunt.logging;
+import hunt.logging.ConsoleLogger;
 
 class Pool(T : Closeable)
 {
@@ -55,10 +55,12 @@ class Pool(T : Closeable)
         scope (exit)
             _mutex.unlock();
 
-        if (_list.size < _maxSize)
+        if (_list.size < _maxSize) {
             _list.add(t);
-        else
+        }
+        else {
             t.close();
+        }
     }
 
     int size()

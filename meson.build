@@ -2,12 +2,12 @@ project('hunt-database', 'd',
     meson_version: '>=0.46',
     license: 'Apache-2.0',
 
-    version: '1.0.1'
+    version: '1.1.1'
 )
 
 project_soversion = '0'
 
-hunt_sql_required_version = '>= 1.0.1'
+hunt_sql_required_version = '>= 1.1.1'
 
 src_dir = include_directories('source/')
 pkgc = import('pkgconfig')
