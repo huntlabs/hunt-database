@@ -100,6 +100,13 @@ class Statement
         _needReset = true;
     }
 
+    public string sql()
+    {
+        auto conn = _db.getConnection();
+        scope(exit) _db.relaseConnection(conn);
+        return sql(conn);
+    }
+
     private string sql(Connection conn)
     {
         if(!_needReset)
