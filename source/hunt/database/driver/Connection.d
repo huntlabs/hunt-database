@@ -55,4 +55,5 @@ interface Connection : Closeable
 
     string getDBType();
 
+    void setParams(Object[string] param);
 }

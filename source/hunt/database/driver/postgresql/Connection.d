@@ -175,4 +175,5 @@ class PostgresqlConnection : Connection {
     string getDBType() {
         return "postgresql";
     }
+    override void setParams(Object[string] param){}
 }

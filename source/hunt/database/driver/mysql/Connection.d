@@ -210,6 +210,9 @@ class MysqlConnection : Connection
     {
         return "mysql";
     }
+
+    override void setParams(Object[string] param){}
+
 }
 
 cstring toCstring(string c) 

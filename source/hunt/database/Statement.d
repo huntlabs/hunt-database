@@ -123,8 +123,12 @@ class Statement
             {
                 if(conn.getDBType() == "postgresql")
                     str = str.replaceAll(re, conn.escapeLiteral(v.toString())  ~ "$1");
+                else if(conn.getDBType() == "mysql")
+                   str = str.replaceAll(re, "'" ~ conn.escape(v.toString()) ~ "'"  ~ "$1");
                 else
-                   str = str.replaceAll(re, "'" ~ conn.escape(v.toString()) ~ "'"  ~ "$1"); 
+                   {
+                       str = str.replaceAll(re, quoteSqlString(v.toString())  ~ "$1"); 
+                    }
             }
             else
             {
@@ -147,7 +151,11 @@ class Statement
         string execSql = sql(conn);
         assert(execSql);
         version(HUNT_DEBUG)logDebug(execSql);
-
+        if(conn.getDBType() == "sqlite")
+        {
+            conn.setParams(_parameters);
+            execSql = _sql;
+        }
         int status = conn.execute(execSql);
         _lastInsertId = conn.lastInsertId();
 		_affectRows = conn.affectedRows();

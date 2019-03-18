@@ -17,6 +17,7 @@ import hunt.database;
 import hunt.logging;
 import std.path;
 import std.file;
+import core.stdc.string;
 
 version (Windows)
 {
@@ -52,12 +53,14 @@ class SQLiteConnection : Connection
         uint _port;
 
         sqlite3* conn;
-        sqlite3_stmt* st;
+        sqlite3_stmt* stmt;
         bool closed;
         bool autocommit;
 
         int _last_insert_id;
         int _affectRows;
+        Object[string] _parameters;
+
     }
 
     this(URL url)
@@ -89,7 +92,8 @@ class SQLiteConnection : Connection
 
     ~this()
     {
-        close();
+        if(conn !is null)
+            close();
     }
 
     void close()
@@ -117,12 +121,43 @@ class SQLiteConnection : Connection
 
     int execute(string sql)
     {
-        int code = sqlite3_exec(conn,toStringz(sql),&myCallback,null,null);
-		if(code != 0)
-			throw new DatabaseException("SQL : " ~ sql ~" \rDB status : "~code.to!string~" \rEXECUTE ERROR :" ~ getError());
-        _last_insert_id = cast(int)sqlite3_last_insert_rowid(conn);
-        _affectRows = sqlite3_changes(conn);
-        return code;
+        // logInfo("len : ",_parameters.length);
+        if(_parameters.length > 0)
+        {
+            auto rc = sqlite3_prepare(conn, toStringz(sql), cast(int)strlen(toStringz(sql)), &stmt, null);
+            // logInfo("rc : ",rc," sql :",sql);
+            if (rc != SQLITE_OK)
+            {
+            //    fprintf(stderr, "sql error:%s\n", sqlite3_errmsg(db));
+            }
+            foreach(k,v; _parameters) {
+                auto idx = sqlite3_bind_parameter_index(stmt,toStringz(":" ~ k));
+                // logInfo("idx : ",idx," key : ",k);
+                sqlite3_bind_text(stmt, idx, toStringz(v.toString), cast(int)strlen(toStringz(v.toString)), SQLITE_STATIC);
+
+            }
+
+            int code = sqlite3_step(stmt);
+            if(code != SQLITE_DONE)
+            {
+                logError("sqlite3_step errorCode  : ",code," msg : ", fromStringz(sqlite3_errmsg(conn)));
+            }
+
+            _last_insert_id = cast(int)sqlite3_last_insert_rowid(conn);
+            _affectRows = sqlite3_changes(conn);
+            sqlite3_finalize(stmt);
+            return code;
+        }
+        else
+        {
+            int code = sqlite3_exec(conn,toStringz(sql),&myCallback,null,null);
+            if(code != 0)
+                throw new DatabaseException("SQL : " ~ sql ~" \rDB status : "~code.to!string~" \rEXECUTE ERROR :" ~ getError());
+            _last_insert_id = cast(int)sqlite3_last_insert_rowid(conn);
+            _affectRows = sqlite3_changes(conn);
+            return code;
+        }
+        
     }
 	
 	void begin()
@@ -184,6 +219,10 @@ class SQLiteConnection : Connection
     {
         return "sqlite";
     }
+
+    override void setParams(Object[string] param){
+        _parameters = param;
+    }
 }  
 extern(C) int myCallback(void *a_parm, int argc, char **argv,
                          char **column)
@@ -191,6 +230,9 @@ extern(C) int myCallback(void *a_parm, int argc, char **argv,
     return 0;
 }
 
+extern(C) void myCB(void *a_parm)
+{
+}
 enum State {
     Init,
     Execute,
