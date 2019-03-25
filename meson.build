@@ -7,7 +7,7 @@ project('hunt-database', 'd',
 
 project_soversion = '0'
 
-hunt_sql_required_version = '>= 1.1.1'
+hunt_sql_required_version = '>= 1.1.0-beta.1'
 
 src_dir = include_directories('source/')
 pkgc = import('pkgconfig')
