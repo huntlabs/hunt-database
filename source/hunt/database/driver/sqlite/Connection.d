@@ -94,14 +94,16 @@ class SQLiteConnection : Connection
 
     void close()
     {
-        checkClosed();
+        if(!closed) {
+            checkClosed();
 
-        int res = sqlite3_close(conn);
-        if (res != SQLITE_OK)
-        throw new DatabaseException("SQLite Error " ~ to!string(
-            res) ~ " while trying to close DB " ~ filename ~ " : " ~ getError());
-        closed = true;
-        conn = null;
+            int res = sqlite3_close(conn);
+            if (res != SQLITE_OK)
+            throw new DatabaseException("SQLite Error " ~ to!string(
+                res) ~ " while trying to close DB " ~ filename ~ " : " ~ getError());
+            closed = true;
+            conn = null;
+        }
     }
 
     void setAutoCommit(bool autoCommit)
