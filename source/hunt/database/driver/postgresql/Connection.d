@@ -59,17 +59,10 @@ class PostgresqlConnection : Connection {
 
     void close() {
 
-        if (_isClosed) {
-            return;
-        }
-        _isClosed = true;
-
         if (con !is null)
             PQfinish(con);
-
+        con = null;
     }
-
-    private bool _isClosed = false;
 
     int socket() {
         return PQsocket(con);
