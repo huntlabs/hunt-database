@@ -231,9 +231,15 @@ class TransStatement
         isUsed();
         string execSql = sql();
         assert(execSql);
-        version(HUNT_DEBUG)logDebug(execSql);
+        version(HUNT_DEBUG) info(execSql);
 
         _rs = _conn.query(execSql);
+        version(HUNT_DEBUG) {
+            tracef("result size: row=%d, col=%d", _rs.rows(), _rs.columns());
+        //     foreach(Row r; _rs) {
+        //         trace(r.toString());
+        //     }
+        }
         return _rs;
     }
 

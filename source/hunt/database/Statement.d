@@ -209,16 +209,12 @@ class Statement
         version(HUNT_DEBUG)logDebug(execSql);
 
         _rs = conn.query(execSql);
-        // conn.close();
-        // import core.thread;
-        // import core.time;
-        // Thread.sleep(1.seconds);
         return _rs;
     }
 
     void close()
     {
-
+        version(HUNT_DEBUG) info("statement closed");
     }
 
     private void isUsed()

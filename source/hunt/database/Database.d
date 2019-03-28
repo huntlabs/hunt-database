@@ -14,6 +14,8 @@ module hunt.database.Database;
 import hunt.database;
 import hunt.sql;
 
+version(HUNT_DEBUG) import hunt.logging.ConsoleLogger;
+
 class Database
 {
 	Pool!Connection _pool;
@@ -108,6 +110,7 @@ class Database
 
 	int execute(string sql)
 	{
+        version(HUNT_DEBUG) trace(sql);
 		int ret = new Statement(this, sql).execute();
 		return ret;
 	}
@@ -143,6 +146,7 @@ class Database
 
 	ResultSet query(string sql)
 	{
+        version(HUNT_DEBUG) trace(sql);
 		ResultSet ret = (new Statement(this, sql)).query();
 		return ret;
 	}
