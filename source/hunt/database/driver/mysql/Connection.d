@@ -40,9 +40,7 @@ class MysqlConnection : Connection
 
     ~this() 
     {
-        if(mysql)
-            mysql_close(mysql);
-        mysql = null;
+        close();
     }
 
     private void connect()
@@ -95,6 +93,7 @@ class MysqlConnection : Connection
     {
         if(mysql)
             mysql_close(mysql);
+        mysql = null;
     }
     void ping()
     {
