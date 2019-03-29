@@ -30,9 +30,9 @@ class ValueVariant
 }
 
 
-string quoteSqlString(string s) 
+string quoteSqlString(string s,string quotes = "\"") 
 {
-		string res = "\"";
+		string res = quotes;
 		foreach(ch; s) {
 			switch(ch) {
 				case '\'': res ~= "\\\'"; break;
@@ -50,7 +50,7 @@ string quoteSqlString(string s)
 					res ~= ch;
 			}
 		}
-		res ~= "\"";
+		res ~= quotes;
 		//writeln("quoted " ~ s ~ " is " ~ res);
 		return res;
 }
