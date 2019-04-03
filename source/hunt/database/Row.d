@@ -11,12 +11,15 @@
 
 module hunt.database.Row;
 
-import hunt.database;
+import hunt.database.DatabaseException;
+import hunt.database.driver.ResultSet;
+import hunt.logging.ConsoleLogger;
 
 import std.algorithm.comparison;
+import std.conv;
+import std.format;
 import std.regex;
-
-
+import std.string;
 
 
 public class RowDataS {
@@ -55,10 +58,6 @@ class Row
 		this._resultSet = resultSet;
 	}
 
-	~this()
-	{
-	}
-
 	void opDispatch(string name, T)(T val)
 	{
 		if (name in vars)
@@ -66,14 +65,19 @@ class Row
 		vars[name] = val;
 	}
 
-	void add(string name,TypeInfo type,string val)
+	void add(string name, TypeInfo type, string val)
 	{
 		if (name in vars) 
 			throw new DatabaseException("field "~name~" exits");
+		version(HUNT_DEBUG) {
+			tracef("column: name=%s, value=%s, type=%s", name, val, type.toString());
+		}
+
 		vars[name] = val;
 		types[name] = type;
 		columnNameIndexMap[columnCount] = name;
 		columnCount++;
+
 		auto nameFields = split(name, "__");
 		if (nameFields.length == 3 && nameFields[1] == "as") {
 			RowDataS data = new RowDataS;
@@ -108,13 +112,13 @@ class Row
 	}
 	
 	string opIndex(int index,string file = __FILE__,int line = __LINE__) {
-		int i = 0;
-		foreach(k,v;vars){
-			if(i == index)
-				return v;
-			i++;
+		if(index <0 || index >= columnCount) {
+			string msg = format("Out of range: %d, the valid range is [0, %d]", index, columnCount-1);
+			throw new DatabaseException(msg, file, line);
 		}
-		throw new DatabaseException("no index "~index.to!string~" in result", file, line);
+
+		string name = columnNameIndexMap[index];
+		return vars[name];
 	}
 
 	string opIndex(string name, string file = __FILE__, int line = __LINE__) {
