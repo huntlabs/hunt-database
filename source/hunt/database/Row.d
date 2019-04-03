@@ -41,6 +41,8 @@ class Row
 	private ResultSet _resultSet;
 	private string[string] vars;
 	private TypeInfo[string] types;
+	private string[int] columnNameIndexMap;
+	private int columnCount = 0;
 
 	RowData[string] rowData;
 
@@ -70,6 +72,8 @@ class Row
 			throw new DatabaseException("field "~name~" exits");
 		vars[name] = val;
 		types[name] = type;
+		columnNameIndexMap[columnCount] = name;
+		columnCount++;
 		auto nameFields = split(name, "__");
 		if (nameFields.length == 3 && nameFields[1] == "as") {
 			RowDataS data = new RowDataS;
@@ -124,7 +128,7 @@ class Row
 	}
 
 	ulong getSize() {
-		return vars.length;
+		return columnCount; // vars.length;
 	}
 
 	override string toString()
@@ -135,6 +139,35 @@ class Row
 	string[string] toStringArray() {
 		return vars;
 	}
+
+
+	T getAs(T)(int index) {
+		string v = opIndex(index);
+		static if(is(T == string)) {
+			return v;
+		} else static if(is(T == bool)) {
+			return stringToBool(v);
+		} else {
+			return to!T(v);
+		}
+	}
+
+
+	private static bool stringToBool(string v) {
+		version(USE_POSTGRESQL) {
+			if(v == "t" || v == "T") {
+				return true;
+			}
+			else if(v == "f" || v == "F") {
+				return false;
+			} else {
+				throw new DatabaseException("Can't convert to a bool value from " ~ v);
+			}
+		} else {
+			return to!bool(v);
+		}
+	}
+
 }
 
 
