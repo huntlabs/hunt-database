@@ -184,8 +184,16 @@ class TransStatement
         string execSql = sql();
         assert(execSql);
         version(HUNT_DEBUG)logDebug(execSql);
-
-        int status = _conn.execute(execSql);
+        
+        try {
+            int status = _conn.execute(execSql);
+        } catch(Exception ex) {
+            version(HUNT_DEBUG) {
+                error(ex);
+            } else {
+                error(ex.msg);
+            }
+        }
         _lastInsertId = _conn.lastInsertId();
 		_affectRows = _conn.affectedRows();
         // return status;
@@ -233,7 +241,15 @@ class TransStatement
         assert(execSql);
         version(HUNT_DEBUG) info(execSql);
 
-        _rs = _conn.query(execSql);
+        try {
+            _rs = _conn.query(execSql);
+        } catch(Exception ex) {
+            version(HUNT_DEBUG) {
+                error(ex);
+            } else {
+                error(ex.msg);
+            }
+        }
         version(HUNT_DEBUG) {
             tracef("result size: row=%d, col=%d", _rs.rows(), _rs.columns());
         //     foreach(Row r; _rs) {
