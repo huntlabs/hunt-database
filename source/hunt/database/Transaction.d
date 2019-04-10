@@ -187,15 +187,16 @@ class TransStatement
         
         try {
             int status = _conn.execute(execSql);
+            _lastInsertId = _conn.lastInsertId();
+            _affectRows = _conn.affectedRows();
         } catch(Exception ex) {
             version(HUNT_DEBUG) {
                 error(ex);
             } else {
                 error(ex.msg);
             }
+            throw ex;
         }
-        _lastInsertId = _conn.lastInsertId();
-		_affectRows = _conn.affectedRows();
         // return status;
         return _affectRows;
     }

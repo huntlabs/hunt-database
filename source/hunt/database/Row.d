@@ -69,7 +69,7 @@ class Row
 	{
 		if (name in vars) 
 			throw new DatabaseException("field "~name~" exits");
-		version(HUNT_DEBUG) {
+		version(HUNT_SQL_DEBUG) {
 			tracef("column: name=%s, value=%s, type=%s", name, val, type.toString());
 		}
 
