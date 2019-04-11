@@ -30,7 +30,7 @@ class ValueVariant
 }
 
 
-string quoteSqlString(string s,string quotes = "\"") 
+string quoteSqlString(string s,string quotes = "\'") 
 {
 		string res = quotes;
 		foreach(ch; s) {
