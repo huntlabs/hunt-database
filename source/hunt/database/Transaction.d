@@ -179,11 +179,10 @@ class TransStatement
     int execute()
     {
         isUsed();
-        
        
         string execSql = sql();
         assert(execSql);
-        version(HUNT_DEBUG)logDebug(execSql);
+        version(HUNT_DEBUG) info(execSql);
         
         try {
             int status = _conn.execute(execSql);
@@ -243,20 +242,21 @@ class TransStatement
         version(HUNT_DEBUG) info(execSql);
 
         try {
-            _rs = _conn.query(execSql);
-        } catch(Exception ex) {
+            _rs = _conn.query(execSql);        
+            version(HUNT_DEBUG) {
+                tracef("result size: row=%d, col=%d", _rs.rows(), _rs.columns());
+                //     foreach(Row r; _rs) {
+                //         trace(r.toString());
+                //     }
+            }
+        } catch(Throwable ex) {
             version(HUNT_DEBUG) {
                 error(ex);
             } else {
                 error(ex.msg);
             }
         }
-        version(HUNT_DEBUG) {
-            tracef("result size: row=%d, col=%d", _rs.rows(), _rs.columns());
-        //     foreach(Row r; _rs) {
-        //         trace(r.toString());
-        //     }
-        }
+
         return _rs;
     }
 

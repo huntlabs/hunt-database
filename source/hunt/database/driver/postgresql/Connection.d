@@ -79,10 +79,13 @@ class PostgresqlConnection : Connection {
         res = PQexec(con, toStringz(sql));
         int result = PQresultStatus(res);
         _affectRows = safeConvert!(char[], int)(std.string.fromStringz(PQcmdTuples(res)));
-        if (result == PGRES_FATAL_ERROR)
-            throw new DatabaseException("DB SQL : " ~ sql ~ "\r\nDB status : " ~ to!string(
+        if (result == PGRES_FATAL_ERROR) {
+            string msg = "DB SQL : " ~ sql ~ "\r\nDB status : " ~ to!string(
                     result) ~ " \r\nEXECUTE ERROR : " ~ to!string(
-                    result) ~ "\r\n" ~ cast(string) fromStringz(PQresultErrorMessage(res)));
+                    result) ~ "\r\n" ~ cast(string) fromStringz(PQresultErrorMessage(res));
+            throw new DatabaseException(msg);
+        }
+        else
         {
             auto reg = regex(r"[I|i][N|n][S|s][E|e][R|r][T|t].*[I|i][N|n][T|t][O|o].*.*[R|r][E|e][T|t][U|u][R|r][N|n][I|i][N|n][G|g].*");
             if (match(sql, reg)) {
@@ -98,6 +101,15 @@ class PostgresqlConnection : Connection {
         reconnect();
         PGresult* res;
         res = PQexec(con, toStringz(sql));
+
+        int result = PQresultStatus(res);
+        _affectRows = safeConvert!(char[], int)(std.string.fromStringz(PQcmdTuples(res)));
+        if (result == PGRES_FATAL_ERROR) {
+            string msg = "DB SQL : " ~ sql ~ "\r\nDB status : " ~ to!string(
+                    result) ~ " \r\nEXECUTE ERROR : " ~ to!string(
+                    result) ~ "\r\n" ~ cast(string) fromStringz(PQresultErrorMessage(res));
+            throw new DatabaseException(msg);
+        }
         return new PostgresqlResult(res);
     }
 
