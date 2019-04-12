@@ -203,6 +203,9 @@ extern(System) {
     char *PQescapeString(PGconn*,const(char)*,size_t);
     char *PQescapeLiteral(PGconn*,const(char)*,size_t);
     char *PQescapeIdentifier(PGconn*,const(char)*,size_t);
+    size_t PQescapeStringConn(PGconn *conn,
+                          ubyte *to, const char *from, size_t length,
+                          int *error);
 
     // date
 

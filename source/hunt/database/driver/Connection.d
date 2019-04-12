@@ -53,6 +53,9 @@ interface Connection : Closeable
     string escapeLiteral(string msg);
     string escapeIdentifier(string msg);
 
+    string escapeWithQuotes(string msg);
+
+
     string getDBType();
 
     void setParams(Object[string] param);

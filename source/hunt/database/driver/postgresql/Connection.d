@@ -12,6 +12,7 @@
 module hunt.database.driver.postgresql.Connection;
 
 import hunt.database;
+import hunt.logging;
 
 // dfmt off
 version(USE_POSTGRESQL):
@@ -114,14 +115,18 @@ class PostgresqlConnection : Connection {
     }
 
     string escape(string msg) {
-        auto buf = PQescapeString(con, msg.toStringz, msg.length);
-        if (buf is null)
+        int error;
+        ubyte[] buf = new ubyte[msg.length * 2 + 1];
+
+        buf.length = PQescapeStringConn(con,buf.ptr, msg.toStringz, msg.length,&error);
+        if(error != 0)
             throw new DatabaseException("Unable to escape value: " ~ msg);
 
-        string res = buf.fromStringz.to!string;
-        PQfreemem(buf);
+        // string res = buf.fromStringz.to!string;
+        // PQfreemem(buf);
+        version(HUNT_SQL_DEBUG)logDebugf("before msg : %s ,after msg : %s",msg,cast(string)buf);
 
-        return res;
+        return cast(string)buf;
     }
 
     int lastInsertId() {
@@ -161,7 +166,7 @@ class PostgresqlConnection : Connection {
         string res = buf.fromStringz.to!string;
         PQfreemem(buf);
 
-        // logDebug("escapeLiteral : ",res);
+        version(HUNT_SQL_DEBUG)logDebug("escapeLiteral : ",res);
         return res;
     }
 
@@ -175,6 +180,11 @@ class PostgresqlConnection : Connection {
 
         // logDebug("escapeIdentifier : ",res);
         return res;
+    }
+
+    string escapeWithQuotes(string msg)
+    {
+        return `'` ~ escape(msg) ~ `'`;
     }
 
     string getDBType() {

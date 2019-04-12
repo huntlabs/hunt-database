@@ -217,6 +217,11 @@ class SQLiteConnection : Connection
         return msg;
     }
 
+    string escapeWithQuotes(string msg)
+    {
+        return `"` ~ msg ~ `"`;
+    }
+
     string getDBType()
     {
         return "sqlite";

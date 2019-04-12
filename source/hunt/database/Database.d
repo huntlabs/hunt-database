@@ -143,6 +143,13 @@ class Database
 		return str;
 	}
 
+	string escapeWithQuotes(string msg){
+		auto conn = getConnection();
+        scope(exit) relaseConnection(conn);
+		string str = conn.escapeWithQuotes(msg);
+		return str;
+	}
+
 
 	ResultSet query(string sql)
 	{

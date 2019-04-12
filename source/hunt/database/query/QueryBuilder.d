@@ -237,7 +237,7 @@ class QueryBuilder
     private string getExprStr(T)(Comparison!T comExpr)
     {
         static if (is(T == string) || is(T == String) || is(T == Nullable!string))
-            return comExpr.variant ~ " " ~ comExpr.operator ~ " " ~ quoteSqlString(
+            return comExpr.variant ~ " " ~ comExpr.operator ~ " " ~ /*quoteSqlString*/ _db.escapeWithQuotes(
                     comExpr.value.to!string);
         else
             return comExpr.variant ~ " " ~ comExpr.operator ~ " " ~ comExpr.value.to!string;

@@ -205,6 +205,12 @@ class MysqlConnection : Connection
         // return msg;
     }
 
+    string escapeWithQuotes(string msg)
+    {
+        return "\"" ~ escape(msg) ~ "\"";
+    }
+
+
     string getDBType()
     {
         return "mysql";
