@@ -182,7 +182,7 @@ class TransStatement
        
         string execSql = sql();
         assert(execSql);
-        version(HUNT_DEBUG) info(execSql);
+        version(HUNT_SQL_DEBUG) info(execSql);
         
         try {
             int status = _conn.execute(execSql);
@@ -239,11 +239,11 @@ class TransStatement
         isUsed();
         string execSql = sql();
         assert(execSql);
-        version(HUNT_DEBUG) info(execSql);
+        version(HUNT_SQL_DEBUG) info(execSql);
 
         try {
             _rs = _conn.query(execSql);        
-            version(HUNT_DEBUG) {
+            version(HUNT_SQL_DEBUG) {
                 tracef("result size: row=%d, col=%d", _rs.rows(), _rs.columns());
                 //     foreach(Row r; _rs) {
                 //         trace(r.toString());
