@@ -22,10 +22,12 @@ import hunt.Byte;
 import hunt.Short;
 import hunt.Nullable;
 
+
 class Transaction
 {
     private Connection _conn;
     private bool _isExpire = false;
+    private bool _isStarted = false;
 
     this(Connection conn)
     {
@@ -36,18 +38,29 @@ class Transaction
     {
         _conn.begin;
         _isExpire = false;
+        _isStarted = true;
     }
 
     void commit()
     {
-        _conn.commit;
-        _isExpire = true;
+        if(_isStarted) {
+            _conn.commit;
+            _isExpire = true;
+            _isStarted = false;
+        } else {
+            version(HUNT_DEBUG) warning("The transaction is not started.");
+        }
     }
 
     void rollback()
     {
-        _conn.rollback;
-        _isExpire = true;
+        if(_isStarted) {
+            _conn.rollback;
+            _isExpire = true;
+            _isStarted = false;
+        } else {
+            version(HUNT_DEBUG) warning("The transaction is not started.");
+        }
     }
 
     // int execute(string sql)
