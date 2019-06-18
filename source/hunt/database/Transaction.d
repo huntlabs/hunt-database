@@ -43,6 +43,7 @@ class Transaction
 
     void commit()
     {
+        // https://stackoverflow.com/questions/28593685/why-does-this-postgresql-transaction-give-warning-there-is-no-transaction-in-p
         if(_isStarted) {
             _conn.commit;
             _isExpire = true;

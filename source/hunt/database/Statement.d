@@ -206,7 +206,7 @@ class Statement
 
         string execSql = sql(conn);
         assert(execSql);
-        version(HUNT_DEBUG)logDebug(execSql);
+        version(HUNT_SQL_DEBUG) logDebug(execSql);
 
         _rs = conn.query(execSql);
         return _rs;
