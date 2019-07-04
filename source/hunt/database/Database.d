@@ -75,6 +75,7 @@ class Database
 
 	private Connection createConnection()
     {
+		version(HUNT_DEBUG_MORE) infof("url: %s", _options.url);
 		version (USE_POSTGRESQL)
 		{
             if(_options.isPgsql)
@@ -92,7 +93,7 @@ class Database
 			return new SQLiteConnection(_options.url);
 		}
 		
-			throw new DatabaseException("Don't support database driver: "~ _options.url.scheme);
+		throw new DatabaseException("Unsupported database driver: "~ _options.url.scheme);
     }
 
 	// Transaction beginTransaction()

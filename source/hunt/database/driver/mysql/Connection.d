@@ -124,6 +124,8 @@ class MysqlConnection : Connection
     {
         // import std.stdio;
         // writeln("connection hash : ",this.toHash());
+        // TODO: Tasks pending completion -@zhangxueping at 2019/6/29 12:48:13 pm
+        // to check the status of query execution.
         assert(mysql);
         sql = escapedVariants(sql, args);
         mysql_query(mysql, toCstring(sql));
