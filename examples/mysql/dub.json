@@ -1,13 +1,13 @@
 {
     "name": "mysql_demo",
-    "authors": ["putao"],
     "targetType": "executable",
     "dependencies": {
         "hunt-database": {"path":"../../"}
     },
     "description": "A minimal D application.",
-    "copyright": "Copyright © 2017, Zhang",
-    "license": "public domain",
+    "license": "Apache-2.0",
+    "copyright": "Copyright (C) 2017-2019, HuntLabs",
+    "homepage": "https://www.huntlabs.net",
     "configurations": [
         {
             "name": "default",
@@ -15,5 +15,6 @@
                 "hunt-database": "mysql"
             }
         }
-    ]
+    ],
+    "versions": ["HUNT_DEBUG", "HUNT_SQL_DEBUG"]
 }

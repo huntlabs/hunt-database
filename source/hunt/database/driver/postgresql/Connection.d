@@ -106,9 +106,9 @@ class PostgresqlConnection : Connection {
         int result = PQresultStatus(res);
         _affectRows = safeConvert!(char[], int)(std.string.fromStringz(PQcmdTuples(res)));
         if (result == PGRES_FATAL_ERROR) {
-            string msg = "DB SQL : " ~ sql ~ "\r\nDB status : " ~ to!string(
-                    result) ~ " \r\nEXECUTE ERROR : " ~ to!string(
-                    result) ~ "\r\n" ~ cast(string) fromStringz(PQresultErrorMessage(res));
+            string msg = "DB SQL : " ~ sql ~ "\r\nDB status: " ~ 
+                to!string(result) ~ " \r\nEXECUTE ERROR: " ~ 
+                cast(string) fromStringz(PQresultErrorMessage(res));
             throw new DatabaseException(msg);
         }
         return new PostgresqlResult(res);
