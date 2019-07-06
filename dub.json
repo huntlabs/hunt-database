@@ -14,7 +14,11 @@
             "versions": [ "USE_POSTGRESQL", "USE_MYSQL", "USE_SQLITE" ],
             "libs-posix": [ "mysqlclient" ],
             "sourceFiles-windows-x86_64-dmd": [ "lib/win64/libmysql.lib" ],
-            "copyFiles-windows-x86_64-dmd": [ "lib/win64/libmysql.dll" ],
+            "copyFiles-windows-x86_64-dmd": [ 
+                "lib/win64/libmysql.dll",
+                "lib/win64/libeay32.dll",
+                "lib/win64/ssleay32.dll" 
+            ],
             "libs": [ "pq", "sqlite3" ]
         },
         {
@@ -36,7 +40,11 @@
             ],
             "libs-posix": [ "mysqlclient" ],
             "sourceFiles-windows-x86_64-dmd": [ "lib/win64/libmysql.lib" ],
-            "copyFiles-windows-x86_64-dmd": [ "lib/win64/libmysql.dll" ]
+            "copyFiles-windows-x86_64-dmd": [ 
+                "lib/win64/libmysql.dll",
+                "lib/win64/libeay32.dll",
+                "lib/win64/ssleay32.dll" 
+            ]
         },
         {
             "name": "sqlite",
