@@ -149,14 +149,16 @@ class Statement
         auto conn = _db.getConnection();
         scope(exit) _db.relaseConnection(conn);
         string execSql = sql(conn);
+        version(HUNT_SQL_DEBUG) logDebug(execSql);
         assert(execSql);
-        version(HUNT_DEBUG)logDebug(execSql);
         if(conn.getDBType() == "sqlite")
         {
             conn.setParams(_parameters);
             execSql = _sql;
         }
         int status = conn.execute(execSql);
+        version(HUNT_SQL_DEBUG) tracef("status=%d", status);
+
         _lastInsertId = conn.lastInsertId();
 		_affectRows = conn.affectedRows();
         // return status;

@@ -255,7 +255,7 @@ class TransStatement
         assert(execSql);
         version(HUNT_SQL_DEBUG) info(execSql);
 
-        try {
+        // try {
             _rs = _conn.query(execSql);        
             version(HUNT_SQL_DEBUG) {
                 tracef("result size: row=%d, col=%d", _rs.rows(), _rs.columns());
@@ -263,13 +263,13 @@ class TransStatement
                 //         trace(r.toString());
                 //     }
             }
-        } catch(Throwable ex) {
-            version(HUNT_DEBUG) {
-                error(ex);
-            } else {
-                error(ex.msg);
-            }
-        }
+        // } catch(Throwable ex) {
+        //     version(HUNT_DEBUG) {
+        //         error(ex);
+        //     } else {
+        //         error(ex.msg);
+        //     }
+        // }
 
         return _rs;
     }

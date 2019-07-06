@@ -50,7 +50,7 @@ class MysqlConnection : Connection
         //mysql_options(mysql, mysql_option.MYSQL_OPT_RECONNECT, &reconnect);
         if(!mysql_real_connect(mysql, toCstring(_host), toCstring(_user), 
                 toCstring(_pass), toCstring(_db), _port, null, 0))
-            throw new DatabaseException("DB connect error " ~ error());
+            throw new DatabaseException("DB connect error: " ~ error());
         if(_url.chartset == string.init)
             mysql_set_character_set(mysql, toCstring("utf8mb4"));
         else
@@ -62,8 +62,11 @@ class MysqlConnection : Connection
         assert(mysql);
         auto v = toCstring(sql);
         int result = mysql_query(mysql, v);
-		if(result != 0)
-			throw new DatabaseException("SQL : " ~ sql ~" \rDB status : "~result.to!string~" \rEXECUTE ERROR :" ~ error());
+		if(result != 0) {
+			throw new DatabaseException("SQL: " ~ sql ~
+                "\nDB status: " ~ result.to!string ~
+                "\nEXECUTE ERROR: " ~ error());
+        }
 		return result;
     }
 
@@ -124,11 +127,16 @@ class MysqlConnection : Connection
     {
         // import std.stdio;
         // writeln("connection hash : ",this.toHash());
-        // TODO: Tasks pending completion -@zhangxueping at 2019/6/29 12:48:13 pm
-        // to check the status of query execution.
         assert(mysql);
         sql = escapedVariants(sql, args);
-        mysql_query(mysql, toCstring(sql));
+        int result = mysql_query(mysql, toCstring(sql));
+
+		if(result != 0) {
+			throw new DatabaseException("SQL: " ~ sql ~
+                "\nDB status: " ~ result.to!string ~
+                "\nEXECUTE ERROR: " ~ error());
+        }
+
         return new MysqlResult(mysql_store_result(mysql), sql);
     }
 

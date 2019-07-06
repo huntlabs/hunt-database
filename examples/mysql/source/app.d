@@ -19,13 +19,15 @@ void main()
 {
     writeln("run database MySQL demo.");
 
-    Database db = new Database("mysql://putao:putao123@10.1.11.17:3306/PaiBot?charset=utf-8");
+    Database db = new Database("mysql://dev:111111@10.1.11.31:3306/mysql?charset=utf-8");
 
-    Statement stmt = db.prepare("SELECT * FROM ugc_common_response where username = :username and age = :age");
-    stmt.setParameter(":username","viile");
-    stmt.setParameter(":age",10);
+    Statement stmt = db.prepare("SELECT * FROM user where User = :user");
+    stmt.setParameter("user","root");
 
     writeln(stmt.sql);
+
+    int r = stmt.execute();
+    writeln(r);
 
     db.close();
 }
