@@ -14,7 +14,7 @@ module hunt.database.Database;
 import hunt.database;
 import hunt.sql;
 
-version(HUNT_DEBUG) import hunt.logging.ConsoleLogger;
+import hunt.logging.ConsoleLogger;
 
 class Database
 {
@@ -45,8 +45,12 @@ class Database
 
 	Connection getConnection() {
 		auto conn = _pool.invoke();
-		if(conn !is null)
-			conn.ping();
+
+		if(conn !is null) {
+			// conn.ping();
+		} else {
+			warning("The new connection is null.");
+		}
 		return conn;
 	}
 
@@ -75,7 +79,7 @@ class Database
 
 	private Connection createConnection()
     {
-		version(HUNT_DEBUG_MORE) infof("url: %s", _options.url);
+		version(HUNT_DB_DEBUG_MORE) infof("url: %s", _options.url);
 		version (USE_POSTGRESQL)
 		{
             if(_options.isPgsql)

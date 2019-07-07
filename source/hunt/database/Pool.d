@@ -28,7 +28,9 @@ class Pool(T : Closeable)
     {
         for(int i = 0 ; i < _minSize ; i++)
         {
-            _list.add(_objectFactory());
+            T r = _objectFactory();
+            version(HUNT_DB_DEBUG_MORE) tracef("index=%d, connecion: %s", i, (cast(Object)r).toHash);
+            _list.add(r);
         }
     }
 
@@ -38,28 +40,35 @@ class Pool(T : Closeable)
         scope (exit)
             _mutex.unlock();
 
+        T r;
         if (_list.size > 0)
         {
-            return _list.pollFirst();
+            r = _list.pollFirst();
+            version(HUNT_DB_DEBUG) logDebugf("pooled object: %s, pool size: %d", (cast(Object)r).toHash, _list.size);
         }
         else
         {
-            return _objectFactory();
+            r = _objectFactory();
+            version(HUNT_DB_DEBUG) logDebugf("new object: %s, pool size: %d", (cast(Object)r).toHash, _list.size);
         }
+        return r;
     }
 
     void revoke(T t)
     {
-        // logDebug(" revoke object : ",(cast(Object)t).toHash);
         _mutex.lock();
         scope (exit)
             _mutex.unlock();
 
         if (_list.size < _maxSize) {
             _list.add(t);
+            version(HUNT_DB_DEBUG) logDebugf("pool object: %s, pool size: %d", 
+                (cast(Object)t).toHash, _list.size); // (cast(Object)t).toHash
         }
         else {
             t.close();
+            version(HUNT_DB_DEBUG) logDebugf("close object: %s, pool size: %d", 
+                (cast(Object)t).toHash, _list.size); // (cast(Object)t).toHash
         }
     }
 

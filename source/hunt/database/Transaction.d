@@ -23,6 +23,8 @@ import hunt.Short;
 import hunt.Nullable;
 
 
+/**
+*/
 class Transaction
 {
     private Connection _conn;
@@ -89,6 +91,9 @@ class Transaction
     }
 }
 
+
+/**
+*/
 class TransStatement
 {
     private Connection _conn ;
@@ -197,19 +202,26 @@ class TransStatement
         string execSql = sql();
         assert(execSql);
         version(HUNT_SQL_DEBUG) info(execSql);
-        
+        int status;
+
         try {
-            int status = _conn.execute(execSql);
-            _lastInsertId = _conn.lastInsertId();
-            _affectRows = _conn.affectedRows();
+            status = _conn.execute(execSql);
         } catch(Exception ex) {
-            version(HUNT_DEBUG) {
+            version(HUNT_DB_DEBUG) {
                 error(ex);
             } else {
                 error(ex.msg);
             }
-            throw ex;
+            
+            info("try to recover the connection");
+            _conn.ping();
+            status = _conn.execute(execSql);
+            // throw ex;
         }
+        version(HUNT_SQL_DEBUG) infof("status=%d", status);
+
+        _lastInsertId = _conn.lastInsertId();
+        _affectRows = _conn.affectedRows();
         // return status;
         return _affectRows;
     }
@@ -221,7 +233,21 @@ class TransStatement
         string execSql = sql();
         assert(execSql);
 
-        auto r = _conn.query(execSql);
+        ResultSet r;
+        try {
+            r = _conn.query(execSql);
+        } catch(Exception ex) {
+            version(HUNT_DB_DEBUG) {
+                error(ex);
+            } else {
+                error(ex.msg);
+            }
+
+            info("try to recover the connection");
+            _conn.ping();
+            r = _conn.query(execSql);
+        }
+
         auto res = r.front();
         return res[0].to!int;
     }
@@ -238,7 +264,10 @@ class TransStatement
     
     Row fetch()
     {
-        if(!_rs)_rs = query();
+        if(!_rs) {
+            _rs = query();
+        }
+
         scope(exit){
             if(!_rs.empty)
                 _rs.popFront();
@@ -255,22 +284,28 @@ class TransStatement
         assert(execSql);
         version(HUNT_SQL_DEBUG) info(execSql);
 
-        // try {
-            _rs = _conn.query(execSql);        
-            version(HUNT_SQL_DEBUG) {
-                tracef("result size: row=%d, col=%d", _rs.rows(), _rs.columns());
-                //     foreach(Row r; _rs) {
-                //         trace(r.toString());
-                //     }
+        try {
+            _rs = _conn.query(execSql); 
+        } catch(Throwable ex) {
+            version(HUNT_DB_DEBUG) {
+                error(ex);
+            } else {
+                error(ex.msg);
             }
-        // } catch(Throwable ex) {
-        //     version(HUNT_DEBUG) {
-        //         error(ex);
-        //     } else {
-        //         error(ex.msg);
-        //     }
-        // }
 
+            version(HUNT_DB_DEBUG) {
+                 infof("try to recover the connection: %s", (cast(Object)_conn).toHash);
+            }
+            _conn.ping();
+            _rs = _conn.query(execSql); 
+        }
+       
+        version(HUNT_SQL_DEBUG) {
+            tracef("result size: row=%d, col=%d", _rs.rows(), _rs.columns());
+            //     foreach(Row r; _rs) {
+            //         trace(r.toString());
+            //     }
+        }
         return _rs;
     }
 

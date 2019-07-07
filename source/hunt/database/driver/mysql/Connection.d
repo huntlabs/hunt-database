@@ -12,6 +12,7 @@
 module hunt.database.driver.mysql.Connection;
 
 import hunt.database;
+import hunt.logging.ConsoleLogger;
 
 version(USE_MYSQL):
 
@@ -46,6 +47,9 @@ class MysqlConnection : Connection
     private void connect()
     {
         mysql = mysql_init(null);
+        version(HUNT_DB_DEBUG) {
+            tracef("Create a new connection: %s", mysql);
+        }
         //my_bool reconnect = 1;
         //mysql_options(mysql, mysql_option.MYSQL_OPT_RECONNECT, &reconnect);
         if(!mysql_real_connect(mysql, toCstring(_host), toCstring(_user), 
@@ -94,15 +98,37 @@ class MysqlConnection : Connection
     }
     void close() 
     {
-        if(mysql)
+        if(mysql) {
+            version(HUNT_DB_DEBUG) {
+                tracef("Closed: %s", mysql);
+            }
             mysql_close(mysql);
+        }
         mysql = null;
     }
+
     void ping()
     {
-        if(pingMysql())
+        version(HUNT_DB_DEBUG) {
+            tracef("pinging: %s", mysql);
+        }
+
+        int count = 0;
+        while(pingMysql() && count < 5) {
+            count++;
+            version(HUNT_DB_DEBUG) {
+                warningf("Reconnect to MySQL server: %d", count);
+            }
+            close();
             connect();
+        }
+
+        if(count>=5) {
+            logError("Can't reconnect the server after trying 5 times.");
+            throw new DatabaseException("Connection broken.");
+        }
     }
+
     int pingMysql()
     {
         return mysql_ping(mysql);
