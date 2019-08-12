@@ -36,7 +36,7 @@ abstract class QueryCommandBaseCodec!(T, C extends QueryCommandBase!(T)) extends
     T result;
     int size;
     RowDesc desc;
-    if (decoder != null) {
+    if (decoder !is null) {
       result = decoder.complete();
       desc = decoder.desc;
       size = decoder.size();

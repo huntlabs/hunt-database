@@ -162,7 +162,7 @@ class DataTypeCodec {
       //TODO handle json + unknown?
       default:
         Class<?> javaType = type.binaryType;
-        return value == null || javaType.isInstance(value) ? value : REFUSED_SENTINEL;
+        return value is null || javaType.isInstance(value) ? value : REFUSED_SENTINEL;
     }
   }
 

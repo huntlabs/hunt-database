@@ -88,7 +88,7 @@ class InitCommandCodec : PgCommandCodec!(Connection, InitCommand) {
     } catch (Exception ignore) {
     }
     CommandResponse!(Connection) fut;
-    if(cs == null || !cs == StandardCharsets.UTF_8) {
+    if(cs is null || !cs == StandardCharsets.UTF_8) {
       fut = CommandResponse.failure(encoding + " is not supported in the client only UTF8");
     } else {
       fut = CommandResponse.success(cmd.connection());

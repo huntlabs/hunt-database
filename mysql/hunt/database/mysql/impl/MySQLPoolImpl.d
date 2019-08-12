@@ -17,7 +17,7 @@ class MySQLPoolImpl : PoolBase!(MySQLPoolImpl) implements MySQLPool {
 
   MySQLPoolImpl(Context context, boolean closeVertx, MySQLConnectOptions connectOptions, PoolOptions poolOptions) {
     super(context, closeVertx, poolOptions);
-    this.factory = new MySQLConnectionFactory(context, Vertx.currentContext() != null, connectOptions);
+    this.factory = new MySQLConnectionFactory(context, Vertx.currentContext() !is null, connectOptions);
   }
 
   override

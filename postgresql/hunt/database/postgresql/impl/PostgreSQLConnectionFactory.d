@@ -136,12 +136,12 @@ class PgConnectionFactory {
         });
         break;
       case VERIFY_FULL:
-        if (hostnameVerificationAlgorithm == null || hostnameVerificationAlgorithm.isEmpty()) {
+        if (hostnameVerificationAlgorithm is null || hostnameVerificationAlgorithm.isEmpty()) {
           handler.handle(Future.failedFuture(new IllegalArgumentException("Host verification algorithm must be specified under verify-full sslmode")));
           return;
         }
       case VERIFY_CA:
-        if (trustOptions == null) {
+        if (trustOptions is null) {
           handler.handle(Future.failedFuture(new IllegalArgumentException("Trust options must be specified under verify-full or verify-ca sslmode")));
           return;
         }

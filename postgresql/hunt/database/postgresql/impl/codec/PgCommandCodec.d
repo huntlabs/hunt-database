@@ -116,7 +116,7 @@ abstract class PgCommandCodec!(R, C extends CommandBase!(R)) {
    */
   void handleReadyForQuery(TxStatus txStatus) {
     CommandResponse!(R) resp;
-    if (failure != null) {
+    if (failure !is null) {
       resp = CommandResponse.failure(failure, txStatus);
     } else {
       resp = CommandResponse.success(result, txStatus);

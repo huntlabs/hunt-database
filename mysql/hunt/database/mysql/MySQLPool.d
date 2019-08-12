@@ -53,7 +53,7 @@ interface MySQLPool : Pool {
    * @return the connection pool
    */
   static MySQLPool pool(MySQLConnectOptions connectOptions, PoolOptions poolOptions) {
-    if (Vertx.currentContext() != null) {
+    if (Vertx.currentContext() !is null) {
       throw new IllegalStateException("Running in a Vertx context => use MySQLPool#pool(Vertx, MySQLConnectOptions, PoolOptions) instead");
     }
     VertxOptions vertxOptions = new VertxOptions();

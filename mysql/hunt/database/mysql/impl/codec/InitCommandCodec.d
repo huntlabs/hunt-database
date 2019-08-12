@@ -140,7 +140,7 @@ class InitCommandCodec : CommandCodec!(Connection, InitCommand) {
     if (ssl) {
       //TODO ssl
     } else {
-      if (cmd.database() != null && !cmd.database().isEmpty()) {
+      if (cmd.database() !is null && !cmd.database().isEmpty()) {
         encoder.clientCapabilitiesFlag |= CLIENT_CONNECT_WITH_DB;
       }
       String authMethodName = initialHandshakePacket.getAuthMethodName();
@@ -157,7 +157,7 @@ class InitCommandCodec : CommandCodec!(Connection, InitCommand) {
       encoder.charset = Charset.forName(collation.mappedJavaCharsetName());
       properties.remove("collation");
       Map!(String, String) clientConnectionAttributes = properties;
-      if (clientConnectionAttributes != null && !clientConnectionAttributes.isEmpty()) {
+      if (clientConnectionAttributes !is null && !clientConnectionAttributes.isEmpty()) {
         encoder.clientCapabilitiesFlag |= CLIENT_CONNECT_ATTRS;
       }
       encoder.clientCapabilitiesFlag &= initialHandshakePacket.getServerCapabilitiesFlags();
@@ -196,7 +196,7 @@ class InitCommandCodec : CommandCodec!(Connection, InitCommand) {
     byte[] filler = new byte[23];
     packet.writeBytes(filler);
     BufferUtils.writeNullTerminatedString(packet, username, StandardCharsets.UTF_8);
-    if (password == null || password.isEmpty()) {
+    if (password is null || password.isEmpty()) {
       packet.writeByte(0);
     } else {
       //TODO support different auth methods here

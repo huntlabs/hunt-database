@@ -81,7 +81,7 @@ class PreparedQueryImpl implements PreparedQuery {
                                Handler!(AsyncResult!(Boolean)) handler) {
     if (context == Vertx.currentContext()) {
       String msg = ps.prepare((List!(Object)) args);
-      if (msg != null) {
+      if (msg !is null) {
         handler.handle(Future.failedFuture(msg));
       } else {
         ExtendedQueryCommand cmd = new ExtendedQueryCommand<>(
@@ -105,7 +105,7 @@ class PreparedQueryImpl implements PreparedQuery {
   override
   Cursor cursor(Tuple args) {
     String msg = ps.prepare((List!(Object)) args);
-    if (msg != null) {
+    if (msg !is null) {
       throw new IllegalArgumentException(msg);
     }
     return new CursorImpl(this, args);
@@ -134,7 +134,7 @@ class PreparedQueryImpl implements PreparedQuery {
     Handler!(AsyncResult!(R3)) handler) {
     for  (Tuple args : argsList) {
       String msg = ps.prepare((List!(Object)) args);
-      if (msg != null) {
+      if (msg !is null) {
         handler.handle(Future.failedFuture(msg));
         return this;
       }

@@ -27,6 +27,6 @@ class PasswordMessage {
   final String hash;
 
   PasswordMessage(String username, String password, byte[] salt) {
-    this.hash = salt != null ? MD5Authentication.encode(username, password, salt) : password;
+    this.hash = salt !is null ? MD5Authentication.encode(username, password, salt) : password;
   }
 }

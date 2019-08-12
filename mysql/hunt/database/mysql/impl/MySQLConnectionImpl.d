@@ -25,7 +25,7 @@ class MySQLConnectionImpl : SqlConnectionImpl!(MySQLConnectionImpl) implements M
 
   static void connect(Vertx vertx, MySQLConnectOptions options, Handler!(AsyncResult!(MySQLConnection)) handler) {
     Context ctx = Vertx.currentContext();
-    if (ctx != null) {
+    if (ctx !is null) {
       MySQLConnectionFactory client = new MySQLConnectionFactory(ctx, false, options);
       client.connect(ar-> {
         if (ar.succeeded()) {

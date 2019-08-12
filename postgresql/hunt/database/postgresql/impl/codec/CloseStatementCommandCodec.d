@@ -28,7 +28,7 @@ class CloseStatementCommandCodec : PgCommandCodec!(Void, CloseStatementCommand) 
   override
   void encode(PgEncoder out) {
     /*
-    if (conn.psCache == null) {
+    if (conn.psCache is null) {
       conn.writeMessage(new Close().setStatement(statement));
       conn.writeMessage(Sync.INSTANCE);
     } else {

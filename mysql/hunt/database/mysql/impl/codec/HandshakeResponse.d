@@ -36,7 +36,7 @@ final class HandshakeResponse {
     this.scramble = scramble;
     this.clientCapabilitiesFlags = clientCapabilitiesFlags;
     this.authMethodName = authMethodName;
-    if (clientConnectAttrs != null) {
+    if (clientConnectAttrs !is null) {
       this.clientConnectAttrs.putAll(clientConnectAttrs);
     }
   }

@@ -76,7 +76,7 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl) implements Transacti
         break;
       case ST_PENDING: {
         CommandBase<?> cmd = pending.poll();
-        if (cmd != null) {
+        if (cmd !is null) {
           if (isComplete(cmd)) {
             status = ST_COMPLETED;
           } else {
@@ -93,7 +93,7 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl) implements Transacti
         if (pending.size() > 0) {
           VertxException err = new VertxException("Transaction already completed");
           CommandBase<?> cmd;
-          while ((cmd = pending.poll()) != null) {
+          while ((cmd = pending.poll()) !is null) {
             cmd.fail(err);
           }
         }
@@ -126,11 +126,11 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl) implements Transacti
         if (ar.txStatus() == TxStatus.FAILED) {
           // We won't recover from this so rollback
           CommandBase<?> c;
-          while ((c = pending.poll()) != null) {
+          while ((c = pending.poll()) !is null) {
             c.fail(new RuntimeException("rollback exception"));
           }
           Handler!(Void) h = failedHandler;
-          if (h != null) {
+          if (h !is null) {
             context.runOnContext(h);
           }
           schedule(doQuery("ROLLBACK", ar2 -> {
@@ -157,7 +157,7 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl) implements Transacti
       case ST_PROCESSING:
         schedule(doQuery("COMMIT", ar -> {
           disposeHandler.handle(null);
-          if (handler != null) {
+          if (handler !is null) {
             if (ar.succeeded()) {
               handler.handle(Future.succeededFuture());
             } else {
@@ -167,7 +167,7 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl) implements Transacti
         }));
         break;
       case ST_COMPLETED:
-        if (handler != null) {
+        if (handler !is null) {
           handler.handle(Future.failedFuture("Transaction already completed"));
         }
         break;
@@ -182,7 +182,7 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl) implements Transacti
   void rollback(Handler!(AsyncResult!(Void)) handler) {
     schedule(doQuery("ROLLBACK", ar -> {
       disposeHandler.handle(null);
-      if (handler != null) {
+      if (handler !is null) {
         handler.handle(ar.mapEmpty());
       }
     }));

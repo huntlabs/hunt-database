@@ -59,15 +59,15 @@ class PgConnectOptions : SqlConnectOptions {
   static PgConnectOptions fromEnv() {
     PgConnectOptions pgConnectOptions = new PgConnectOptions();
 
-    if (getenv("PGHOSTADDR") == null) {
-      if (getenv("PGHOST") != null) {
+    if (getenv("PGHOSTADDR") is null) {
+      if (getenv("PGHOST") !is null) {
         pgConnectOptions.setHost(getenv("PGHOST"));
       }
     } else {
       pgConnectOptions.setHost(getenv("PGHOSTADDR"));
     }
 
-    if (getenv("PGPORT") != null) {
+    if (getenv("PGPORT") !is null) {
       try {
         pgConnectOptions.setPort(parseInt(getenv("PGPORT")));
       } catch (NumberFormatException e) {
@@ -75,16 +75,16 @@ class PgConnectOptions : SqlConnectOptions {
       }
     }
 
-    if (getenv("PGDATABASE") != null) {
+    if (getenv("PGDATABASE") !is null) {
       pgConnectOptions.setDatabase(getenv("PGDATABASE"));
     }
-    if (getenv("PGUSER") != null) {
+    if (getenv("PGUSER") !is null) {
       pgConnectOptions.setUser(getenv("PGUSER"));
     }
-    if (getenv("PGPASSWORD") != null) {
+    if (getenv("PGPASSWORD") !is null) {
       pgConnectOptions.setPassword(getenv("PGPASSWORD"));
     }
-    if (getenv("PGSSLMODE") != null) {
+    if (getenv("PGSSLMODE") !is null) {
       pgConnectOptions.setSslMode(SslMode.of(getenv("PGSSLMODE")));
     }
     return pgConnectOptions;

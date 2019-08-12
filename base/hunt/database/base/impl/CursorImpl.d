@@ -45,7 +45,7 @@ class CursorImpl implements Cursor {
 
   override
   synchronized boolean hasMore() {
-    if (result == null) {
+    if (result is null) {
       throw new IllegalStateException("No current cursor read");
     }
     return result.isSuspended();
@@ -53,7 +53,7 @@ class CursorImpl implements Cursor {
 
   override
   synchronized void read(int count, Handler!(AsyncResult!(RowSet)) handler) {
-    if (id == null) {
+    if (id is null) {
       id = UUID.randomUUID().toString();
       result = new SqlResultBuilder<>(RowSetImpl.FACTORY, handler);
       ps.execute(params, count, id, false, false, RowSetImpl.COLLECTOR, result, result);
@@ -69,7 +69,7 @@ class CursorImpl implements Cursor {
   synchronized void close(Handler!(AsyncResult!(Void)) completionHandler) {
     if (!closed) {
       closed = true;
-      if (id == null) {
+      if (id is null) {
         completionHandler.handle(Future.succeededFuture());
       } else {
         String id = this.id;

@@ -123,7 +123,7 @@ abstract class SocketConnectionBase implements Connection {
   }
 
   void schedule(CommandBase<?> cmd) {
-    if (cmd.handler == null) {
+    if (cmd.handler is null) {
       throw new IllegalArgumentException();
     }
     if (Vertx.currentContext() != context) {
@@ -132,14 +132,14 @@ abstract class SocketConnectionBase implements Connection {
 
     // Special handling for cache
     PreparedStatementCache psCache = this.psCache;
-    if (psCache != null && cmd instanceof PrepareStatementCommand) {
+    if (psCache !is null && cmd instanceof PrepareStatementCommand) {
       PrepareStatementCommand psCmd = (PrepareStatementCommand) cmd;
       if (psCmd.sql().length() > preparedStatementCacheSqlLimit) {
         // do not cache the statements
         return;
       }
       CachedPreparedStatement cached = psCache.get(psCmd.sql());
-      if (cached != null) {
+      if (cached !is null) {
         psCmd.cached = cached;
         Handler<? super CommandResponse!(PreparedStatement)> handler = psCmd.handler;
         cached.get(handler);
@@ -173,7 +173,7 @@ abstract class SocketConnectionBase implements Connection {
     CommandResponse!(PreparedStatement) resp;
 
     void get(Handler<? super CommandResponse!(PreparedStatement)> handler) {
-      if (resp != null) {
+      if (resp !is null) {
         handler.handle(resp);
       } else {
         waiters.add(handler);
@@ -184,7 +184,7 @@ abstract class SocketConnectionBase implements Connection {
     void handle(CommandResponse!(PreparedStatement) event) {
       resp = event;
       Handler<? super CommandResponse!(PreparedStatement)> waiter;
-      while ((waiter = waiters.poll()) != null) {
+      while ((waiter = waiters.poll()) !is null) {
         waiter.handle(resp);
       }
     }
@@ -194,7 +194,7 @@ abstract class SocketConnectionBase implements Connection {
     ChannelHandlerContext ctx = socket.channelHandlerContext();
     if (inflight < pipeliningLimit) {
       CommandBase<?> cmd;
-      while (inflight < pipeliningLimit && (cmd = pending.poll()) != null) {
+      while (inflight < pipeliningLimit && (cmd = pending.poll()) !is null) {
         inflight++;
         ctx.write(cmd);
       }
@@ -216,7 +216,7 @@ abstract class SocketConnectionBase implements Connection {
   }
 
   private void handleNotification(Notification response) {
-    if (holder != null) {
+    if (holder !is null) {
       holder.handleNotification(response.getProcessId(), response.getChannel(), response.getPayload());
     }
   }
@@ -240,20 +240,20 @@ abstract class SocketConnectionBase implements Connection {
   private void handleClose(Throwable t) {
     if (status != Status.CLOSED) {
       status = Status.CLOSED;
-      if (t != null) {
+      if (t !is null) {
         synchronized (this) {
-          if (holder != null) {
+          if (holder !is null) {
             holder.handleException(t);
           }
         }
       }
-      Throwable cause = t == null ? new VertxException("closed") : t;
+      Throwable cause = t is null ? new VertxException("closed") : t;
       CommandBase<?> cmd;
-      while ((cmd = pending.poll()) != null) {
+      while ((cmd = pending.poll()) !is null) {
         CommandBase<?> c = cmd;
         context.runOnContext(v -> c.fail(cause));
       }
-      if (holder != null) {
+      if (holder !is null) {
         holder.handleClosed();
       }
     }

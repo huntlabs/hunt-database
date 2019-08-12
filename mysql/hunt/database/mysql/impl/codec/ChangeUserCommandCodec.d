@@ -77,7 +77,7 @@ class ChangeUserCommandCodec : CommandCodec!(Void, ChangeUserCommand) {
       BufferUtils.writeNullTerminatedString(packet, "mysql_native_password", StandardCharsets.UTF_8);
     }
     Map!(String, String) clientConnectionAttributes = cmd.connectionAttributes();
-    if (clientConnectionAttributes != null && !clientConnectionAttributes.isEmpty()) {
+    if (clientConnectionAttributes !is null && !clientConnectionAttributes.isEmpty()) {
       encoder.clientCapabilitiesFlag |= CLIENT_CONNECT_ATTRS;
     }
     if ((encoder.clientCapabilitiesFlag & CLIENT_CONNECT_ATTRS) != 0) {

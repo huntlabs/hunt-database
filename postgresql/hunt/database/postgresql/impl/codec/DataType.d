@@ -141,7 +141,7 @@ enum DataType {
 
   static DataType valueOf(int oid) {
     DataType value = oidToDataType.get(oid);
-    if (value == null) {
+    if (value is null) {
       logger.debug("Postgres type OID=" + oid + " not handled - using unknown type instead");
       return UNKNOWN;
     } else {

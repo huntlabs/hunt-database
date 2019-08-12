@@ -59,15 +59,15 @@ class RowStreamImpl implements RowStream!(Row), Handler!(AsyncResult!(RowSet)) {
   RowStream!(Row) handler(Handler!(Row) handler) {
     Cursor c;
     synchronized (this) {
-      if (handler != null) {
-        if (cursor == null) {
+      if (handler !is null) {
+        if (cursor is null) {
           rowHandler = handler;
           c = cursor = ps.cursor(params);
         } else {
           throw new UnsupportedOperationException("Handle me gracefully");
         }
       } else {
-        if (cursor != null) {
+        if (cursor !is null) {
           cursor = null;
         } else {
           rowHandler = null;
@@ -94,7 +94,7 @@ class RowStreamImpl implements RowStream!(Row), Handler!(AsyncResult!(RowSet)) {
       if (demand < 0L) {
         demand = Long.MAX_VALUE;
       }
-      if (cursor == null) {
+      if (cursor is null) {
         return this;
       }
     }
@@ -121,7 +121,7 @@ class RowStreamImpl implements RowStream!(Row), Handler!(AsyncResult!(RowSet)) {
         cursor = null;
         handler = exceptionHandler;
       }
-      if (handler != null) {
+      if (handler !is null) {
         handler.handle(ar.cause());
       }
     } else {
@@ -139,7 +139,7 @@ class RowStreamImpl implements RowStream!(Row), Handler!(AsyncResult!(RowSet)) {
   void close(Handler!(AsyncResult!(Void)) completionHandler) {
     Cursor c;
     synchronized (this) {
-      if ((c = cursor) == null) {
+      if ((c = cursor) is null) {
         return;
       }
       cursor = null;
@@ -156,7 +156,7 @@ class RowStreamImpl implements RowStream!(Row), Handler!(AsyncResult!(RowSet)) {
     }
     while (true) {
       synchronized (RowStreamImpl.this) {
-        if (demand == 0L || result == null) {
+        if (demand == 0L || result is null) {
           emitting = false;
           break;
         }
@@ -180,7 +180,7 @@ class RowStreamImpl implements RowStream!(Row), Handler!(AsyncResult!(RowSet)) {
             event = null;
           }
         }
-        if (handler != null) {
+        if (handler !is null) {
           handler.handle(event);
         }
       }

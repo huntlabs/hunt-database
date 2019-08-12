@@ -35,11 +35,11 @@ class RowResultDecoder!(C, R) implements RowDecoder {
 
   override
   void decodeRow(int len, ByteBuf in) {
-    if (container == null) {
+    if (container is null) {
       container = collector.supplier().get();
     }
     if (singleton) {
-      if (row == null) {
+      if (row is null) {
         row = new MySQLRowImpl(rowDesc);
       } else {
         row.clear();
@@ -96,7 +96,7 @@ class RowResultDecoder!(C, R) implements RowDecoder {
   }
 
   R complete() {
-    if (container == null) {
+    if (container is null) {
       container = collector.supplier().get();
     }
     return collector.finisher().apply(container);

@@ -54,7 +54,7 @@ class PgDecoder : ChannelInboundHandlerAdapter {
   override
   void channelRead(ChannelHandlerContext ctx, Object msg) {
     ByteBuf buff = (ByteBuf) msg;
-    if (in == null) {
+    if (in is null) {
       in = buff;
     } else {
       CompositeByteBuf composite;
@@ -107,7 +107,7 @@ class PgDecoder : ChannelInboundHandlerAdapter {
         in.setIndex(endIdx, writerIndex);
       }
     }
-    if (in != null && !in.isReadable()) {
+    if (in !is null && !in.isReadable()) {
       in.release();
       in = null;
     }

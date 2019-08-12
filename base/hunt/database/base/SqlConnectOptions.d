@@ -264,7 +264,7 @@ abstract class SqlConnectOptions : NetClientOptions {
   abstract protected void init();
 
   protected void checkParameterNonNull(Object parameter, String message) {
-    if (parameter == null) {
+    if (parameter is null) {
       throw new IllegalArgumentException(message);
     }
   }

@@ -63,7 +63,7 @@ class RowImpl : ArrayTuple implements RowInternal {
 
   override
   int getColumnIndex(String name) {
-    if (name == null) {
+    if (name is null) {
       throw new NullPointerException();
     }
     return desc.columnNames().indexOf(name);

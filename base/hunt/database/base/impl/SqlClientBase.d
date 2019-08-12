@@ -79,7 +79,7 @@ abstract class SqlClientBase!(C extends SqlClient) implements SqlClient, Command
       if (cr.succeeded()) {
         PreparedStatement ps = cr.result();
         String msg = ps.prepare((List!(Object)) arguments);
-        if (msg != null) {
+        if (msg !is null) {
           handler.handle(Future.failedFuture(msg));
         } else {
           SqlResultBuilder!(R1, R2, R3) b = new SqlResultBuilder<>(factory, handler);
@@ -124,7 +124,7 @@ abstract class SqlClientBase!(C extends SqlClient) implements SqlClient, Command
         PreparedStatement ps = cr.result();
         for  (Tuple args : batch) {
           String msg = ps.prepare((List!(Object)) args);
-          if (msg != null) {
+          if (msg !is null) {
             handler.handle(Future.failedFuture(msg));
             return;
           }

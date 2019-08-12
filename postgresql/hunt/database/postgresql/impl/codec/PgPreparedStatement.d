@@ -35,7 +35,7 @@ class PgPreparedStatement implements PreparedStatement {
   PgPreparedStatement(String sql, long statement, PgParamDesc paramDesc, PgRowDesc rowDesc) {
 
     // Fix to use binary when possible
-    if (rowDesc != null) {
+    if (rowDesc !is null) {
       rowDesc = new PgRowDesc(Arrays.stream(rowDesc.columns)
         .map(c -> new PgColumnDesc(
           c.name,
@@ -51,7 +51,7 @@ class PgPreparedStatement implements PreparedStatement {
     this.paramDesc = paramDesc;
     this.rowDesc = rowDesc;
     this.sql = sql;
-    this.bind = new Bind(statement, paramDesc != null ? paramDesc.paramDataTypes() : null, rowDesc != null ? rowDesc.columns : EMPTY_COLUMNS);
+    this.bind = new Bind(statement, paramDesc !is null ? paramDesc.paramDataTypes() : null, rowDesc !is null ? rowDesc.columns : EMPTY_COLUMNS);
   }
 
   override

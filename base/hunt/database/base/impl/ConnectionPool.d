@@ -120,7 +120,7 @@ class ConnectionPool {
 
     override
     void init(Holder holder) {
-      if (this.holder != null) {
+      if (this.holder !is null) {
         throw new IllegalStateException();
       }
       this.holder = holder;
@@ -139,7 +139,7 @@ class ConnectionPool {
     void handleClosed() {
       if (all.remove(this)) {
         size--;
-        if (holder == null) {
+        if (holder is null) {
           available.remove(this);
         } else {
           holder.handleClosed();
@@ -152,14 +152,14 @@ class ConnectionPool {
 
     override
     void handleNotification(int processId, String channel, String payload) {
-      if (holder != null) {
+      if (holder !is null) {
         holder.handleNotification(processId, channel, payload);
       }
     }
 
     override
     void handleException(Throwable err) {
-      if (holder != null) {
+      if (holder !is null) {
         holder.handleException(err);
       }
     }

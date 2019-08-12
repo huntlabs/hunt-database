@@ -16,8 +16,18 @@
  */
 module hunt.database.base.data.Numeric;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
+
+import hunt.Double;
+import hunt.Exceptions;
+import hunt.Float;
+import hunt.Long;
+import hunt.Integer;
+import hunt.math.BigDecimal;
+import hunt.math.BigInteger;
+import hunt.Number;
+
+import std.concurrency : initOnce;
+
 
 /**
  * The Postgres <i>NUMERIC</i> type.
@@ -27,9 +37,12 @@ final class Numeric : Number {
     /**
      * Constant for the {@code NaN} value.
      */
-    static final Numeric NaN = new Numeric(Double.NaN);
+    static Numeric NaN() {
+        __gshared Numeric inst;
+        return initOnce!inst(new Numeric(Double.NaN));
+    }
 
-    private final Number value;
+    private Number value;
 
     /**
      * Return a {@code Numeric} instance for the given {@code number}.
@@ -41,10 +54,13 @@ final class Numeric : Number {
      * @throws NumberFormatException when the number is infinite
      */
     static Numeric create(Number number) {
-        if (number == null) {
+        if (number is null) {
             throw new NullPointerException();
-        }
-        if (number instanceof Double && ((Double)number).isInfinite() || number instanceof Float && ((Float)number).isInfinite()) {
+        
+        Double d = cast(Double)number;
+        Float f = cast(Float)number;
+
+        if (d !is null && d.isInfinite() || f !is null && f.isInfinite()) {
             throw new NumberFormatException("Infinite numbers are not valid numerics");
         }
         return new Numeric(number);
@@ -58,7 +74,7 @@ final class Numeric : Number {
      * @param s the string
      * @return the {@code Numeric} value
      */
-    static Numeric parse(String s) {
+    static Numeric parse(string s) {
         switch (s) {
             case "NaN":
                 return NaN;
@@ -67,7 +83,7 @@ final class Numeric : Number {
         }
     }
 
-    private Numeric(Number value) {
+    private this(Number value) {
         this.value = value;
     }
 
@@ -99,8 +115,10 @@ final class Numeric : Number {
     /**
      * @return {@code true} when this number represents {@code NaN}
      */
-    boolean isNaN() {
-        return value instanceof Double && ((Double)value).isNaN() || value instanceof Float && ((Float)value).isNaN();
+    bool isNaN() {
+        Double d = cast(Double)value;
+        Float f = cast(Float)value;
+        return d !is null && d.isNaN() || f !is null && f.isNaN();
     }
 
     /**
@@ -109,10 +127,14 @@ final class Numeric : Number {
      *          represents the {@code NaN} value.
      */
     BigDecimal bigDecimalValue() {
-        if (value instanceof BigDecimal) {
-            return (BigDecimal) value;
-        } else if (value instanceof BigInteger) {
-            return new BigDecimal((BigInteger)value);
+        BigDecimal bd = cast(BigDecimal) value;
+        if (bd !is null) {
+            return bd;
+        } 
+
+        BigInteger bi = cast(BigInteger)value;
+        if (bi !is null) {
+            return new BigDecimal(bi);
         } else if (isNaN()) {
             return null;
         } else {
@@ -126,10 +148,14 @@ final class Numeric : Number {
      *          represents the {@code NaN} value.
      */
     BigInteger bigIntegerValue() {
-        if (value instanceof BigInteger) {
-            return (BigInteger) value;
-        } else if (value instanceof BigDecimal) {
-            return ((BigDecimal)value).toBigInteger();
+        BigInteger bi = cast(BigInteger)value;
+        if (bi !is null) {
+            return bi;
+        }
+
+        BigDecimal bd = cast(BigDecimal)value;
+        if (bd !is null) {
+            return bd.toBigInteger();
         } else if (isNaN()) {
             return null;
         } else {
@@ -139,18 +165,22 @@ final class Numeric : Number {
 
     override
     bool opEquals(Object obj) {
-        if (obj instanceof Numeric) {
-            Numeric that = (Numeric) obj;
-            if (value.getClass() == that.value.getClass()) {
+        Numeric that = cast(Numeric) obj;
+        if (that !is null) {
+            if (typeid(value)  == typeid(that)) {
                 return value == that.value;
             } else {
                 BigDecimal l = bigDecimalValue();
                 BigDecimal r = that.bigDecimalValue();
-                if (l == null) {
-                    return r == null;
-                } else if (r == null) {
+                if (l is null) {
+                    return r is null;
+                } else if (r is null) {
                     return false;
                 }
+                
+                // TODO: Tasks pending completion -@zxp at 8/12/2019, 3:15:15 PM
+                // 
+                // return l == r;
                 return l.compareTo(r) == 0;
             }
         }
@@ -159,11 +189,11 @@ final class Numeric : Number {
 
     override
     size_t toHash() @trusted nothrow {
-        return intValue();
+        return cast(size_t)intValue();
     }
 
     override
-    String toString() {
+    string toString() {
         return value.toString();
     }
 }

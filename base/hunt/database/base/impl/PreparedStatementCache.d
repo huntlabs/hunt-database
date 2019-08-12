@@ -40,10 +40,10 @@ class PreparedStatementCache : LinkedHashMap!(String, CachedPreparedStatement) {
 
   boolean isReady() {
     Map.Entry!(String, CachedPreparedStatement) entry = getEldestEntry();
-    if (entry == null) {
+    if (entry is null) {
       return true;
     } else {
-      return entry.getValue().resp != null;
+      return entry.getValue().resp !is null;
     }
   }
 

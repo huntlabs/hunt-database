@@ -51,7 +51,7 @@ public enum DataType {
 
   static DataType valueOf(int value) {
     DataType dataType = idToDataType.get(value);
-    if (dataType == null) {
+    if (dataType is null) {
 //      logger.warn("MySQL type =" + value + " not handled - using unknown type instead");
       //TODO need better handling
       return null;

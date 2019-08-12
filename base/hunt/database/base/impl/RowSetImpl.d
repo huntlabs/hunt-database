@@ -29,7 +29,7 @@ class RowSetImpl : SqlResultBase!(RowSet, RowSetImpl) implements RowSet {
   static Collector!(Row, RowSetImpl, RowSet) COLLECTOR = Collector.of(
     RowSetImpl::new,
     (set, row) -> {
-      if (set.head == null) {
+      if (set.head is null) {
         set.head = set.tail = (RowInternal) row;
       } else {
         set.tail.setNext((RowInternal) row);;
@@ -56,11 +56,11 @@ class RowSetImpl : SqlResultBase!(RowSet, RowSetImpl) implements RowSet {
       RowInternal current = head;
       override
       boolean hasNext() {
-        return current != null;
+        return current !is null;
       }
       override
       Row next() {
-        if (current == null) {
+        if (current is null) {
           throw new NoSuchElementException();
         }
         RowInternal r = current;

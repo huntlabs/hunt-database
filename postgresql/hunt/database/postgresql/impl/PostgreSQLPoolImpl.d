@@ -39,7 +39,7 @@ class PgPoolImpl : PoolBase!(PgPoolImpl) implements PgPool {
 
   PgPoolImpl(Context context, boolean closeVertx, PgConnectOptions connectOptions, PoolOptions poolOptions) {
     super(context, closeVertx, poolOptions);
-    this.factory = new PgConnectionFactory(context, Vertx.currentContext() != null, connectOptions);
+    this.factory = new PgConnectionFactory(context, Vertx.currentContext() !is null, connectOptions);
   }
 
   override

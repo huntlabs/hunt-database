@@ -43,16 +43,16 @@ class SqlResultBuilder!(T, R extends SqlResultBase!(T, R), L extends SqlResult!(
     R r = factory.apply(result);
     r.updated = updatedCount;
     r.size = size;
-    r.columnNames = desc != null ? desc.columnNames() : null;
+    r.columnNames = desc !is null ? desc.columnNames() : null;
     handleResult(r);
   }
 
   private void handleResult(R result) {
-    if (first == null) {
+    if (first is null) {
       first = result;
     } else {
       R h = first;
-      while (h.next != null) {
+      while (h.next !is null) {
         h = h.next;
       }
       h.next = result;

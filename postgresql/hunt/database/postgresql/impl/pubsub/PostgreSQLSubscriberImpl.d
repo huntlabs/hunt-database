@@ -61,11 +61,11 @@ class PgSubscriberImpl implements PgSubscriber {
     List!(Handler!(String)) handlers = new ArrayList<>();
     synchronized (this) {
       ChannelList channel = channels.get(notif.getChannel());
-      if (channel != null) {
+      if (channel !is null) {
         channel.subs.forEach(sub -> {
           if (!sub.paused) {
             Handler!(String) handler = sub.eventHandler;
-            if (handler != null) {
+            if (handler !is null) {
               handlers.add(handler);
             } else {
               // Race ?
@@ -89,7 +89,7 @@ class PgSubscriberImpl implements PgSubscriber {
 
   override
   synchronized PgSubscriber reconnectPolicy(Function!(Integer, Long) policy) {
-    if (policy == null) {
+    if (policy is null) {
       reconnectPolicy = DEFAULT_RECONNECT_POLICY;
     } else {
       reconnectPolicy = policy;
@@ -125,7 +125,7 @@ class PgSubscriberImpl implements PgSubscriber {
     channels.clear();
     all.forEach(handler -> handler.handle(null));
     Handler!(Void) handler = closeHandler;
-    if (handler != null) {
+    if (handler !is null) {
       handler.handle(null);
     }
   }
@@ -214,13 +214,13 @@ class PgSubscriberImpl implements PgSubscriber {
     void add(ChannelImpl sub) {
       subs.add(sub);
       if (!subscribed) {
-        if (conn != null) {
+        if (conn !is null) {
           subscribed = true;
           String sql = "LISTEN " + quotedName;
           conn.query(sql, ar -> {
             if (ar.succeeded()) {
               Handler!(Void) handler = sub.subscribeHandler;
-              if (handler != null) {
+              if (handler !is null) {
                 handler.handle(null);
               }
             } else {
@@ -235,7 +235,7 @@ class PgSubscriberImpl implements PgSubscriber {
       subs.remove(sub);
       if (subs.isEmpty()) {
         channels.remove(name, this);
-        if (conn != null) {
+        if (conn !is null) {
           conn.query("UNLISTEN " + quotedName, ar -> {
             if (ar.failed()) {
               log.error("Cannot UNLISTEN channel " + name, ar.cause());
@@ -275,19 +275,19 @@ class PgSubscriberImpl implements PgSubscriber {
     override
     ChannelImpl handler(Handler!(String) handler) {
       synchronized (PgSubscriberImpl.this) {
-        if (handler != null) {
+        if (handler !is null) {
           eventHandler = handler;
-          if (channel == null) {
+          if (channel is null) {
             channel = channels.computeIfAbsent(name, ChannelList::new);
             channel.add(this);
           }
         } else {
-          if (channel != null) {
+          if (channel !is null) {
             ChannelList ch = channel;
             channel = null;
             ch.remove(this);
             Handler!(Void) _handler = endHandler;
-            if (_handler != null) {
+            if (_handler !is null) {
               _handler.handle(null);
             }
           }
@@ -331,7 +331,7 @@ class PgSubscriberImpl implements PgSubscriber {
     synchronized (PgSubscriberImpl.this) {
       if (!closed) {
         closed = true;
-        if (conn != null) {
+        if (conn !is null) {
           conn.close();
         }
       }

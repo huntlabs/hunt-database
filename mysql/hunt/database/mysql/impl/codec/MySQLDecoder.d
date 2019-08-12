@@ -29,13 +29,13 @@ class MySQLDecoder : ByteToMessageDecoder {
       int payloadLength = in.readUnsignedMediumLE();
       int sequenceId = in.readUnsignedByte();
 
-      if (payloadLength >= PACKET_PAYLOAD_LENGTH_LIMIT && aggregatedPacketPayload == null) {
+      if (payloadLength >= PACKET_PAYLOAD_LENGTH_LIMIT && aggregatedPacketPayload is null) {
         aggregatedPacketPayload = ctx.alloc().compositeBuffer();
       }
 
       // payload
       if (in.readableBytes() >= payloadLength) {
-        if (aggregatedPacketPayload != null) {
+        if (aggregatedPacketPayload !is null) {
           // read a split packet
           aggregatedPacketPayload.addComponent(true, in.readRetainedSlice(payloadLength));
           sequenceId++;

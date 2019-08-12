@@ -123,7 +123,7 @@ final class PgEncoder : ChannelOutboundHandlerAdapter {
   }
 
   void flush() {
-    if (out != null) {
+    if (out !is null) {
       ByteBuf buff = out;
       out = null;
       ctx.writeAndFlush(buff);
@@ -255,7 +255,7 @@ final class PgEncoder : ChannelOutboundHandlerAdapter {
     if (describe.statement != 0) {
       out.writeByte('S');
       out.writeLong(describe.statement);
-    } else if (describe.portal != null) {
+    } else if (describe.portal !is null) {
       out.writeByte('P');
       Util.writeCStringUTF8(out, describe.portal);
     } else {
@@ -283,7 +283,7 @@ final class PgEncoder : ChannelOutboundHandlerAdapter {
     }
     Util.writeCStringUTF8(out, parse.query);
     // no parameter data types (OIDs)
-    // if(paramDataTypes == null) {
+    // if(paramDataTypes is null) {
     out.writeShort(0);
     // } else {
     //   // Parameter data types (OIDs)
@@ -318,7 +318,7 @@ final class PgEncoder : ChannelOutboundHandlerAdapter {
     int pos = out.writerIndex();
     out.writeByte(EXECUTE);
     out.writeInt(0);
-    if (portal != null) {
+    if (portal !is null) {
       out.writeCharSequence(portal, UTF_8);
     }
     out.writeByte(0);
@@ -339,7 +339,7 @@ final class PgEncoder : ChannelOutboundHandlerAdapter {
     int pos = out.writerIndex();
     out.writeByte(BIND);
     out.writeInt(0);
-    if (portal != null) {
+    if (portal !is null) {
       out.writeCharSequence(portal, UTF_8);
     }
     out.writeByte(0);
@@ -358,7 +358,7 @@ final class PgEncoder : ChannelOutboundHandlerAdapter {
     out.writeShort(paramLen);
     for (int c = 0;c < paramLen;c++) {
       Object param = paramValues.get(c);
-      if (param == null) {
+      if (param is null) {
         // NULL value
         out.writeInt(-1);
       } else {
@@ -390,7 +390,7 @@ final class PgEncoder : ChannelOutboundHandlerAdapter {
   }
 
   private void ensureBuffer() {
-    if (out == null) {
+    if (out is null) {
       out = ctx.alloc().ioBuffer();
     }
   }

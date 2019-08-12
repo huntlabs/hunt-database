@@ -90,7 +90,7 @@ class PgConnectionUriParser {
   }
 
   private static void parseUserAndPassword(String userInfo, JsonObject configuration) {
-    if (userInfo == null || userInfo.isEmpty()) {
+    if (userInfo is null || userInfo.isEmpty()) {
       return;
     }
     if (occurExactlyOnce(userInfo, ":")) {
@@ -110,14 +110,14 @@ class PgConnectionUriParser {
   }
 
   private static void parseNetLocation(String hostInfo, JsonObject configuration) {
-    if (hostInfo == null || hostInfo.isEmpty()) {
+    if (hostInfo is null || hostInfo.isEmpty()) {
       return;
     }
     parseNetLocationValue(decodeUrl(hostInfo), configuration);
   }
 
   private static void parsePort(String portInfo, JsonObject configuration) {
-    if (portInfo == null || portInfo.isEmpty()) {
+    if (portInfo is null || portInfo.isEmpty()) {
       return;
     }
     int port;
@@ -133,14 +133,14 @@ class PgConnectionUriParser {
   }
 
   private static void parseDatabaseName(String databaseInfo, JsonObject configuration) {
-    if (databaseInfo == null || databaseInfo.isEmpty()) {
+    if (databaseInfo is null || databaseInfo.isEmpty()) {
       return;
     }
     configuration.put("database", decodeUrl(databaseInfo));
   }
 
   private static void parseParameters(String parametersInfo, JsonObject configuration) {
-    if (parametersInfo == null || parametersInfo.isEmpty()) {
+    if (parametersInfo is null || parametersInfo.isEmpty()) {
       return;
     }
     Map!(String, String) properties = new HashMap<>();

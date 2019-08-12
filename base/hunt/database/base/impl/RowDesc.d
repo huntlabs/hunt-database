@@ -32,7 +32,7 @@ class RowDesc {
   }
 
   int columnIndex(String columnName) {
-    if (columnName == null) {
+    if (columnName is null) {
       throw new NullPointerException("Column name must not be null");
     }
     return columnNames.indexOf(columnName);

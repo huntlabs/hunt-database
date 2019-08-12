@@ -183,7 +183,7 @@ class Interval {
   override
   bool opEquals(Object o) {
     if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (o is null || getClass() != o.getClass()) return false;
     Interval interval = (Interval) o;
     return years == interval.years &&
       months == interval.months &&

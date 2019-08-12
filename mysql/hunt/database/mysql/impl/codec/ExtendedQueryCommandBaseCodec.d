@@ -74,7 +74,7 @@ abstract class ExtendedQueryCommandBaseCodec!(R, C extends ExtendedQueryCommandB
 
       for (int i = 0; i < numOfParams; i++) {
         Object value = params.getValue(i);
-        if (value != null) {
+        if (value !is null) {
           MySQLCollation collation = MySQLCollation.valueOfId(paramsColumnDefinitions[i].characterSet());
           DataTypeCodec.encodeBinary(parseDataTypeByEncodingValue(value), Charset.forName(collation.mappedJavaCharsetName()), value, packet);
         } else {
@@ -94,7 +94,7 @@ abstract class ExtendedQueryCommandBaseCodec!(R, C extends ExtendedQueryCommandB
   }
 
   private DataType parseDataTypeByEncodingValue(Object value) {
-    if (value == null) {
+    if (value is null) {
       // ProtocolBinary::MYSQL_TYPE_NULL
       return DataType.NULL;
     } else if (value instanceof Byte) {

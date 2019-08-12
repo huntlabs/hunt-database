@@ -71,7 +71,7 @@ class MySQLConnectionUriParser {
   }
 
   private static void parseUserAndPassword(String userInfo, JsonObject configuration) {
-    if (userInfo == null || userInfo.isEmpty()) {
+    if (userInfo is null || userInfo.isEmpty()) {
       return;
     }
     if (occurExactlyOnce(userInfo, ":")) {
@@ -91,14 +91,14 @@ class MySQLConnectionUriParser {
   }
 
   private static void parseHost(String hostInfo, JsonObject configuration) {
-    if (hostInfo == null || hostInfo.isEmpty()) {
+    if (hostInfo is null || hostInfo.isEmpty()) {
       return;
     }
     parseHostValue(decodeUrl(hostInfo), configuration);
   }
 
   private static void parsePort(String portInfo, JsonObject configuration) {
-    if (portInfo == null || portInfo.isEmpty()) {
+    if (portInfo is null || portInfo.isEmpty()) {
       return;
     }
     int port;
@@ -114,14 +114,14 @@ class MySQLConnectionUriParser {
   }
 
   private static void parseSchemaName(String schemaInfo, JsonObject configuration) {
-    if (schemaInfo == null || schemaInfo.isEmpty()) {
+    if (schemaInfo is null || schemaInfo.isEmpty()) {
       return;
     }
     configuration.put("database", decodeUrl(schemaInfo));
   }
 
   private static void parseAttributes(String attributesInfo, JsonObject configuration) {
-    if (attributesInfo == null || attributesInfo.isEmpty()) {
+    if (attributesInfo is null || attributesInfo.isEmpty()) {
       return;
     }
     Map!(String, String) properties = new HashMap<>();

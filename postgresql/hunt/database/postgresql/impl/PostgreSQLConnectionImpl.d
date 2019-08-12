@@ -31,7 +31,7 @@ class PgConnectionImpl : SqlConnectionImpl!(PgConnectionImpl) implements PgConne
 
   static void connect(Vertx vertx, PgConnectOptions options, Handler!(AsyncResult!(PgConnection)) handler) {
     Context ctx = Vertx.currentContext();
-    if (ctx != null) {
+    if (ctx !is null) {
       PgConnectionFactory client = new PgConnectionFactory(ctx, false, options);
       client.connectAndInit(ar -> {
         if (ar.succeeded()) {
@@ -72,7 +72,7 @@ class PgConnectionImpl : SqlConnectionImpl!(PgConnectionImpl) implements PgConne
 
   void handleNotification(int processId, String channel, String payload) {
     Handler!(PgNotification) handler = notificationHandler;
-    if (handler != null) {
+    if (handler !is null) {
       handler.handle(new PgNotification().setProcessId(processId).setChannel(channel).setPayload(payload));
     }
   }

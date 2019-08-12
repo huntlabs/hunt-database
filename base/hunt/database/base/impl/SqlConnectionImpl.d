@@ -39,7 +39,7 @@ abstract class SqlConnectionImpl!(C extends SqlConnectionImpl) extends SqlConnec
   override
   void handleClosed() {
     Handler!(Void) handler = closeHandler;
-    if (handler != null) {
+    if (handler !is null) {
       context.runOnContext(handler);
     }
   }
@@ -56,7 +56,7 @@ abstract class SqlConnectionImpl!(C extends SqlConnectionImpl) extends SqlConnec
 
   protected void schedule(CommandBase<?> cmd) {
     if (context == Vertx.currentContext()) {
-      if (tx != null) {
+      if (tx !is null) {
         tx.schedule(cmd);
       } else {
         conn.schedule(cmd);
@@ -71,7 +71,7 @@ abstract class SqlConnectionImpl!(C extends SqlConnectionImpl) extends SqlConnec
   override
   void handleException(Throwable err) {
     Handler!(Throwable) handler = exceptionHandler;
-    if (handler != null) {
+    if (handler !is null) {
       context.runOnContext(v -> {
         handler.handle(err);
       });
@@ -103,7 +103,7 @@ abstract class SqlConnectionImpl!(C extends SqlConnectionImpl) extends SqlConnec
   }
 
   Transaction begin(boolean closeOnEnd) {
-    if (tx != null) {
+    if (tx !is null) {
       throw new IllegalStateException();
     }
     tx = new TransactionImpl(context, conn, v -> {
@@ -120,7 +120,7 @@ abstract class SqlConnectionImpl!(C extends SqlConnectionImpl) extends SqlConnec
   override
   void close() {
     if (context == Vertx.currentContext()) {
-      if (tx != null) {
+      if (tx !is null) {
         tx.rollback(ar -> conn.close(this));
         tx = null;
       } else {

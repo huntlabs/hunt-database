@@ -581,7 +581,7 @@ class DataTypeCodec {
     switch (type) {
       case JSON:
       case JSONB:
-        if (value == null ||
+        if (value is null ||
             value == Tuple.JSON_NULL ||
             value instanceof String ||
             value instanceof Boolean ||
@@ -595,14 +595,14 @@ class DataTypeCodec {
       case UNKNOWN:
         if (value instanceof String[]) {
           return Arrays.stream((String[]) value).collect(Collectors.joining(",", "{", "}"));
-        } else if (value == null || value instanceof String) {
+        } else if (value is null || value instanceof String) {
           return value;
         } else {
           return REFUSED_SENTINEL;
         }
       default:
         Class<?> javaType = type.decodingType;
-        return value == null || javaType.isInstance(value) ? value : REFUSED_SENTINEL;
+        return value is null || javaType.isInstance(value) ? value : REFUSED_SENTINEL;
     }
   }
 
@@ -1403,7 +1403,7 @@ class DataTypeCodec {
     buff.writeInt(1);             // lower bnds
     boolean hasNulls = false;
     for (T value : values) {
-      if (value == null) {
+      if (value is null) {
         hasNulls = true;
         buff.writeInt(-1);
       } else {
@@ -1479,7 +1479,7 @@ class DataTypeCodec {
         buff.writeByte(',');
       }
       T value = values[i];
-      if (value != null) {
+      if (value !is null) {
         textEncode(type, value, buff);
       } else {
         buff.writeByte('N');
