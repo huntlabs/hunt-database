@@ -16,11 +16,10 @@
  */
 module hunt.database.base.impl.command.CommandScheduler;
 
-import io.vertx.core.Handler;
+import hunt.database.base.impl.command.CommandBase;
 
-@FunctionalInterface
 interface CommandScheduler {
 
-  <R> void schedule(CommandBase!(R) cmd, Handler<? super CommandResponse!(R)> handler);
+  // <R> void schedule(CommandBase!(R) cmd, Handler<? super CommandResponse!(R)> handler);
 
 }

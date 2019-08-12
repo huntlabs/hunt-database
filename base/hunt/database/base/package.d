@@ -1,0 +1,2 @@
+module hunt.database.base;
+

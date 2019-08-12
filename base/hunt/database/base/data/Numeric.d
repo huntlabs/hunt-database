@@ -16,7 +16,6 @@
  */
 module hunt.database.base.data.Numeric;
 
-
 import hunt.Double;
 import hunt.Exceptions;
 import hunt.Float;

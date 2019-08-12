@@ -17,7 +17,9 @@
 
 module hunt.database.base.impl.command.CommandBase;
 
-import io.vertx.core.Handler;
+import hunt.database.base.Common;
+
+alias ResponseHandler(R) = EventHandler!(CommandResponse!(R));
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -25,9 +27,9 @@ import io.vertx.core.Handler;
 
 abstract class CommandBase!(R) {
 
-  Handler<? super CommandResponse!(R)> handler;
+    ResponseHandler!R handler;
 
-  final void fail(Throwable err) {
-    handler.handle(CommandResponse.failure(err));
-  }
+    final void fail(Throwable err) {
+        handler(CommandResponse.failure(err));
+    }
 }

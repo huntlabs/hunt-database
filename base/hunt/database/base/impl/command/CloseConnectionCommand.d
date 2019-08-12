@@ -17,12 +17,20 @@
 
 module hunt.database.base.impl.command.CloseConnectionCommand;
 
+import hunt.database.base.impl.command.CommandBase;
+
+import hunt.Object;
+
 class CloseConnectionCommand : CommandBase!(Void) {
 
-  static final CloseConnectionCommand INSTANCE = new CloseConnectionCommand();
+    __gshared CloseConnectionCommand INSTANCE;
 
-  private CloseConnectionCommand() {
-    handler = ar -> {};
-  }
+    shared static this() {
+        INSTANCE = new CloseConnectionCommand();
+    }
+
+    private this() {
+        handler = (ar) {};
+    }
 
 }

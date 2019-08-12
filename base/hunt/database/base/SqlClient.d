@@ -15,7 +15,7 @@
  *
  */
 
-module hunt.database.base.SqlClient.SqlClient;
+module hunt.database.base.SqlClient;
 
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.GenIgnore;

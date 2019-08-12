@@ -1,80 +1,95 @@
 module hunt.database.base.impl.command.CommandResponse;
 
+import hunt.database.base.impl.command.CommandBase;
+import hunt.database.base.impl.command.CommandScheduler;
+
+import hunt.database.base.AsyncResult;
 import hunt.database.base.impl.TxStatus;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.impl.NoStackTraceThrowable;
+import hunt.database.base.Exceptions;
 
-abstract class CommandResponse!(R) implements AsyncResult!(R) {
+abstract class CommandResponse(R) : AsyncResult!(R) {
 
-  static <R> CommandResponse!(R) failure(String msg) {
-    return failure(new NoStackTraceThrowable(msg), null);
-  }
+    // The connection that executed the command
+    CommandScheduler scheduler;
+    CommandBase!(R) cmd;
+    private TxStatus txStatus;
 
-  static <R> CommandResponse!(R) failure(String msg, TxStatus txStatus) {
-    return failure(new NoStackTraceThrowable(msg), txStatus);
-  }
+    this(TxStatus txStatus) {
+        this.txStatus = txStatus;
+    }
 
-  static <R> CommandResponse!(R) failure(Throwable cause) {
-    return failure(cause, null);
-  }
+    TxStatus txStatus() {
+        return txStatus;
+    }
+}
 
-  static <R> CommandResponse!(R) failure(Throwable cause, TxStatus txStatus) {
-    return new CommandResponse!(R)(txStatus) {
-      override
-      R result() {
-        return null;
-      }
-      override
-      Throwable cause() {
-        return cause;
-      }
-      override
-      boolean succeeded() {
-        return false;
-      }
-      override
-      boolean failed() {
-        return true;
-      }
-    };
-  }
+template failure(R) {
+    CommandResponse!(R) failure(string msg) {
+        return failure(new NoStackTraceThrowable(msg), null);
+    }
 
-  static <R> CommandResponse!(R) success(R result) {
-    return success(result, null);
-  }
+    CommandResponse!(R) failure(string msg, TxStatus txStatus) {
+        return failure(new NoStackTraceThrowable(msg), txStatus);
+    }
 
-  static <R> CommandResponse!(R) success(R result, TxStatus txStatus) {
-    return new CommandResponse!(R)(txStatus) {
-      override
-      R result() {
-        return result;
-      }
-      override
-      Throwable cause() {
-        return null;
-      }
-      override
-      boolean succeeded() {
-        return true;
-      }
-      override
-      boolean failed() {
-        return false;
-      }
-    };
-  }
+    CommandResponse!(R) failure(Throwable cause) {
+        return failure(cause, null);
+    }
 
-  // The connection that executed the command
-  CommandScheduler scheduler;
-  CommandBase!(R) cmd;
-  private final TxStatus txStatus;
+    CommandResponse!(R) failure(Throwable cause, TxStatus txStatus) {
+        return new class CommandResponse!(R) {
+            this() {
+                super(txStatus);
+            }
 
-  CommandResponse(TxStatus txStatus) {
-    this.txStatus = txStatus;
-  }
+            override R result() {
+                return null;
+            }
 
-  TxStatus txStatus() {
-    return txStatus;
-  }
+            override Throwable cause() {
+                return cause;
+            }
 
+            override bool succeeded() {
+                return false;
+            }
+
+            override bool failed() {
+                return true;
+            }
+        };
+    }
+}
+
+/**
+*/
+template success(R) {
+
+    CommandResponse!(R) success(R result) {
+        return success(result, null);
+    }
+
+    CommandResponse!(R) success(R result, TxStatus txStatus) {
+        return new class CommandResponse!(R) {
+            this() {
+                super(txStatus);
+            }
+
+            override R result() {
+                return result;
+            }
+
+            override Throwable cause() {
+                return null;
+            }
+
+            override bool succeeded() {
+                return true;
+            }
+
+            override bool failed() {
+                return false;
+            }
+        };
+    }
 }
