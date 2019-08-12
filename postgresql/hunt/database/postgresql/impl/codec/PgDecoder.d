@@ -348,7 +348,7 @@ class PgDecoder : ChannelInboundHandlerAdapter {
       case PgProtocolConstants.AUTHENTICATION_TYPE_GSS_CONTINUE:
       case PgProtocolConstants.AUTHENTICATION_TYPE_SSPI:
       default:
-        throw new UnsupportedOperationException("Authentication type " + type + " is not supported in the client");
+        throw new UnsupportedOperationException("Authentication type " ~ type ~ " is not supported in the client");
     }
   }
 

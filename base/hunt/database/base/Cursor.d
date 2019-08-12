@@ -18,7 +18,7 @@
 module hunt.database.base.Cursor;
 
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.AsyncResult;
+import hunt.database.base.AsyncResult;
 import io.vertx.core.Handler;
 
 /**

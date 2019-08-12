@@ -18,7 +18,7 @@
 module hunt.database.base.impl.SqlResultBuilder;
 
 import hunt.database.base.SqlResult;
-import io.vertx.core.AsyncResult;
+import hunt.database.base.AsyncResult;
 import io.vertx.core.Handler;
 
 import java.util.function.Function;

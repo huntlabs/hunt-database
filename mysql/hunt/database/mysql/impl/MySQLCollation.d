@@ -241,7 +241,7 @@ public enum MySQLCollation {
     try {
       return MySQLCollation.valueOf(collationName);
     } catch (IllegalArgumentException e) {
-      throw new IllegalArgumentException("Unknown MySQL collation: [" + collationName + "]");
+      throw new IllegalArgumentException("Unknown MySQL collation: [" ~ collationName ~ "]");
     }
   }
 
@@ -698,7 +698,7 @@ public enum MySQLCollation {
       case 250:
         return gb18030_unicode_520_ci;
       default:
-        throw new UnsupportedOperationException("Collation of Id [" + collationId + "] is unknown to this client");
+        throw new UnsupportedOperationException("Collation of Id [" ~ collationId ~ "] is unknown to this client");
     }
   }
 

@@ -65,7 +65,7 @@ class Circle {
 
   override
   String toString() {
-    return "Circle<" + centerPoint.toString() + "," + radius + ">";
+    return "Circle<" ~ centerPoint.toString() ~ "," ~ radius ~ ">";
   }
 
   JsonObject toJson() {

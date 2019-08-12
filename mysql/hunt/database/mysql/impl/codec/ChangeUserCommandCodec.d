@@ -33,7 +33,7 @@ class ChangeUserCommandCodec : CommandCodec!(Void, ChangeUserCommand) {
         String pluginName = BufferUtils.readNullTerminatedString(payload, StandardCharsets.UTF_8);
         if (pluginName.equals("caching_sha2_password")) {
           // TODO support different auth methods later
-          completionHandler.handle(CommandResponse.failure(new UnsupportedOperationException("unsupported authentication method: " + pluginName)));
+          completionHandler.handle(CommandResponse.failure(new UnsupportedOperationException("unsupported authentication method: " ~ pluginName)));
           return;
         }
         byte[] scramble = new byte[20];

@@ -24,7 +24,7 @@ import hunt.database.base.Transaction;
 import hunt.database.base.impl.command.CommandBase;
 import hunt.database.base.impl.command.CommandResponse;
 import hunt.database.base.impl.command.CommandScheduler;
-import io.vertx.core.AsyncResult;
+import hunt.database.base.AsyncResult;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;

@@ -50,7 +50,7 @@ class PgConnectionUriParser {
     + PORT_REGEX
     + DATABASE_REGEX
     + PARAMS_REGEX
-    + "$"; // regex end
+    ~ "$"; // regex end
 
   static JsonObject parse(String connectionUri) {
     // if we get any exception during the parsing, then we throw an IllegalArgumentException.
@@ -59,7 +59,7 @@ class PgConnectionUriParser {
       doParse(connectionUri, configuration);
       return configuration;
     } catch (Exception e) {
-      throw new IllegalArgumentException("Cannot parse invalid connection URI: " + connectionUri, e);
+      throw new IllegalArgumentException("Cannot parse invalid connection URI: " ~ connectionUri, e);
     }
   }
 

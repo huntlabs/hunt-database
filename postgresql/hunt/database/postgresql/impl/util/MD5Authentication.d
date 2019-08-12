@@ -59,6 +59,6 @@ class MD5Authentication {
     messageDigest.update(salt);
     passDigest = messageDigest.digest();
 
-    return "md5" + toHex(passDigest);
+    return "md5" ~ toHex(passDigest);
   }
 }

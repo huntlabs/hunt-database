@@ -86,18 +86,18 @@ final class ColumnDefinition {
 
   override
   String toString() {
-    return "ColumnDefinition{" +
-      "catalog='" + catalog + '\'' +
-      ", schema='" + schema + '\'' +
-      ", table='" + table + '\'' +
-      ", orgTable='" + orgTable + '\'' +
-      ", name='" + name + '\'' +
-      ", orgName='" + orgName + '\'' +
-      ", characterSet=" + characterSet +
-      ", columnLength=" + columnLength +
-      ", type=" + type +
-      ", flags=" + flags +
-      ", decimals=" + decimals +
+    return "ColumnDefinition{" ~
+      "catalog='" ~ catalog + '\'' +
+      ", schema='" ~ schema + '\'' +
+      ", table='" ~ table + '\'' +
+      ", orgTable='" ~ orgTable + '\'' +
+      ", name='" ~ name + '\'' +
+      ", orgName='" ~ orgName + '\'' +
+      ", characterSet=" ~ characterSet +
+      ", columnLength=" ~ columnLength +
+      ", type=" ~ type +
+      ", flags=" ~ flags +
+      ", decimals=" ~ decimals +
       '}';
   }
 

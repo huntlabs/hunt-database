@@ -17,21 +17,22 @@
 
 module hunt.database.base.impl.command.ExtendedBatchQueryCommand;
 
+impprt hunt.database.base.impl.command.ExtendedQueryCommandBase;
+
 import hunt.database.base.Row;
 import hunt.database.base.Tuple;
 import hunt.database.base.impl.PreparedStatement;
 import hunt.database.base.impl.QueryResultHandler;
 
-import java.util.List;
-import java.util.stream.Collector;
+import hunt.collection;
 
-class ExtendedBatchQueryCommand!(T) extends ExtendedQueryCommandBase!(T) {
+class ExtendedBatchQueryCommand(T) : ExtendedQueryCommandBase!(T) {
 
-  private final List!(Tuple) params;
+  private List!(Tuple) params;
 
-  ExtendedBatchQueryCommand(PreparedStatement ps,
+  this(PreparedStatement ps,
                             List!(Tuple) params,
-                            boolean singleton,
+                            bool singleton,
                             Collector<Row, ?, T> collector,
                             QueryResultHandler!(T) resultHandler) {
     this(ps, params, 0, null, false, singleton, collector, resultHandler);
@@ -40,9 +41,9 @@ class ExtendedBatchQueryCommand!(T) extends ExtendedQueryCommandBase!(T) {
   private ExtendedBatchQueryCommand(PreparedStatement ps,
                             List!(Tuple) params,
                             int fetch,
-                            String cursorId,
-                            boolean suspended,
-                            boolean singleton,
+                            string cursorId,
+                            bool suspended,
+                            bool singleton,
                             Collector<Row, ?, T> collector,
                             QueryResultHandler!(T) resultHandler) {
     super(ps, fetch, cursorId, suspended, singleton, collector, resultHandler);

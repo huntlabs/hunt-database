@@ -79,7 +79,7 @@ class Line {
 
   override
   String toString() {
-    return "Line{" + a + "," + b + "," + c + "}";
+    return "Line{" ~ a ~ "," ~ b ~ "," ~ c ~ "}";
   }
 
   JsonObject toJson() {

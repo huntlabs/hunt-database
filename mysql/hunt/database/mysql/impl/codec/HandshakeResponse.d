@@ -79,15 +79,15 @@ final class HandshakeResponse {
 
   override
   String toString() {
-    return "HandshakeResponse{" +
-      "username='" + username + '\'' +
-      ", charset=" + charset +
-      ", password='" + password + '\'' +
-      ", database='" + database + '\'' +
-      ", scramble=" + Arrays.toString(scramble) +
-      ", clientCapabilitiesFlags=" + clientCapabilitiesFlags +
-      ", authMethodName='" + authMethodName + '\'' +
-      ", clientConnectAttrs=" + clientConnectAttrs +
+    return "HandshakeResponse{" ~
+      "username='" ~ username + '\'' +
+      ", charset=" ~ charset +
+      ", password='" ~ password + '\'' +
+      ", database='" ~ database + '\'' +
+      ", scramble=" ~ Arrays.toString(scramble) +
+      ", clientCapabilitiesFlags=" ~ clientCapabilitiesFlags +
+      ", authMethodName='" ~ authMethodName + '\'' +
+      ", clientConnectAttrs=" ~ clientConnectAttrs +
       '}';
   }
 }

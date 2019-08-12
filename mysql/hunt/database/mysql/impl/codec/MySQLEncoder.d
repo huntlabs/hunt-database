@@ -90,7 +90,7 @@ class MySQLEncoder : ChannelOutboundHandlerAdapter {
     } else if (cmd instanceof ChangeUserCommand) {
       return new ChangeUserCommandCodec((ChangeUserCommand) cmd);
     } else {
-      System.out.println("Unsupported command " + cmd);
+      System.out.println("Unsupported command " ~ cmd);
       throw new UnsupportedOperationException("Todo");
     }
   }

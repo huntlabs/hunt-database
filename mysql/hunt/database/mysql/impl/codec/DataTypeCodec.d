@@ -480,7 +480,7 @@ class DataTypeCodec {
     int second = Integer.parseInt(timeElements[2].substring(0, 2));
     long nanos = 0;
     if (timeElements[2].length() > 2) {
-      double fractionalSecondsPart = Double.parseDouble("0." + timeElements[2].substring(3));
+      double fractionalSecondsPart = Double.parseDouble("0." ~ timeElements[2].substring(3));
       nanos = (long) (1000000000 * fractionalSecondsPart);
     }
     if (isNegative) {

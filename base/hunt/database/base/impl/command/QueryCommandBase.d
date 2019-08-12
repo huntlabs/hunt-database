@@ -26,24 +26,24 @@ import java.util.stream.Collector;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 
-abstract class QueryCommandBase!(T) extends CommandBase!(Boolean) {
+abstract class QueryCommandBase(T) : CommandBase!(Boolean) {
 
-  private final QueryResultHandler!(T) resultHandler;
-  private final Collector<Row, ?, T> collector;
+    private QueryResultHandler!(T) resultHandler;
+    private Collector<Row, ?, T> collector;
 
-  QueryCommandBase(Collector<Row, ?, T> collector, QueryResultHandler!(T) resultHandler) {
-    this.resultHandler = resultHandler;
-    this.collector = collector;
-  }
+    this(Collector<Row, ?, T> collector, QueryResultHandler!(T) resultHandler) {
+        this.resultHandler = resultHandler;
+        this.collector = collector;
+    }
 
-  QueryResultHandler!(T) resultHandler() {
-    return resultHandler;
-  }
+    QueryResultHandler!(T) resultHandler() {
+        return resultHandler;
+    }
 
-  Collector<Row, ?, T> collector() {
-    return collector;
-  }
+    Collector<Row, ?, T> collector() {
+        return collector;
+    }
 
-  abstract String sql();
+    abstract string sql();
 
 }

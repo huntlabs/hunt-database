@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "base"
+		},
+		{
+			"path": "mysql"
+		},
+		{
+			"path": "postgresql"
+		}
+	],
+	"settings": {}
+}

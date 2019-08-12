@@ -19,7 +19,7 @@ module hunt.database.base.Pool;
 
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.AsyncResult;
+import hunt.database.base.AsyncResult;
 import io.vertx.core.Handler;
 
 import java.util.List;
@@ -43,21 +43,18 @@ interface Pool : SqlClient {
   Pool query(String sql, Handler!(AsyncResult!(RowSet)) handler);
 
   override
-  @GenIgnore
   <R> Pool query(String sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
   override
   Pool preparedQuery(String sql, Tuple arguments, Handler!(AsyncResult!(RowSet)) handler);
 
   override
-  @GenIgnore
   <R> Pool preparedQuery(String sql, Tuple arguments, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
   override
   Pool preparedBatch(String sql, List!(Tuple) batch, Handler!(AsyncResult!(RowSet)) handler);
 
   override
-  @GenIgnore
   <R> Pool preparedBatch(String sql, List!(Tuple) batch, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
   /**

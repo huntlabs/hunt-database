@@ -163,7 +163,7 @@ abstract class SocketConnectionBase implements Connection {
       pending.add(cmd);
       checkPending();
     } else {
-      cmd.fail(new VertxException("Connection not open " + status));
+      cmd.fail(new VertxException("Connection not open " ~ status));
     }
   }
 

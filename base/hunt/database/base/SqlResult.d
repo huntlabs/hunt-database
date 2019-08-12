@@ -17,58 +17,57 @@
 
 module hunt.database.base.SqlResult.SqlResult;
 
-import io.vertx.codegen.annotations.VertxGen;
+import hunt.collection.List;
 
-import java.util.List;
 
 /**
  * Represents the result of an operation on database.
  * @param <T>
  */
-interface SqlResult!(T) {
+interface SqlResult(T) {
 
-  /**
-   * Get the number of the affected rows in the operation to this PgResult.
-   * <p/>
-   * The meaning depends on the executed statement:
-   * <ul>
-   *   <li>INSERT: the number of rows inserted</li>
-   *   <li>DELETE: the number of rows deleted</li>
-   *   <li>UPDATE: the number of rows updated</li>
-   *   <li>SELECT: the number of rows retrieved</li>
-   * </ul>
-   *
-   * @return the count of affected rows.
-   */
-  int rowCount();
+    /**
+     * Get the number of the affected rows in the operation to this PgResult.
+     * <p/>
+     * The meaning depends on the executed statement:
+     * <ul>
+     *   <li>INSERT: the number of rows inserted</li>
+     *   <li>DELETE: the number of rows deleted</li>
+     *   <li>UPDATE: the number of rows updated</li>
+     *   <li>SELECT: the number of rows retrieved</li>
+     * </ul>
+     *
+     * @return the count of affected rows.
+     */
+    int rowCount();
 
-  /**
-   * Get the names of columns in the PgResult.
-   *
-   * @return the list of names of columns.
-   */
-  List!(String) columnsNames();
+    /**
+     * Get the names of columns in the PgResult.
+     *
+     * @return the list of names of columns.
+     */
+    List!(string) columnsNames();
 
-  /**
-   * Get the number of rows in the PgResult.
-   *
-   * @return the count of rows.
-   */
-  int size();
+    /**
+     * Get the number of rows in the PgResult.
+     *
+     * @return the count of rows.
+     */
+    int size();
 
-  /**
-   * Get the result value.
-   *
-   * @return the result
-   */
-  T value();
+    /**
+     * Get the result value.
+     *
+     * @return the result
+     */
+    T value();
 
-  /**
-   * Return the next available result or {@code null}, e.g for a simple query that executed multiple queries or for
-   * a batch result.
-   *
-   * @return the next available result or {@code null} if none is available
-   */
-  SqlResult!(T) next();
+    /**
+     * Return the next available result or {@code null}, e.g for a simple query that executed multiple queries or for
+     * a batch result.
+     *
+     * @return the next available result or {@code null} if none is available
+     */
+    SqlResult!(T) next();
 
 }

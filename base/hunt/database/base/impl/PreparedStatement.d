@@ -17,15 +17,18 @@
 
 module hunt.database.base.impl.PreparedStatement;
 
-import java.util.List;
+import hunt.database.base.impl.ParamDesc;
+import hunt.database.base.impl.RowDesc;
+
+import hunt.collection.List;
 
 interface PreparedStatement {
 
-  ParamDesc paramDesc();
+    ParamDesc paramDesc();
 
-  RowDesc rowDesc();
+    RowDesc rowDesc();
 
-  String sql();
+    string sql();
 
-  String prepare(List!(Object) values);
+    string prepare(List!(Object) values);
 }

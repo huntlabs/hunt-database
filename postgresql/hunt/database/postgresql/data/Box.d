@@ -61,7 +61,7 @@ class Box {
 
   override
   String toString() {
-    return "Box(" + upperRightCorner.toString() + "," + lowerLeftCorner.toString() + ")";
+    return "Box(" ~ upperRightCorner.toString() ~ "," ~ lowerLeftCorner.toString() ~ ")";
   }
 
   JsonObject toJson() {

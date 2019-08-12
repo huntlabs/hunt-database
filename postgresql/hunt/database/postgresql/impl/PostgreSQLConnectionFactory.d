@@ -161,7 +161,7 @@ class PgConnectionFactory {
     if (!isUsingDomainSocket) {
       socketAddress = SocketAddress.inetSocketAddress(port, host);
     } else {
-      socketAddress = SocketAddress.domainSocketAddress(host + "/.s.PGSQL." + port);
+      socketAddress = SocketAddress.domainSocketAddress(host ~ "/.s.PGSQL." ~ port);
     }
 
     Promise!(NetSocket) promise = Promise.promise();

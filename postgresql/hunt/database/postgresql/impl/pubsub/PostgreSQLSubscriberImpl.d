@@ -208,7 +208,7 @@ class PgSubscriberImpl implements PgSubscriber {
 
     ChannelList(String name) {
       this.name = name;
-	  quotedName = "\"" + name.replace("\"", "\"\"") + "\"";
+	  quotedName = "\"" ~ name.replace("\"", "\"\"") ~ "\"";
     }
 
     void add(ChannelImpl sub) {
@@ -216,7 +216,7 @@ class PgSubscriberImpl implements PgSubscriber {
       if (!subscribed) {
         if (conn !is null) {
           subscribed = true;
-          String sql = "LISTEN " + quotedName;
+          String sql = "LISTEN " ~ quotedName;
           conn.query(sql, ar -> {
             if (ar.succeeded()) {
               Handler!(Void) handler = sub.subscribeHandler;
@@ -224,7 +224,7 @@ class PgSubscriberImpl implements PgSubscriber {
                 handler.handle(null);
               }
             } else {
-              log.error("Cannot LISTEN to channel " + name, ar.cause());
+              log.error("Cannot LISTEN to channel " ~ name, ar.cause());
             }
           });
         }
@@ -236,9 +236,9 @@ class PgSubscriberImpl implements PgSubscriber {
       if (subs.isEmpty()) {
         channels.remove(name, this);
         if (conn !is null) {
-          conn.query("UNLISTEN " + quotedName, ar -> {
+          conn.query("UNLISTEN " ~ quotedName, ar -> {
             if (ar.failed()) {
-              log.error("Cannot UNLISTEN channel " + name, ar.cause());
+              log.error("Cannot UNLISTEN channel " ~ name, ar.cause());
             }
           });
         }

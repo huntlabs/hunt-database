@@ -17,7 +17,7 @@
 
 module hunt.database.base.impl.CursorImpl;
 
-import io.vertx.core.AsyncResult;
+import hunt.database.base.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
 import hunt.database.base.Cursor;

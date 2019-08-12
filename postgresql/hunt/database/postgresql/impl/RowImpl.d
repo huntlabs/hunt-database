@@ -126,7 +126,7 @@ class RowImpl : ArrayTuple implements RowInternal {
     } else if (type == Object.class) {
       return type.cast(get(pos));
     }
-    throw new UnsupportedOperationException("Unsupported type " + type.getName());
+    throw new UnsupportedOperationException("Unsupported type " ~ type.getName());
   }
 
   override
@@ -184,7 +184,7 @@ class RowImpl : ArrayTuple implements RowInternal {
     } else if (type == Object.class) {
       return (T[]) getJsonArray(pos);
     }
-    throw new UnsupportedOperationException("Unsupported type " + type.getName());
+    throw new UnsupportedOperationException("Unsupported type " ~ type.getName());
   }
 
   override

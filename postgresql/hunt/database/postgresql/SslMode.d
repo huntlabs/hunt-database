@@ -67,6 +67,6 @@ public enum SslMode {
       }
     }
 
-    throw new IllegalArgumentException("Could not find an appropriate SSL mode for the value [" + value + "].");
+    throw new IllegalArgumentException("Could not find an appropriate SSL mode for the value [" ~ value ~ "].");
   }
 }

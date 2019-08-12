@@ -19,29 +19,30 @@ module hunt.database.base.impl.SqlConnectionBase;
 
 import hunt.database.base.PreparedQuery;
 import hunt.database.base.impl.command.PrepareStatementCommand;
-import io.vertx.core.*;
+// import io.vertx.core.*;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-abstract class SqlConnectionBase!(C extends SqlConnectionBase) extends SqlClientBase!(C) {
+abstract class SqlConnectionBase(C) : SqlClientBase!(C) 
+        if(is(C : SqlConnectionBase)) {
 
-  protected final Context context;
-  protected final Connection conn;
+    protected Context context;
+    protected Connection conn;
 
-  protected SqlConnectionBase(Context context, Connection conn) {
-    this.context = context;
-    this.conn = conn;
-  }
+    protected this(Context context, Connection conn) {
+        this.context = context;
+        this.conn = conn;
+    }
 
-  C prepare(String sql, Handler!(AsyncResult!(PreparedQuery)) handler) {
-    schedule(new PrepareStatementCommand(sql), cr -> {
-      if (cr.succeeded()) {
-        handler.handle(Future.succeededFuture(new PreparedQueryImpl(conn, context, cr.result())));
-      } else {
-        handler.handle(Future.failedFuture(cr.cause()));
-      }
-    });
-    return (C) this;
-  }
+    C prepare(string sql, Handler!(AsyncResult!(PreparedQuery)) handler) {
+        schedule(new PrepareStatementCommand(sql), (cr) {
+            if (cr.succeeded()) {
+                handler.handle(Future.succeededFuture(new PreparedQueryImpl(conn, context, cr.result())));
+            } else {
+                handler.handle(Future.failedFuture(cr.cause()));
+            }
+        });
+        return cast(C) this;
+    }
 }

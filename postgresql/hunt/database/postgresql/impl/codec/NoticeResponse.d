@@ -28,46 +28,46 @@ class NoticeResponse : Response implements Notice {
 
   override
   void log(Logger logger) {
-    logger.warn("Backend notice: " +
-      "severity='" + getSeverity() + "'" +
-      ", code='" + getCode() + "'" +
-      ", message='" + getMessage() + "'" +
-      ", detail='" + getDetail() + "'" +
-      ", hint='" + getHint() + "'" +
-      ", position='" + getPosition() + "'" +
-      ", internalPosition='" + getInternalPosition() + "'" +
-      ", internalQuery='" + getInternalQuery() + "'" +
-      ", where='" + getWhere() + "'" +
-      ", file='" + getFile() + "'" +
-      ", line='" + getLine() + "'" +
-      ", routine='" + getRoutine() + "'" +
-      ", schema='" + getSchema() + "'" +
-      ", table='" + getTable() + "'" +
-      ", column='" + getColumn() + "'" +
-      ", dataType='" + getDataType() + "'" +
-      ", constraint='" + getConstraint() + "'");
+    logger.warn("Backend notice: " ~
+      "severity='" ~ getSeverity() ~ "'" ~
+      ", code='" ~ getCode() ~ "'" ~
+      ", message='" ~ getMessage() ~ "'" ~
+      ", detail='" ~ getDetail() ~ "'" ~
+      ", hint='" ~ getHint() ~ "'" ~
+      ", position='" ~ getPosition() ~ "'" ~
+      ", internalPosition='" ~ getInternalPosition() ~ "'" ~
+      ", internalQuery='" ~ getInternalQuery() ~ "'" ~
+      ", where='" ~ getWhere() ~ "'" ~
+      ", file='" ~ getFile() ~ "'" ~
+      ", line='" ~ getLine() ~ "'" ~
+      ", routine='" ~ getRoutine() ~ "'" ~
+      ", schema='" ~ getSchema() ~ "'" ~
+      ", table='" ~ getTable() ~ "'" ~
+      ", column='" ~ getColumn() ~ "'" ~
+      ", dataType='" ~ getDataType() ~ "'" ~
+      ", constraint='" ~ getConstraint() ~ "'");
   }
 
   override
   String toString() {
-    return "NoticeResponse{" +
-      "severity='" + getSeverity() + '\'' +
-      ", code='" + getCode() + '\'' +
-      ", message='" + getMessage() + '\'' +
-      ", detail='" + getDetail() + '\'' +
-      ", hint='" + getHint() + '\'' +
-      ", position='" + getPosition() + '\'' +
-      ", internalPosition='" + getInternalPosition() + '\'' +
-      ", internalQuery='" + getInternalQuery() + '\'' +
-      ", where='" + getWhere() + '\'' +
-      ", file='" + getFile() + '\'' +
-      ", line='" + getLine() + '\'' +
-      ", routine='" + getRoutine() + '\'' +
-      ", schema='" + getSchema() + '\'' +
-      ", table='" + getTable() + '\'' +
-      ", column='" + getColumn() + '\'' +
-      ", dataType='" + getDataType() + '\'' +
-      ", constraint='" + getConstraint() + '\'' +
+    return "NoticeResponse{" ~
+      "severity='" ~ getSeverity() + '\'' +
+      ", code='" ~ getCode() + '\'' +
+      ", message='" ~ getMessage() + '\'' +
+      ", detail='" ~ getDetail() + '\'' +
+      ", hint='" ~ getHint() + '\'' +
+      ", position='" ~ getPosition() + '\'' +
+      ", internalPosition='" ~ getInternalPosition() + '\'' +
+      ", internalQuery='" ~ getInternalQuery() + '\'' +
+      ", where='" ~ getWhere() + '\'' +
+      ", file='" ~ getFile() + '\'' +
+      ", line='" ~ getLine() + '\'' +
+      ", routine='" ~ getRoutine() + '\'' +
+      ", schema='" ~ getSchema() + '\'' +
+      ", table='" ~ getTable() + '\'' +
+      ", column='" ~ getColumn() + '\'' +
+      ", dataType='" ~ getDataType() + '\'' +
+      ", constraint='" ~ getConstraint() + '\'' +
       '}';
   }
 }

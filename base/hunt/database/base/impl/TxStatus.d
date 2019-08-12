@@ -22,10 +22,10 @@ module hunt.database.base.impl.TxStatus;
  * @author <a href="mailto:emad.albloushi@gmail.com">Emad Alblueshi</a>
  *
  */
-public enum TxStatus {
+enum TxStatus {
 
-  IDLE,
-  ACTIVE,
-  FAILED;
+    IDLE,
+    ACTIVE,
+    FAILED;
 
 }

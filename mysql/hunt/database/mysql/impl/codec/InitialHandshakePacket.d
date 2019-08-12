@@ -69,15 +69,15 @@ final class InitialHandshakePacket {
 
   override
   String toString() {
-    return "InitialHandshakePacket{" +
-      "protocolVersion=" + protocolVersion +
-      ", serverVersion='" + serverVersion + '\'' +
-      ", connectionId=" + connectionId +
-      ", serverCapabilitiesFlags=" + serverCapabilitiesFlags +
-      ", characterSet=" + characterSet +
-      ", serverStatusFlags=" + serverStatusFlags +
-      ", scramble=" + Arrays.toString(scramble) +
-      ", authMethodName='" + authMethodName + '\'' +
+    return "InitialHandshakePacket{" ~
+      "protocolVersion=" ~ protocolVersion +
+      ", serverVersion='" ~ serverVersion + '\'' +
+      ", connectionId=" ~ connectionId +
+      ", serverCapabilitiesFlags=" ~ serverCapabilitiesFlags +
+      ", characterSet=" ~ characterSet +
+      ", serverStatusFlags=" ~ serverStatusFlags +
+      ", scramble=" ~ Arrays.toString(scramble) +
+      ", authMethodName='" ~ authMethodName + '\'' +
       '}';
   }
 }

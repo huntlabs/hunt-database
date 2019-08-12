@@ -31,24 +31,24 @@ class ErrorResponse : Response {
 
   override
   String toString() {
-    return "ErrorResponse{" +
-      "severity='" + getSeverity() + '\'' +
-      ", code='" + getCode() + '\'' +
-      ", message='" + getMessage() + '\'' +
-      ", detail='" + getDetail() + '\'' +
-      ", hint='" + getHint() + '\'' +
-      ", position='" + getPosition() + '\'' +
-      ", internalPosition='" + getInternalPosition() + '\'' +
-      ", internalQuery='" + getInternalQuery() + '\'' +
-      ", where='" + getWhere() + '\'' +
-      ", file='" + getFile() + '\'' +
-      ", line='" + getLine() + '\'' +
-      ", routine='" + getRoutine() + '\'' +
-      ", schema='" + getSchema() + '\'' +
-      ", table='" + getTable() + '\'' +
-      ", column='" + getColumn() + '\'' +
-      ", dataType='" + getDataType() + '\'' +
-      ", constraint='" + getConstraint() + '\'' +
+    return "ErrorResponse{" ~
+      "severity='" ~ getSeverity() + '\'' +
+      ", code='" ~ getCode() + '\'' +
+      ", message='" ~ getMessage() + '\'' +
+      ", detail='" ~ getDetail() + '\'' +
+      ", hint='" ~ getHint() + '\'' +
+      ", position='" ~ getPosition() + '\'' +
+      ", internalPosition='" ~ getInternalPosition() + '\'' +
+      ", internalQuery='" ~ getInternalQuery() + '\'' +
+      ", where='" ~ getWhere() + '\'' +
+      ", file='" ~ getFile() + '\'' +
+      ", line='" ~ getLine() + '\'' +
+      ", routine='" ~ getRoutine() + '\'' +
+      ", schema='" ~ getSchema() + '\'' +
+      ", table='" ~ getTable() + '\'' +
+      ", column='" ~ getColumn() + '\'' +
+      ", dataType='" ~ getDataType() + '\'' +
+      ", constraint='" ~ getConstraint() + '\'' +
       '}';
   }
 }

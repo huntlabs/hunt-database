@@ -208,8 +208,8 @@ class Interval {
 
   override
   String toString() {
-    return "Interval( " + years + " years " + months + " months " + days + " days " + hours + " hours " +
-      minutes + " minutes " + seconds + (microseconds == 0 ? "" : "." + Math.abs(microseconds)) + " seconds )";
+    return "Interval( " ~ years ~ " years " ~ months ~ " months " ~ days ~ " days " ~ hours ~ " hours " ~
+      minutes ~ " minutes " ~ seconds + (microseconds == 0 ? "" : "." ~ Math.abs(microseconds)) ~ " seconds )";
   }
 
   JsonObject toJson() {

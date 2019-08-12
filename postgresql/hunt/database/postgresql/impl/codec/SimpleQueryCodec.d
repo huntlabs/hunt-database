@@ -40,6 +40,6 @@ class SimpleQueryCodec!(T) extends QueryCommandBaseCodec!(T, SimpleQueryCommand!
 
   override
   void handleParameterStatus(String key, String value) {
-    LOGGER.debug(getClass().getSimpleName() + " should handle message ParameterStatus");
+    LOGGER.debug(getClass().getSimpleName() ~ " should handle message ParameterStatus");
   }
 }

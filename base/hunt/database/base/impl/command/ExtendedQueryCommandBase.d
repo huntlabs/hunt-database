@@ -17,6 +17,8 @@
 
 module hunt.database.base.impl.command.ExtendedQueryCommandBase;
 
+import hunt.database.base.impl.command.QueryCommandBase;
+
 import hunt.database.base.Row;
 import hunt.database.base.impl.PreparedStatement;
 import hunt.database.base.impl.QueryResultHandler;
@@ -26,19 +28,19 @@ import java.util.stream.Collector;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-abstract class ExtendedQueryCommandBase!(R) extends QueryCommandBase!(R) {
+abstract class ExtendedQueryCommandBase(R) : QueryCommandBase!(R) {
 
-  protected final PreparedStatement ps;
-  protected final int fetch;
-  protected final String cursorId;
-  protected final boolean suspended;
-  private final boolean singleton;
+  protected PreparedStatement ps;
+  protected int fetch;
+  protected string cursorId;
+  protected bool suspended;
+  private bool singleton;
 
-  ExtendedQueryCommandBase(PreparedStatement ps,
+  this(PreparedStatement ps,
                            int fetch,
-                           String cursorId,
-                           boolean suspended,
-                           boolean singleton,
+                           string cursorId,
+                           bool suspended,
+                           bool singleton,
                            Collector<Row, ?, R> collector,
                            QueryResultHandler!(R) resultHandler) {
     super(collector, resultHandler);
@@ -57,20 +59,20 @@ abstract class ExtendedQueryCommandBase!(R) extends QueryCommandBase!(R) {
     return fetch;
   }
 
-  String cursorId() {
+  string cursorId() {
     return cursorId;
   }
 
-  boolean isSuspended() {
+  bool isSuspended() {
     return suspended;
   }
 
-  boolean isSingleton() {
+  bool isSingleton() {
     return singleton;
   }
 
   override
-  String sql() {
+  string sql() {
     return ps.sql();
   }
 }

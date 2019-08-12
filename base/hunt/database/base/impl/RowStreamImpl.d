@@ -22,7 +22,7 @@ import hunt.database.base.RowSet;
 import hunt.database.base.RowStream;
 import hunt.database.base.Row;
 import hunt.database.base.Tuple;
-import io.vertx.core.AsyncResult;
+import hunt.database.base.AsyncResult;
 import io.vertx.core.Handler;
 
 import java.util.Iterator;
@@ -87,7 +87,7 @@ class RowStreamImpl implements RowStream!(Row), Handler!(AsyncResult!(RowSet)) {
 
   RowStream!(Row) fetch(long amount) {
     if (amount < 0L) {
-      throw new IllegalArgumentException("Invalid fetch amount " + amount);
+      throw new IllegalArgumentException("Invalid fetch amount " ~ amount);
     }
     synchronized (this) {
       demand += amount;

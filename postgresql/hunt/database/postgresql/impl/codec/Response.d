@@ -186,24 +186,24 @@ abstract class Response {
 
   override
   String toString() {
-    return "Response{" +
-      "severity='" + severity + '\'' +
-      ", code='" + code + '\'' +
-      ", message='" + message + '\'' +
-      ", detail='" + detail + '\'' +
-      ", hint='" + hint + '\'' +
-      ", position='" + position + '\'' +
-      ", internalPosition='" + internalPosition + '\'' +
-      ", internalQuery='" + internalQuery + '\'' +
-      ", where='" + where + '\'' +
-      ", file='" + file + '\'' +
-      ", line='" + line + '\'' +
-      ", routine='" + routine + '\'' +
-      ", schema='" + schema + '\'' +
-      ", table='" + table + '\'' +
-      ", column='" + column + '\'' +
-      ", dataType='" + dataType + '\'' +
-      ", constraint='" + constraint + '\'' +
+    return "Response{" ~
+      "severity='" ~ severity + '\'' +
+      ", code='" ~ code + '\'' +
+      ", message='" ~ message + '\'' +
+      ", detail='" ~ detail + '\'' +
+      ", hint='" ~ hint + '\'' +
+      ", position='" ~ position + '\'' +
+      ", internalPosition='" ~ internalPosition + '\'' +
+      ", internalQuery='" ~ internalQuery + '\'' +
+      ", where='" ~ where + '\'' +
+      ", file='" ~ file + '\'' +
+      ", line='" ~ line + '\'' +
+      ", routine='" ~ routine + '\'' +
+      ", schema='" ~ schema + '\'' +
+      ", table='" ~ table + '\'' +
+      ", column='" ~ column + '\'' +
+      ", dataType='" ~ dataType + '\'' +
+      ", constraint='" ~ constraint + '\'' +
       '}';
   }
 }

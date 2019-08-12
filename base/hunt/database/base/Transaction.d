@@ -19,7 +19,7 @@ module hunt.database.base.Transaction;
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.AsyncResult;
+import hunt.database.base.AsyncResult;
 import io.vertx.core.Handler;
 
 import java.util.List;
@@ -30,73 +30,71 @@ import java.util.stream.Collector;
  */
 interface Transaction : SqlClient {
 
-  /**
-   * Create a prepared query.
-   *
-   * @param sql the sql
-   * @param handler the handler notified with the prepared query asynchronously
-   */
-  @Fluent
-  Transaction prepare(String sql, Handler!(AsyncResult!(PreparedQuery)) handler);
+    /**
+     * Create a prepared query.
+     *
+     * @param sql the sql
+     * @param handler the handler notified with the prepared query asynchronously
+     */
+    Transaction prepare(string sql, Handler!(AsyncResult!(PreparedQuery)) handler);
 
-  /**
-   * Commit the current transaction.
-   */
-  void commit();
+    /**
+     * Commit the current transaction.
+     */
+    void commit();
 
-  /**
-   * Like {@link #commit} with an handler to be notified when the transaction commit has completed
-   */
-  void commit(Handler!(AsyncResult!(Void)) handler);
+    /**
+     * Like {@link #commit} with an handler to be notified when the transaction commit has completed
+     */
+    void commit(Handler!(AsyncResult!(Void)) handler);
 
-  /**
-   * Rollback the current transaction.
-   */
-  void rollback();
+    /**
+     * Rollback the current transaction.
+     */
+    void rollback();
 
-  /**
-   * Like {@link #rollback} with an handler to be notified when the transaction rollback has completed
-   */
-  void rollback(Handler!(AsyncResult!(Void)) handler);
+    /**
+     * Like {@link #rollback} with an handler to be notified when the transaction rollback has completed
+     */
+    void rollback(Handler!(AsyncResult!(Void)) handler);
 
-  /**
-   * Set an handler to be called when the transaction is aborted.
-   *
-   * @param handler the handler
-   */
-  @Fluent
-  Transaction abortHandler(Handler!(Void) handler);
+    /**
+     * Set an handler to be called when the transaction is aborted.
+     *
+     * @param handler the handler
+     */
+    Transaction abortHandler(Handler!(Void) handler);
 
-  override
-  Transaction query(String sql, Handler!(AsyncResult!(RowSet)) handler);
+    override
+    Transaction query(string sql, Handler!(AsyncResult!(RowSet)) handler);
 
-  override
-  @GenIgnore
-  <R> Transaction query(String sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+    override
+    @GenIgnore
+    <R> Transaction query(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
-  override
-  Transaction preparedQuery(String sql, Handler!(AsyncResult!(RowSet)) handler);
+    override
+    Transaction preparedQuery(string sql, Handler!(AsyncResult!(RowSet)) handler);
 
-  override
-  @GenIgnore
-  <R> Transaction preparedQuery(String sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+    override
+    @GenIgnore
+    <R> Transaction preparedQuery(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
-  override
-  Transaction preparedQuery(String sql, Tuple arguments, Handler!(AsyncResult!(RowSet)) handler);
+    override
+    Transaction preparedQuery(string sql, Tuple arguments, Handler!(AsyncResult!(RowSet)) handler);
 
-  override
-  @GenIgnore
-  <R> Transaction preparedQuery(String sql, Tuple arguments, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+    override
+    @GenIgnore
+    <R> Transaction preparedQuery(string sql, Tuple arguments, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
-  override
-  Transaction preparedBatch(String sql, List!(Tuple) batch, Handler!(AsyncResult!(RowSet)) handler);
+    override
+    Transaction preparedBatch(string sql, List!(Tuple) batch, Handler!(AsyncResult!(RowSet)) handler);
 
-  override
-  @GenIgnore
-  <R> Transaction preparedBatch(String sql, List!(Tuple) batch, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+    override
+    @GenIgnore
+    <R> Transaction preparedBatch(string sql, List!(Tuple) batch, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
-  /**
-   * Rollback the transaction and release the associated resources.
-   */
-  void close();
+    /**
+     * Rollback the transaction and release the associated resources.
+     */
+    void close();
 }

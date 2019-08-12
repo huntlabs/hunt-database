@@ -56,7 +56,7 @@ class MySQLRowImpl : ArrayTuple implements RowInternal {
     } else if (type == Duration.class) {
       return type.cast(getDuration(pos));
     } else {
-      throw new UnsupportedOperationException("Unsupported type " + type.getName());
+      throw new UnsupportedOperationException("Unsupported type " ~ type.getName());
     }
   }
 

@@ -21,11 +21,14 @@ import hunt.database.base.Common;
 
 alias ResponseHandler(R) = EventHandler!(CommandResponse!(R));
 
+interface ICommand {
+    void fail(Throwable err);
+}
+
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-
-abstract class CommandBase!(R) {
+abstract class CommandBase(R) : ICommand {
 
     ResponseHandler!R handler;
 

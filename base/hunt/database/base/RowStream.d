@@ -18,7 +18,7 @@
 module hunt.database.base.RowStream;
 
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.AsyncResult;
+import hunt.database.base.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.streams.ReadStream;
 

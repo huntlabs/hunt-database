@@ -17,56 +17,57 @@
 
 module hunt.database.base.impl.Notification;
 
-import java.util.Objects;
+import std.conv;
 
 /**
  * @author <a href="mailto:emad.albloushi@gmail.com">Emad Alblueshi</a>
  */
 class Notification {
 
-  private final int processId;
-  private final String channel;
-  private final String payload;
+    private int processId;
+    private string channel;
+    private string payload;
 
-  Notification(int processId, String channel, String payload) {
-    this.processId = processId;
-    this.channel = channel;
-    this.payload = payload;
-  }
+    this(int processId, string channel, string payload) {
+        this.processId = processId;
+        this.channel = channel;
+        this.payload = payload;
+    }
 
-  int getProcessId() {
-    return processId;
-  }
+    int getProcessId() {
+        return processId;
+    }
 
-  String getChannel() {
-    return channel;
-  }
+    string getChannel() {
+        return channel;
+    }
 
-  String getPayload() {
-    return payload;
-  }
+    string getPayload() {
+        return payload;
+    }
 
-  override
-  bool opEquals(Object o) {
-    if (this == o) return true;
-    if (o is null || getClass() != o.getClass()) return false;
-    Notification that = (Notification) o;
-    return processId == that.processId &&
-      Objects.equals(channel, that.channel) &&
-      Objects.equals(payload, that.payload);
-  }
+    override
+    bool opEquals(Object o) {
+        if (this is o) return true;
+        Notification that = cast(Notification) o;
+        if (o is null || that is null) return false;
+        
+        return processId == that.processId &&
+            channel == that.channel &&
+            payload == that.payload;
+    }
 
-  override
-  size_t toHash() @trusted nothrow {
-    return Objects.hash(processId, channel, payload);
-  }
+    override
+    size_t toHash() @trusted nothrow {
+        return processId.hashOf + channel.hashOf + payload.hashOf;
+    }
 
-  override
-  String toString() {
-    return "NotificationResponse{" +
-      "processId=" + processId +
-      ", channel='" + channel + '\'' +
-      ", payload='" + payload + '\'' +
-      '}';
-  }
+    override
+    string toString() {
+        return "NotificationResponse{" ~
+            "processId=" ~ processId.to!string() ~
+            ", channel='" ~ channel ~ "\'" ~
+            ", payload='" ~ payload ~ "\'" ~
+            "}";
+    }
 }

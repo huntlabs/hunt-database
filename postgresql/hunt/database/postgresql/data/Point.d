@@ -69,7 +69,7 @@ class Point {
 
   override
   String toString() {
-    return "Point(" + x + "," + y + ")";
+    return "Point(" ~ x ~ "," ~ y ~ ")";
   }
 
   JsonObject toJson() {

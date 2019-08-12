@@ -17,12 +17,11 @@
 
 module hunt.database.base.impl.ParamDesc;
 
-import java.util.List;
+import hunt.collection.List;
 
 /**
  * @author <a href="mailto:emad.albloushi@gmail.com">Emad Alblueshi</a>
  */
-
 abstract class ParamDesc {
-  abstract String prepare(List!(Object) values);
+    abstract string prepare(List!(Object) values);
 }

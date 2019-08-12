@@ -67,10 +67,10 @@ class Util {
   }
 
   static String buildInvalidArgsError(Stream!(Object) values, Stream!(Class) types) {
-    return "Values [" + values.map(String::valueOf).collect(Collectors.joining(", ")) +
-      "] cannot be coerced to [" + types
+    return "Values [" ~ values.map(String::valueOf).collect(Collectors.joining(", ")) +
+      "] cannot be coerced to [" ~ types
       .map(Class::getSimpleName)
-      .collect(Collectors.joining(", ")) + "]";
+      .collect(Collectors.joining(", ")) ~ "]";
   }
 
   private static final int FIRST_HALF_BYTE_MASK = 0x0F;

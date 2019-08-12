@@ -61,7 +61,7 @@ class LineSegment {
 
   override
   String toString() {
-    return "LineSegment[" + p1.toString() + "," + p2.toString() + "]";
+    return "LineSegment[" ~ p1.toString() ~ "," ~ p2.toString() ~ "]";
   }
 
   JsonObject toJson() {

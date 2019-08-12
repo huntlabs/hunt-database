@@ -40,31 +40,31 @@ abstract class PgCommandCodec!(R, C extends CommandBase!(R)) {
   abstract void encode(PgEncoder encoder);
 
   void handleBackendKeyData(int processId, int secretKey) {
-    logger.warn(getClass().getSimpleName() + " should handle message BackendKeyData");
+    logger.warn(getClass().getSimpleName() ~ " should handle message BackendKeyData");
   }
 
   void handleEmptyQueryResponse() {
-    logger.warn(getClass().getSimpleName() + " should handle message EmptyQueryResponse");
+    logger.warn(getClass().getSimpleName() ~ " should handle message EmptyQueryResponse");
   }
 
   void handleParameterDescription(PgParamDesc paramDesc) {
-    logger.warn(getClass().getSimpleName() + " should handle message ParameterDescription");
+    logger.warn(getClass().getSimpleName() ~ " should handle message ParameterDescription");
   }
 
   void handleParseComplete() {
-    logger.warn(getClass().getSimpleName() + " should handle message ParseComplete");
+    logger.warn(getClass().getSimpleName() ~ " should handle message ParseComplete");
   }
 
   void handleCloseComplete() {
-    logger.warn(getClass().getSimpleName() + " should handle message CloseComplete");
+    logger.warn(getClass().getSimpleName() ~ " should handle message CloseComplete");
   }
 
   void handleRowDescription(PgRowDesc rowDescription) {
-    logger.warn(getClass().getSimpleName() + " should handle message " + rowDescription);
+    logger.warn(getClass().getSimpleName() ~ " should handle message " ~ rowDescription);
   }
 
   void handleNoData() {
-    logger.warn(getClass().getSimpleName() + " should handle message NoData");
+    logger.warn(getClass().getSimpleName() ~ " should handle message NoData");
   }
 
   void handleNoticeResponse(NoticeResponse noticeResponse) {
@@ -72,35 +72,35 @@ abstract class PgCommandCodec!(R, C extends CommandBase!(R)) {
   }
 
   void handleErrorResponse(ErrorResponse errorResponse) {
-    logger.warn(getClass().getSimpleName() + " should handle message " + errorResponse);
+    logger.warn(getClass().getSimpleName() ~ " should handle message " ~ errorResponse);
   }
 
   void handlePortalSuspended() {
-    logger.warn(getClass().getSimpleName() + " should handle message PortalSuspended");
+    logger.warn(getClass().getSimpleName() ~ " should handle message PortalSuspended");
   }
 
   void handleBindComplete() {
-    logger.warn(getClass().getSimpleName() + " should handle message BindComplete");
+    logger.warn(getClass().getSimpleName() ~ " should handle message BindComplete");
   }
 
   void handleCommandComplete(int updated) {
-    logger.warn(getClass().getSimpleName() + " should handle message CommandComplete");
+    logger.warn(getClass().getSimpleName() ~ " should handle message CommandComplete");
   }
 
   void handleAuthenticationMD5Password(byte[] salt) {
-    logger.warn(getClass().getSimpleName() + " should handle message AuthenticationMD5Password");
+    logger.warn(getClass().getSimpleName() ~ " should handle message AuthenticationMD5Password");
   }
 
   void handleAuthenticationClearTextPassword() {
-    logger.warn(getClass().getSimpleName() + " should handle message AuthenticationClearTextPassword");
+    logger.warn(getClass().getSimpleName() ~ " should handle message AuthenticationClearTextPassword");
   }
 
   void handleAuthenticationOk() {
-    logger.warn(getClass().getSimpleName() + " should handle message AuthenticationOk");
+    logger.warn(getClass().getSimpleName() ~ " should handle message AuthenticationOk");
   }
 
   void handleParameterStatus(String key, String value) {
-    logger.warn(getClass().getSimpleName() + " should handle message ParameterStatus");
+    logger.warn(getClass().getSimpleName() ~ " should handle message ParameterStatus");
   }
 
   /**

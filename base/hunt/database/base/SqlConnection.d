@@ -20,7 +20,7 @@ module hunt.database.base.SqlConnection;
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.AsyncResult;
+import hunt.database.base.AsyncResult;
 import io.vertx.core.Handler;
 
 import java.util.List;
@@ -40,7 +40,6 @@ interface SqlConnection : SqlClient {
    * @param sql the sql
    * @param handler the handler notified with the prepared query asynchronously
    */
-  @Fluent
   SqlConnection prepare(String sql, Handler!(AsyncResult!(PreparedQuery)) handler);
 
   /**
@@ -49,7 +48,6 @@ interface SqlConnection : SqlClient {
    * @param handler the handler
    * @return a reference to this, so the API can be used fluently
    */
-  @Fluent
   SqlConnection exceptionHandler(Handler!(Throwable) handler);
 
   /**
@@ -58,7 +56,6 @@ interface SqlConnection : SqlClient {
    * @param handler the handler
    * @return a reference to this, so the API can be used fluently
    */
-  @Fluent
   SqlConnection closeHandler(Handler!(Void) handler);
 
   /**
@@ -92,20 +89,17 @@ interface SqlConnection : SqlClient {
   SqlConnection query(String sql, Handler!(AsyncResult!(RowSet)) handler);
 
   override
-  @GenIgnore
   <R> SqlConnection query(String sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
   override
   SqlConnection preparedQuery(String sql, Tuple arguments, Handler!(AsyncResult!(RowSet)) handler);
 
   override
-  @GenIgnore
   <R> SqlConnection preparedQuery(String sql, Tuple arguments, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
   override
   SqlConnection preparedBatch(String sql, List!(Tuple) batch, Handler!(AsyncResult!(RowSet)) handler);
 
   override
-  @GenIgnore
   <R> SqlConnection preparedBatch(String sql, List!(Tuple) batch, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 }

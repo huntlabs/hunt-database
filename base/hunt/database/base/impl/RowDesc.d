@@ -17,7 +17,7 @@
 
 module hunt.database.base.impl.RowDesc;
 
-import java.util.List;
+import hunt.collection.List;
 
 /**
  * @author <a href="mailto:emad.albloushi@gmail.com">Emad Alblueshi</a>
@@ -25,27 +25,27 @@ import java.util.List;
 
 class RowDesc {
 
-  private final List!(String) columnNames;
+	private List!(string) columnNames;
 
-  RowDesc(List!(String) columnNames) {
-    this.columnNames = columnNames;
-  }
+	this(List!(string) columnNames) {
+		this.columnNames = columnNames;
+	}
 
-  int columnIndex(String columnName) {
-    if (columnName is null) {
-      throw new NullPointerException("Column name must not be null");
-    }
-    return columnNames.indexOf(columnName);
-  }
+	int columnIndex(string columnName) {
+		if (columnName is null) {
+			throw new NullPointerException("Column name must not be null");
+		}
+		return columnNames.indexOf(columnName);
+	}
 
-  List!(String) columnNames() {
-    return columnNames;
-  }
+	List!(string) columnNames() {
+		return columnNames;
+	}
 
-  override
-  String toString() {
-    return "RowDesc{" +
-      "columns=" + columnNames +
-      '}';
-  }
+	override
+	string toString() {
+		return "RowDesc{" ~
+			"columns=" ~ columnNames.toString() ~
+			"}";
+	}
 }
