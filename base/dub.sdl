@@ -1,6 +1,6 @@
 name "base"
 description "DB client abstruct library for D Programming Language."
-dependency "hunt" path="../../hunt"
+dependency "hunt-net" path="../../hunt-net"
 targetType "library"
 sourcePaths "."
 importPaths "."

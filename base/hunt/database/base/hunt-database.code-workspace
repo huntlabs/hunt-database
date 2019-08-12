@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "/mnt/zxp/dlang/hunt-database"
+		},
+		{
+			"path": "/mnt/zxp/dlang/hunt-database/base"
+		},
+		{
+			"path": "/mnt/zxp/dlang/hunt-database/mysql"
+		},
+		{
+			"path": "/mnt/zxp/dlang/hunt-database/postgresql"
+		}
+	],
+	"settings": {}
+}
