@@ -69,28 +69,24 @@ interface Transaction : SqlClient {
     Transaction query(string sql, Handler!(AsyncResult!(RowSet)) handler);
 
     override
-    @GenIgnore
     <R> Transaction query(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
     override
     Transaction preparedQuery(string sql, Handler!(AsyncResult!(RowSet)) handler);
 
     override
-    @GenIgnore
     <R> Transaction preparedQuery(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
     override
     Transaction preparedQuery(string sql, Tuple arguments, Handler!(AsyncResult!(RowSet)) handler);
 
     override
-    @GenIgnore
     <R> Transaction preparedQuery(string sql, Tuple arguments, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
     override
     Transaction preparedBatch(string sql, List!(Tuple) batch, Handler!(AsyncResult!(RowSet)) handler);
 
     override
-    @GenIgnore
     <R> Transaction preparedBatch(string sql, List!(Tuple) batch, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
     /**

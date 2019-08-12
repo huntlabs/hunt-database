@@ -17,10 +17,10 @@
 
 module hunt.database.base.impl.RowDecoder;
 
-import io.netty.buffer.ByteBuf;
+import hunt.collection.ByteBuffer;
 
 interface RowDecoder {
 
-  void decodeRow(int len, ByteBuf in);
+    void decodeRow(int len, ByteBuffer buffer);
 
 }

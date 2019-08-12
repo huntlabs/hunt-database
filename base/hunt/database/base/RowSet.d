@@ -17,17 +17,19 @@
 
 module hunt.database.base.RowSet;
 
-import io.vertx.codegen.annotations.VertxGen;
+import hunt.database.base.Row;
+import hunt.database.base.RowIterator;
+import hunt.database.base.SqlResult;
+
+import hunt.util.Common;
+
 
 /**
  * A set of rows.
  */
 interface RowSet : Iterable!(Row), SqlResult!(RowSet) {
 
-  override
-  RowIterator iterator();
+    override RowIterator iterator();
 
-  override
-  RowSet next();
-
+    override RowSet next();
 }

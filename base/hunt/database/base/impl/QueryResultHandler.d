@@ -17,11 +17,13 @@
 
 module hunt.database.base.impl.QueryResultHandler;
 
+import hunt.database.base.impl.RowDesc;
+
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-interface QueryResultHandler!(T) {
+interface QueryResultHandler(T) {
 
-  void handleResult(int updatedCount, int size, RowDesc desc, T result);
+    void handleResult(int updatedCount, int size, RowDesc desc, T result);
 
 }

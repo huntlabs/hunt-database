@@ -16,19 +16,15 @@
  */
 module hunt.database.base.RowIterator;
 
-import io.vertx.codegen.annotations.VertxGen;
-
-import java.util.Iterator;
+import std.range;
 
 /**
  * An iterator for processing rows.
  */
-interface RowIterator : Iterator!(Row) {
+interface RowIterator : InputRange!(Row) {
 
-  override
-  boolean hasNext();
+    // override bool hasNext();
 
-  override
-  Row next();
+    // override Row next();
 
 }
