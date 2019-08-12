@@ -1,4 +1,4 @@
-module hunt.database.mysql;
+module hunt.database.mysql.MySQLConnectOptions;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.buffer.Buffer;

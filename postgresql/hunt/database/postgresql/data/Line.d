@@ -1,4 +1,4 @@
-module hunt.database.postgresql.data;
+module hunt.database.postgresql.data.Line;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;

@@ -1,4 +1,4 @@
-module hunt.database.mysql.impl;
+module hunt.database.mysql.impl.MySQLConnectionFactory;
 
 import io.vertx.core.*;
 import io.vertx.core.impl.NetSocketInternal;

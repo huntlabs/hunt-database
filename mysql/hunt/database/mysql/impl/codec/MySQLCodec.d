@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-module hunt.database.mysql.impl.codec;
+module hunt.database.mysql.impl.codec.MySQLCodec;
 
 import io.netty.channel.CombinedChannelDuplexHandler;
 

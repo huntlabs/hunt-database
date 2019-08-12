@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-module hunt.database.postgresql.impl.util;
+module hunt.database.postgresql.impl.util.UTF8StringEndDetector;
 
 import io.netty.util.ByteProcessor;
 

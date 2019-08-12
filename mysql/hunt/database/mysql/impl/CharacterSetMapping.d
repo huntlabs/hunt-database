@@ -1,4 +1,4 @@
-module hunt.database.mysql.impl;
+module hunt.database.mysql.impl.CharacterSetMapping;
 
 import io.netty.util.collection.IntObjectHashMap;
 import io.netty.util.collection.IntObjectMap;

@@ -15,7 +15,7 @@
  *
  */
 
-module hunt.database.postgresql.impl.codec;
+module hunt.database.postgresql.impl.codec.NoticeResponse;
 
 import hunt.database.base.impl.Notice;
 import io.vertx.core.logging.Logger;

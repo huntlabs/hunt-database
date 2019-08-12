@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-module hunt.database.postgresql.impl.codec;
+module hunt.database.postgresql.impl.codec.DataType;
 
 import io.netty.util.collection.IntObjectHashMap;
 import io.netty.util.collection.IntObjectMap;

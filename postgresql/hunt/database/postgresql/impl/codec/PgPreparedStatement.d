@@ -15,7 +15,7 @@
  *
  */
 
-module hunt.database.postgresql.impl.codec;
+module hunt.database.postgresql.impl.codec.PgPreparedStatement;
 
 import hunt.database.base.impl.PreparedStatement;
 import hunt.database.base.impl.ParamDesc;

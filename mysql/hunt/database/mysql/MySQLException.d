@@ -1,4 +1,4 @@
-module hunt.database.mysql;
+module hunt.database.mysql.MySQLException;
 
 /**
  * A {@link RuntimeException} signals that an error occurred.

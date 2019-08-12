@@ -1,4 +1,4 @@
-module hunt.database.mysql.impl;
+module hunt.database.mysql.impl.MySQLCollation;
 
 /**
  * MySQL collation which is a set of rules for comparing characters in a character set.

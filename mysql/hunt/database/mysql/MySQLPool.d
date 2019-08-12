@@ -1,4 +1,4 @@
-module hunt.database.mysql;
+module hunt.database.mysql.MySQLPool;
 
 import io.vertx.codegen.annotations.GenIgnore;
 import io.vertx.codegen.annotations.VertxGen;

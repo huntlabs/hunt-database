@@ -1,4 +1,4 @@
-module hunt.database.mysql.impl;
+module hunt.database.mysql.impl.MySQLRowImpl;
 
 import hunt.database.base.data.Numeric;
 import hunt.database.base.impl.ArrayTuple;

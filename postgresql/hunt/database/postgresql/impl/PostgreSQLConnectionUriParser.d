@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-module hunt.database.postgresql.impl.PostgreSQLConnectionUriParser;
+module hunt.database.postgresql.impl.PostgreSQLConnectionUriParser.PostgreSQLConnectionUriParser;
 
 import hunt.database.postgresql.SslMode;
 import io.vertx.core.json.JsonObject;

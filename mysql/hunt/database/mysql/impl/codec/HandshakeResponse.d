@@ -1,4 +1,4 @@
-module hunt.database.mysql.impl.codec;
+module hunt.database.mysql.impl.codec.HandshakeResponse;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;

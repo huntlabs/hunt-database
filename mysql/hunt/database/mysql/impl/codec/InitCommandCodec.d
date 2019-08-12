@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-module hunt.database.mysql.impl.codec;
+module hunt.database.mysql.impl.codec.InitCommandCodec;
 
 import io.netty.buffer.ByteBuf;
 import hunt.database.mysql.impl.MySQLCollation;

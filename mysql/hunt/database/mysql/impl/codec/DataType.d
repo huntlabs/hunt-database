@@ -1,4 +1,4 @@
-module hunt.database.mysql.impl.codec;
+module hunt.database.mysql.impl.codec.DataType;
 
 import io.netty.util.collection.IntObjectHashMap;
 import io.netty.util.collection.IntObjectMap;

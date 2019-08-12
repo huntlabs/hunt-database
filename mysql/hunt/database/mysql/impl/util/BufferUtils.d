@@ -1,4 +1,4 @@
-module hunt.database.mysql.impl.util;
+module hunt.database.mysql.impl.util.BufferUtils;
 
 import io.netty.buffer.ByteBuf;
 

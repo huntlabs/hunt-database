@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-module hunt.database.postgresql;
+module hunt.database.postgresql.PostgreSQLNotification;
 
 import io.vertx.codegen.annotations.DataObject;
 import io.vertx.core.json.JsonObject;

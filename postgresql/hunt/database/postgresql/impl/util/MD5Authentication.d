@@ -15,7 +15,7 @@
  *
  */
 
-module hunt.database.postgresql.impl.util;
+module hunt.database.postgresql.impl.util.MD5Authentication;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

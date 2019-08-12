@@ -15,7 +15,7 @@
  *
  */
 
-module hunt.database.postgresql.impl.PostgreSQLSocketConnection;
+module hunt.database.postgresql.impl.PostgreSQLSocketConnection.PostgreSQLSocketConnection;
 
 import io.netty.channel.ChannelPipeline;
 import io.netty.handler.codec.DecoderException;

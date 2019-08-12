@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-module hunt.database.postgresql;
+module hunt.database.postgresql.SslMode;
 
 /**
  * The different values for the sslmode parameter provide different levels of protection.

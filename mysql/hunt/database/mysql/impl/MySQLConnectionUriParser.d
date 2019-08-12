@@ -1,4 +1,4 @@
-module hunt.database.mysql.impl;
+module hunt.database.mysql.impl.MySQLConnectionUriParser;
 
 import io.vertx.core.json.JsonObject;
 

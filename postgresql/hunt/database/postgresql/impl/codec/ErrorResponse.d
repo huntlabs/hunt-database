@@ -15,7 +15,7 @@
  *
  */
 
-module hunt.database.postgresql.impl.codec;
+module hunt.database.postgresql.impl.codec.ErrorResponse;
 
 import hunt.database.postgresql.PgException;
 

@@ -15,7 +15,7 @@
  *
  */
 
-module hunt.database.mysql.impl.codec;
+module hunt.database.mysql.impl.codec.MySQLPreparedStatement;
 
 import hunt.database.base.impl.ParamDesc;
 import hunt.database.base.impl.PreparedStatement;

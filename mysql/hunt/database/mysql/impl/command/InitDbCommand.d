@@ -1,4 +1,4 @@
-module hunt.database.mysql.impl.command;
+module hunt.database.mysql.impl.command.InitDbCommand;
 
 import hunt.database.base.impl.command.CommandBase;
 

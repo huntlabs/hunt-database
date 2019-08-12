@@ -1,4 +1,4 @@
-module hunt.database.mysql.impl.util;
+module hunt.database.mysql.impl.util.Util;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;

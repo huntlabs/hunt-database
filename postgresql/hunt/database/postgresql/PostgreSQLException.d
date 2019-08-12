@@ -15,7 +15,7 @@
  *
  */
 
-module hunt.database.postgresql.PostgreSQLException;
+module hunt.database.postgresql.PostgreSQLException.PostgreSQLException;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>

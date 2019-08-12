@@ -1,4 +1,4 @@
-module hunt.database.mysql.impl.codec;
+module hunt.database.mysql.impl.codec.Packets;
 
 /**
  * MySQL Packets.

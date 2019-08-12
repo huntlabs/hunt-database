@@ -15,7 +15,7 @@
  *
  */
 
-module hunt.database.postgresql.impl.codec;
+module hunt.database.postgresql.impl.codec.PgDecoder;
 
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.buffer.CompositeByteBuf;

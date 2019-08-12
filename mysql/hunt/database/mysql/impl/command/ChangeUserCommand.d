@@ -1,4 +1,4 @@
-module hunt.database.mysql.impl.command;
+module hunt.database.mysql.impl.command.ChangeUserCommand;
 
 import hunt.database.mysql.impl.MySQLCollation;
 import hunt.database.base.impl.command.CommandBase;

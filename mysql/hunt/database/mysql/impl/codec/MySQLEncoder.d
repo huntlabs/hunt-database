@@ -1,4 +1,4 @@
-module hunt.database.mysql.impl.codec;
+module hunt.database.mysql.impl.codec.MySQLEncoder;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelOutboundHandlerAdapter;

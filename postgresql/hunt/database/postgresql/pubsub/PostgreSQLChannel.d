@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-module hunt.database.postgresql.pubsub.PostgreSQLChannel;
+module hunt.database.postgresql.pubsub.PostgreSQLChannel.PostgreSQLChannel;
 
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.VertxGen;

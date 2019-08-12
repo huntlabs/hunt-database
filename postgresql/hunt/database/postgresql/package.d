@@ -16,6 +16,6 @@
  */
 
 @ModuleGen(name = "vertx-pg-client", groupPackage = "io.vertx")
-module hunt.database.postgresql;
+module hunt.database.postgresql.package;
 
 import io.vertx.codegen.annotations.ModuleGen;

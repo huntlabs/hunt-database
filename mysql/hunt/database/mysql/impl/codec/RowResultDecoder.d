@@ -1,4 +1,4 @@
-module hunt.database.mysql.impl.codec;
+module hunt.database.mysql.impl.codec.RowResultDecoder;
 
 import io.netty.buffer.ByteBuf;
 import hunt.database.mysql.impl.MySQLCollation;

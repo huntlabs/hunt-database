@@ -15,7 +15,7 @@
  *
  */
 
-module hunt.database.postgresql.PostgreSQLConnection;
+module hunt.database.postgresql.PostgreSQLConnection.PostgreSQLConnection;
 
 import hunt.database.postgresql.impl.PgConnectionImpl;
 import hunt.database.base.PreparedQuery;

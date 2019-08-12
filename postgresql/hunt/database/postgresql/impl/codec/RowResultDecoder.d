@@ -15,7 +15,7 @@
  *
  */
 
-module hunt.database.postgresql.impl.codec;
+module hunt.database.postgresql.impl.codec.RowResultDecoder;
 
 import hunt.database.base.Row;
 import hunt.database.postgresql.impl.RowImpl;

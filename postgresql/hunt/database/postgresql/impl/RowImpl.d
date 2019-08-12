@@ -15,7 +15,7 @@
  *
  */
 
-module hunt.database.postgresql.impl;
+module hunt.database.postgresql.impl.RowImpl;
 
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;

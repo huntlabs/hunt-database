@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-module hunt.database.postgresql.impl.PostgreSQLConnectionImpl;
+module hunt.database.postgresql.impl.PostgreSQLConnectionImpl.PostgreSQLConnectionImpl;
 
 import hunt.database.postgresql.PgConnectOptions;
 import hunt.database.postgresql.PgConnection;

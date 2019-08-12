@@ -1,4 +1,4 @@
-module hunt.database.mysql.impl.codec;
+module hunt.database.mysql.impl.codec.DataTypeCodec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.DecoderException;

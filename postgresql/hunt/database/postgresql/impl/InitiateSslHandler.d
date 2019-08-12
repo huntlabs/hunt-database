@@ -15,7 +15,7 @@
  *
  */
 
-module hunt.database.postgresql.impl;
+module hunt.database.postgresql.impl.InitiateSslHandler;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;

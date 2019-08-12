@@ -1,4 +1,4 @@
-module hunt.database.mysql;
+module hunt.database.mysql.MySQLSetOption;
 
 import io.vertx.core.Handler;
 

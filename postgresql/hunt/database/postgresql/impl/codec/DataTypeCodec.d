@@ -15,7 +15,7 @@
  *
  */
 
-module hunt.database.postgresql.impl.codec;
+module hunt.database.postgresql.impl.codec.DataTypeCodec;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.netty.buffer.ByteBuf;

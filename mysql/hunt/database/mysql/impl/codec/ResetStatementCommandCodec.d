@@ -1,4 +1,4 @@
-module hunt.database.mysql.impl.codec;
+module hunt.database.mysql.impl.codec.ResetStatementCommandCodec;
 
 import io.netty.buffer.ByteBuf;
 import hunt.database.base.impl.command.CloseCursorCommand;

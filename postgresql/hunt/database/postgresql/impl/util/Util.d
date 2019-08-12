@@ -15,7 +15,7 @@
  *
  */
 
-module hunt.database.postgresql.impl.util;
+module hunt.database.postgresql.impl.util.Util;
 
 import io.netty.buffer.ByteBuf;
 import io.vertx.core.buffer.Buffer;

@@ -15,7 +15,7 @@
  *
  */
 
-module hunt.database.postgresql;
+module hunt.database.postgresql.PostgreSQLPool;
 
 import hunt.database.postgresql.impl.PgPoolImpl;
 import hunt.database.base.PoolOptions;

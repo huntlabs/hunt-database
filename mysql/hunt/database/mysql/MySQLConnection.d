@@ -1,4 +1,4 @@
-module hunt.database.mysql;
+module hunt.database.mysql.MySQLConnection;
 
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.GenIgnore;

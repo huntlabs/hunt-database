@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-module hunt.database.postgresql.impl.codec;
+module hunt.database.postgresql.impl.codec.PgRowDesc;
 
 import hunt.database.base.impl.RowDesc;
 

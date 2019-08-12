@@ -1,4 +1,4 @@
-module hunt.database.mysql.impl.codec;
+module hunt.database.mysql.impl.codec.ExtendedQueryCommandBaseCodec;
 
 import io.netty.buffer.ByteBuf;
 import io.vertx.core.buffer.Buffer;

@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-module hunt.database.postgresql.pubsub.PostgreSQLSubscriber;
+module hunt.database.postgresql.pubsub.PostgreSQLSubscriber.PostgreSQLSubscriber;
 
 import hunt.database.postgresql.PgConnectOptions;
 import hunt.database.postgresql.PgConnection;

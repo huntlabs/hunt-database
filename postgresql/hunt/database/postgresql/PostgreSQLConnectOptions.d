@@ -15,7 +15,7 @@
  *
  */
 
-module hunt.database.postgresql.PostgreSQLConnectOptions;
+module hunt.database.postgresql.PostgreSQLConnectOptions.PostgreSQLConnectOptions;
 
 import hunt.database.postgresql.impl.PgConnectionUriParser;
 import io.vertx.codegen.annotations.DataObject;

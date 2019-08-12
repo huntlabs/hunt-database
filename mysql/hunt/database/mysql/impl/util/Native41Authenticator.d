@@ -1,4 +1,4 @@
-module hunt.database.mysql.impl.util;
+module hunt.database.mysql.impl.util.Native41Authenticator;
 
 import java.nio.charset.Charset;
 import java.security.MessageDigest;

@@ -15,7 +15,7 @@
  *
  */
 
-module hunt.database.mysql.impl;
+module hunt.database.mysql.impl.MySQLSocketConnection;
 
 import io.netty.channel.ChannelPipeline;
 import io.vertx.core.Context;

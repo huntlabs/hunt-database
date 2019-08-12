@@ -15,7 +15,7 @@
  *
  */
 
-module hunt.database.postgresql.impl.codec;
+module hunt.database.postgresql.impl.codec.PasswordMessage;
 
 import hunt.database.postgresql.impl.util.MD5Authentication;
 

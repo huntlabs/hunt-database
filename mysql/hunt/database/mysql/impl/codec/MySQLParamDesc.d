@@ -1,4 +1,4 @@
-module hunt.database.mysql.impl.codec;
+module hunt.database.mysql.impl.codec.MySQLParamDesc;
 
 import hunt.database.mysql.impl.util.Util;
 import hunt.database.base.impl.ParamDesc;

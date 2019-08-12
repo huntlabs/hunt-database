@@ -1,4 +1,4 @@
-module hunt.database.mysql.impl.command;
+module hunt.database.mysql.impl.command.SetOptionCommand;
 
 import hunt.database.mysql.MySQLSetOption;
 import hunt.database.base.impl.command.CommandBase;
