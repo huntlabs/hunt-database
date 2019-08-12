@@ -1,0 +1,6 @@
+name "base"
+description "DB client abstruct library for D Programming Language."
+dependency "hunt" version="~>1.3.0"
+targetType "library"
+sourcePaths "."
+importPaths "."

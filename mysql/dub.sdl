@@ -1,0 +1,6 @@
+name "mysql"
+description "MySQL client for D Programming Language."
+dependency "hunt-database:core" version="*"
+targetType "library"
+sourcePaths "."
+importPaths "."

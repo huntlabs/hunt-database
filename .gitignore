@@ -21,10 +21,16 @@ dub.selections.json
 docs.json
 __dummy.html
 docs/
+*-test-*
 
 # Code coverage
 *.lst
+mixin_output.d
+
+# Others
+/java/
+.DS_Store
+*.zip
 
 # Examples
-hunt-database-test-default
 examples/mysql/mysql_demo
