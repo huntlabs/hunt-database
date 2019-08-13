@@ -1,6 +1,6 @@
 module hunt.database.mysql.impl.MySQLPoolImpl;
 
-import io.vertx.core.AsyncResult;
+import hunt.database.base.AsyncResult;
 import io.vertx.core.Context;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;

@@ -21,7 +21,7 @@ import hunt.database.postgresql.PgConnection;
 import hunt.database.postgresql.impl.pubsub.PgSubscriberImpl;
 import io.vertx.codegen.annotations.Fluent;
 import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.AsyncResult;
+import hunt.database.base.AsyncResult;
 import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 

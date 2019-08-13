@@ -21,7 +21,7 @@ import hunt.database.postgresql.PgConnection;
 import hunt.database.postgresql.PgNotification;
 import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.SqlConnectionImpl;
-import io.vertx.core.AsyncResult;
+import hunt.database.base.AsyncResult;
 import io.vertx.core.Context;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;

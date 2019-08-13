@@ -16,80 +16,79 @@
  */
 module hunt.database.postgresql.PostgreSQLNotification;
 
-import io.vertx.codegen.annotations.DataObject;
-import io.vertx.core.json.JsonObject;
+// import io.vertx.codegen.annotations.DataObject;
+// import io.vertx.core.json.JsonObject;
 
 /**
  * A notification emited by Postgres.
  */
-@DataObject(generateConverter = true)
 class PgNotification {
 
-  private int processId;
-  private String channel;
-  private String payload;
+    private int processId;
+    private string channel;
+    private string payload;
 
-  PgNotification() {
-  }
+    this() {
+    }
 
-  PgNotification(JsonObject json) {
-    PgNotificationConverter.fromJson(json, this);
-  }
+    // this(JsonObject json) {
+    //     PgNotificationConverter.fromJson(json, this);
+    // }
 
-  /**
-   * @return the notification process id
-   */
-  int getProcessId() {
-    return processId;
-  }
+    /**
+     * @return the notification process id
+     */
+    int getProcessId() {
+        return processId;
+    }
 
-  /**
-   * Set the process id.
-   *
-   * @return a reference to this, so the API can be used fluently
-   */
-  PgNotification setProcessId(int processId) {
-    this.processId = processId;
-    return this;
-  }
+    /**
+     * Set the process id.
+     *
+     * @return a reference to this, so the API can be used fluently
+     */
+    PgNotification setProcessId(int processId) {
+        this.processId = processId;
+        return this;
+    }
 
-  /**
-   * @return the notification channel value
-   */
-  String getChannel() {
-    return channel;
-  }
+    /**
+     * @return the notification channel value
+     */
+    string getChannel() {
+        return channel;
+    }
 
-  /**
-   * Set the channel value.
-   *
-   * @return a reference to this, so the API can be used fluently
-   */
-  PgNotification setChannel(String channel) {
-    this.channel = channel;
-    return this;
-  }
+    /**
+     * Set the channel value.
+     *
+     * @return a reference to this, so the API can be used fluently
+     */
+    PgNotification setChannel(string channel) {
+        this.channel = channel;
+        return this;
+    }
 
-  /**
-   * @return the notification payload value
-   */
-  String getPayload() {
-    return payload;
-  }
+    /**
+     * @return the notification payload value
+     */
+    string getPayload() {
+        return payload;
+    }
 
-  /**
-   * Set the payload value.
-   *
-   * @return a reference to this, so the API can be used fluently
-   */
-  PgNotification setPayload(String payload) {
-    this.payload = payload;
-    return this;
-  }
+    /**
+     * Set the payload value.
+     *
+     * @return a reference to this, so the API can be used fluently
+     */
+    PgNotification setPayload(string payload) {
+        this.payload = payload;
+        return this;
+    }
 
-  JsonObject toJson() {
-    JsonObject json = new JsonObject();
-    PgNotificationConverter.toJson(this, json);
-    return json;
-  }
+    // JsonObject toJson() {
+    //     JsonObject json = new JsonObject();
+    //     PgNotificationConverter.toJson(this, json);
+    //     return json;
+    // }
 }

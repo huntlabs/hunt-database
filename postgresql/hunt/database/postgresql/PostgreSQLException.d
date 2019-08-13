@@ -15,36 +15,38 @@
  *
  */
 
-module hunt.database.postgresql.PostgreSQLException.PostgreSQLException;
+module hunt.database.postgresql.PostgreSQLException;
+
+import hunt.Exceptions;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 class PgException : RuntimeException {
 
-  private final String severity;
-  private final String code;
-  private final String detail;
+    private string severity;
+    private string code;
+    private string detail;
 
-  PgException(String message, String severity, String code, String detail) {
-    super(message);
-    this.severity = severity;
-    this.code = code;
-    this.detail = detail;
-  }
+    this(string message, string severity, string code, string detail) {
+        super(message);
+        this.severity = severity;
+        this.code = code;
+        this.detail = detail;
+    }
 
-  String getSeverity() {
-    return severity;
-  }
+    string getSeverity() {
+        return severity;
+    }
 
-  String getCode() {
-    return code;
-  }
+    string getCode() {
+        return code;
+    }
 
-  /**
-   * @return the detail error message
-   */
-  String getDetail() {
-    return detail;
-  }
+    /**
+     * @return the detail error message
+     */
+    string getDetail() {
+        return detail;
+    }
 }

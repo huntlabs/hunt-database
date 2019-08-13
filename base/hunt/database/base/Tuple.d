@@ -18,10 +18,10 @@
 module hunt.database.base.Tuple;
 
 import hunt.database.base.impl.ArrayTuple;
-import io.vertx.codegen.annotations.Fluent;
-import io.vertx.codegen.annotations.GenIgnore;
-import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.buffer.Buffer;
+// import io.vertx.codegen.annotations.Fluent;
+// import io.vertx.codegen.annotations.GenIgnore;
+// import io.vertx.codegen.annotations.VertxGen;
+// import io.vertx.core.buffer.Buffer;
 
 import hunt.math.BigDecimal;
 // import java.time.*;

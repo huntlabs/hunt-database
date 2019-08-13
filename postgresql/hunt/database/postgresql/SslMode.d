@@ -20,53 +20,35 @@ module hunt.database.postgresql.SslMode;
  * The different values for the sslmode parameter provide different levels of protection.
  * See more information in <a href="https://www.postgresql.org/docs/current/libpq-ssl.html#LIBPQ-SSL-PROTECTION">Protection Provided in Different Modes</a>.
  */
-enum SslMode {
+enum SslMode : string {
 
     /**
      * only try a non-SSL connection.
      */
-    DISABLE("disable"),
+    DISABLE = "disable",
 
     /**
      * first try a non-SSL connection; if that fails, try an SSL connection.
      */
-    ALLOW("allow"),
+    ALLOW = "allow",
 
     /**
      * first try an SSL connection; if that fails, try a non-SSL connection.
      */
-    PREFER("prefer"),
+    PREFER = "prefer",
 
     /**
      * only try an SSL connection. If a root CA file is present, verify the certificate in the same way as if verify-ca was specified.
      */
-    REQUIRE("require"),
+    REQUIRE = "require",
 
     /**
      * only try an SSL connection, and verify that the server certificate is issued by a trusted certificate authority (CA).
      */
-    VERIFY_CA("verify-ca"),
+    VERIFY_CA = "verify-ca",
 
     /**
      * only try an SSL connection, verify that the server certificate is issued by a trusted CA and that the requested server host name matches that in the certificate.
      */
-    VERIFY_FULL("verify-full");
-
-    static final SslMode[] VALUES = SslMode.values();
-
-    final String value;
-
-    SslMode(String value) {
-        this.value = value;
-    }
-
-    static SslMode of(String value) {
-        for (SslMode sslMode : VALUES) {
-            if (sslMode.value.equalsIgnoreCase(value)) {
-                return sslMode;
-            }
-        }
-
-        throw new IllegalArgumentException("Could not find an appropriate SSL mode for the value [" ~ value ~ "].");
-    }
+    VERIFY_FULL = "verify-full"
 }

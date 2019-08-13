@@ -18,21 +18,22 @@
 module hunt.database.postgresql.PostgreSQLPool;
 
 import hunt.database.postgresql.impl.PgPoolImpl;
+
 import hunt.database.base.PoolOptions;
 import hunt.database.base.SqlResult;
 import hunt.database.base.RowSet;
 import hunt.database.base.Row;
 import hunt.database.base.Pool;
 import hunt.database.base.Tuple;
-import io.vertx.codegen.annotations.GenIgnore;
-import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.AsyncResult;
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
-import io.vertx.core.VertxOptions;
+// import io.vertx.codegen.annotations.GenIgnore;
+// import io.vertx.codegen.annotations.VertxGen;
+import hunt.database.base.AsyncResult;
+// import io.vertx.core.Handler;
+// import io.vertx.core.Vertx;
+// import io.vertx.core.VertxOptions;
 
-import java.util.List;
-import java.util.stream.Collector;
+// import java.util.List;
+// import java.util.stream.Collector;
 
 /**
  * A pool of PostgreSQL connections.
@@ -41,88 +42,88 @@ import java.util.stream.Collector;
  */
 interface PgPool : Pool {
 
-  /**
-   * Like {@link #pool(PoolOptions)} with a default {@code poolOptions}.
-   */
-  static PgPool pool() {
-    return pool(PgConnectOptions.fromEnv(), new PoolOptions());
-  }
-
-  /**
-   * Like {@link #pool(PgConnectOptions, PoolOptions)} with {@code connectOptions} build from the environment variables.
-   */
-  static PgPool pool(PoolOptions poolOptions) {
-    return pool(PgConnectOptions.fromEnv(), poolOptions);
-  }
-
-  /**
-   * Like {@link #pool(String, PoolOptions)} with a default {@code poolOptions}.
-   */
-  static PgPool pool(String connectionUri) {
-    return pool(connectionUri, new PoolOptions());
-  }
-
-  /**
-   * Like {@link #pool(PgConnectOptions, PoolOptions)} with {@code connectOptions} build from {@code connectionUri}.
-   */
-  static PgPool pool(String connectionUri, PoolOptions poolOptions) {
-    return pool(PgConnectOptions.fromUri(connectionUri), poolOptions);
-  }
-
-  /**
-   * Like {@link #pool(Vertx, PgConnectOptions, PoolOptions)} with {@code connectOptions} build from the environment variables.
-   */
-  static PgPool pool(Vertx vertx, PoolOptions poolOptions) {
-    return pool(vertx, PgConnectOptions.fromEnv(), poolOptions);
-  }
-
-  /**
-   * Like {@link #pool(Vertx, PgConnectOptions, PoolOptions)} with {@code connectOptions} build from {@code connectionUri}.
-   */
-  static PgPool pool(Vertx vertx, String connectionUri, PoolOptions poolOptions) {
-    return pool(vertx, PgConnectOptions.fromUri(connectionUri), poolOptions);
-  }
-
-  /**
-   * Create a connection pool to the database configured with the given {@code connectOptions} and {@code poolOptions}.
-   *
-   * @param poolOptions the options for creating the pool
-   * @return the connection pool
-   */
-  static PgPool pool(PgConnectOptions connectOptions, PoolOptions poolOptions) {
-    if (Vertx.currentContext() !is null) {
-      throw new IllegalStateException("Running in a Vertx context => use PgPool#pool(Vertx, PgConnectOptions, PoolOptions) instead");
+    /**
+     * Like {@link #pool(PoolOptions)} with a default {@code poolOptions}.
+     */
+    static PgPool pool() {
+        return pool(PgConnectOptions.fromEnv(), new PoolOptions());
     }
-    VertxOptions vertxOptions = new VertxOptions();
-    if (connectOptions.isUsingDomainSocket()) {
-      vertxOptions.setPreferNativeTransport(true);
+
+    /**
+     * Like {@link #pool(PgConnectOptions, PoolOptions)} with {@code connectOptions} build from the environment variables.
+     */
+    static PgPool pool(PoolOptions poolOptions) {
+        return pool(PgConnectOptions.fromEnv(), poolOptions);
     }
-    Vertx vertx = Vertx.vertx(vertxOptions);
-    return new PgPoolImpl(vertx.getOrCreateContext(), true, connectOptions, poolOptions);
-  }
 
-  /**
-   * Like {@link #pool(PgConnectOptions, PoolOptions)} with a specific {@link Vertx} instance.
-   */
-  static PgPool pool(Vertx vertx, PgConnectOptions connectOptions, PoolOptions poolOptions) {
-    return new PgPoolImpl(vertx.getOrCreateContext(), false, connectOptions, poolOptions);
-  }
+    /**
+     * Like {@link #pool(string, PoolOptions)} with a default {@code poolOptions}.
+     */
+    static PgPool pool(string connectionUri) {
+        return pool(connectionUri, new PoolOptions());
+    }
 
-  PgPool preparedQuery(String sql, Handler!(AsyncResult!(RowSet)) handler);
+    /**
+     * Like {@link #pool(PgConnectOptions, PoolOptions)} with {@code connectOptions} build from {@code connectionUri}.
+     */
+    static PgPool pool(string connectionUri, PoolOptions poolOptions) {
+        return pool(PgConnectOptions.fromUri(connectionUri), poolOptions);
+    }
 
-  @GenIgnore
-  <R> PgPool preparedQuery(String sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
-  PgPool query(String sql, Handler!(AsyncResult!(RowSet)) handler);
+    /**
+     * Like {@link #pool(Vertx, PgConnectOptions, PoolOptions)} with {@code connectOptions} build from the environment variables.
+     */
+    // static PgPool pool(Vertx vertx, PoolOptions poolOptions) {
+    //     return pool(vertx, PgConnectOptions.fromEnv(), poolOptions);
+    // }
 
-  @GenIgnore
-  <R> PgPool query(String sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
-  PgPool preparedQuery(String sql, Tuple arguments, Handler!(AsyncResult!(RowSet)) handler);
+    /**
+     * Like {@link #pool(Vertx, PgConnectOptions, PoolOptions)} with {@code connectOptions} build from {@code connectionUri}.
+     */
+    // static PgPool pool(Vertx vertx, string connectionUri, PoolOptions poolOptions) {
+    //     return pool(vertx, PgConnectOptions.fromUri(connectionUri), poolOptions);
+    // }
 
-  @GenIgnore
-  <R> PgPool preparedQuery(String sql, Tuple arguments, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
-  PgPool preparedBatch(String sql, List!(Tuple) batch, Handler!(AsyncResult!(RowSet)) handler);
+    /**
+     * Create a connection pool to the database configured with the given {@code connectOptions} and {@code poolOptions}.
+     *
+     * @param poolOptions the options for creating the pool
+     * @return the connection pool
+     */
+    // static PgPool pool(PgConnectOptions connectOptions, PoolOptions poolOptions) {
+    //     if (Vertx.currentContext() !is null) {
+    //         throw new IllegalStateException("Running in a Vertx context => use PgPool#pool(Vertx, PgConnectOptions, PoolOptions) instead");
+    //     }
+    //     VertxOptions vertxOptions = new VertxOptions();
+    //     if (connectOptions.isUsingDomainSocket()) {
+    //         vertxOptions.setPreferNativeTransport(true);
+    //     }
+    //     Vertx vertx = Vertx.vertx(vertxOptions);
+    //     return new PgPoolImpl(vertx.getOrCreateContext(), true, connectOptions, poolOptions);
+    // }
 
-  @GenIgnore
-  <R> PgPool preparedBatch(String sql, List!(Tuple) batch, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+    /**
+     * Like {@link #pool(PgConnectOptions, PoolOptions)} with a specific {@link Vertx} instance.
+     */
+    static PgPool pool(Vertx vertx, PgConnectOptions connectOptions, PoolOptions poolOptions) {
+        return new PgPoolImpl(vertx.getOrCreateContext(), false, connectOptions, poolOptions);
+    }
+
+    PgPool preparedQuery(string sql, Handler!(AsyncResult!(RowSet)) handler);
+
+
+    // <R> PgPool preparedQuery(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+    // PgPool query(string sql, Handler!(AsyncResult!(RowSet)) handler);
+
+
+    // <R> PgPool query(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+    // PgPool preparedQuery(string sql, Tuple arguments, Handler!(AsyncResult!(RowSet)) handler);
+
+
+    // <R> PgPool preparedQuery(string sql, Tuple arguments, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+    // PgPool preparedBatch(string sql, List!(Tuple) batch, Handler!(AsyncResult!(RowSet)) handler);
+
+
+    // <R> PgPool preparedBatch(string sql, List!(Tuple) batch, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
 }
