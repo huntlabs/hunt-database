@@ -1,76 +1,74 @@
 module hunt.database.postgresql.data.Circle;
 
-import io.vertx.codegen.annotations.DataObject;
-import io.vertx.core.json.JsonObject;
+import hunt.database.postgresql.data.Point;
 
 /**
  * Circle data type in Postgres represented by a center {@link Point} and radius.
  */
-@DataObject(generateConverter = true)
 class Circle {
-  private Point centerPoint;
-  private double radius;
+    private Point centerPoint;
+    private double radius;
 
-  Circle() {
-    this(new Point(), 0.0);
-  }
+    this() {
+        this(new Point(), 0.0);
+    }
 
-  Circle(Point centerPoint, double radius) {
-    this.centerPoint = centerPoint;
-    this.radius = radius;
-  }
+    this(Point centerPoint, double radius) {
+        this.centerPoint = centerPoint;
+        this.radius = radius;
+    }
 
-  Circle(JsonObject json) {
-    CircleConverter.fromJson(json, this);
-  }
+    // this(JsonObject json) {
+    //     CircleConverter.fromJson(json, this);
+    // }
 
-  Point getCenterPoint() {
-    return centerPoint;
-  }
+    Point getCenterPoint() {
+        return centerPoint;
+    }
 
-  void setCenterPoint(Point centerPoint) {
-    this.centerPoint = centerPoint;
-  }
+    void setCenterPoint(Point centerPoint) {
+        this.centerPoint = centerPoint;
+    }
 
-  double getRadius() {
-    return radius;
-  }
+    double getRadius() {
+        return radius;
+    }
 
-  void setRadius(double radius) {
-    this.radius = radius;
-  }
+    void setRadius(double radius) {
+        this.radius = radius;
+    }
 
-  override
-  bool opEquals(Object o) {
-    if (this == o) return true;
-    if (o is null || getClass() != o.getClass()) return false;
+    override
+    bool opEquals(Object o) {
+        if (this is o) return true;
 
-    Circle that = (Circle) o;
+        Circle that = cast(Circle) o;
+        if(that is null) return false;
 
-    if (radius != that.radius) return false;
-    if (!centerPoint == that.centerPoint) return false;
+        if (radius != that.radius) return false;
+        if (!centerPoint == that.centerPoint) return false;
 
-    return true;
-  }
+        return true;
+    }
 
-  override
-  size_t toHash() @trusted nothrow {
-    int result;
-    long temp;
-    result = centerPoint.hashCode();
-    temp = Double.doubleToLongBits(radius);
-    result = 31 * result + (int) (temp ^ (temp >>> 32));
-    return result;
-  }
+    override
+    size_t toHash() @trusted nothrow {
+        import hunt.Double;
+        size_t result = centerPoint.toHash();
+        size_t temp = Double.doubleToLongBits(radius);
+        result = 31 * result + cast(int) (temp ^ (temp >>> 32));
+        return result;
+    }
 
-  override
-  String toString() {
-    return "Circle<" ~ centerPoint.toString() ~ "," ~ radius ~ ">";
-  }
+    override
+    string toString() {
+        import std.conv;
+        return "Circle<" ~ centerPoint.toString() ~ "," ~ radius.to!string() ~ ">";
+    }
 
-  JsonObject toJson() {
-    JsonObject json = new JsonObject();
-    CircleConverter.toJson(this, json);
-    return json;
-  }
+    // JsonObject toJson() {
+    //     JsonObject json = new JsonObject();
+    //     CircleConverter.toJson(this, json);
+    //     return json;
+    // }
 }

@@ -64,7 +64,7 @@ class PgParamDesc : ParamDesc {
   }
 
   override
-  String toString() {
+  string toString() {
     return "PgParamDesc{" ~
       "paramDataTypes=" ~ Arrays.toString(paramDataTypes) +
       '}';

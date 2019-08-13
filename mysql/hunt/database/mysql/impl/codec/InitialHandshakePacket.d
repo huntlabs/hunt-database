@@ -68,7 +68,7 @@ final class InitialHandshakePacket {
   }
 
   override
-  String toString() {
+  string toString() {
     return "InitialHandshakePacket{" ~
       "protocolVersion=" ~ protocolVersion +
       ", serverVersion='" ~ serverVersion + '\'' +

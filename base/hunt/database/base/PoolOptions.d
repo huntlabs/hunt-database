@@ -114,7 +114,7 @@ class PoolOptions {
 
     override
     size_t toHash() @trusted nothrow {
-        int result = super.hashCode();
+        int result = super.toHash();
         result = 31 * result + maxSize;
         return result;
     }

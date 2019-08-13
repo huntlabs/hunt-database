@@ -1,72 +1,71 @@
 module hunt.database.postgresql.data.LineSegment;
 
-import io.vertx.codegen.annotations.DataObject;
-import io.vertx.core.json.JsonObject;
+import hunt.database.postgresql.data.Point;
 
 /**
  * Finite line segment data type in Postgres represented by pairs of {@link Point}s that are the endpoints of the segment.
  */
-@DataObject(generateConverter = true)
 class LineSegment {
-  private Point p1, p2;
+    private Point p1, p2;
 
-  LineSegment() {
-    this(new Point(), new Point());
-  }
+    this() {
+        this(new Point(), new Point());
+    }
 
-  LineSegment(Point p1, Point p2) {
-    this.p1 = p1;
-    this.p2 = p2;
-  }
+    this(Point p1, Point p2) {
+        this.p1 = p1;
+        this.p2 = p2;
+    }
 
-  LineSegment(JsonObject json) {
-    LineSegmentConverter.fromJson(json, this);
-  }
+    // this(JsonObject json) {
+    //     LineSegmentConverter.fromJson(json, this);
+    // }
 
-  Point getP1() {
-    return p1;
-  }
+    Point getP1() {
+        return p1;
+    }
 
-  void setP1(Point p1) {
-    this.p1 = p1;
-  }
+    void setP1(Point p1) {
+        this.p1 = p1;
+    }
 
-  Point getP2() {
-    return p2;
-  }
+    Point getP2() {
+        return p2;
+    }
 
-  void setP2(Point p2) {
-    this.p2 = p2;
-  }
+    void setP2(Point p2) {
+        this.p2 = p2;
+    }
 
-  override
-  bool opEquals(Object o) {
-    if (this == o) return true;
-    if (o is null || getClass() != o.getClass()) return false;
+    override bool opEquals(Object o) {
+        if (this is o)
+            return true;
 
-    LineSegment that = (LineSegment) o;
+        LineSegment that = cast(LineSegment) o;
+        if (that is null)
+            return false;
 
-    if (!p1 == that.p1) return false;
-    if (!p2 == that.p2) return false;
+        if (!p1 == that.p1)
+            return false;
+        if (!p2 == that.p2)
+            return false;
 
-    return true;
-  }
+        return true;
+    }
 
-  override
-  size_t toHash() @trusted nothrow {
-    int result = p1.hashCode();
-    result = 31 * result + p2.hashCode();
-    return result;
-  }
+    override size_t toHash() @trusted nothrow {
+        size_t result = p1.toHash();
+        result = 31 * result + p2.toHash();
+        return result;
+    }
 
-  override
-  String toString() {
-    return "LineSegment[" ~ p1.toString() ~ "," ~ p2.toString() ~ "]";
-  }
+    override string toString() {
+        return "LineSegment[" ~ p1.toString() ~ "," ~ p2.toString() ~ "]";
+    }
 
-  JsonObject toJson() {
-    JsonObject json = new JsonObject();
-    LineSegmentConverter.toJson(this, json);
-    return json;
-  }
+    // JsonObject toJson() {
+    //     JsonObject json = new JsonObject();
+    //     LineSegmentConverter.toJson(this, json);
+    //     return json;
+    // }
 }

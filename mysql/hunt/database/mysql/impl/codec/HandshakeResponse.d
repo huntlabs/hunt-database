@@ -78,7 +78,7 @@ final class HandshakeResponse {
   }
 
   override
-  String toString() {
+  string toString() {
     return "HandshakeResponse{" ~
       "username='" ~ username + '\'' +
       ", charset=" ~ charset +

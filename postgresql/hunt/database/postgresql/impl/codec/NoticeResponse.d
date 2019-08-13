@@ -49,7 +49,7 @@ class NoticeResponse : Response implements Notice {
   }
 
   override
-  String toString() {
+  string toString() {
     return "NoticeResponse{" ~
       "severity='" ~ getSeverity() + '\'' +
       ", code='" ~ getCode() + '\'' +

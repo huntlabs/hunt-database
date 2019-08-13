@@ -85,7 +85,7 @@ final class ColumnDefinition {
   }
 
   override
-  String toString() {
+  string toString() {
     return "ColumnDefinition{" ~
       "catalog='" ~ catalog + '\'' +
       ", schema='" ~ schema + '\'' +

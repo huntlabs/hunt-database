@@ -185,7 +185,7 @@ abstract class Response {
 
 
   override
-  String toString() {
+  string toString() {
     return "Response{" ~
       "severity='" ~ severity + '\'' +
       ", code='" ~ code + '\'' +

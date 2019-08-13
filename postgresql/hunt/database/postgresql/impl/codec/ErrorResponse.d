@@ -30,7 +30,7 @@ class ErrorResponse : Response {
   }
 
   override
-  String toString() {
+  string toString() {
     return "ErrorResponse{" ~
       "severity='" ~ getSeverity() + '\'' +
       ", code='" ~ getCode() + '\'' +

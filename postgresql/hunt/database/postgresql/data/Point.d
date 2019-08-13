@@ -16,65 +16,62 @@
  */
 module hunt.database.postgresql.data.Point;
 
-import io.vertx.codegen.annotations.DataObject;
-import io.vertx.core.json.JsonObject;
+import std.conv;
 
 /**
  * A Postgresql point.
  */
-@DataObject(generateConverter = true)
 class Point {
 
-  double x, y;
+    private double x, y;
 
-  Point() {
-    this(0, 0);
-  }
-
-  Point(double x, double y) {
-    this.x = x;
-    this.y = y;
-  }
-
-  Point(JsonObject json) {
-    PointConverter.fromJson(json, this);
-  }
-
-  double getX() {
-    return x;
-  }
-
-  Point setX(double x) {
-    this.x = x;
-    return this;
-  }
-
-  double getY() {
-    return y;
-  }
-
-  Point setY(double y) {
-    this.y = y;
-    return this;
-  }
-
-  override
-  bool opEquals(Object obj) {
-    if (obj instanceof Point) {
-      Point that = (Point) obj;
-      return x == that.x && y == that.y;
+    this() {
+        this(0, 0);
     }
-    return false;
-  }
 
-  override
-  String toString() {
-    return "Point(" ~ x ~ "," ~ y ~ ")";
-  }
+    this(double x, double y) {
+        this.x = x;
+        this.y = y;
+    }
 
-  JsonObject toJson() {
-    JsonObject json = new JsonObject();
-    PointConverter.toJson(this, json);
-    return json;
-  }
+    // this(JsonObject json) {
+    //     PointConverter.fromJson(json, this);
+    // }
+
+    double getX() {
+        return x;
+    }
+
+    Point setX(double x) {
+        this.x = x;
+        return this;
+    }
+
+    double getY() {
+        return y;
+    }
+
+    Point setY(double y) {
+        this.y = y;
+        return this;
+    }
+
+    override bool opEquals(Object obj) {
+        if (this is obj)
+            return true;
+        Point that = cast(Point) obj;
+        if (that is null)
+            return false;
+        return x == that.x && y == that.y;
+    }
+
+    override string toString() {
+        return "this(" ~ x.to!string() ~ "," ~ y.to!string() ~ ")";
+    }
+
+    // JsonObject toJson() {
+    //     JsonObject json = new JsonObject();
+    //     PointConverter.toJson(this, json);
+    //     return json;
+    // }
 }
