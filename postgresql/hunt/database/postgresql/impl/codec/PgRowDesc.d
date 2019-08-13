@@ -16,20 +16,24 @@
  */
 module hunt.database.postgresql.impl.codec.PgRowDesc;
 
+import hunt.database.postgresql.impl.codec.PgColumnDesc;
+
 import hunt.database.base.impl.RowDesc;
 
-import java.util.Collections;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+// import hunt.collection.Collections;
+// import java.util.stream.Collectors;
+// import java.util.stream.Stream;
+
+
+import std.algorithm;
+import std.range;
 
 class PgRowDesc : RowDesc {
 
-  final PgColumnDesc[] columns;
+    PgColumnDesc[] columns;
 
-  PgRowDesc(PgColumnDesc[] columns) {
-    super(Collections.unmodifiableList(Stream.of(columns)
-      .map(d -> d.name)
-      .collect(Collectors.toList())));
-    this.columns = columns;
-  }
+    this(PgColumnDesc[] columns) {
+        super(columns.map!(d => d.name).array);
+        this.columns = columns;
+    }
 }

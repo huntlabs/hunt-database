@@ -19,7 +19,7 @@ module hunt.database.base.impl.SqlResultBase;
 
 import hunt.database.base.SqlResult;
 
-import java.util.List;
+import hunt.collection.List;
 
 abstract class SqlResultBase!(T, R extends SqlResultBase!(T, R)) implements SqlResult!(T) {
 

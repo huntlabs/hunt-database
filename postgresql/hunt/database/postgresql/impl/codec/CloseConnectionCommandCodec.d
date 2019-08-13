@@ -16,19 +16,25 @@
  */
 module hunt.database.postgresql.impl.codec.CloseConnectionCommandCodec;
 
+import hunt.database.postgresql.impl.codec.PgEncoder;
 import hunt.database.base.impl.command.CloseConnectionCommand;
+
+import std.concurrency : initOnce;
 
 class CloseConnectionCommandCodec : PgCommandCodec!(Void, CloseConnectionCommand) {
 
-  static final CloseConnectionCommandCodec INSTANCE = new CloseConnectionCommandCodec();
+    static CloseConnectionCommandCodec INSTANCE() {
+        __gshared CloseConnectionCommandCodec inst;
+        return initOnce!inst(new CloseConnectionCommandCodec());
+    }
 
-  private CloseConnectionCommandCodec() {
-    super(CloseConnectionCommand.INSTANCE);
-  }
+    private this() {
+        super(CloseConnectionCommand.INSTANCE());
+    }
 
-  override
-  void encode(PgEncoder encoder) {
-    encoder.writeTerminate();
-  }
+    override
+    void encode(PgEncoder encoder) {
+        encoder.writeTerminate();
+    }
 
 }

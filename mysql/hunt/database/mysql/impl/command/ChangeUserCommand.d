@@ -3,7 +3,7 @@ module hunt.database.mysql.impl.command.ChangeUserCommand;
 import hunt.database.mysql.impl.MySQLCollation;
 import hunt.database.base.impl.command.CommandBase;
 
-import java.util.Map;
+import hunt.collection.Map;
 
 class ChangeUserCommand : CommandBase!(Void) {
   private final String username;

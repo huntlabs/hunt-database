@@ -17,7 +17,7 @@
 
 module hunt.database.postgresql.impl.codec.ErrorResponse;
 
-import hunt.database.postgresql.PgException;
+import hunt.database.postgresql.PostgreSQLException;
 
 /**
  * @author <a href="mailto:emad.albloushi@gmail.com">Emad Alblueshi</a>
@@ -25,30 +25,30 @@ import hunt.database.postgresql.PgException;
 
 class ErrorResponse : Response {
 
-  PgException toException() {
-    return new PgException(getMessage(), getSeverity(), getCode(), getDetail());
-  }
+    PgException toException() {
+        return new PgException(getMessage(), getSeverity(), getCode(), getDetail());
+    }
 
-  override
-  string toString() {
-    return "ErrorResponse{" ~
-      "severity='" ~ getSeverity() + '\'' +
-      ", code='" ~ getCode() + '\'' +
-      ", message='" ~ getMessage() + '\'' +
-      ", detail='" ~ getDetail() + '\'' +
-      ", hint='" ~ getHint() + '\'' +
-      ", position='" ~ getPosition() + '\'' +
-      ", internalPosition='" ~ getInternalPosition() + '\'' +
-      ", internalQuery='" ~ getInternalQuery() + '\'' +
-      ", where='" ~ getWhere() + '\'' +
-      ", file='" ~ getFile() + '\'' +
-      ", line='" ~ getLine() + '\'' +
-      ", routine='" ~ getRoutine() + '\'' +
-      ", schema='" ~ getSchema() + '\'' +
-      ", table='" ~ getTable() + '\'' +
-      ", column='" ~ getColumn() + '\'' +
-      ", dataType='" ~ getDataType() + '\'' +
-      ", constraint='" ~ getConstraint() + '\'' +
-      '}';
-  }
+    override
+    string toString() {
+        return "ErrorResponse{" ~
+            "severity='" ~ getSeverity() ~ "\'" ~ 
+            ", code='" ~ getCode() ~ "\'" ~ 
+            ", message='" ~ getMessage() ~ "\'" ~ 
+            ", detail='" ~ getDetail() ~ "\'" ~ 
+            ", hint='" ~ getHint() ~ "\'" ~ 
+            ", position='" ~ getPosition() ~ "\'" ~ 
+            ", internalPosition='" ~ getInternalPosition() ~ "\'" ~ 
+            ", internalQuery='" ~ getInternalQuery() ~ "\'" ~ 
+            ", where='" ~ getWhere() ~ "\'" ~ 
+            ", file='" ~ getFile() ~ "\'" ~ 
+            ", line='" ~ getLine() ~ "\'" ~ 
+            ", routine='" ~ getRoutine() ~ "\'" ~ 
+            ", schema='" ~ getSchema() ~ "\'" ~ 
+            ", table='" ~ getTable() ~ "\'" ~ 
+            ", column='" ~ getColumn() ~ "\'" ~ 
+            ", dataType='" ~ getDataType() ~ "\'" ~ 
+            ", constraint='" ~ getConstraint() ~ "\'" ~ 
+            '}';
+    }
 }

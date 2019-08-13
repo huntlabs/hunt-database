@@ -17,48 +17,48 @@
 
 module hunt.database.postgresql.impl.util.MD5Authentication;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+// import java.security.MessageDigest;
+// import java.security.NoSuchAlgorithmException;
 
-import static java.nio.charset.StandardCharsets.*;
+// import static java.nio.charset.StandardCharsets.*;
 
-class MD5Authentication {
+// class MD5Authentication {
 
-  private final static char[] HEX_ALPHABET = "0123456789abcdef".toCharArray();
+//     private final static char[] HEX_ALPHABET = "0123456789abcdef".toCharArray();
 
-  private static String toHex(byte[] bytes) {
-    char[] hexChars = new char[bytes.length * 2];
-    for ( int j = 0; j < bytes.length; j++ ) {
-      int v = bytes[j] & 0xFF;
-      hexChars[j * 2] = HEX_ALPHABET[v >>> 4];
-      hexChars[j * 2 + 1] = HEX_ALPHABET[v & 0x0F];
-    }
-    return new String(hexChars);
-  }
+//     private static String toHex(byte[] bytes) {
+//         char[] hexChars = new char[bytes.length * 2];
+//         for ( int j = 0; j < bytes.length; j++ ) {
+//             int v = bytes[j] & 0xFF;
+//             hexChars[j * 2] = HEX_ALPHABET[v >>> 4];
+//             hexChars[j * 2 + 1] = HEX_ALPHABET[v & 0x0F];
+//         }
+//         return new String(hexChars);
+//     }
 
-  static String encode(String username, String password, byte[] salt) {
+//     static String encode(String username, String password, byte[] salt) {
 
-    byte[] digest, passDigest;
+//         byte[] digest, passDigest;
 
-    MessageDigest messageDigest;
+//         MessageDigest messageDigest;
 
-    try {
-      messageDigest = MessageDigest.getInstance("MD5");
-    }
-    catch (NoSuchAlgorithmException e) {
-      throw new RuntimeException(e);
-    }
+//         try {
+//             messageDigest = MessageDigest.getInstance("MD5");
+//         }
+//         catch (NoSuchAlgorithmException e) {
+//             throw new RuntimeException(e);
+//         }
 
-    messageDigest.update(password.getBytes(UTF_8));
-    messageDigest.update(username.getBytes(UTF_8));
-    digest = messageDigest.digest();
+//         messageDigest.update(password.getBytes(UTF_8));
+//         messageDigest.update(username.getBytes(UTF_8));
+//         digest = messageDigest.digest();
 
-    byte[] hexDigest = toHex(digest).getBytes(US_ASCII);
+//         byte[] hexDigest = toHex(digest).getBytes(US_ASCII);
 
-    messageDigest.update(hexDigest);
-    messageDigest.update(salt);
-    passDigest = messageDigest.digest();
+//         messageDigest.update(hexDigest);
+//         messageDigest.update(salt);
+//         passDigest = messageDigest.digest();
 
-    return "md5" ~ toHex(passDigest);
-  }
-}
+//         return "md5" ~ toHex(passDigest);
+//     }
+// }

@@ -20,7 +20,7 @@ module hunt.database.base.impl.command.InitCommand;
 import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.SocketConnectionBase;
 
-import java.util.Map;
+import hunt.collection.Map;
 
 /**
  * Initialize the connection so it can be used to interact with the database.

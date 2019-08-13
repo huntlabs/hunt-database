@@ -22,10 +22,10 @@ module hunt.database.postgresql.impl.codec.Query;
  */
 class Query {
 
-  final String sql;
+    string sql;
 
-  Query(String sql) {
-    this.sql = sql;
-  }
+    this(string sql) {
+        this.sql = sql;
+    }
 
 }

@@ -3,7 +3,7 @@ module hunt.database.mysql.impl.codec.MySQLParamDesc;
 import hunt.database.mysql.impl.util.Util;
 import hunt.database.base.impl.ParamDesc;
 
-import java.util.List;
+import hunt.collection.List;
 import java.util.stream.Stream;
 
 class MySQLParamDesc : ParamDesc {

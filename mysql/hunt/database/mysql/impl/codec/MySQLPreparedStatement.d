@@ -21,7 +21,7 @@ import hunt.database.base.impl.ParamDesc;
 import hunt.database.base.impl.PreparedStatement;
 import hunt.database.base.impl.RowDesc;
 
-import java.util.List;
+import hunt.collection.List;
 
 class MySQLPreparedStatement implements PreparedStatement {
 

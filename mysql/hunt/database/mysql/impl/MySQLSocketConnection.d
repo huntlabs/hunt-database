@@ -27,7 +27,7 @@ import hunt.database.base.impl.SocketConnectionBase;
 import hunt.database.base.impl.command.CommandResponse;
 import hunt.database.base.impl.command.InitCommand;
 
-import java.util.Map;
+import hunt.collection.Map;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>

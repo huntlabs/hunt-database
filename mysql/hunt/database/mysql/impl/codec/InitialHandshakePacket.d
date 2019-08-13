@@ -1,6 +1,6 @@
 module hunt.database.mysql.impl.codec.InitialHandshakePacket;
 
-import java.util.Arrays;
+import hunt.collection.Arrays;
 
 @Deprecated
 //TODO we may drop this class later

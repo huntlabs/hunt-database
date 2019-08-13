@@ -16,45 +16,48 @@
  */
 module hunt.database.postgresql.impl.codec.QueryCommandBaseCodec;
 
+import hunt.database.postgresql.impl.codec.RowResultDecoder;
+import hunt.database.postgresql.impl.codec.PgCommandCodec;
+
 import hunt.database.base.Row;
 import hunt.database.base.impl.RowDesc;
 import hunt.database.base.impl.command.QueryCommandBase;
 
-import java.util.stream.Collector;
+// import java.util.stream.Collector;
 
-abstract class QueryCommandBaseCodec!(T, C extends QueryCommandBase!(T)) extends PgCommandCodec!(Boolean, C) {
+abstract class QueryCommandBaseCodec(T, C) : PgCommandCodec!(bool, C) { // C extends QueryCommandBase!(T)
 
-  RowResultDecoder<?, T> decoder;
+    RowResultDecoder<?, T> decoder;
 
-  QueryCommandBaseCodec(C cmd) {
-    super(cmd);
-  }
-
-  override
-  void handleCommandComplete(int updated) {
-    this.result = false;
-    T result;
-    int size;
-    RowDesc desc;
-    if (decoder !is null) {
-      result = decoder.complete();
-      desc = decoder.desc;
-      size = decoder.size();
-      decoder.reset();
-    } else {
-      result = emptyResult(cmd.collector());
-      size = 0;
-      desc = null;
+    this(C cmd) {
+        super(cmd);
     }
-    cmd.resultHandler().handleResult(updated, size, desc, result);
-  }
 
-  override
-  void handleErrorResponse(ErrorResponse errorResponse) {
-    failure = errorResponse.toException();
-  }
+    override
+    void handleCommandComplete(int updated) {
+        this.result = false;
+        T result;
+        int size;
+        RowDesc desc;
+        if (decoder !is null) {
+            result = decoder.complete();
+            desc = decoder.desc;
+            size = decoder.size();
+            decoder.reset();
+        } else {
+            result = emptyResult(cmd.collector());
+            size = 0;
+            desc = null;
+        }
+        cmd.resultHandler().handleResult(updated, size, desc, result);
+    }
 
-  private static <A, T> T emptyResult(Collector!(Row, A, T) collector) {
-    return collector.finisher().apply(collector.supplier().get());
-  }
+    override
+    void handleErrorResponse(ErrorResponse errorResponse) {
+        failure = errorResponse.toException();
+    }
+
+    // private static <A, T> T emptyResult(Collector!(Row, A, T) collector) {
+    //     return collector.finisher().apply(collector.supplier().get());
+    // }
 }

@@ -5,7 +5,7 @@ import hunt.database.base.Tuple;
 import hunt.database.base.impl.command.CommandResponse;
 import hunt.database.base.impl.command.ExtendedBatchQueryCommand;
 
-import java.util.List;
+import hunt.collection.List;
 
 import static hunt.database.mysql.impl.codec.Packets.*;
 

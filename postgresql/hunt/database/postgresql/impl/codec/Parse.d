@@ -22,16 +22,16 @@ module hunt.database.postgresql.impl.codec.Parse;
  */
 final class Parse {
 
-  final String query;
-  final long statement;
+    string query;
+    long statement;
 
-  Parse(String query, long statement) {
-    this.query = query;
-    this.statement = statement;
-  }
+    this(string query, long statement) {
+        this.query = query;
+        this.statement = statement;
+    }
 
-  Parse(String query) {
-    this.query = query;
-    this.statement = 0;
-  }
+    this(string query) {
+        this.query = query;
+        this.statement = 0;
+    }
 }

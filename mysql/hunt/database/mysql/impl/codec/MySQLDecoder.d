@@ -6,7 +6,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 
 import java.util.ArrayDeque;
-import java.util.List;
+import hunt.collection.List;
 
 import static hunt.database.mysql.impl.codec.Packets.*;
 

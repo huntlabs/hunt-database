@@ -9,7 +9,7 @@ import hunt.database.mysql.MySQLConnectOptions;
 import hunt.database.base.impl.Connection;
 
 import java.util.HashMap;
-import java.util.Map;
+import hunt.collection.Map;
 
 class MySQLConnectionFactory {
   private final NetClient netClient;

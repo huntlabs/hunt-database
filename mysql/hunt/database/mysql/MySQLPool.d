@@ -14,7 +14,7 @@ import hunt.database.base.RowSet;
 import hunt.database.base.SqlResult;
 import hunt.database.base.Tuple;
 
-import java.util.List;
+import hunt.collection.List;
 import java.util.stream.Collector;
 
 import static hunt.database.mysql.MySQLConnectOptions.*;

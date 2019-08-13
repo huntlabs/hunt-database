@@ -17,9 +17,9 @@ import io.vertx.core.net.TrustOptions;
 import hunt.database.mysql.impl.MySQLConnectionUriParser;
 import hunt.database.base.SqlConnectOptions;
 
-import java.util.Collections;
+import hunt.collection.Collections;
 import java.util.HashMap;
-import java.util.Map;
+import hunt.collection.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 

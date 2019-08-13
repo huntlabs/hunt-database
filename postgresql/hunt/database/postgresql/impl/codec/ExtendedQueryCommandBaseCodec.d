@@ -16,38 +16,43 @@
  */
 module hunt.database.postgresql.impl.codec.ExtendedQueryCommandBaseCodec;
 
+import hunt.database.postgresql.impl.codec.QueryCommandBaseCodec;
+import hunt.database.postgresql.impl.codec.RowResultDecoder;
+
+
 import hunt.database.base.impl.RowDesc;
 import hunt.database.base.impl.command.ExtendedQueryCommandBase;
 
-abstract class ExtendedQueryCommandBaseCodec!(R, C extends ExtendedQueryCommandBase!(R)) extends QueryCommandBaseCodec!(R, C) {
+abstract class ExtendedQueryCommandBaseCodec(R, C) : QueryCommandBaseCodec!(R, C) { // extends ExtendedQueryCommandBase!(R)
 
-  ExtendedQueryCommandBaseCodec(C cmd) {
-    super(cmd);
-    decoder = new RowResultDecoder<>(cmd.collector(), cmd.isSingleton(), ((PgPreparedStatement)cmd.preparedStatement()).rowDesc());
-  }
+    this(C cmd) {
+        super(cmd);
+        decoder = new RowResultDecoder<>(cmd.collector(), cmd.isSingleton(), 
+            (cast(PgPreparedStatement)cmd.preparedStatement()).rowDesc());
+    }
 
-  override
-  void handleRowDescription(PgRowDesc rowDescription) {
-    decoder = new RowResultDecoder<>(cmd.collector(), cmd.isSingleton(), rowDescription);
-  }
+    override
+    void handleRowDescription(PgRowDesc rowDescription) {
+        decoder = new RowResultDecoder<>(cmd.collector(), cmd.isSingleton(), rowDescription);
+    }
 
-  override
-  void handleParseComplete() {
-    // Response to Parse
-  }
+    override
+    void handleParseComplete() {
+        // Response to Parse
+    }
 
-  override
-  void handlePortalSuspended() {
-    R result = decoder.complete();
-    RowDesc desc = decoder.desc;
-    int size = decoder.size();
-    decoder.reset();
-    this.result = true;
-    cmd.resultHandler().handleResult(0, size, desc, result);
-  }
+    override
+    void handlePortalSuspended() {
+        R result = decoder.complete();
+        RowDesc desc = decoder.desc;
+        int size = decoder.size();
+        decoder.reset();
+        this.result = true;
+        cmd.resultHandler().handleResult(0, size, desc, result);
+    }
 
-  override
-  void handleBindComplete() {
-    // Response to Bind
-  }
+    override
+    void handleBindComplete() {
+        // Response to Bind
+    }
 }

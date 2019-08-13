@@ -4,7 +4,7 @@ import hunt.database.base.impl.SocketConnectionBase.CachedPreparedStatement;
 import hunt.database.base.impl.command.CloseStatementCommand;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
+import hunt.collection.Map;
 
 /**
  * A LRU replacement strategy cache based on {@link java.util.LinkedHashMap} for prepared statements.

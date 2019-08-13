@@ -22,13 +22,6 @@ module hunt.database.postgresql.impl.codec.DataFormat;
  */
 
 enum DataFormat {
-  TEXT(0),
-  BINARY(1);
-  final int id;
-  DataFormat(int id) {
-    this.id = id;
-  }
-  static DataFormat valueOf(int id) {
-    return (id == 0) ? DataFormat.TEXT : DataFormat.BINARY;
-  }
+    TEXT = 0,
+    BINARY = 1
 }

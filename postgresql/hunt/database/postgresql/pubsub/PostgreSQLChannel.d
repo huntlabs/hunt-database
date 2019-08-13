@@ -14,12 +14,12 @@
  * limitations under the License.
  *
  */
-module hunt.database.postgresql.pubsub.PostgreSQLChannel.PostgreSQLChannel;
+module hunt.database.postgresql.pubsub.PostgreSQLChannel;
 
-import io.vertx.codegen.annotations.Fluent;
-import io.vertx.codegen.annotations.VertxGen;
-import io.vertx.core.Handler;
-import io.vertx.core.streams.ReadStream;
+// import io.vertx.codegen.annotations.Fluent;
+// import io.vertx.codegen.annotations.VertxGen;
+// import io.vertx.core.Handler;
+// import io.vertx.core.streams.ReadStream;
 
 /**
  * A channel to Postgres that tracks the subscription to a given Postgres channel using the {@code LISTEN/UNLISTEN} commands.
@@ -28,55 +28,54 @@ import io.vertx.core.streams.ReadStream;
  */
 interface PgChannel : ReadStream!(String) {
 
-  /**
-   * Set an handler called when the the channel get subscribed.
-   *
-   * @param handler the handler
-   * @return a reference to this, so the API can be used fluently
-   */
-  @Fluent
-  PgChannel subscribeHandler(Handler!(Void) handler);
+    /**
+     * Set an handler called when the the channel get subscribed.
+     *
+     * @param handler the handler
+     * @return a reference to this, so the API can be used fluently
+     */
+    PgChannel subscribeHandler(Handler!(Void) handler);
 
-  /**
-   * Set or unset an handler to be called when a the channel is notified by Postgres.
-   * <p/>
-   * <ul>
-   *   <li>when the handler is set, the subscriber sends a {@code LISTEN} command if needed</li>
-   *   <li>when the handler is unset, the subscriber sends a {@code UNLISTEN} command if needed</li>
-   * </ul>
-   *
-   * @param handler the handler
-   * @return a reference to this, so the API can be used fluently
-   */
-  override
-  PgChannel handler(Handler!(String) handler);
+    /**
+     * Set or unset an handler to be called when a the channel is notified by Postgres.
+     * <p/>
+     * <ul>
+     *   <li>when the handler is set, the subscriber sends a {@code LISTEN} command if needed</li>
+     *   <li>when the handler is unset, the subscriber sends a {@code UNLISTEN} command if needed</li>
+     * </ul>
+     *
+     * @param handler the handler
+     * @return a reference to this, so the API can be used fluently
+     */
+    override
+    PgChannel handler(Handler!(String) handler);
 
-  /**
-   * Pause the channel, all notifications are discarded.
-   *
-   * @return a reference to this, so the API can be used fluently
-   */
-  override
-  PgChannel pause();
+    /**
+     * Pause the channel, all notifications are discarded.
+     *
+     * @return a reference to this, so the API can be used fluently
+     */
+    override
+    PgChannel pause();
 
-  /**
-   * Resume the channel.
-   *
-   * @return a reference to this, so the API can be used fluently
-   */
-  override
-  PgChannel resume();
+    /**
+     * Resume the channel.
+     *
+     * @return a reference to this, so the API can be used fluently
+     */
+    override
+    PgChannel resume();
 
-  /**
-   * Set an handler to be called when no more notifications will be received.
-   *
-   * @param endHandler the handler
-   * @return a reference to this, so the API can be used fluently
-   */
-  override
-  PgChannel endHandler(Handler!(Void) endHandler);
+    /**
+     * Set an handler to be called when no more notifications will be received.
+     *
+     * @param endHandler the handler
+     * @return a reference to this, so the API can be used fluently
+     */
+    override
+    PgChannel endHandler(Handler!(Void) endHandler);
 
-  override
-  PgChannel exceptionHandler(Handler!(Throwable) handler);
+    override
+    PgChannel exceptionHandler(Handler!(Throwable) handler);
 
 }

@@ -16,29 +16,30 @@
  */
 module hunt.database.postgresql.impl.codec.ExtendedQueryCommandCodec;
 
+import hunt.database.postgresql.impl.codec.ExtendedQueryCommandBaseCodec;
+
 import hunt.database.base.impl.command.ExtendedQueryCommand;
 
-import java.util.List;
+import hunt.collection.List;
 
-class ExtendedQueryCommandCodec!(R) extends ExtendedQueryCommandBaseCodec!(R, ExtendedQueryCommand!(R)) {
+class ExtendedQueryCommandCodec(R) : ExtendedQueryCommandBaseCodec!(R, ExtendedQueryCommand!(R)) {
 
-  ExtendedQueryCommandCodec(ExtendedQueryCommand!(R) cmd) {
-    super(cmd);
-  }
-
-  override
-  void encode(PgEncoder encoder) {
-    if (cmd.isSuspended()) {
-      encoder.writeExecute(cmd.cursorId(), cmd.fetch());
-      encoder.writeSync();
-    } else {
-      PgPreparedStatement ps = (PgPreparedStatement) cmd.preparedStatement();
-      if (ps.bind.statement == 0) {
-        encoder.writeParse(new Parse(ps.sql()));
-      }
-      encoder.writeBind(ps.bind, cmd.cursorId(), (List!(Object)) cmd.params());
-      encoder.writeExecute(cmd.cursorId(), cmd.fetch());
-      encoder.writeSync();
+    this(ExtendedQueryCommand!(R) cmd) {
+        super(cmd);
     }
-  }
+
+    override void encode(PgEncoder encoder) {
+        if (cmd.isSuspended()) {
+            encoder.writeExecute(cmd.cursorId(), cmd.fetch());
+            encoder.writeSync();
+        } else {
+            PgPreparedStatement ps = (PgPreparedStatement) cmd.preparedStatement();
+            if (ps.bind.statement == 0) {
+                encoder.writeParse(new Parse(ps.sql()));
+            }
+            encoder.writeBind(ps.bind, cmd.cursorId(), cast(List!(Object)) cmd.params());
+            encoder.writeExecute(cmd.cursorId(), cmd.fetch());
+            encoder.writeSync();
+        }
+    }
 }

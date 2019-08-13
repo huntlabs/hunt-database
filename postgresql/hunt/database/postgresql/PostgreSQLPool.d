@@ -32,7 +32,7 @@ import hunt.database.base.AsyncResult;
 // import io.vertx.core.Vertx;
 // import io.vertx.core.VertxOptions;
 
-// import java.util.List;
+// import hunt.collection.List;
 // import java.util.stream.Collector;
 
 /**

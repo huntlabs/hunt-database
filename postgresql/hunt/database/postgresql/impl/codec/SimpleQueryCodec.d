@@ -16,30 +16,34 @@
  */
 module hunt.database.postgresql.impl.codec.SimpleQueryCodec;
 
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
+import hunt.database.postgresql.impl.codec.QueryCommandBaseCodec;
+import hunt.database.postgresql.impl.codec.Query;
+import hunt.database.postgresql.impl.codec.PgEncoder;
+import hunt.database.postgresql.impl.codec.PgRowDesc;
+import hunt.database.postgresql.impl.codec.RowResultDecoder;
+
 import hunt.database.base.impl.command.SimpleQueryCommand;
 
-class SimpleQueryCodec!(T) extends QueryCommandBaseCodec!(T, SimpleQueryCommand!(T)) {
+import hunt.logging.ConsoleLogger;
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(PgCommandCodec.class);
+class SimpleQueryCodec(T) : QueryCommandBaseCodec!(T, SimpleQueryCommand!(T)) {
 
-  SimpleQueryCodec(SimpleQueryCommand!(T) cmd) {
-    super(cmd);
-  }
+    this(SimpleQueryCommand!(T) cmd) {
+        super(cmd);
+    }
 
-  override
-  void encode(PgEncoder encoder) {
-    encoder.writeQuery(new Query(cmd.sql()));
-  }
+    override
+    void encode(PgEncoder encoder) {
+        encoder.writeQuery(new Query(cmd.sql()));
+    }
 
-  override
-  void handleRowDescription(PgRowDesc rowDescription) {
-    decoder = new RowResultDecoder<>(cmd.collector(), cmd.isSingleton(), rowDescription);
-  }
+    override
+    void handleRowDescription(PgRowDesc rowDescription) {
+        decoder = new RowResultDecoder!T(cmd.collector(), cmd.isSingleton(), rowDescription);
+    }
 
-  override
-  void handleParameterStatus(String key, String value) {
-    LOGGER.debug(getClass().getSimpleName() ~ " should handle message ParameterStatus");
-  }
+    override
+    void handleParameterStatus(string key, string value) {
+        trace(typeof(this).stringof ~ " should handle message ParameterStatus");
+    }
 }

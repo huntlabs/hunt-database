@@ -22,11 +22,11 @@ module hunt.database.postgresql.impl.codec.Describe;
  */
 class Describe {
 
-  final long statement;
-  final String portal;
+    long statement;
+    string portal;
 
-  Describe(long statement, String portal) {
-    this.statement = statement;
-    this.portal = portal;
-  }
+    this(long statement, string portal) {
+        this.statement = statement;
+        this.portal = portal;
+    }
 }

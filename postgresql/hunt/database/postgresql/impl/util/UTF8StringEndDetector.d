@@ -16,41 +16,41 @@
  */
 module hunt.database.postgresql.impl.util.UTF8StringEndDetector;
 
-import io.netty.util.ByteProcessor;
+// import io.netty.util.ByteProcessor;
 
-/**
- * A processor that detects the end of a well formed UTF8 string, starting end ending with a {@code "}.
- * <p/>
- * It process all bytes until it finds the ending {@code "}.
- */
-class UTF8StringEndDetector implements ByteProcessor {
+// /**
+//  * A processor that detects the end of a well formed UTF8 string, starting end ending with a {@code "}.
+//  * <p/>
+//  * It process all bytes until it finds the ending {@code "}.
+//  */
+// class UTF8StringEndDetector implements ByteProcessor {
 
-  private boolean inString;
-  private boolean escaped;
+//   private boolean inString;
+//   private boolean escaped;
 
-  override
-  boolean process(byte value) {
-    boolean wasEscaped = escaped;
-    escaped = false;
-    // In UTF-8 low ASCII have their 8th bit == 0
-    if ((value & 0b10000000) == 0) {
-      switch (value) {
-        case '"':
-          if (!wasEscaped) {
-            if (inString) {
-              return false;
-            } else {
-              inString = true;
-            }
-          }
-          break;
-        case '\\':
-          if (inString) {
-            escaped = true;
-          }
-          break;
-      }
-    }
-    return true;
-  }
-}
+//   override
+//   boolean process(byte value) {
+//     boolean wasEscaped = escaped;
+//     escaped = false;
+//     // In UTF-8 low ASCII have their 8th bit == 0
+//     if ((value & 0b10000000) == 0) {
+//       switch (value) {
+//         case '"':
+//           if (!wasEscaped) {
+//             if (inString) {
+//               return false;
+//             } else {
+//               inString = true;
+//             }
+//           }
+//           break;
+//         case '\\':
+//           if (inString) {
+//             escaped = true;
+//           }
+//           break;
+//       }
+//     }
+//     return true;
+//   }
+// }

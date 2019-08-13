@@ -16,37 +16,39 @@
  */
 module hunt.database.postgresql.impl.codec.ExtendedBatchQueryCommandCodec;
 
+import hunt.database.postgresql.impl.codec.ExtendedQueryCommandBaseCodec;
+
 import hunt.database.base.Tuple;
 import hunt.database.base.impl.command.ExtendedBatchQueryCommand;
 
-import java.util.List;
+import hunt.collection.List;
 
-class ExtendedBatchQueryCommandCodec!(R) extends ExtendedQueryCommandBaseCodec!(R, ExtendedBatchQueryCommand!(R)) {
+class ExtendedBatchQueryCommandCodec(R) : ExtendedQueryCommandBaseCodec!(R,
+        ExtendedBatchQueryCommand!(R)) {
 
-  ExtendedBatchQueryCommandCodec(ExtendedBatchQueryCommand!(R) cmd) {
-    super(cmd);
-  }
-
-  override
-  void encode(PgEncoder encoder) {
-    if (cmd.isSuspended()) {
-      encoder.writeExecute(cmd.cursorId(), cmd.fetch());
-      encoder.writeSync();
-    } else {
-      PgPreparedStatement ps = (PgPreparedStatement) cmd.preparedStatement();
-      if (ps.bind.statement == 0) {
-        encoder.writeParse(new Parse(ps.sql()));
-      }
-      if (cmd.params().isEmpty()) {
-        // We set suspended to false as we won't get a command complete command back from Postgres
-        this.result = false;
-      } else {
-        for (Tuple param : cmd.params()) {
-          encoder.writeBind(ps.bind, cmd.cursorId(), (List!(Object)) param);
-          encoder.writeExecute(cmd.cursorId(), cmd.fetch());
-        }
-      }
-      encoder.writeSync();
+    this(ExtendedBatchQueryCommand!(R) cmd) {
+        super(cmd);
     }
-  }
+
+    override void encode(PgEncoder encoder) {
+        if (cmd.isSuspended()) {
+            encoder.writeExecute(cmd.cursorId(), cmd.fetch());
+            encoder.writeSync();
+        } else {
+            PgPreparedStatement ps = cast(PgPreparedStatement) cmd.preparedStatement();
+            if (ps.bind.statement == 0) {
+                encoder.writeParse(new Parse(ps.sql()));
+            }
+            if (cmd.params().isEmpty()) {
+                // We set suspended to false as we won't get a command complete command back from Postgres
+                this.result = false;
+            } else {
+                foreach (Tuple param; cmd.params()) {
+                    encoder.writeBind(ps.bind, cmd.cursorId(), cast(List!(Object)) param);
+                    encoder.writeExecute(cmd.cursorId(), cmd.fetch());
+                }
+            }
+            encoder.writeSync();
+        }
+    }
 }

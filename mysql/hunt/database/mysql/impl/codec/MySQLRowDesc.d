@@ -18,7 +18,7 @@ module hunt.database.mysql.impl.codec.MySQLRowDesc;
 
 import hunt.database.base.impl.RowDesc;
 
-import java.util.Collections;
+import hunt.collection.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 

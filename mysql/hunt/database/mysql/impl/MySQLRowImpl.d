@@ -14,7 +14,7 @@ import java.time.LocalTime;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.time.temporal.Temporal;
-import java.util.List;
+import hunt.collection.List;
 import java.util.UUID;
 
 class MySQLRowImpl : ArrayTuple implements RowInternal {

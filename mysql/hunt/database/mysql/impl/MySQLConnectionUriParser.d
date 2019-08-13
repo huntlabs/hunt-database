@@ -5,7 +5,7 @@ import io.vertx.core.json.JsonObject;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
-import java.util.Map;
+import hunt.collection.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

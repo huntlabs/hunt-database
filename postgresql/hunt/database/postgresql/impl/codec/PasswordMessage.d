@@ -24,9 +24,9 @@ import hunt.database.postgresql.impl.util.MD5Authentication;
  */
 class PasswordMessage {
 
-  final String hash;
+    string hash;
 
-  PasswordMessage(String username, String password, byte[] salt) {
-    this.hash = salt !is null ? MD5Authentication.encode(username, password, salt) : password;
-  }
+    this(string username, string password, byte[] salt) {
+        this.hash = salt !is null ? MD5Authentication.encode(username, password, salt) : password;
+    }
 }

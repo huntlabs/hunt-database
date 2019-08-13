@@ -17,78 +17,82 @@
 
 module hunt.database.postgresql.impl.codec.RowResultDecoder;
 
+import hunt.database.postgresql.impl.codec.PgRowDesc;
+
 import hunt.database.base.Row;
 import hunt.database.postgresql.impl.RowImpl;
-import io.netty.buffer.ByteBuf;
 import hunt.database.base.impl.RowDecoder;
 
-import java.util.function.BiConsumer;
-import java.util.stream.Collector;
+// import java.util.function.BiConsumer;
+// import java.util.stream.Collector;
 
-class RowResultDecoder!(C, R) implements RowDecoder {
+import hunt.collection.ByteBuffer;
+import hunt.Functions;
 
-  final Collector!(Row, C, R) collector;
-  final boolean singleton;
-  final BiConsumer!(C, Row) accumulator;
-  final PgRowDesc desc;
+class RowResultDecoder(C, R) : RowDecoder {
 
-  private int size;
-  private C container;
-  private Row row;
+    Collector!(Row, C, R) collector;
+    bool singleton;
+    BiConsumer!(C, Row) accumulator;
+    PgRowDesc desc;
 
-  RowResultDecoder(Collector!(Row, C, R) collector, boolean singleton, PgRowDesc desc) {
-    this.collector = collector;
-    this.singleton = singleton;
-    this.accumulator = collector.accumulator();
-    this.desc = desc;
-  }
+    private int size;
+    private C container;
+    private Row row;
 
-  int size() {
-    return size;
-  }
-
-  override
-  void decodeRow(int len, ByteBuf in) {
-    if (container is null) {
-      container = collector.supplier().get();
+    this(Collector!(Row, C, R) collector, bool singleton, PgRowDesc desc) {
+        this.collector = collector;
+        this.singleton = singleton;
+        this.accumulator = collector.accumulator();
+        this.desc = desc;
     }
-    if (singleton) {
-      if (row is null) {
-        row = new RowImpl(desc);
-      } else {
-        row.clear();
-      }
-    } else {
-      row = new RowImpl(desc);
+
+    int size() {
+        return size;
     }
-    Row row = new RowImpl(desc);
-    for (int c = 0; c < len; ++c) {
-      int length = in.readInt();
-      Object decoded = null;
-      if (length != -1) {
-        PgColumnDesc columnDesc = desc.columns[c];
-        if (columnDesc.dataFormat == DataFormat.BINARY) {
-          decoded = DataTypeCodec.decodeBinary(columnDesc.dataType, in.readerIndex(), length, in);
-        } else {
-          decoded = DataTypeCodec.decodeText(columnDesc.dataType, in.readerIndex(), length, in);
+
+    override
+    void decodeRow(int len, ByteBuffer buffer) {
+        if (container is null) {
+            container = collector.supplier().get();
         }
-        in.skipBytes(length);
-      }
-      row.addValue(decoded);
+        if (singleton) {
+            if (row is null) {
+                row = new RowImpl(desc);
+            } else {
+                row.clear();
+            }
+        } else {
+            row = new RowImpl(desc);
+        }
+        Row row = new RowImpl(desc);
+        for (int c = 0; c < len; ++c) {
+            int length = buffer.readInt();
+            Object decoded = null;
+            if (length != -1) {
+                PgColumnDesc columnDesc = desc.columns[c];
+                if (columnDesc.dataFormat == DataFormat.BINARY) {
+                    decoded = DataTypeCodec.decodeBinary(columnDesc.dataType, buffer.readerIndex(), length, buffer);
+                } else {
+                    decoded = DataTypeCodec.decodeText(columnDesc.dataType, buffer.readerIndex(), length, buffer);
+                }
+                buffer.skipBytes(length);
+            }
+            row.addValue(decoded);
+        }
+        accumulator.accept(container, row);
+        size++;
     }
-    accumulator.accept(container, row);
-    size++;
-  }
 
-  R complete() {
-    if (container is null) {
-      container = collector.supplier().get();
+    R complete() {
+        if (container is null) {
+            container = collector.supplier().get();
+        }
+        return collector.finisher().apply(container);
     }
-    return collector.finisher().apply(container);
-  }
 
-  void reset() {
-    container = null;
-    size = 0;
-  }
+    void reset() {
+        container = null;
+        size = 0;
+    }
 }

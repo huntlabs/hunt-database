@@ -19,8 +19,8 @@ module hunt.database.postgresql.impl.codec.PgParamDesc;
 import hunt.database.base.impl.ParamDesc;
 import hunt.database.postgresql.impl.util.Util;
 
-import java.util.Arrays;
-import java.util.List;
+import hunt.collection.Arrays;
+import hunt.collection.List;
 import java.util.stream.Stream;
 
 /**

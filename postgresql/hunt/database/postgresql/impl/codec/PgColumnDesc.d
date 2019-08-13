@@ -17,27 +17,36 @@
 
 module hunt.database.postgresql.impl.codec.PgColumnDesc;
 
+import hunt.database.postgresql.impl.codec.DataType;
+import hunt.database.postgresql.impl.codec.DataTypeDesc;
+import hunt.database.postgresql.impl.codec.DataFormat;
+import hunt.database.postgresql.impl.codec.PgColumnDesc;
+
 /**
  * @author <a href="mailto:emad.albloushi@gmail.com">Emad Alblueshi</a>
  */
 
 class PgColumnDesc {
 
-  final String name;
-  final int relationId;
-  final DataType dataType;
-  final DataFormat dataFormat; // are we sure that ????
-  final short relationAttributeNo;
-  final short length;
-  final int typeModifier;
+    string name;
+    int relationId;
+    // DataType dataType;
+    DataTypeDesc dataType;
+    DataFormat dataFormat; // are we sure that ????
+    short relationAttributeNo;
+    short length;
+    int typeModifier;
 
-  PgColumnDesc(String name, int relationId, short relationAttributeNo, DataType dataType, short length, int typeModifier, DataFormat dataFormat) {
-    this.name = name;
-    this.dataType = dataType;
-    this.dataFormat = dataFormat;
-    this.length = length;
-    this.relationId = relationId;
-    this.relationAttributeNo = relationAttributeNo;
-    this.typeModifier = typeModifier;
-  }
+    this(string name, int relationId, short relationAttributeNo, 
+            DataTypeDesc dataType, short length, int typeModifier) {
+        this.name = name;
+        this.dataType = dataType;
+        this.dataFormat = dataType.supportsBinary ? DataFormat.BINARY : DataFormat.TEXT;
+        // this.dataType = DataTypeDescs.valueOf(cast(int)dataType);
+        // this.dataFormat = dataFormat;
+        this.length = length;
+        this.relationId = relationId;
+        this.relationAttributeNo = relationAttributeNo;
+        this.typeModifier = typeModifier;
+    }
 }

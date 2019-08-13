@@ -30,7 +30,7 @@ import hunt.database.base.Row;
 import hunt.database.base.Tuple;
 import io.vertx.core.*;
 
-import java.util.List;
+import hunt.collection.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collector;

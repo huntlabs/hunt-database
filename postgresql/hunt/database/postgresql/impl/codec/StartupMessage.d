@@ -17,28 +17,28 @@
 
 module hunt.database.postgresql.impl.codec.StartupMessage;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
+// import io.netty.buffer.ByteBuf;
+// import io.netty.buffer.Unpooled;
 
-import java.util.Map;
+import hunt.collection.Map;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
+// import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * @author <a href="mailto:emad.albloushi@gmail.com">Emad Alblueshi</a>
  */
 class StartupMessage {
 
-  static final ByteBuf BUFF_USER = Unpooled.copiedBuffer("user", UTF_8).asReadOnly();
-  static final ByteBuf BUFF_DATABASE = Unpooled.copiedBuffer("database", UTF_8).asReadOnly();
+    // static ByteBuf BUFF_USER = Unpooled.copiedBuffer("user", UTF_8).asReadOnly();
+    // static ByteBuf BUFF_DATABASE = Unpooled.copiedBuffer("database", UTF_8).asReadOnly();
 
-  final String username;
-  final String database;
-  final Map!(String, String) properties;
+    string username;
+    string database;
+    Map!(string, string) properties;
 
-  StartupMessage(String username, String database, Map!(String, String) properties) {
-    this.username = username;
-    this.database = database;
-    this.properties = properties;
-  }
+    this(string username, string database, Map!(string, string) properties) {
+        this.username = username;
+        this.database = database;
+        this.properties = properties;
+    }
 }

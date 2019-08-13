@@ -21,20 +21,19 @@ import hunt.database.base.impl.command.CommandResponse;
 
 class CloseStatementCommandCodec : PgCommandCodec!(Void, CloseStatementCommand) {
 
-  CloseStatementCommandCodec(CloseStatementCommand cmd) {
-    super(cmd);
-  }
-
-  override
-  void encode(PgEncoder out) {
-    /*
-    if (conn.psCache is null) {
-      conn.writeMessage(new Close().setStatement(statement));
-      conn.writeMessage(Sync.INSTANCE);
-    } else {
+    this(CloseStatementCommand cmd) {
+        super(cmd);
     }
-    */
-    CommandResponse!(Void) resp = CommandResponse.success(null);
-    completionHandler.handle(resp);
-  }
+
+    override void encode(PgEncoder encoder) {
+        /*
+        if (conn.psCache is null) {
+            conn.writeMessage(new Close().setStatement(statement));
+            conn.writeMessage(Sync.INSTANCE);
+        } else {
+        }
+        */
+        CommandResponse!(Void) resp = CommandResponse.success(null);
+        completionHandler.handle(resp);
+    }
 }

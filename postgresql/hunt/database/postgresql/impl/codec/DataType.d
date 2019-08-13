@@ -16,23 +16,26 @@
  */
 module hunt.database.postgresql.impl.codec.DataType;
 
-import io.netty.util.collection.IntObjectHashMap;
-import io.netty.util.collection.IntObjectMap;
+// import io.netty.util.collection.IntObjectHashMap;
+// import io.netty.util.collection.IntObjectMap;
+
 import hunt.database.postgresql.data.Box;
 import hunt.database.postgresql.data.Circle;
 import hunt.database.postgresql.data.Line;
 import hunt.database.postgresql.data.LineSegment;
-import hunt.database.base.data.Numeric;
 import hunt.database.postgresql.data.Interval;
 import hunt.database.postgresql.data.Path;
 import hunt.database.postgresql.data.Point;
 import hunt.database.postgresql.data.Polygon;
-import io.vertx.core.buffer.Buffer;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
 
-import java.time.*;
-import java.util.UUID;
+import hunt.database.base.data.Numeric;
+
+// import io.vertx.core.buffer.Buffer;
+// import io.vertx.core.logging.Logger;
+// import io.vertx.core.logging.LoggerFactory;
+
+// import java.time.*;
+// import java.util.UUID;
 
 /**
  * PostgreSQL <a href="https://github.com/postgres/postgres/blob/master/src/include/catalog/pg_type.h">object
@@ -41,119 +44,79 @@ import java.util.UUID;
  * @author <a href="mailto:emad.albloushi@gmail.com">Emad Alblueshi</a>
  */
 enum DataType {
-
-  BOOL(16, true, Boolean.class),
-  BOOL_ARRAY(1000, true, Boolean[].class),
-  INT2(21, true, Short.class, Number.class),
-  INT2_ARRAY(1005, true, Short[].class, Number[].class),
-  INT4(23, true, Integer.class, Number.class),
-  INT4_ARRAY(1007, true, Integer[].class, Number[].class),
-  INT8(20, true, Long.class, Number.class),
-  INT8_ARRAY(1016, true, Long[].class, Number[].class),
-  FLOAT4(700, true, Float.class, Number.class),
-  FLOAT4_ARRAY(1021, true, Float[].class, Number[].class),
-  FLOAT8(701, true, Double.class, Number.class),
-  FLOAT8_ARRAY(1022, true, Double[].class, Number[].class),
-  NUMERIC(1700, false, Numeric.class, Number.class),
-  NUMERIC_ARRAY(1231, false, Numeric[].class, Number[].class),
-  MONEY(790, true, Object.class),
-  MONEY_ARRAY(791, true, Object[].class),
-  BIT(1560, true, Object.class),
-  BIT_ARRAY(1561, true, Object[].class),
-  VARBIT(1562, true, Object.class),
-  VARBIT_ARRAY(1563, true, Object[].class),
-  CHAR(18, true, String.class),
-  CHAR_ARRAY(1002, true, String[].class),
-  VARCHAR(1043, true, String.class),
-  VARCHAR_ARRAY(1015, true, String[].class),
-  BPCHAR(1042, true, String.class),
-  BPCHAR_ARRAY(1014, true, String[].class),
-  TEXT(25, true, String.class),
-  TEXT_ARRAY(1009, true, String[].class),
-  NAME(19, true, String.class),
-  NAME_ARRAY(1003, true, String[].class),
-  DATE(1082, true, LocalDate.class),
-  DATE_ARRAY(1182, true, LocalDate[].class),
-  TIME(1083, true, LocalTime.class),
-  TIME_ARRAY(1183, true, LocalTime[].class),
-  TIMETZ(1266, true, OffsetTime.class),
-  TIMETZ_ARRAY(1270, true, OffsetTime[].class),
-  TIMESTAMP(1114, true, LocalDateTime.class),
-  TIMESTAMP_ARRAY(1115, true, LocalDateTime[].class),
-  TIMESTAMPTZ(1184, true, OffsetDateTime.class),
-  TIMESTAMPTZ_ARRAY(1185, true, OffsetDateTime[].class),
-  INTERVAL(1186, true, Interval.class),
-  INTERVAL_ARRAY(1187, true, Interval[].class),
-  BYTEA(17, true, Buffer.class),
-  BYTEA_ARRAY(1001, true, Buffer[].class),
-  MACADDR(829, true, Object.class),
-  INET(869, true, Object[].class),
-  CIDR(650, true, Object.class),
-  MACADDR8(774, true, Object[].class),
-  UUID(2950, true, UUID.class),
-  UUID_ARRAY(2951, true, UUID[].class),
-  JSON(114, true, Object.class),
-  JSON_ARRAY(199, true, Object[].class),
-  JSONB(3802, true, Object.class),
-  JSONB_ARRAY(3807, true, Object[].class),
-  XML(142, true, Object.class),
-  XML_ARRAY(143, true, Object[].class),
-  POINT(600, true, Point.class),
-  POINT_ARRAY(1017, true, Point[].class),
-  LINE(628, true, Line.class),
-  LINE_ARRAY(629, true, Line[].class),
-  LSEG(601, true, LineSegment.class),
-  LSEG_ARRAY(1018, true, LineSegment[].class),
-  BOX(603, true, Box.class),
-  BOX_ARRAY(1020, true, Box[].class),
-  PATH(602, true, Path.class),
-  PATH_ARRAY(1019, true, Path[].class),
-  POLYGON(604, true, Polygon.class),
-  POLYGON_ARRAY(1027, true, Polygon[].class),
-  CIRCLE(718, true, Circle.class),
-  CIRCLE_ARRAY(719, true, Circle[].class),
-  HSTORE(33670, true, Object.class),
-  OID(26, true, Object.class),
-  OID_ARRAY(1028, true, Object[].class),
-  VOID(2278, true, Object.class),
-  UNKNOWN(705, false, String.class);
-
-  private static final Logger logger = LoggerFactory.getLogger(DataType.class);
-
-  final int id;
-  final boolean supportsBinary;
-  final Class<?> encodingType; // Not really used for now
-  final Class<?> decodingType;
-
-  DataType(int id, boolean supportsBinary, Class<?> type) {
-    this.id = id;
-    this.supportsBinary = supportsBinary;
-    this.decodingType = type;
-    this.encodingType = type;
-  }
-
-  DataType(int id, boolean supportsBinary, Class<?> encodingType, Class<?> decodingType) {
-    this.id = id;
-    this.supportsBinary = supportsBinary;
-    this.encodingType = encodingType;
-    this.decodingType = decodingType;
-  }
-
-  static DataType valueOf(int oid) {
-    DataType value = oidToDataType.get(oid);
-    if (value is null) {
-      logger.debug("Postgres type OID=" ~ oid ~ " not handled - using unknown type instead");
-      return UNKNOWN;
-    } else {
-      return value;
-    }
-  }
-
-  private static IntObjectMap!(DataType) oidToDataType = new IntObjectHashMap<>();
-
-  static {
-    for (DataType dataType : values()) {
-      oidToDataType.put(dataType.id, dataType);
-    }
-  }
+    BOOL = 16,
+    BOOL_ARRAY = 1000,
+    INT2 = 21,
+    INT2_ARRAY = 1005,
+    INT4 = 23,
+    INT4_ARRAY = 1007,
+    INT8 = 20,
+    INT8_ARRAY = 1016,
+    FLOAT4 = 700,
+    FLOAT4_ARRAY = 1021,
+    FLOAT8 = 701,
+    FLOAT8_ARRAY = 1022,
+    NUMERIC = 1700,
+    NUMERIC_ARRAY = 1231,
+    MONEY = 790,
+    MONEY_ARRAY = 791,
+    BIT = 1560,
+    BIT_ARRAY = 1561,
+    VARBIT = 1562,
+    VARBIT_ARRAY = 1563,
+    CHAR = 18,
+    CHAR_ARRAY = 1002,
+    VARCHAR = 1043,
+    VARCHAR_ARRAY = 1015,
+    BPCHAR = 1042,
+    BPCHAR_ARRAY = 1014,
+    TEXT = 25,
+    TEXT_ARRAY = 1009,
+    NAME = 19,
+    NAME_ARRAY = 1003,
+    DATE = 1082,
+    DATE_ARRAY = 1182,
+    TIME = 1083,
+    TIME_ARRAY = 1183,
+    TIMETZ = 1266,
+    TIMETZ_ARRAY = 1270,
+    TIMESTAMP = 1114,
+    TIMESTAMP_ARRAY = 1115,
+    TIMESTAMPTZ = 1184,
+    TIMESTAMPTZ_ARRAY = 1185,
+    INTERVAL = 1186,
+    INTERVAL_ARRAY = 1187,
+    BYTEA = 17,
+    BYTEA_ARRAY = 1001,
+    MACADDR = 829,
+    INET = 869,
+    CIDR = 650,
+    MACADDR8 = 774,
+    UUID = 2950,
+    UUID_ARRAY = 2951,
+    JSON = 114,
+    JSON_ARRAY = 199,
+    JSONB = 3802,
+    JSONB_ARRAY = 3807,
+    XML = 142,
+    XML_ARRAY = 143,
+    POINT = 600,
+    POINT_ARRAY = 1017,
+    LINE = 628,
+    LINE_ARRAY = 629,
+    LSEG = 601,
+    LSEG_ARRAY = 1018,
+    BOX = 603,
+    BOX_ARRAY = 1020,
+    PATH = 602,
+    PATH_ARRAY = 1019,
+    POLYGON = 604,
+    POLYGON_ARRAY = 1027,
+    CIRCLE = 718,
+    CIRCLE_ARRAY = 719,
+    HSTORE = 33670,
+    OID = 26,
+    OID_ARRAY = 1028,
+    VOID = 2278,
+    UNKNOWN = 705
 }

@@ -15,14 +15,14 @@
  *
  */
 
-module hunt.database.postgresql.impl.PostgreSQLPoolImpl.PostgreSQLPoolImpl;
+module hunt.database.postgresql.impl.PostgreSQLPoolImpl;
 
-import hunt.database.postgresql.*;
+// import hunt.database.postgresql.*;
 import hunt.database.base.PoolOptions;
 import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.PoolBase;
 import hunt.database.base.impl.SqlConnectionImpl;
-import io.vertx.core.*;
+// import io.vertx.core.*;
 
 /**
  * Todo :
@@ -33,28 +33,28 @@ import io.vertx.core.*;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  * @author <a href="mailto:emad.albloushi@gmail.com">Emad Alblueshi</a>
  */
-class PgPoolImpl : PoolBase!(PgPoolImpl) implements PgPool {
+class PgPoolImpl : PoolBase!(PgPoolImpl), PgPool {
 
-  private final PgConnectionFactory factory;
+    private PgConnectionFactory factory;
 
-  PgPoolImpl(Context context, boolean closeVertx, PgConnectOptions connectOptions, PoolOptions poolOptions) {
-    super(context, closeVertx, poolOptions);
-    this.factory = new PgConnectionFactory(context, Vertx.currentContext() !is null, connectOptions);
-  }
+    this(Context context, boolean closeVertx, PgConnectOptions connectOptions, PoolOptions poolOptions) {
+        super(context, closeVertx, poolOptions);
+        this.factory = new PgConnectionFactory(context, Vertx.currentContext() !is null, connectOptions);
+    }
 
-  override
-  void connect(Handler!(AsyncResult!(Connection)) completionHandler) {
-    factory.connectAndInit(completionHandler);
-  }
+    override
+    void connect(Handler!(AsyncResult!(Connection)) completionHandler) {
+        factory.connectAndInit(completionHandler);
+    }
 
-  override
-  protected SqlConnectionImpl wrap(Context context, Connection conn) {
-    return new PgConnectionImpl(factory, context, conn);
-  }
+    override
+    protected SqlConnectionImpl wrap(Context context, Connection conn) {
+        return new PgConnectionImpl(factory, context, conn);
+    }
 
-  override
-  protected void doClose() {
-    factory.close();
-    super.doClose();
-  }
+    override
+    protected void doClose() {
+        factory.close();
+        super.doClose();
+    }
 }

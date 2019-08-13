@@ -26,7 +26,7 @@ import hunt.database.base.impl.command.InitCommand;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
+import hunt.collection.Map;
 
 import static hunt.database.mysql.impl.codec.CapabilitiesFlag.*;
 import static hunt.database.mysql.impl.codec.Packets.*;

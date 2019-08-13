@@ -17,60 +17,68 @@
 
 module hunt.database.postgresql.impl.codec.PgPreparedStatement;
 
+import hunt.database.postgresql.impl.codec.Bind;
+import hunt.database.postgresql.impl.codec.PgColumnDesc;
+import hunt.database.postgresql.impl.codec.PgParamDesc;
+import hunt.database.postgresql.impl.codec.PgRowDesc;
+
 import hunt.database.base.impl.PreparedStatement;
 import hunt.database.base.impl.ParamDesc;
 
-import java.util.Arrays;
-import java.util.List;
+// import hunt.collection.Arrays;
+import hunt.collection.List;
 
-class PgPreparedStatement implements PreparedStatement {
+class PgPreparedStatement : PreparedStatement {
 
-  private static final PgColumnDesc[] EMPTY_COLUMNS = new PgColumnDesc[0];
+    private enum PgColumnDesc[] EMPTY_COLUMNS = [];
 
-  final String sql;
-  final Bind bind;
-  final PgParamDesc paramDesc;
-  final PgRowDesc rowDesc;
+    string sql;
+    Bind bind;
+    PgParamDesc paramDesc;
+    PgRowDesc rowDesc;
 
-  PgPreparedStatement(String sql, long statement, PgParamDesc paramDesc, PgRowDesc rowDesc) {
+    this(string sql, long statement, PgParamDesc paramDesc, PgRowDesc rowDesc) {
 
-    // Fix to use binary when possible
-    if (rowDesc !is null) {
-      rowDesc = new PgRowDesc(Arrays.stream(rowDesc.columns)
-        .map(c -> new PgColumnDesc(
-          c.name,
-          c.relationId,
-          c.relationAttributeNo,
-          c.dataType,
-          c.length,
-          c.typeModifier,
-          c.dataType.supportsBinary ? DataFormat.BINARY : DataFormat.TEXT))
-        .toArray(PgColumnDesc[]::new));
+        // Fix to use binary when possible
+        if (rowDesc !is null) {
+            rowDesc = new PgRowDesc(rowDesc.columns
+                .map(c => new PgColumnDesc(
+                    c.name,
+                    c.relationId,
+                    c.relationAttributeNo,
+                    c.dataType,
+                    c.length,
+                    c.typeModifier))
+                .array);
+
+                // ,
+                //     c.dataType.supportsBinary ? DataFormat.BINARY : DataFormat.TEXT
+        }
+
+        this.paramDesc = paramDesc;
+        this.rowDesc = rowDesc;
+        this.sql = sql;
+        this.bind = new Bind(statement, paramDesc !is null ? paramDesc.paramDataTypes() : null, 
+            rowDesc !is null ? rowDesc.columns : EMPTY_COLUMNS);
     }
 
-    this.paramDesc = paramDesc;
-    this.rowDesc = rowDesc;
-    this.sql = sql;
-    this.bind = new Bind(statement, paramDesc !is null ? paramDesc.paramDataTypes() : null, rowDesc !is null ? rowDesc.columns : EMPTY_COLUMNS);
-  }
+    override
+    ParamDesc paramDesc() {
+        return paramDesc;
+    }
 
-  override
-  ParamDesc paramDesc() {
-    return paramDesc;
-  }
+    override
+    PgRowDesc rowDesc() {
+        return rowDesc;
+    }
 
-  override
-  PgRowDesc rowDesc() {
-    return rowDesc;
-  }
+    override
+    string sql() {
+        return sql;
+    }
 
-  override
-  String sql() {
-    return sql;
-  }
-
-  override
-  String prepare(List!(Object) values) {
-    return paramDesc.prepare(values);
-  }
+    override
+    string prepare(List!(Object) values) {
+        return paramDesc.prepare(values);
+    }
 }

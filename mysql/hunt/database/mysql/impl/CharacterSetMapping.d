@@ -6,7 +6,7 @@ import io.netty.util.collection.IntObjectMap;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.Map;
+import hunt.collection.Map;
 
 final class CharacterSetMapping {
   private static IntObjectMap!(Charset) byteToCharsetMapping = new IntObjectHashMap<>();

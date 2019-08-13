@@ -31,7 +31,7 @@ import hunt.database.base.AsyncResult;
 // import io.vertx.core.Future;
 // import io.vertx.core.Handler;
 
-// import java.util.List;
+// import hunt.collection.List;
 // import java.util.function.Function;
 // import java.util.stream.Collector;
 

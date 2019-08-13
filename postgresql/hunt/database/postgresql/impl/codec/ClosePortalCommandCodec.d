@@ -16,22 +16,26 @@
  */
 module hunt.database.postgresql.impl.codec.ClosePortalCommandCodec;
 
+import hunt.database.postgresql.impl.codec.PgCommandCodec;
+
 import hunt.database.base.impl.command.CloseCursorCommand;
+
+import hunt.Object;
 
 class ClosePortalCommandCodec : PgCommandCodec!(Void, CloseCursorCommand) {
 
-  ClosePortalCommandCodec(CloseCursorCommand cmd) {
-    super(cmd);
-  }
+    this(CloseCursorCommand cmd) {
+        super(cmd);
+    }
 
-  override
-  void encode(PgEncoder out) {
-    out.writeClosePortal(cmd.id());
-    out.writeSync();
-  }
+    override
+    void encode(PgEncoder encoder) {
+        encoder.writeClosePortal(cmd.id());
+        encoder.writeSync();
+    }
 
-  override
-  void handleCloseComplete() {
-    // Expected
-  }
+    override
+    void handleCloseComplete() {
+        // Expected
+    }
 }

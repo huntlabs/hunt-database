@@ -19,33 +19,36 @@ module hunt.database.base.impl.RowDesc;
 
 import hunt.collection.List;
 
+import hunt.Exceptions;
+
+import std.algorithm;
+import std.conv;
+import std.range;
+
 /**
  * @author <a href="mailto:emad.albloushi@gmail.com">Emad Alblueshi</a>
  */
 
 class RowDesc {
 
-	private List!(string) columnNames;
+	private string[] columnNames;
 
-	this(List!(string) columnNames) {
+	this(string[] columnNames) {
 		this.columnNames = columnNames;
 	}
 
 	int columnIndex(string columnName) {
-		if (columnName is null) {
+		if (columnName.empty) {
 			throw new NullPointerException("Column name must not be null");
 		}
-		return columnNames.indexOf(columnName);
+		return columnNames.countUntil(columnName);
 	}
 
-	List!(string) columnNames() {
+	string[] columnNames() {
 		return columnNames;
 	}
 
-	override
-	string toString() {
-		return "RowDesc{" ~
-			"columns=" ~ columnNames.toString() ~
-			"}";
+	override string toString() {
+		return "RowDesc{" ~ "columns=" ~ columnNames.to!string() ~ "}";
 	}
 }
