@@ -19,21 +19,26 @@ module hunt.database.postgresql.impl.codec.ExtendedQueryCommandBaseCodec;
 import hunt.database.postgresql.impl.codec.QueryCommandBaseCodec;
 import hunt.database.postgresql.impl.codec.RowResultDecoder;
 
-
 import hunt.database.base.impl.RowDesc;
 import hunt.database.base.impl.command.ExtendedQueryCommandBase;
+
+import hunt.Exceptions;
 
 abstract class ExtendedQueryCommandBaseCodec(R, C) : QueryCommandBaseCodec!(R, C) { // extends ExtendedQueryCommandBase!(R)
 
     this(C cmd) {
         super(cmd);
-        decoder = new RowResultDecoder<>(cmd.collector(), cmd.isSingleton(), 
-            (cast(PgPreparedStatement)cmd.preparedStatement()).rowDesc());
+        // TODO: Tasks pending completion -@zxp at 8/14/2019, 11:47:10 AM
+        // 
+        implementationMissing(false);
+        // decoder = new RowResultDecoder<>(cmd.collector(), cmd.isSingleton(), 
+        //     (cast(PgPreparedStatement)cmd.preparedStatement()).rowDesc());
     }
 
     override
     void handleRowDescription(PgRowDesc rowDescription) {
-        decoder = new RowResultDecoder<>(cmd.collector(), cmd.isSingleton(), rowDescription);
+        implementationMissing(false);
+        // decoder = new RowResultDecoder<>(cmd.collector(), cmd.isSingleton(), rowDescription);
     }
 
     override

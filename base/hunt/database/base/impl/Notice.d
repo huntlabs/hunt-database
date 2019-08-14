@@ -16,10 +16,7 @@
  */
 module hunt.database.base.impl.Notice;
 
-// import io.vertx.core.logging.Logger;
-
 interface Notice {
 
-  // void log(Logger logger);
-
+    void log();
 }

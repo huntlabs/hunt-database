@@ -195,7 +195,7 @@ final class PgEncoder : ChannelOutboundHandlerAdapter {
         Util.writeCStringUTF8(outBuffer, msg.username);
         writeCString(outBuffer, StartupMessage.BUFF_DATABASE);
         Util.writeCStringUTF8(outBuffer, msg.database);
-        for (Map.Entry!(String, String) property : msg.properties.entrySet()) {
+        for (MapEntry!(String, String) property : msg.properties.entrySet()) {
             writeCString(outBuffer, property.getKey(), UTF_8);
             writeCString(outBuffer, property.getValue(), UTF_8);
         }

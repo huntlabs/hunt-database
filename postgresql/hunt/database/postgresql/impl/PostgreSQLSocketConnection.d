@@ -17,20 +17,27 @@
 
 module hunt.database.postgresql.impl.PostgreSQLSocketConnection;
 
-import io.netty.channel.ChannelPipeline;
-import io.netty.handler.codec.DecoderException;
+// import io.netty.channel.ChannelPipeline;
+// import io.netty.handler.codec.DecoderException;
 
+import hunt.database.base.Common;
 import hunt.database.postgresql.impl.codec.PgCodec;
 import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.SocketConnectionBase;
 import hunt.database.base.impl.command.CommandResponse;
 import hunt.database.base.impl.command.InitCommand;
 
-// import io.vertx.core.*;
-// import io.vertx.core.buffer.Buffer;
-// import io.vertx.core.impl.NetSocketInternal;
-
+import hunt.collection.ByteBuffer;
+import hunt.collection.BufferUtils;
 import hunt.collection.Map;
+import hunt.Exceptions;
+import hunt.net.AbstractConnection;
+import hunt.net.Exceptions;
+import hunt.util.Common;
+
+
+// alias AsyncConnectHandler = NetEventHandler!(AsyncResult!Connection);
+// alias AsyncVoidResultHandler = EventHandler!(AsyncResult!(Void));
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -41,15 +48,14 @@ class PgSocketConnection : SocketConnectionBase {
     int processId;
     int secretKey;
 
-    this(NetSocketInternal socket,
+    this(AbstractConnection socket,
             bool cachePreparedStatements,
             int preparedStatementCacheSize,
             int preparedStatementCacheSqlLimit,
-            int pipeliningLimit,
-            Context context) {
+            int pipeliningLimit) {
                 
         super(socket, cachePreparedStatements, preparedStatementCacheSize, 
-                preparedStatementCacheSqlLimit, pipeliningLimit, context);
+                preparedStatementCacheSqlLimit, pipeliningLimit);
     }
 
     override
@@ -60,30 +66,38 @@ class PgSocketConnection : SocketConnectionBase {
         super.init();
     }
 
-    void sendStartupMessage(String username, String password, String database, Map!(String, String) properties, Handler<? super CommandResponse!(Connection)> completionHandler) {
-        InitCommand cmd = new InitCommand(this, username, password, database, properties);
-        cmd.handler = completionHandler;
-        schedule(cmd);
-    }
+    // void sendStartupMessage(String username, String password, String database, Map!(String, String) properties, Handler<? super CommandResponse!(Connection)> completionHandler) {
+    //     InitCommand cmd = new InitCommand(this, username, password, database, properties);
+    //     cmd.handler = completionHandler;
+    //     schedule(cmd);
+    // }
 
-    void sendCancelRequestMessage(int processId, int secretKey, Handler!(AsyncResult!(Void)) handler) {
-        Buffer buffer = Buffer.buffer(16);
+    void sendCancelRequestMessage(int processId, int secretKey, Callback handler) {
+        ByteBuffer buffer = BufferUtils.allocate(16);
         buffer.appendInt(16);
         // cancel request code
         buffer.appendInt(80877102);
         buffer.appendInt(processId);
         buffer.appendInt(secretKey);
 
-        socket.write(buffer, ar -> {
-            if (ar.succeeded()) {
+        socket.write(buffer, new class Callback {
+
+            void succeeded() {
                 // directly close this connection
                 if (status == Status.CONNECTED) {
                     status = Status.CLOSING;
                     socket.close();
                 }
-                handler.handle(Future.succeededFuture());
-            } else {
-                handler.handle(Future.failedFuture(ar.cause()));
+                handler.succeeded();
+            }
+
+            void failed(Exception x) {
+                // handler(Future.failedFuture(ar.cause()));
+                handler.failed(x);
+            }
+
+            bool isNonBlocking() {
+                return true;
             }
         });
     }
@@ -98,22 +112,25 @@ class PgSocketConnection : SocketConnectionBase {
         return secretKey;
     }
 
-    void upgradeToSSLConnection(Handler!(AsyncResult!(Void)) completionHandler) {
-        ChannelPipeline pipeline = socket.channelHandlerContext().pipeline();
-        Promise!(Void) upgradePromise = Promise.promise();
-        upgradePromise.future().setHandler(ar->{
-            if (ar.succeeded()) {
-                completionHandler.handle(Future.succeededFuture());
-            } else {
-                Throwable cause = ar.cause();
-                if (cause instanceof DecoderException) {
-                    DecoderException err = (DecoderException) cause;
-                    cause = err.getCause();
-                }
-                completionHandler.handle(Future.failedFuture(cause));
-            }
-        });
-        pipeline.addBefore("handler", "initiate-ssl-handler", new InitiateSslHandler(this, upgradePromise));
+    void upgradeToSSLConnection(Callback completionHandler) {
+        // ChannelPipeline pipeline = socket.channelHandlerContext().pipeline();
+        // Promise!(Void) upgradePromise = Promise.promise();
+        // upgradePromise.future().setHandler(ar->{
+        //     if (ar.succeeded()) {
+        //         completionHandler.handle(Future.succeededFuture());
+        //     } else {
+        //         Throwable cause = ar.cause();
+        //         if (cause instanceof DecoderException) {
+        //             DecoderException err = (DecoderException) cause;
+        //             cause = err.getCause();
+        //         }
+        //         completionHandler.handle(Future.failedFuture(cause));
+        //     }
+        // });
+        // pipeline.addBefore("handler", "initiate-ssl-handler", new InitiateSslHandler(this, upgradePromise));
+        // TODO: Tasks pending completion -@zxp at 8/14/2019, 11:42:27 AM
+        // 
+        implementationMissing(false);
     }
 
 }

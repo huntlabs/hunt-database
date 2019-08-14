@@ -82,7 +82,7 @@ class ChangeUserCommandCodec : CommandCodec!(Void, ChangeUserCommand) {
     }
     if ((encoder.clientCapabilitiesFlag & CLIENT_CONNECT_ATTRS) != 0) {
       ByteBuf kv = encoder.chctx.alloc().ioBuffer();
-      for (Map.Entry!(String, String) attribute : clientConnectionAttributes.entrySet()) {
+      for (MapEntry!(String, String) attribute : clientConnectionAttributes.entrySet()) {
         BufferUtils.writeLengthEncodedString(kv, attribute.getKey(), StandardCharsets.UTF_8);
         BufferUtils.writeLengthEncodedString(kv, attribute.getValue(), StandardCharsets.UTF_8);
       }

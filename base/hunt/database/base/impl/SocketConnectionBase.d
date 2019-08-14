@@ -17,245 +17,246 @@
 
 module hunt.database.base.impl.SocketConnectionBase;
 
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.DecoderException;
-import io.vertx.core.Context;
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
-import io.vertx.core.VertxException;
-import io.vertx.core.impl.NetSocketInternal;
-import io.vertx.core.logging.Logger;
-import io.vertx.core.logging.LoggerFactory;
-import hunt.database.base.impl.command.*;
+import hunt.database.base.impl.command;
+import hunt.database.base.impl.Connection;
+import hunt.database.base.impl.Notice;
+import hunt.database.base.impl.Notification;
+import hunt.database.base.impl.PreparedStatement;
+import hunt.database.base.impl.PreparedStatementCache;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+
+import hunt.collection.ArrayDeque;
+import hunt.collection.Deque;
+import hunt.Exceptions;
+import hunt.logging.ConsoleLogger;
+import hunt.net.AbstractConnection;
+import hunt.Object;
+
+import std.container.dlist;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-abstract class SocketConnectionBase implements Connection {
+abstract class SocketConnectionBase : Connection {
 
-  private static final Logger logger = LoggerFactory.getLogger(SocketConnectionBase.class);
+    // private static final Logger logger = LoggerFactory.getLogger(SocketConnectionBase.class);
 
-  enum Status {
-
-    CLOSED, CONNECTED, CLOSING
-
-  }
-
-  protected final PreparedStatementCache psCache;
-  private final int preparedStatementCacheSqlLimit;
-  private final StringLongSequence psSeq = new StringLongSequence();
-  private final ArrayDeque<CommandBase<?>> pending = new ArrayDeque<>();
-  private final Context context;
-  private int inflight;
-  private Holder holder;
-  private final int pipeliningLimit;
-
-  protected final NetSocketInternal socket;
-  protected Status status = Status.CONNECTED;
-
-  SocketConnectionBase(NetSocketInternal socket,
-                              boolean cachePreparedStatements,
-                              int preparedStatementCacheSize,
-                              int preparedStatementCacheSqlLimit,
-                              int pipeliningLimit,
-                              Context context) {
-    this.socket = socket;
-    this.context = context;
-    this.pipeliningLimit = pipeliningLimit;
-    this.psCache = cachePreparedStatements ? new PreparedStatementCache(preparedStatementCacheSize, this) : null;
-    this.preparedStatementCacheSqlLimit = preparedStatementCacheSqlLimit;
-  }
-
-  Context context() {
-    return context;
-  }
-
-  void init() {
-    socket.closeHandler(this::handleClosed);
-    socket.exceptionHandler(this::handleException);
-    socket.messageHandler(msg -> {
-      try {
-        handleMessage(msg);
-      } catch (Exception e) {
-        handleException(e);
-      }
-    });
-  }
-
-  NetSocketInternal socket() {
-    return socket;
-  }
-
-  boolean isSsl() {
-    return socket.isSsl();
-  }
-
-  override
-  void init(Holder holder) {
-    this.holder = holder;
-  }
-
-  override
-  int getProcessId() {
-    throw new UnsupportedOperationException();
-  }
-
-  override
-  int getSecretKey() {
-    throw new UnsupportedOperationException();
-  }
-
-  override
-  void close(Holder holder) {
-    if (Vertx.currentContext() == context) {
-      if (status == Status.CONNECTED) {
-        status = Status.CLOSING;
-        // Append directly since schedule checks the status and won't enqueue the command
-        pending.add(CloseConnectionCommand.INSTANCE);
-        checkPending();
-      }
-    } else {
-      context.runOnContext(v -> close(holder));
-    }
-  }
-
-  void schedule(CommandBase<?> cmd) {
-    if (cmd.handler is null) {
-      throw new IllegalArgumentException();
-    }
-    if (Vertx.currentContext() != context) {
-      throw new IllegalStateException();
+    enum Status {
+        CLOSED, CONNECTED, CLOSING
     }
 
-    // Special handling for cache
-    PreparedStatementCache psCache = this.psCache;
-    if (psCache !is null && cmd instanceof PrepareStatementCommand) {
-      PrepareStatementCommand psCmd = (PrepareStatementCommand) cmd;
-      if (psCmd.sql().length() > preparedStatementCacheSqlLimit) {
-        // do not cache the statements
-        return;
-      }
-      CachedPreparedStatement cached = psCache.get(psCmd.sql());
-      if (cached !is null) {
-        psCmd.cached = cached;
-        Handler<? super CommandResponse!(PreparedStatement)> handler = psCmd.handler;
-        cached.get(handler);
-        return;
-      } else {
-        if (psCache.size() >= psCache.getCapacity() && !psCache.isReady()) {
-          // only if the prepared statement is ready then it can be evicted
-        } else {
-          psCmd.statement = psSeq.next();
-          psCmd.cached = cached = new CachedPreparedStatement();
-          psCache.put(psCmd.sql(), cached);
-          Handler<? super CommandResponse!(PreparedStatement)> a = psCmd.handler;
-          ((CachedPreparedStatement) psCmd.cached).get(a);
-          psCmd.handler = (Handler<? super CommandResponse!(PreparedStatement)>) psCmd.cached;
-        }
-      }
+    protected PreparedStatementCache psCache;
+    private int preparedStatementCacheSqlLimit;
+    private StringLongSequence psSeq = new StringLongSequence();
+    // private ArrayDeque<CommandBase<?>> pending = new ArrayDeque<>();
+    private DList!(ICommand) pending;
+    
+    // private Context context;
+    private int inflight;
+    private Holder holder;
+    private int pipeliningLimit;
+
+    protected AbstractConnection _socket;
+    protected Status status = Status.CONNECTED;
+
+    this(AbstractConnection socket,
+                        bool cachePreparedStatements,
+                        int preparedStatementCacheSize,
+                        int preparedStatementCacheSqlLimit,
+                        int pipeliningLimit) {
+        this._socket = socket;
+        // this.context = context;
+        this.pipeliningLimit = pipeliningLimit;
+        this.psCache = cachePreparedStatements ? new PreparedStatementCache(preparedStatementCacheSize, this) : null;
+        this.preparedStatementCacheSqlLimit = preparedStatementCacheSqlLimit;
     }
 
-    //
-    if (status == Status.CONNECTED) {
-      pending.add(cmd);
-      checkPending();
-    } else {
-      cmd.fail(new VertxException("Connection not open " ~ status));
+    // Context context() {
+    //     return context;
+    // }
+
+    void init() {
+
+        import hunt.net.Connection;
+        ConnectionEventHandlerAdapter adapter = new ConnectionEventHandlerAdapter();
+        adapter.onClosed(&handleClosed);
+        adapter.onException(&handleException);
+        adapter.onMessageReceived((conn, msg) {
+            try {
+                handleMessage(msg);
+            } catch (Exception e) {
+                handleException(e);
+            }
+        });
+
+        _socket.setHandler(adapter);
     }
-  }
 
-  static class CachedPreparedStatement implements Handler!(CommandResponse!(PreparedStatement)) {
+    NetSocketInternal socket() {
+        return _socket;
+    }
 
-    private final Deque<Handler<? super CommandResponse!(PreparedStatement)>> waiters = new ArrayDeque<>();
-    CommandResponse!(PreparedStatement) resp;
-
-    void get(Handler<? super CommandResponse!(PreparedStatement)> handler) {
-      if (resp !is null) {
-        handler.handle(resp);
-      } else {
-        waiters.add(handler);
-      }
+    bool isSsl() {
+        return _socket.isSsl();
     }
 
     override
-    void handle(CommandResponse!(PreparedStatement) event) {
-      resp = event;
-      Handler<? super CommandResponse!(PreparedStatement)> waiter;
-      while ((waiter = waiters.poll()) !is null) {
-        waiter.handle(resp);
-      }
+    void init(Holder holder) {
+        this.holder = holder;
     }
-  }
 
-  private void checkPending() {
-    ChannelHandlerContext ctx = socket.channelHandlerContext();
-    if (inflight < pipeliningLimit) {
-      CommandBase<?> cmd;
-      while (inflight < pipeliningLimit && (cmd = pending.poll()) !is null) {
-        inflight++;
-        ctx.write(cmd);
-      }
-      ctx.flush();
+    override
+    int getProcessId() {
+        throw new UnsupportedOperationException();
     }
-  }
 
-  private void handleMessage(Object msg) {
-    if (msg instanceof CommandResponse) {
-      inflight--;
-      checkPending();
-      CommandResponse resp =(CommandResponse) msg;
-      resp.cmd.handler.handle(msg);
-    } else if (msg instanceof Notification) {
-      handleNotification((Notification) msg);
-    } else if (msg instanceof Notice) {
-      handleNotice((Notice) msg);
+    override
+    int getSecretKey() {
+        throw new UnsupportedOperationException();
     }
-  }
 
-  private void handleNotification(Notification response) {
-    if (holder !is null) {
-      holder.handleNotification(response.getProcessId(), response.getChannel(), response.getPayload());
-    }
-  }
-
-  private void handleNotice(Notice notice) {
-    notice.log(logger);
-  }
-
-  private void handleClosed(Void v) {
-    handleClose(null);
-  }
-
-  private synchronized void handleException(Throwable t) {
-    if (t instanceof DecoderException) {
-      DecoderException err = (DecoderException) t;
-      t = err.getCause();
-    }
-    handleClose(t);
-  }
-
-  private void handleClose(Throwable t) {
-    if (status != Status.CLOSED) {
-      status = Status.CLOSED;
-      if (t !is null) {
-        synchronized (this) {
-          if (holder !is null) {
-            holder.handleException(t);
-          }
+    override
+    void close(Holder holder) {
+        if (status == Status.CONNECTED) {
+            status = Status.CLOSING;
+            _socket.close();
         }
-      }
-      Throwable cause = t is null ? new VertxException("closed") : t;
-      CommandBase<?> cmd;
-      while ((cmd = pending.poll()) !is null) {
-        CommandBase<?> c = cmd;
-        context.runOnContext(v -> c.fail(cause));
-      }
-      if (holder !is null) {
-        holder.handleClosed();
-      }
+        // if (Vertx.currentContext() == context) {
+        //     if (status == Status.CONNECTED) {
+        //         status = Status.CLOSING;
+        //         // Append directly since schedule checks the status and won't enqueue the command
+        //         pending.add(CloseConnectionCommand.INSTANCE);
+        //         checkPending();
+        //     }
+        // } else {
+        //     context.runOnContext(v -> close(holder));
+        // }
     }
-  }
+
+    void schedule(ICommand cmd) {
+        if (!cmd.handlerExist()) {
+            throw new IllegalArgumentException();
+        }
+        // if (Vertx.currentContext() != context) {
+        //     throw new IllegalStateException();
+        // }
+
+        // Special handling for cache
+        PreparedStatementCache psCache = this.psCache;
+        PrepareStatementCommand psCmd = cast(PrepareStatementCommand) cmd;
+        if (psCache !is null && psCmd !is null) {
+            if (psCmd.sql().length() > preparedStatementCacheSqlLimit) {
+                // do not cache the statements
+                return;
+            }
+            CachedPreparedStatement cached = psCache.get(psCmd.sql());
+            if (cached !is null) {
+                psCmd.cached = cached;
+                ResponseHandler!(PreparedStatement) handler = psCmd.handler;
+                cached.get(handler);
+                return;
+            } else {
+                if (psCache.size() >= psCache.getCapacity() && !psCache.isReady()) {
+                    // only if the prepared statement is ready then it can be evicted
+                } else {
+                    psCmd.statement = psSeq.next();
+                    psCmd.cached = cached = new CachedPreparedStatement();
+                    psCache.put(psCmd.sql(), cached);
+                    ResponseHandler!(PreparedStatement) a = psCmd.handler;
+                    (cast(CachedPreparedStatement) psCmd.cached).get(a);
+// FIXME: Needing refactor or cleanup -@zxp at 8/14/2019, 10:54:17 AM                    
+// to check
+                    psCmd.handler = cast(ResponseHandler!(PreparedStatement)) psCmd.cached;
+                }
+            }
+        }
+
+        //
+        if (status == Status.CONNECTED) {
+            pending.insertBack(cmd);
+            checkPending();
+        } else {
+            cmd.fail(new IOException("Connection not open " ~ status));
+        }
+    }
+
+
+    private void checkPending() {
+        // ChannelHandlerContext ctx = _socket.channelHandlerContext();
+        import hunt.net.Connection;
+        ConnectionEventHandler ctx = _socket.getHandler();
+        if (inflight < pipeliningLimit) {
+            ICommand cmd;
+            while (inflight < pipeliningLimit && (cmd = pending.poll()) !is null) {
+                inflight++;
+                // ctx.write(cast(Object)cmd);
+                ctx.messageReceived(_socket, cast(Object)cmd);
+            }
+            // ctx.flush();
+        }
+    }
+
+    private void handleMessage(Object msg) {
+        CommandResponse resp = cast(CommandResponse) msg;
+        if (resp !is null) {
+            inflight--;
+            checkPending();
+            resp.cmd.handler.handle(msg);
+        } 
+
+        Notification n = cast(Notification) msg;
+        if (n !is null) {
+            handleNotification(n);
+        }
+
+        Notice notice = cast(Notice) msg;
+        if (notice !is null) {
+            handleNotice(notice);
+        }
+    }
+
+    private void handleNotification(Notification response) {
+        if (holder !is null) {
+            holder.handleNotification(response.getProcessId(), response.getChannel(), response.getPayload());
+        }
+    }
+
+    private void handleNotice(Notice notice) {
+        notice.log();
+    }
+
+    private void handleClosed(Void v) {
+        handleClose(null);
+    }
+
+    private synchronized void handleException(Throwable t) {
+        DecoderException err = cast(DecoderException) t;
+        if (err !is null) {
+            t = err.next;
+        }
+        handleClose(t);
+    }
+
+    private void handleClose(Throwable t) {
+        if (status != Status.CLOSED) {
+            status = Status.CLOSED;
+            // if (t !is null) {
+            //     synchronized (this) {
+            //         if (holder !is null) {
+            //             holder.handleException(t);
+            //         }
+            //     }
+            // }
+            // Throwable cause = t is null ? new VertxException("closed") : t;
+            // CommandBase<?> cmd;
+            // while ((cmd = pending.poll()) !is null) {
+            //     CommandBase<?> c = cmd;
+            //     context.runOnContext(v -> c.fail(cause));
+            // }
+            // if (holder !is null) {
+            //     holder.handleClosed();
+            // }
+        }
+    }
 }
+

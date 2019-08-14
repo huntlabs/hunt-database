@@ -23,6 +23,8 @@ alias ResponseHandler(R) = EventHandler!(CommandResponse!(R));
 
 interface ICommand {
     void fail(Throwable err);
+
+    bool handlerExist();
 }
 
 /**
@@ -31,6 +33,9 @@ interface ICommand {
 abstract class CommandBase(R) : ICommand {
 
     ResponseHandler!R handler;
+
+
+    final bool handlerExist() { handler !is null; }
 
     final void fail(Throwable err) {
         handler(CommandResponse.failure(err));
