@@ -41,7 +41,7 @@ interface MySQLConnection : SqlConnection {
   }
 
   override
-  MySQLConnection prepare(String sql, Handler!(AsyncResult!(PreparedQuery)) handler);
+  MySQLConnection prepare(String sql, PreparedQueryHandler handler);
 
   override
   MySQLConnection exceptionHandler(Handler!(Throwable) handler);

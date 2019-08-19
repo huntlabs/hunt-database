@@ -20,6 +20,7 @@ module hunt.database.base.SqlClient;
 import hunt.database.base.AsyncResult;
 import hunt.database.base.Common;
 import hunt.database.base.RowSet;
+import hunt.database.base.Tuple;
 
 import hunt.collection.List;
 // import java.util.stream.Collector;

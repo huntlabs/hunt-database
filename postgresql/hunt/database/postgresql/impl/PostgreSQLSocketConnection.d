@@ -61,8 +61,7 @@ class PgSocketConnection : SocketConnectionBase {
     override
     void init() {
         codec = new PgCodec();
-        ChannelPipeline pipeline = socket.channelHandlerContext().pipeline();
-        pipeline.addBefore("handler", "codec", codec);
+        socket().setCodec(codec);
         super.init();
     }
 

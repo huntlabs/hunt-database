@@ -17,10 +17,14 @@
 
 module hunt.database.base.impl.PreparedQueryImpl;
 
+import hunt.database.base.impl.Connection;
+import hunt.database.base.impl.PreparedStatement;
+
 import hunt.database.base.impl.command.CloseCursorCommand;
 import hunt.database.base.impl.command.CloseStatementCommand;
 import hunt.database.base.impl.command.ExtendedBatchQueryCommand;
 import hunt.database.base.impl.command.ExtendedQueryCommand;
+import hunt.database.base.Common;
 import hunt.database.base.Cursor;
 import hunt.database.base.PreparedQuery;
 import hunt.database.base.SqlResult;
@@ -102,7 +106,7 @@ class PreparedQueryImpl : PreparedQuery {
     //     return this;
     // }
 
-    override
+    // override
     Cursor cursor(Tuple args) {
         string msg = ps.prepare(cast(List!(Object)) args);
         if (msg !is null) {
@@ -111,7 +115,7 @@ class PreparedQueryImpl : PreparedQuery {
         return new CursorImpl(this, args);
     }
 
-    override
+    // override
     void close() {
         // close(ar -> {
         // });
@@ -146,10 +150,10 @@ class PreparedQueryImpl : PreparedQuery {
     //     return this;
     // }
 
-    override
-    RowStream!(Row) createStream(int fetch, Tuple args) {
-        return new RowStreamImpl(this, fetch, args);
-    }
+    // override
+    // RowStream!(Row) createStream(int fetch, Tuple args) {
+    //     return new RowStreamImpl(this, fetch, args);
+    // }
 
     override
     void close(VoidHandler completionHandler) {

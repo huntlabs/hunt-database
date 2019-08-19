@@ -16,9 +16,11 @@
  */
 module hunt.database.base.impl.TransactionImpl;
 
+import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.RowSetImpl;
 import hunt.database.base.impl.SqlConnectionBase;
 
+import hunt.database.base.Common;
 import hunt.database.base.Transaction;
 import hunt.database.base.impl.command.CommandResponse;
 import hunt.database.base.impl.command.CommandBase;
@@ -46,8 +48,8 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
     private VoidHandler failedHandler;
     private int status = ST_BEGIN;
 
-    this(Context context, Connection conn, VoidHandler disposeHandler) {
-        super(context, conn);
+    this(Connection conn, VoidHandler disposeHandler) { // Context context, 
+        super(conn); // context, 
         this.disposeHandler = disposeHandler;
         // doSchedule(doQuery("BEGIN", this::afterBegin));
     }
@@ -152,7 +154,7 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
     //     };
     // }
 
-    override
+    // override
     void commit() {
         commit(null);
     }
@@ -181,7 +183,7 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
         }
     }
 
-    override
+    // override
     void rollback() {
         rollback(null);
     }
@@ -201,7 +203,7 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
     }
 
     override
-    io.vertx.sqlclient.Transaction abortHandler(VoidHandler handler) {
+    Transaction abortHandler(VoidHandler handler) {
         failedHandler = handler;
         return this;
     }

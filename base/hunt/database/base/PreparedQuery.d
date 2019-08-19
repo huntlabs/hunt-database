@@ -17,10 +17,12 @@
 
 module hunt.database.base.PreparedQuery;
 
+import hunt.database.base.AsyncResult;
 import hunt.database.base.Common;
+import hunt.database.base.Cursor;
 import hunt.database.base.RowSet;
 import hunt.database.base.impl.ArrayTuple;
-import hunt.database.base.AsyncResult;
+import hunt.database.base.Tuple;
 
 import hunt.collection.List;
 // import java.util.stream.Collector;
@@ -93,7 +95,7 @@ interface PreparedQuery {
      * @param args the prepared query arguments
      * @return the createStream
      */
-    RowStream!(Row) createStream(int fetch, Tuple args);
+    // RowStream!(Row) createStream(int fetch, Tuple args);
 
     /**
      * Execute a batch.

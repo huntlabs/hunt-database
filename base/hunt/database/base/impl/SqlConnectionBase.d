@@ -17,6 +17,8 @@
 
 module hunt.database.base.impl.SqlConnectionBase;
 
+import hunt.database.base.impl.SqlClientBase;
+
 import hunt.database.base.PreparedQuery;
 import hunt.database.base.impl.command.PrepareStatementCommand;
 import hunt.database.base.impl.PreparedQueryImpl;

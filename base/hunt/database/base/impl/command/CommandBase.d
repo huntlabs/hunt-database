@@ -17,9 +17,8 @@
 
 module hunt.database.base.impl.command.CommandBase;
 
-import hunt.database.base.Common;
+import hunt.database.base.impl.command.CommandResponse;
 
-alias ResponseHandler(R) = EventHandler!(CommandResponse!(R));
 
 interface ICommand {
     void fail(Throwable err);

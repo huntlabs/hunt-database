@@ -21,30 +21,30 @@ import hunt.database.base.SqlResult;
 
 import hunt.collection.List;
 
-abstract class SqlResultBase!(T, R extends SqlResultBase!(T, R)) implements SqlResult!(T) {
+abstract class SqlResultBase(T, R) : SqlResult!(T) { //  extends SqlResultBase!(T, R)
 
-  int updated;
-  List!(String) columnNames;
-  int size;
-  R next;
+    int updated;
+    List!(string) columnNames;
+    int size;
+    R next;
 
-  override
-  List!(String) columnsNames() {
-    return columnNames;
-  }
+    override
+    List!(string) columnsNames() {
+        return columnNames;
+    }
 
-  override
-  int rowCount() {
-    return updated;
-  }
+    override
+    int rowCount() {
+        return updated;
+    }
 
-  override
-  int size() {
-    return size;
-  }
+    override
+    int size() {
+        return size;
+    }
 
-  override
-  R next() {
-    return next;
-  }
+    override
+    R next() {
+        return next;
+    }
 }

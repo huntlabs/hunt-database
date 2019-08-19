@@ -17,185 +17,212 @@
 
 module hunt.database.postgresql.impl.PostgreSQLConnectionFactory;
 
+import hunt.database.postgresql.impl.PostgreSQLSocketConnection;
 import hunt.database.postgresql.PostgreSQLConnectOptions;
 import hunt.database.postgresql.SslMode;
-import hunt.database.base.impl.Connection;
+
+import hunt.database.base.AsyncResult;
+import hunt.database.base.Common;
+// import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.command.CommandResponse;
+
 // import io.vertx.core.*;
 // import io.vertx.core.impl.NetSocketInternal;
 // import io.vertx.core.net.*;
 
 import hunt.collection.HashMap;
 import hunt.collection.Map;
+import hunt.Exceptions;
+import hunt.logging.ConsoleLogger;
+
+import hunt.net.AbstractConnection;
+import hunt.net.Connection;
+import hunt.net.NetClient;
+import hunt.net.NetClientOptions;
+import hunt.net.NetUtil;
+
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-// class PgConnectionFactory {
+class PgConnectionFactory {
 
-//     private NetClient client;
-//     private Context ctx;
-//     private bool registerCloseHook;
-//     private string host;
-//     private int port;
-//     private SslMode sslMode;
-//     private TrustOptions trustOptions;
-//     private string hostnameVerificationAlgorithm;
-//     private string database;
-//     private string username;
-//     private string password;
-//     private Map!(string, string) properties;
-//     private bool cachePreparedStatements;
-//     private int preparedStatementCacheSize;
-//     private int preparedStatementCacheSqlLimit;
-//     private int pipeliningLimit;
-//     private bool isUsingDomainSocket;
-//     private Closeable hook;
+    private NetClient client;
+    // private Context ctx;
+    private bool registerCloseHook;
+    private string host;
+    private int port;
+    private SslMode sslMode;
+    // private TrustOptions trustOptions;
+    private string hostnameVerificationAlgorithm;
+    private string database;
+    private string username;
+    private string password;
+    private Map!(string, string) properties;
+    private bool cachePreparedStatements;
+    private int preparedStatementCacheSize;
+    private int preparedStatementCacheSqlLimit;
+    private int pipeliningLimit;
+    private bool isUsingDomainSocket;
+    // private Closeable hook;
 
-//     PgConnectionFactory(Context context,
-//                         bool registerCloseHook,
-//                         PgConnectOptions options) {
+    this(PgConnectOptions options) {
 
-//         hook = this::close;
-//         this.registerCloseHook = registerCloseHook;
+        // hook = this::close;
+        // this.registerCloseHook = registerCloseHook;
 
-//         ctx = context;
-//         if (registerCloseHook) {
-//             ctx.addCloseHook(hook);
-//         }
+        // ctx = context;
+        // if (registerCloseHook) {
+        //     ctx.addCloseHook(hook);
+        // }
 
-//         NetClientOptions netClientOptions = new NetClientOptions(options);
+        NetClientOptions netClientOptions = new NetClientOptions(options);
 
-//         // Make sure ssl=false as we will use STARTLS
-//         netClientOptions.setSsl(false);
+        // Make sure ssl=false as we will use STARTLS
+        netClientOptions.setSsl(false);
 
-//         this.sslMode = options.getSslMode();
-//         this.hostnameVerificationAlgorithm = netClientOptions.getHostnameVerificationAlgorithm();
-//         this.trustOptions = netClientOptions.getTrustOptions();
-//         this.host = options.getHost();
-//         this.port = options.getPort();
-//         this.database = options.getDatabase();
-//         this.username = options.getUser();
-//         this.password = options.getPassword();
-//         this.properties = new HashMap<>(options.getProperties());
-//         this.cachePreparedStatements = options.getCachePreparedStatements();
-//         this.pipeliningLimit = options.getPipeliningLimit();
-//         this.preparedStatementCacheSize = options.getPreparedStatementCacheMaxSize();
-//         this.preparedStatementCacheSqlLimit = options.getPreparedStatementCacheSqlLimit();
-//         this.isUsingDomainSocket = options.isUsingDomainSocket();
+        this.sslMode = options.getSslMode();
+        this.hostnameVerificationAlgorithm = netClientOptions.getHostnameVerificationAlgorithm();
+        // this.trustOptions = netClientOptions.getTrustOptions();
+        this.host = options.getHost();
+        this.port = options.getPort();
+        this.database = options.getDatabase();
+        this.username = options.getUser();
+        this.password = options.getPassword();
+        this.properties = new HashMap!(string, string)(options.getProperties());
+        this.cachePreparedStatements = options.getCachePreparedStatements();
+        this.pipeliningLimit = options.getPipeliningLimit();
+        this.preparedStatementCacheSize = options.getPreparedStatementCacheMaxSize();
+        this.preparedStatementCacheSqlLimit = options.getPreparedStatementCacheSqlLimit();
+        this.isUsingDomainSocket = options.isUsingDomainSocket();
 
-//         this.client = context.owner().createNetClient(netClientOptions);
-//     }
+        // this.client = context.owner().createNetClient(netClientOptions);
+        this.client = NetUtil.createNetClient(netClientOptions);
+    }
 
-//     // Called by hook
-//     private void close(VoidHandler completionHandler) {
-//         client.close();
-//         completionHandler.handle(Future.succeededFuture());
-//     }
+    // Called by hook
+    private void close(VoidHandler completionHandler) {
+        client.close();
+        // completionHandler.handle(Future.succeededFuture());
+    }
 
-//     void close() {
-//         if (registerCloseHook) {
-//             ctx.removeCloseHook(hook);
-//         }
-//         client.close();
-//     }
+    void close() {
+        // if (registerCloseHook) {
+        //     ctx.removeCloseHook(hook);
+        // }
+        client.close();
+    }
 
-//     void connectAndInit(Handler!(AsyncResult!(Connection)) completionHandler) {
-//         connect(ar -> {
-//             if (ar.succeeded()) {
-//                 PgSocketConnection conn = ar.result();
-//                 conn.init();
-//                 conn.sendStartupMessage(username, password, database, properties, completionHandler);
-//             } else {
-//                 completionHandler.handle(CommandResponse.failure(ar.cause()));
-//             }
-//         });
-//     }
+    // void connectAndInit(AsyncResultHandler!(DbConnection) completionHandler) {
+    //     implementationMissing(false);
+    //     // connect(ar -> {
+    //     //     if (ar.succeeded()) {
+    //     //         PgSocketConnection conn = ar.result();
+    //     //         conn.init();
+    //     //         conn.sendStartupMessage(username, password, database, properties, completionHandler);
+    //     //     } else {
+    //     //         completionHandler.handle(CommandResponse.failure(ar.cause()));
+    //     //     }
+    //     // });
+    // }
 
-//     void connect(Handler!(AsyncResult!(PgSocketConnection)) handler) {
-//         switch (sslMode) {
-//             case DISABLE:
-//                 doConnect(false, handler);
-//                 break;
-//             case ALLOW:
-//                 doConnect(false, ar -> {
-//                     if (ar.succeeded()) {
-//                         handler.handle(Future.succeededFuture(ar.result()));
-//                     } else {
-//                         doConnect(true, handler);
-//                     }
-//                 });
-//                 break;
-//             case PREFER:
-//                 doConnect(true, ar -> {
-//                     if (ar.succeeded()) {
-//                         handler.handle(Future.succeededFuture(ar.result()));
-//                     } else {
-//                         doConnect(false, handler);
-//                     }
-//                 });
-//                 break;
-//             case VERIFY_FULL:
-//                 if (hostnameVerificationAlgorithm is null || hostnameVerificationAlgorithm.isEmpty()) {
-//                     handler.handle(Future.failedFuture(new IllegalArgumentException("Host verification algorithm must be specified under verify-full sslmode")));
-//                     return;
-//                 }
-//             case VERIFY_CA:
-//                 if (trustOptions is null) {
-//                     handler.handle(Future.failedFuture(new IllegalArgumentException("Trust options must be specified under verify-full or verify-ca sslmode")));
-//                     return;
-//                 }
-//             case REQUIRE:
-//                 doConnect(true, handler);
-//                 break;
-//             default:
-//                 throw new IllegalArgumentException("Unsupported SSL mode");
-//         }
-//     }
+    void connect(AsyncResultHandler!(PgSocketConnection) handler) {
+        doConnect(false, handler);
+        // switch (sslMode) {
+        //     case DISABLE:
+        //         doConnect(false, handler);
+        //         break;
+        //     case ALLOW:
+        //         doConnect(false, ar -> {
+        //             if (ar.succeeded()) {
+        //                 handler.handle(Future.succeededFuture(ar.result()));
+        //             } else {
+        //                 doConnect(true, handler);
+        //             }
+        //         });
+        //         break;
+        //     case PREFER:
+        //         doConnect(true, ar -> {
+        //             if (ar.succeeded()) {
+        //                 handler.handle(Future.succeededFuture(ar.result()));
+        //             } else {
+        //                 doConnect(false, handler);
+        //             }
+        //         });
+        //         break;
+        //     case VERIFY_FULL:
+        //         if (hostnameVerificationAlgorithm is null || hostnameVerificationAlgorithm.isEmpty()) {
+        //             handler.handle(Future.failedFuture(new IllegalArgumentException("Host verification algorithm must be specified under verify-full sslmode")));
+        //             return;
+        //         }
+        //     case VERIFY_CA:
+        //         if (trustOptions is null) {
+        //             handler.handle(Future.failedFuture(new IllegalArgumentException("Trust options must be specified under verify-full or verify-ca sslmode")));
+        //             return;
+        //         }
+        //     case REQUIRE:
+        //         doConnect(true, handler);
+        //         break;
+        //     default:
+        //         throw new IllegalArgumentException("Unsupported SSL mode");
+        // }
+    }
 
-//     private void doConnect(bool ssl, Handler!(AsyncResult!(PgSocketConnection)) handler) {
-//         if (Vertx.currentContext() != ctx) {
-//             throw new IllegalStateException();
-//         }
-//         SocketAddress socketAddress;
-//         if (!isUsingDomainSocket) {
-//             socketAddress = SocketAddress.inetSocketAddress(port, host);
-//         } else {
-//             socketAddress = SocketAddress.domainSocketAddress(host ~ "/.s.PGSQL." ~ port);
-//         }
+    private void doConnect(bool ssl, AsyncResultHandler!(PgSocketConnection) handler) {
 
-//         Promise!(NetSocket) promise = Promise.promise();
-//         promise.future().setHandler(ar -> {
-//             if (ar.succeeded()) {
-//                 NetSocketInternal socket = (NetSocketInternal) ar.result();
-//                 PgSocketConnection conn = newSocketConnection(socket);
+        client.setHandler(new class ConnectionEventHandler {
 
-//                 if (ssl && !isUsingDomainSocket) {
-//                     // upgrade connection to SSL if needed
-//                     conn.upgradeToSSLConnection(ar2 -> {
-//                         if (ar2.succeeded()) {
-//                             handler.handle(Future.succeededFuture(conn));
-//                         } else {
-//                             handler.handle(Future.failedFuture(ar2.cause()));
-//                         }
-//                     });
-//                 } else {
-//                     handler.handle(Future.succeededFuture(conn));
-//                 }
-//             } else {
-//                 handler.handle(Future.failedFuture(ar.cause()));
-//             }
-//         });
+                override void connectionOpened(Connection connection) {
+                    infof("Connection created: %s", connection.getRemoteAddress());
 
-//         try {
-//             client.connect(socketAddress, null, promise);
-//         } catch (Exception e) {
-//             // Client is closed
-//             promise.fail(e);
-//         }
-//     }
+                    PgSocketConnection conn = newSocketConnection(cast(AbstractConnection)connection);
+                    handler(succeededResult(conn));
+                }
 
-//     private PgSocketConnection newSocketConnection(NetSocketInternal socket) {
-//         return new PgSocketConnection(socket, cachePreparedStatements, preparedStatementCacheSize, preparedStatementCacheSqlLimit, pipeliningLimit, ctx);
-//     }
-// }
+                override void connectionClosed(Connection connection) {
+                    infof("Connection closed: %s", connection.getRemoteAddress());
+                    // client.close();
+                }
+
+                override void messageReceived(Connection connection, Object message) {
+                    tracef("message type: %s", typeid(message).name);
+                }
+
+                override void exceptionCaught(Connection connection, Exception t) {
+                    warning(t);
+                    handler(failedResult(t));
+                }
+
+                override void failedOpeningConnection(int connectionId, Exception t) {
+                    warning(t);
+
+                    handler(failedResult(t));
+                    client.close(); 
+                }
+
+                override void failedAcceptingConnection(int connectionId, Exception t) {
+                    warning(t);
+                    handler(failedResult(t));
+                }
+            });        
+
+        try {
+            client.connect(host, port);
+        } catch (Exception e) {
+            // Client is closed
+            version(HUNT_DEBUG) {
+                warning(e.message);
+            } else {
+                warning(e);
+            }
+            
+            if(handler !is null)
+                handler(failedResult(e));
+        }
+    }
+
+    private PgSocketConnection newSocketConnection(AbstractConnection socket) {
+        return new PgSocketConnection(socket, cachePreparedStatements, preparedStatementCacheSize, 
+                preparedStatementCacheSqlLimit, pipeliningLimit);
+    }
+}

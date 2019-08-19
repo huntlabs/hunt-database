@@ -28,6 +28,7 @@ import hunt.database.base.Tuple;
 // import java.util.UUID;
 
 import hunt.collection.ArrayList;
+import hunt.collection.Collection;
 
 import std.concurrency : initOnce;
 

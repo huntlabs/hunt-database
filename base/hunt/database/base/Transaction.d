@@ -17,6 +17,10 @@
 module hunt.database.base.Transaction;
 
 import hunt.database.base.AsyncResult;
+import hunt.database.base.Common;
+import hunt.database.base.PreparedQuery;
+import hunt.database.base.RowSet;
+import hunt.database.base.SqlClient;
 
 import hunt.collection.List;
 // import java.util.stream.Collector;
@@ -32,7 +36,7 @@ interface Transaction : SqlClient {
      * @param sql the sql
      * @param handler the handler notified with the prepared query asynchronously
      */
-    Transaction prepare(string sql, Handler!(AsyncResult!(PreparedQuery)) handler);
+    Transaction prepare(string sql, PreparedQueryHandler handler);
 
     /**
      * Commit the current transaction.

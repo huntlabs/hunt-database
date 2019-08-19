@@ -17,6 +17,8 @@
 
 module hunt.database.base.impl.SqlConnectionImpl;
 
+import hunt.database.base.impl.Connection;
+
 import hunt.database.base.Common;
 import hunt.database.base.SqlConnection;
 import hunt.database.base.impl.command.CommandResponse;
@@ -26,7 +28,7 @@ import hunt.database.base.impl.TransactionImpl;
 import hunt.database.base.Transaction;
 
 import hunt.logging.ConsoleLogger;
-// import io.vertx.core.*;
+import hunt.net.AbstractConnection;
 
 import hunt.Object;
 
@@ -44,7 +46,7 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection //, C
         super(context, conn);
     }
 
-    override
+    // override
     void handleClosed() {
         VoidHandler handler = closeHandler;
         if (handler !is null) {

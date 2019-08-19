@@ -16,9 +16,7 @@
  */
 module hunt.database.base.Row;
 
-// import io.vertx.codegen.annotations.GenIgnore;
-// import io.vertx.codegen.annotations.VertxGen;
-// import io.vertx.core.buffer.Buffer;
+import hunt.database.base.Tuple;
 
 // import java.math.BigDecimal;
 // import java.time.*;

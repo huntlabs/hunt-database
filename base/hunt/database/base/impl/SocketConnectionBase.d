@@ -37,7 +37,7 @@ import std.container.dlist;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-abstract class SocketConnectionBase : Connection {
+abstract class SocketConnectionBase : DbConnection {
 
     // private static final Logger logger = LoggerFactory.getLogger(SocketConnectionBase.class);
 
@@ -93,7 +93,7 @@ abstract class SocketConnectionBase : Connection {
         _socket.setHandler(adapter);
     }
 
-    NetSocketInternal socket() {
+    AbstractConnection socket() {
         return _socket;
     }
 

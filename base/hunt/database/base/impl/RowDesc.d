@@ -18,7 +18,6 @@
 module hunt.database.base.impl.RowDesc;
 
 import hunt.collection.List;
-
 import hunt.Exceptions;
 
 import std.algorithm;
@@ -31,24 +30,24 @@ import std.range;
 
 class RowDesc {
 
-	private string[] columnNames;
+	private string[] _columnNames;
 
 	this(string[] columnNames) {
-		this.columnNames = columnNames;
+		this._columnNames = columnNames;
 	}
 
 	int columnIndex(string columnName) {
 		if (columnName.empty) {
 			throw new NullPointerException("Column name must not be null");
 		}
-		return columnNames.countUntil(columnName);
+		return _columnNames.countUntil(columnName);
 	}
 
 	string[] columnNames() {
-		return columnNames;
+		return _columnNames;
 	}
 
 	override string toString() {
-		return "RowDesc{" ~ "columns=" ~ columnNames.to!string() ~ "}";
+		return "RowDesc{" ~ "columns=" ~ _columnNames.to!string() ~ "}";
 	}
 }

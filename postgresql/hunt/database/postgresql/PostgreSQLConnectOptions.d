@@ -29,6 +29,8 @@ import hunt.collection.Collections;
 import hunt.collection.HashMap;
 import hunt.collection.Map;
 import hunt.collection.Set;
+import hunt.net.OpenSSLEngineOptions;
+import hunt.net.ProxyOptions;
 import hunt.net.util.HttpURI;
 import hunt.Exceptions;
 
@@ -173,7 +175,7 @@ class PgConnectOptions : SqlConnectOptions {
         return this;
     }
 
-    PgConnectOptions setCachePreparedStatements(bool cachePreparedStatements) {
+    override PgConnectOptions setCachePreparedStatements(bool cachePreparedStatements) {
         return cast(PgConnectOptions) super.setCachePreparedStatements(cachePreparedStatements);
     }
 
@@ -250,20 +252,20 @@ class PgConnectOptions : SqlConnectOptions {
         return cast(PgConnectOptions) super.setSoLinger(soLinger);
     }
 
-    override
-    PgConnectOptions setUsePooledBuffers(bool usePooledBuffers) {
-        return cast(PgConnectOptions) super.setUsePooledBuffers(usePooledBuffers);
-    }
+    // override
+    // PgConnectOptions setUsePooledBuffers(bool usePooledBuffers) {
+    //     return cast(PgConnectOptions) super.setUsePooledBuffers(usePooledBuffers);
+    // }
 
     override
-    PgConnectOptions setIdleTimeout(int idleTimeout) {
+    PgConnectOptions setIdleTimeout(Duration idleTimeout) {
         return cast(PgConnectOptions) super.setIdleTimeout(idleTimeout);
     }
 
-    override
-    PgConnectOptions setIdleTimeoutUnit(TimeUnit idleTimeoutUnit) {
-        return cast(PgConnectOptions) super.setIdleTimeoutUnit(idleTimeoutUnit);
-    }
+    // override
+    // PgConnectOptions setIdleTimeoutUnit(TimeUnit idleTimeoutUnit) {
+    //     return cast(PgConnectOptions) super.setIdleTimeoutUnit(idleTimeoutUnit);
+    // }
 
     override
     PgConnectOptions setSsl(bool ssl) {
@@ -341,7 +343,7 @@ class PgConnectOptions : SqlConnectOptions {
     // }
 
     override
-    PgConnectOptions setConnectTimeout(int connectTimeout) {
+    PgConnectOptions setConnectTimeout(Duration connectTimeout) {
         return cast(PgConnectOptions) super.setConnectTimeout(connectTimeout);
     }
 
@@ -366,7 +368,7 @@ class PgConnectOptions : SqlConnectOptions {
     }
 
     override
-    PgConnectOptions setReconnectInterval(long interval) {
+    PgConnectOptions setReconnectInterval(Duration interval) {
         return cast(PgConnectOptions) super.setReconnectInterval(interval);
     }
 
@@ -420,25 +422,25 @@ class PgConnectOptions : SqlConnectOptions {
         return cast(PgConnectOptions) super.setTcpQuickAck(tcpQuickAck);
     }
 
-    override
-    PgConnectOptions setEnabledSecureTransportProtocols(Set!(string) enabledSecureTransportProtocols) {
-        return cast(PgConnectOptions) super.setEnabledSecureTransportProtocols(enabledSecureTransportProtocols);
-    }
+    // override
+    // PgConnectOptions setEnabledSecureTransportProtocols(Set!(string) enabledSecureTransportProtocols) {
+    //     return cast(PgConnectOptions) super.setEnabledSecureTransportProtocols(enabledSecureTransportProtocols);
+    // }
 
     override
-    PgConnectOptions setSslHandshakeTimeout(long sslHandshakeTimeout) {
+    PgConnectOptions setSslHandshakeTimeout(Duration sslHandshakeTimeout) {
         return cast(PgConnectOptions) super.setSslHandshakeTimeout(sslHandshakeTimeout);
     }
 
-    override
-    PgConnectOptions setSslHandshakeTimeoutUnit(TimeUnit sslHandshakeTimeoutUnit) {
-        return cast(PgConnectOptions) super.setSslHandshakeTimeoutUnit(sslHandshakeTimeoutUnit);
-    }
+    // override
+    // PgConnectOptions setSslHandshakeTimeoutUnit(TimeUnit sslHandshakeTimeoutUnit) {
+    //     return cast(PgConnectOptions) super.setSslHandshakeTimeoutUnit(sslHandshakeTimeoutUnit);
+    // }
 
     /**
      * Initialize with the default options.
      */
-    protected void init() {
+    override protected void init() {
         this.setHost(DEFAULT_HOST);
         this.setPort(DEFAULT_PORT);
         this.setUser(DEFAULT_USER);

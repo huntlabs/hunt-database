@@ -32,7 +32,7 @@ alias RowSetHandler = AsyncResultHandler!RowSet;
  */
 interface RowSet : Iterable!(Row), SqlResult!(RowSet) {
 
-    override RowIterator iterator();
+    RowIterator iterator();
 
-    override RowSet next();
+    // override RowSet next();
 }

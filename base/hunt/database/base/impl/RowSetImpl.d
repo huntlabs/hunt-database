@@ -16,6 +16,9 @@
  */
 module hunt.database.base.impl.RowSetImpl;
 
+import hunt.database.base.impl.RowInternal;
+import hunt.database.base.impl.SqlResultBase;
+
 import hunt.database.base.RowIterator;
 import hunt.database.base.RowSet;
 import hunt.database.base.Row;

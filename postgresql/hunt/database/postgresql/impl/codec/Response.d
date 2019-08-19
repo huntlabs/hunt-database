@@ -28,182 +28,182 @@ module hunt.database.postgresql.impl.codec.Response;
 
 abstract class Response {
 
-  private String severity;
-  private String code;
-  private String message;
-  private String detail;
-  private String hint;
-  private String position;
-  private String internalPosition;
-  private String internalQuery;
-  private String where;
-  private String file;
-  private String line;
-  private String routine;
-  private String schema;
-  private String table;
-  private String column;
-  private String dataType;
-  private String constraint;
+    private string severity;
+    private string code;
+    private string message;
+    private string detail;
+    private string hint;
+    private string position;
+    private string internalPosition;
+    private string internalQuery;
+    private string where;
+    private string file;
+    private string line;
+    private string routine;
+    private string schema;
+    private string table;
+    private string column;
+    private string dataType;
+    private string constraint;
 
-  String getSeverity() {
-    return severity;
-  }
+    string getSeverity() {
+        return severity;
+    }
 
-  void setSeverity(String severity) {
-    this.severity = severity;
-  }
+    void setSeverity(string severity) {
+        this.severity = severity;
+    }
 
-  String getCode() {
-    return code;
-  }
+    string getCode() {
+        return code;
+    }
 
-  void setCode(String code) {
-    this.code = code;
-  }
+    void setCode(string code) {
+        this.code = code;
+    }
 
-  String getMessage() {
-    return message;
-  }
+    string getMessage() {
+        return message;
+    }
 
-  void setMessage(String message) {
-    this.message = message;
-  }
+    void setMessage(string message) {
+        this.message = message;
+    }
 
-  String getDetail() {
-    return detail;
-  }
+    string getDetail() {
+        return detail;
+    }
 
-  void setDetail(String detail) {
-    this.detail = detail;
-  }
+    void setDetail(string detail) {
+        this.detail = detail;
+    }
 
-  String getHint() {
-    return hint;
-  }
+    string getHint() {
+        return hint;
+    }
 
-  void setHint(String hint) {
-    this.hint = hint;
-  }
+    void setHint(string hint) {
+        this.hint = hint;
+    }
 
-  String getPosition() {
-    return position;
-  }
+    string getPosition() {
+        return position;
+    }
 
-  void setPosition(String position) {
-    this.position = position;
-  }
+    void setPosition(string position) {
+        this.position = position;
+    }
 
-  String getWhere() {
-    return where;
-  }
+    string getWhere() {
+        return where;
+    }
 
-  void setWhere(String where) {
-    this.where = where;
-  }
+    void setWhere(string where) {
+        this.where = where;
+    }
 
-  String getFile() {
-    return file;
-  }
+    string getFile() {
+        return file;
+    }
 
-  void setFile(String file) {
-    this.file = file;
-  }
+    void setFile(string file) {
+        this.file = file;
+    }
 
-  String getLine() {
-    return line;
-  }
+    string getLine() {
+        return line;
+    }
 
-  void setLine(String line) {
-    this.line = line;
-  }
+    void setLine(string line) {
+        this.line = line;
+    }
 
-  String getRoutine() {
-    return routine;
-  }
+    string getRoutine() {
+        return routine;
+    }
 
-  void setRoutine(String routine) {
-    this.routine = routine;
-  }
+    void setRoutine(string routine) {
+        this.routine = routine;
+    }
 
-  String getSchema() {
-    return schema;
-  }
+    string getSchema() {
+        return schema;
+    }
 
-  void setSchema(String schema) {
-    this.schema = schema;
-  }
+    void setSchema(string schema) {
+        this.schema = schema;
+    }
 
-  String getTable() {
-    return table;
-  }
+    string getTable() {
+        return table;
+    }
 
-  void setTable(String table) {
-    this.table = table;
-  }
+    void setTable(string table) {
+        this.table = table;
+    }
 
-  String getColumn() {
-    return column;
-  }
+    string getColumn() {
+        return column;
+    }
 
-  void setColumn(String column) {
-    this.column = column;
-  }
+    void setColumn(string column) {
+        this.column = column;
+    }
 
-  String getDataType() {
-    return dataType;
-  }
+    string getDataType() {
+        return dataType;
+    }
 
-  void setDataType(String dataType) {
-    this.dataType = dataType;
-  }
+    void setDataType(string dataType) {
+        this.dataType = dataType;
+    }
 
-  String getConstraint() {
-    return constraint;
-  }
+    string getConstraint() {
+        return constraint;
+    }
 
-  void setConstraint(String constraint) {
-    this.constraint = constraint;
-  }
-
-
-  String getInternalPosition() {
-    return internalPosition;
-  }
-
-  void setInternalPosition(String internalPosition) {
-    this.internalPosition = internalPosition;
-  }
-
-  String getInternalQuery() {
-    return internalQuery;
-  }
-
-  void setInternalQuery(String internalQuery) {
-    this.internalQuery = internalQuery;
-  }
+    void setConstraint(string constraint) {
+        this.constraint = constraint;
+    }
 
 
-  override
-  string toString() {
-    return "Response{" ~
-      "severity='" ~ severity + '\'' +
-      ", code='" ~ code + '\'' +
-      ", message='" ~ message + '\'' +
-      ", detail='" ~ detail + '\'' +
-      ", hint='" ~ hint + '\'' +
-      ", position='" ~ position + '\'' +
-      ", internalPosition='" ~ internalPosition + '\'' +
-      ", internalQuery='" ~ internalQuery + '\'' +
-      ", where='" ~ where + '\'' +
-      ", file='" ~ file + '\'' +
-      ", line='" ~ line + '\'' +
-      ", routine='" ~ routine + '\'' +
-      ", schema='" ~ schema + '\'' +
-      ", table='" ~ table + '\'' +
-      ", column='" ~ column + '\'' +
-      ", dataType='" ~ dataType + '\'' +
-      ", constraint='" ~ constraint + '\'' +
-      '}';
-  }
+    string getInternalPosition() {
+        return internalPosition;
+    }
+
+    void setInternalPosition(string internalPosition) {
+        this.internalPosition = internalPosition;
+    }
+
+    string getInternalQuery() {
+        return internalQuery;
+    }
+
+    void setInternalQuery(string internalQuery) {
+        this.internalQuery = internalQuery;
+    }
+
+
+    override
+    string toString() {
+        return "Response{" ~
+            "severity='" ~ severity ~ "\'" ~
+            ", code='" ~ code ~ "\'" ~
+            ", message='" ~ message ~ "\'" ~
+            ", detail='" ~ detail ~ "\'" ~
+            ", hint='" ~ hint ~ "\'" ~
+            ", position='" ~ position ~ "\'" ~
+            ", internalPosition='" ~ internalPosition ~ "\'" ~
+            ", internalQuery='" ~ internalQuery ~ "\'" ~
+            ", where='" ~ where ~ "\'" ~
+            ", file='" ~ file ~ "\'" ~
+            ", line='" ~ line ~ "\'" ~
+            ", routine='" ~ routine ~ "\'" ~
+            ", schema='" ~ schema ~ "\'" ~
+            ", table='" ~ table ~ "\'" ~
+            ", column='" ~ column ~ "\'" ~
+            ", dataType='" ~ dataType ~ "\'" ~
+            ", constraint='" ~ constraint ~ "\'" ~
+            '}';
+    }
 }

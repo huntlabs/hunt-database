@@ -4,22 +4,25 @@ import hunt.database.base.impl.command.CommandBase;
 import hunt.database.base.impl.command.CommandScheduler;
 
 import hunt.database.base.AsyncResult;
-import hunt.database.base.impl.TxStatus;
+import hunt.database.base.Common;
 import hunt.database.base.Exceptions;
+import hunt.database.base.impl.TxStatus;
+
+alias ResponseHandler(R) = EventHandler!(CommandResponse!(R));
 
 abstract class CommandResponse(R) : AsyncResult!(R) {
 
     // The connection that executed the command
     CommandScheduler scheduler;
     CommandBase!(R) cmd;
-    private TxStatus txStatus;
+    private TxStatus _txStatus;
 
     this(TxStatus txStatus) {
-        this.txStatus = txStatus;
+        this._txStatus = txStatus;
     }
 
     TxStatus txStatus() {
-        return txStatus;
+        return _txStatus;
     }
 }
 
@@ -39,7 +42,7 @@ template failure(R) {
     CommandResponse!(R) failure(Throwable cause, TxStatus txStatus) {
         return new class CommandResponse!(R) {
             this() {
-                super(txStatus);
+                super(_txStatus);
             }
 
             override R result() {

@@ -33,28 +33,28 @@ import hunt.database.base.impl.SqlConnectionImpl;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  * @author <a href="mailto:emad.albloushi@gmail.com">Emad Alblueshi</a>
  */
-class PgPoolImpl : PoolBase!(PgPoolImpl), PgPool {
+// class PgPoolImpl : PoolBase!(PgPoolImpl), PgPool {
 
-    private PgConnectionFactory factory;
+//     private PgConnectionFactory factory;
 
-    this(Context context, boolean closeVertx, PgConnectOptions connectOptions, PoolOptions poolOptions) {
-        super(context, closeVertx, poolOptions);
-        this.factory = new PgConnectionFactory(context, Vertx.currentContext() !is null, connectOptions);
-    }
+//     this(Context context, boolean closeVertx, PgConnectOptions connectOptions, PoolOptions poolOptions) {
+//         super(context, closeVertx, poolOptions);
+//         this.factory = new PgConnectionFactory(context, Vertx.currentContext() !is null, connectOptions);
+//     }
 
-    override
-    void connect(Handler!(AsyncResult!(Connection)) completionHandler) {
-        factory.connectAndInit(completionHandler);
-    }
+//     override
+//     void connect(Handler!(AsyncResult!(Connection)) completionHandler) {
+//         factory.connectAndInit(completionHandler);
+//     }
 
-    override
-    protected SqlConnectionImpl wrap(Context context, Connection conn) {
-        return new PgConnectionImpl(factory, context, conn);
-    }
+//     override
+//     protected SqlConnectionImpl wrap(Context context, Connection conn) {
+//         return new PgConnectionImpl(factory, context, conn);
+//     }
 
-    override
-    protected void doClose() {
-        factory.close();
-        super.doClose();
-    }
-}
+//     override
+//     protected void doClose() {
+//         factory.close();
+//         super.doClose();
+//     }
+// }

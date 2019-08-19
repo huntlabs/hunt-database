@@ -22,6 +22,7 @@ import hunt.database.base.Common;
 import hunt.database.base.PreparedQuery;
 import hunt.database.base.RowSet;
 import hunt.database.base.SqlClient;
+import hunt.database.base.Transaction;
 
 import hunt.collection.List;
 // import java.util.stream.Collector;

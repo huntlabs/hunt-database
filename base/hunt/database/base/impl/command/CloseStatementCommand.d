@@ -18,21 +18,21 @@
 module hunt.database.base.impl.command.CloseStatementCommand;
 
 import hunt.database.base.impl.command.CommandBase;
-
 import hunt.database.base.impl.PreparedStatement;
+import hunt.Object;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 class CloseStatementCommand : CommandBase!(Void) {
 
-    private PreparedStatement statement;
+    private PreparedStatement _statement;
 
     this(PreparedStatement statement) {
-        this.statement = statement;
+        this._statement = statement;
     }
 
     PreparedStatement statement() {
-        return statement;
+        return _statement;
     }
 }

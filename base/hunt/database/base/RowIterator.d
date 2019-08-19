@@ -16,15 +16,18 @@
  */
 module hunt.database.base.RowIterator;
 
+import hunt.database.base.Row;
+
 import std.range;
 
 /**
  * An iterator for processing rows.
  */
-interface RowIterator : InputRange!(Row) {
+alias RowIterator = InputRange!(Row);
+// interface RowIterator : InputRange!(Row) {
 
-    // override bool hasNext();
+//     // override bool hasNext();
 
-    // override Row next();
+//     // override Row next();
 
-}
+// }

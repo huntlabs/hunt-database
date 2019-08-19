@@ -16,9 +16,13 @@
  */
 module hunt.database.postgresql.impl.PostgreSQLConnectionImpl;
 
+import hunt.database.postgresql.impl.PostgreSQLConnectionFactory;
+
 import hunt.database.postgresql.PostgreSQLConnectOptions;
 import hunt.database.postgresql.PostgreSQLConnection;
 import hunt.database.postgresql.PostgreSQLNotification;
+
+import hunt.database.base.Common;
 import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.SqlConnectionImpl;
 import hunt.database.base.AsyncResult;
@@ -29,6 +33,8 @@ import hunt.database.base.AsyncResult;
 // import io.vertx.core.Vertx;
 
 import hunt.Exceptions;
+
+alias PgNotificationHandler = EventHandler!(PgNotification);
 
 class PgConnectionImpl : SqlConnectionImpl!(PgConnectionImpl), PgConnection  {
 
@@ -58,7 +64,7 @@ class PgConnectionImpl : SqlConnectionImpl!(PgConnectionImpl), PgConnection  {
     // }
 
     private PgConnectionFactory factory;
-    private Handler!(PgNotification) notificationHandler;
+    private PgNotificationHandler notificationHandler;
 
     this(PgConnectionFactory factory, Context context, Connection conn) {
         super(context, conn);
@@ -67,14 +73,14 @@ class PgConnectionImpl : SqlConnectionImpl!(PgConnectionImpl), PgConnection  {
     }
 
     override
-    PgConnection notificationHandler(Handler!(PgNotification) handler) {
+    PgConnection notificationHandler(PgNotificationHandler handler) {
         notificationHandler = handler;
         return this;
     }
 
 
     void handleNotification(int processId, string channel, string payload) {
-        Handler!(PgNotification) handler = notificationHandler;
+        PgNotificationHandler handler = notificationHandler;
         if (handler !is null) {
             handler.handle(new PgNotification().setProcessId(processId).setChannel(channel).setPayload(payload));
         }

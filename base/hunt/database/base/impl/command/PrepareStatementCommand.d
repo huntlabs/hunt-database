@@ -17,24 +17,25 @@
 
 module hunt.database.base.impl.command.PrepareStatementCommand;
 
+import hunt.database.base.impl.command.CommandBase;
 import hunt.database.base.impl.PreparedStatement;
 
 class PrepareStatementCommand : CommandBase!(PreparedStatement) {
 
-    private string sql;
-    long statement; // 0 means unamed statement otherwise CString
+    private string _sql;
+    long _statement; // 0 means unamed statement otherwise CString
     Object cached;
 
     this(string sql) {
-        this.sql = sql;
+        this._sql = sql;
     }
 
     string sql() {
-        return sql;
+        return _sql;
     }
 
     long statement() {
-        return statement;
+        return _statement;
     }
 
 }

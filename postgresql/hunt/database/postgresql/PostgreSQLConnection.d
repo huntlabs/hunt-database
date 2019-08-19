@@ -18,6 +18,8 @@
 module hunt.database.postgresql.PostgreSQLConnection;
 
 import hunt.database.postgresql.impl.PostgreSQLConnectionImpl;
+
+import hunt.database.base.Common;
 import hunt.database.base.PreparedQuery;
 import hunt.database.base.SqlResult;
 import hunt.database.base.RowSet;
@@ -99,7 +101,7 @@ interface PgConnection : SqlConnection {
      */
     int secretKey();
 
-    PgConnection prepare(string sql, Handler!(AsyncResult!(PreparedQuery)) handler);
+    PgConnection prepare(string sql, PreparedQueryHandler handler);
     PgConnection exceptionHandler(Handler!(Throwable) handler);
     PgConnection closeHandler(VoidHandler handler);
     PgConnection preparedQuery(string sql, RowSetHandler handler);
