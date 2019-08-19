@@ -17,7 +17,7 @@
 
 module hunt.database.postgresql.impl.PostgreSQLConnectionFactory;
 
-import hunt.database.postgresql.PgConnectOptions;
+import hunt.database.postgresql.PostgreSQLConnectOptions;
 import hunt.database.postgresql.SslMode;
 import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.command.CommandResponse;

@@ -55,6 +55,7 @@ final class Numeric : Number {
     static Numeric create(Number number) {
         if (number is null) {
             throw new NullPointerException();
+        }
         
         Double d = cast(Double)number;
         Float f = cast(Float)number;

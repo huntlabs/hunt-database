@@ -41,7 +41,7 @@ module hunt.database.postgresql.impl.pubsub.PostgreSQLSubscriberImpl;
 //     private PgConnection conn;
 //     private boolean connecting;
 //     private boolean closed = true;
-//     private Handler!(Void) closeHandler;
+//     private VoidHandler closeHandler;
 
 //     PgSubscriberImpl(Vertx vertx, PgConnectOptions options) {
 //         this.vertx = vertx;
@@ -82,7 +82,7 @@ module hunt.database.postgresql.impl.pubsub.PostgreSQLSubscriberImpl;
 //     }
 
 //     override
-//     synchronized PgSubscriber closeHandler(Handler!(Void) handler) {
+//     synchronized PgSubscriber closeHandler(VoidHandler handler) {
 //         closeHandler = handler;
 //         return this;
 //     }
@@ -115,7 +115,7 @@ module hunt.database.postgresql.impl.pubsub.PostgreSQLSubscriberImpl;
 //             }
 //             closed = true;
 //         }
-//         List!(Handler!(Void)) all = channels
+//         List!(VoidHandler) all = channels
 //             .values()
 //             .stream()
 //             .flatMap(channel -> channel.subs.stream())
@@ -124,7 +124,7 @@ module hunt.database.postgresql.impl.pubsub.PostgreSQLSubscriberImpl;
 //             .collect(Collectors.toList());
 //         channels.clear();
 //         all.forEach(handler -> handler.handle(null));
-//         Handler!(Void) handler = closeHandler;
+//         VoidHandler handler = closeHandler;
 //         if (handler !is null) {
 //             handler.handle(null);
 //         }
@@ -171,7 +171,7 @@ module hunt.database.postgresql.impl.pubsub.PostgreSQLSubscriberImpl;
 //             conn.notificationHandler(PgSubscriberImpl.this::handleNotification);
 //             conn.closeHandler(PgSubscriberImpl.this::handleClose);
 //             if (channels.size() > 0) {
-//                 List!(Handler!(Void)) handlers = channels.values()
+//                 List!(VoidHandler) handlers = channels.values()
 //                     .stream()
 //                     .flatMap(channel -> channel.subs.stream())
 //                     .map(sub -> sub.subscribeHandler)
@@ -219,7 +219,7 @@ module hunt.database.postgresql.impl.pubsub.PostgreSQLSubscriberImpl;
 //                     String sql = "LISTEN " ~ quotedName;
 //                     conn.query(sql, ar -> {
 //                         if (ar.succeeded()) {
-//                             Handler!(Void) handler = sub.subscribeHandler;
+//                             VoidHandler handler = sub.subscribeHandler;
 //                             if (handler !is null) {
 //                                 handler.handle(null);
 //                             }
@@ -249,9 +249,9 @@ module hunt.database.postgresql.impl.pubsub.PostgreSQLSubscriberImpl;
 //     private class ChannelImpl implements PgChannel {
 
 //         private final String name;
-//         private Handler!(Void) subscribeHandler;
+//         private VoidHandler subscribeHandler;
 //         private Handler!(String) eventHandler;
-//         private Handler!(Void) endHandler;
+//         private VoidHandler endHandler;
 //         private ChannelList channel;
 //         private boolean paused;
 
@@ -260,7 +260,7 @@ module hunt.database.postgresql.impl.pubsub.PostgreSQLSubscriberImpl;
 //         }
 
 //         override
-//         PgChannel subscribeHandler(Handler!(Void) handler) {
+//         PgChannel subscribeHandler(VoidHandler handler) {
 //             synchronized (PgSubscriberImpl.this) {
 //                 subscribeHandler = handler;
 //             }
@@ -286,7 +286,7 @@ module hunt.database.postgresql.impl.pubsub.PostgreSQLSubscriberImpl;
 //                         ChannelList ch = channel;
 //                         channel = null;
 //                         ch.remove(this);
-//                         Handler!(Void) _handler = endHandler;
+//                         VoidHandler _handler = endHandler;
 //                         if (_handler !is null) {
 //                             _handler.handle(null);
 //                         }
@@ -297,7 +297,7 @@ module hunt.database.postgresql.impl.pubsub.PostgreSQLSubscriberImpl;
 //         }
 
 //         override
-//         ChannelImpl endHandler(Handler!(Void) handler) {
+//         ChannelImpl endHandler(VoidHandler handler) {
 //             synchronized (PgSubscriberImpl.this) {
 //                 endHandler = handler;
 //             }

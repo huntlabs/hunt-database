@@ -17,41 +17,41 @@
 
 module hunt.database.base.RowStream;
 
-import io.vertx.codegen.annotations.VertxGen;
 import hunt.database.base.AsyncResult;
-import io.vertx.core.Handler;
-import io.vertx.core.streams.ReadStream;
+// import io.vertx.core.streams.ReadStream;
 
-/**
- * A row oriented stream.
- */
-interface RowStream!(T) extends ReadStream!(T) {
 
-  override
-  RowStream!(T) exceptionHandler(Handler!(Throwable) handler);
 
-  override
-  RowStream!(T) handler(Handler!(T) handler);
+// /**
+//  * A row oriented stream.
+//  */
+// interface RowStream(T) : ReadStream!(T) {
 
-  override
-  RowStream!(T) pause();
+//     override
+//     RowStream!(T) exceptionHandler(Handler!(Throwable) handler);
 
-  override
-  RowStream!(T) resume();
+//     override
+//     RowStream!(T) handler(Handler!(T) handler);
 
-  override
-  RowStream!(T) endHandler(Handler!(Void) endHandler);
+//     override
+//     RowStream!(T) pause();
 
-  /**
-   * Close the stream and release the resources.
-   */
-  void close();
+//     override
+//     RowStream!(T) resume();
 
-  /**
-   * Close the stream and release the resources.
-   *
-   * @param completionHandler the completion handler for this operation
-   */
-  void close(VoidHandler completionHandler);
+//     override
+//     RowStream!(T) endHandler(VoidHandler endHandler);
 
-}
+//     /**
+//      * Close the stream and release the resources.
+//      */
+//     void close();
+
+//     /**
+//      * Close the stream and release the resources.
+//      *
+//      * @param completionHandler the completion handler for this operation
+//      */
+//     void close(VoidHandler completionHandler);
+
+// }

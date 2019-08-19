@@ -17,64 +17,60 @@
 
 module hunt.database.base.Pool;
 
-import io.vertx.codegen.annotations.GenIgnore;
-import io.vertx.codegen.annotations.VertxGen;
 import hunt.database.base.AsyncResult;
-import io.vertx.core.Handler;
 
 import hunt.collection.List;
-import java.util.stream.Collector;
+// import java.util.stream.Collector;
 
 /**
  * A pool of SQL connections.
  *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-interface Pool : SqlClient {
+// interface Pool : SqlClient {
 
-  override
-  Pool preparedQuery(String sql, Handler!(AsyncResult!(RowSet)) handler);
+//     override
+//     Pool preparedQuery(String sql, RowSetHandler handler);
 
-  override
-  @GenIgnore
-  <R> Pool preparedQuery(String sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+//     override
+//     <R> Pool preparedQuery(String sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
-  override
-  Pool query(String sql, Handler!(AsyncResult!(RowSet)) handler);
+//     override
+//     Pool query(String sql, RowSetHandler handler);
 
-  override
-  <R> Pool query(String sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+//     override
+//     <R> Pool query(String sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
-  override
-  Pool preparedQuery(String sql, Tuple arguments, Handler!(AsyncResult!(RowSet)) handler);
+//     override
+//     Pool preparedQuery(String sql, Tuple arguments, RowSetHandler handler);
 
-  override
-  <R> Pool preparedQuery(String sql, Tuple arguments, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+//     override
+//     <R> Pool preparedQuery(String sql, Tuple arguments, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
-  override
-  Pool preparedBatch(String sql, List!(Tuple) batch, Handler!(AsyncResult!(RowSet)) handler);
+//     override
+//     Pool preparedBatch(String sql, List!(Tuple) batch, RowSetHandler handler);
 
-  override
-  <R> Pool preparedBatch(String sql, List!(Tuple) batch, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+//     override
+//     <R> Pool preparedBatch(String sql, List!(Tuple) batch, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
-  /**
-   * Get a connection from the pool.
-   *
-   * @param handler the handler that will get the connection result
-   */
-  void getConnection(Handler!(AsyncResult!(SqlConnection)) handler);
+//     /**
+//      * Get a connection from the pool.
+//      *
+//      * @param handler the handler that will get the connection result
+//      */
+//     void getConnection(Handler!(AsyncResult!(SqlConnection)) handler);
 
-  /**
-   * Borrow a connection from the pool and begin a transaction, the underlying connection will be returned
-   * to the pool when the transaction ends.
-   *
-   * @return the transaction
-   */
-  void begin(Handler!(AsyncResult!(Transaction)) handler);
+//     /**
+//      * Borrow a connection from the pool and begin a transaction, the underlying connection will be returned
+//      * to the pool when the transaction ends.
+//      *
+//      * @return the transaction
+//      */
+//     void begin(Handler!(AsyncResult!(Transaction)) handler);
 
-  /**
-   * Close the pool and release the associated resources.
-   */
-  void close();
+//     /**
+//      * Close the pool and release the associated resources.
+//      */
+//     void close();
 
-}
+// }

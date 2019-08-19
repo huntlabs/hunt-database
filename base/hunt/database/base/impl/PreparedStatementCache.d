@@ -3,7 +3,7 @@ module hunt.database.base.impl.PreparedStatementCache;
 
 import hunt.database.base.impl.command.CloseStatementCommand;
 import hunt.database.base.impl.PreparedStatement;
-import hunt.database.base.impl.SocketConnectionBase.CachedPreparedStatement;
+import hunt.database.base.impl.SocketConnectionBase;
 
 import hunt.collection.LinkedHashMap;
 import hunt.collection.Map;

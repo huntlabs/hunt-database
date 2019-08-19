@@ -47,7 +47,7 @@ abstract class SocketConnectionBase : Connection {
 
     protected PreparedStatementCache psCache;
     private int preparedStatementCacheSqlLimit;
-    private StringLongSequence psSeq = new StringLongSequence();
+    private StringLongSequence psSeq; // = new StringLongSequence();
     // private ArrayDeque<CommandBase<?>> pending = new ArrayDeque<>();
     private DList!(ICommand) pending;
     
@@ -65,6 +65,7 @@ abstract class SocketConnectionBase : Connection {
                         int preparedStatementCacheSqlLimit,
                         int pipeliningLimit) {
         this._socket = socket;
+        this.psSeq = new StringLongSequence();
         // this.context = context;
         this.pipeliningLimit = pipeliningLimit;
         this.psCache = cachePreparedStatements ? new PreparedStatementCache(preparedStatementCacheSize, this) : null;

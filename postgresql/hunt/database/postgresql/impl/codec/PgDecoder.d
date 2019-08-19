@@ -36,7 +36,7 @@ import hunt.collection.Map;
 import hunt.Exceptions;
 import hunt.net.codec.Decoder;
 import hunt.net.Connection;
-import hunt.net.util.ByteBuf;
+import hunt.net.buffer.ByteBuf;
 
 import std.container.dlist;
 

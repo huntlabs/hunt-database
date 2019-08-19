@@ -53,7 +53,7 @@ class PreparedQueryImpl : PreparedQuery {
     }
 
     override
-    PreparedQuery execute(Tuple args, Handler!(AsyncResult!(RowSet)) handler) {
+    PreparedQuery execute(Tuple args, RowSetHandler handler) {
         return execute(args, false, RowSetImpl.FACTORY, RowSetImpl.COLLECTOR, handler);
     }
 
@@ -117,7 +117,7 @@ class PreparedQueryImpl : PreparedQuery {
         // });
     }
 
-    // PreparedQuery batch(List!(Tuple) argsList, Handler!(AsyncResult!(RowSet)) handler) {
+    // PreparedQuery batch(List!(Tuple) argsList, RowSetHandler handler) {
     //     return batch(argsList, false, RowSetImpl.FACTORY, RowSetImpl.COLLECTOR, handler);
     // }
 

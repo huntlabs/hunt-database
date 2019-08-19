@@ -20,33 +20,33 @@ module hunt.database.base.impl.command.SimpleQueryCommand;
 import hunt.database.base.Row;
 import hunt.database.base.impl.QueryResultHandler;
 
-import java.util.stream.Collector;
+// import java.util.stream.Collector;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 
-class SimpleQueryCommand!(T) extends QueryCommandBase!(T) {
+class SimpleQueryCommand(T) : QueryCommandBase!(T) {
 
-  private final String sql;
-  private final boolean singleton;
+    private string _sql;
+    private bool _singleton;
 
-  SimpleQueryCommand(String sql,
-                     boolean singleton,
-                     Collector<Row, ?, T> collector,
-                     QueryResultHandler!(T) resultHandler) {
-    super(collector, resultHandler);
-    this.sql = sql;
-    this.singleton = singleton;
-  }
+    this(string sql,
+            bool singleton,
+            // Collector<Row, ?, T> collector,
+            QueryResultHandler!(T) resultHandler) {
+        super(collector, resultHandler);
+        this._sql = sql;
+        this._singleton = singleton;
+    }
 
-  boolean isSingleton() {
-    return singleton;
-  }
+    bool isSingleton() {
+        return _singleton;
+    }
 
-  override
-  String sql() {
-    return sql;
-  }
+    override
+    string sql() {
+        return _sql;
+    }
 
 }

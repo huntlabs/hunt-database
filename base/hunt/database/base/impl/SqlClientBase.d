@@ -44,7 +44,7 @@ import hunt.net.AbstractConnection;
 abstract class SqlClientBase(C) : SqlClient, CommandScheduler if(is(C : SqlClient)) {
 
     override
-    C query(string sql, Handler!(AsyncResult!(RowSet)) handler) {
+    C query(string sql, RowSetHandler handler) {
         return query(sql, false, RowSetImpl.FACTORY, RowSetImpl.COLLECTOR, handler);
     }
 
@@ -65,7 +65,7 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler if(is(C : SqlClien
     // }
 
     override
-    C preparedQuery(string sql, Tuple arguments, Handler!(AsyncResult!(RowSet)) handler) {
+    C preparedQuery(string sql, Tuple arguments, RowSetHandler handler) {
         return preparedQuery(sql, arguments, false, RowSetImpl.FACTORY, RowSetImpl.COLLECTOR, handler);
     }
 
@@ -99,7 +99,7 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler if(is(C : SqlClien
     // }
 
     // override
-    // C preparedQuery(string sql, Handler!(AsyncResult!(RowSet)) handler) {
+    // C preparedQuery(string sql, RowSetHandler handler) {
     //     return preparedQuery(sql, ArrayTuple.EMPTY, handler);
     // }
 
@@ -109,7 +109,7 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler if(is(C : SqlClien
     // }
 
     // override
-    // C preparedBatch(string sql, List!(Tuple) batch, Handler!(AsyncResult!(RowSet)) handler) {
+    // C preparedBatch(string sql, List!(Tuple) batch, RowSetHandler handler) {
     //     return preparedBatch(sql, batch, false, RowSetImpl.FACTORY, RowSetImpl.COLLECTOR, handler);
     // }
 

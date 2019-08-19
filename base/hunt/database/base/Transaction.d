@@ -16,14 +16,10 @@
  */
 module hunt.database.base.Transaction;
 
-import io.vertx.codegen.annotations.Fluent;
-import io.vertx.codegen.annotations.GenIgnore;
-import io.vertx.codegen.annotations.VertxGen;
 import hunt.database.base.AsyncResult;
-import io.vertx.core.Handler;
 
 import hunt.collection.List;
-import java.util.stream.Collector;
+// import java.util.stream.Collector;
 
 /**
  * A transaction that allows to control the transaction and receive events.
@@ -63,31 +59,31 @@ interface Transaction : SqlClient {
      *
      * @param handler the handler
      */
-    Transaction abortHandler(Handler!(Void) handler);
+    Transaction abortHandler(VoidHandler handler);
 
     override
-    Transaction query(string sql, Handler!(AsyncResult!(RowSet)) handler);
+    Transaction query(string sql, RowSetHandler handler);
 
-    override
-    <R> Transaction query(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+    // override
+    // <R> Transaction query(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
-    override
-    Transaction preparedQuery(string sql, Handler!(AsyncResult!(RowSet)) handler);
+    // override
+    // Transaction preparedQuery(string sql, RowSetHandler handler);
 
-    override
-    <R> Transaction preparedQuery(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+    // override
+    // <R> Transaction preparedQuery(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
-    override
-    Transaction preparedQuery(string sql, Tuple arguments, Handler!(AsyncResult!(RowSet)) handler);
+    // override
+    // Transaction preparedQuery(string sql, Tuple arguments, RowSetHandler handler);
 
-    override
-    <R> Transaction preparedQuery(string sql, Tuple arguments, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+    // override
+    // <R> Transaction preparedQuery(string sql, Tuple arguments, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
-    override
-    Transaction preparedBatch(string sql, List!(Tuple) batch, Handler!(AsyncResult!(RowSet)) handler);
+    // override
+    // Transaction preparedBatch(string sql, List!(Tuple) batch, RowSetHandler handler);
 
-    override
-    <R> Transaction preparedBatch(string sql, List!(Tuple) batch, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+    // override
+    // <R> Transaction preparedBatch(string sql, List!(Tuple) batch, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
     /**
      * Rollback the transaction and release the associated resources.

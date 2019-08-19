@@ -17,43 +17,45 @@
 
 module hunt.database.base.Cursor;
 
-import io.vertx.codegen.annotations.VertxGen;
 import hunt.database.base.AsyncResult;
-import io.vertx.core.Handler;
+import hunt.database.base.Common;
+import hunt.database.base.RowSet;
+
+
 
 /**
  * A cursor that reads progressively rows from the database, it is useful for reading very large result sets.
  */
 interface Cursor {
 
-  /**
-   * Read rows from the cursor, the result is provided asynchronously to the {@code handler}.
-   *
-   * @param count the amount of rows to read
-   * @param handler the handler for the result
-   */
-  void read(int count, Handler!(AsyncResult!(RowSet)) handler);
+    /**
+     * Read rows from the cursor, the result is provided asynchronously to the {@code handler}.
+     *
+     * @param count the amount of rows to read
+     * @param handler the handler for the result
+     */
+    void read(int count, RowSetHandler handler);
 
-  /**
-   * Returns {@code true} when the cursor has results in progress and the {@link #read} should be called to retrieve
-   * them.
-   *
-   * @return whether the cursor has more results,
-   */
-  boolean hasMore();
+    /**
+     * Returns {@code true} when the cursor has results in progress and the {@link #read} should be called to retrieve
+     * them.
+     *
+     * @return whether the cursor has more results,
+     */
+    bool hasMore();
 
-  /**
-   * Release the cursor.
-   * <p/>
-   * It should be called for prepared queries executed with a fetch size.
-   */
-  default void close() {
-    close(ar -> {});
-  }
+    /**
+     * Release the cursor.
+     * <p/>
+     * It should be called for prepared queries executed with a fetch size.
+     */
+    final void close() {
+        close((ar) {});
+    }
 
-  /**
-   * Like {@link #close()} but with a {@code completionHandler} called when the cursor has been released.
-   */
-  void close(VoidHandler completionHandler);
+    /**
+     * Like {@link #close()} but with a {@code completionHandler} called when the cursor has been released.
+     */
+    void close(VoidHandler completionHandler);
 
 }

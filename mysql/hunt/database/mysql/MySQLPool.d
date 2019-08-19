@@ -69,28 +69,28 @@ interface MySQLPool : Pool {
   }
 
   override
-  MySQLPool preparedQuery(String sql, Handler!(AsyncResult!(RowSet)) handler);
+  MySQLPool preparedQuery(String sql, RowSetHandler handler);
 
   @GenIgnore
   override
   <R> MySQLPool preparedQuery(String sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
   override
-  MySQLPool query(String sql, Handler!(AsyncResult!(RowSet)) handler);
+  MySQLPool query(String sql, RowSetHandler handler);
 
   @GenIgnore
   override
   <R> MySQLPool query(String sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
   override
-  MySQLPool preparedQuery(String sql, Tuple arguments, Handler!(AsyncResult!(RowSet)) handler);
+  MySQLPool preparedQuery(String sql, Tuple arguments, RowSetHandler handler);
 
   @GenIgnore
   override
   <R> MySQLPool preparedQuery(String sql, Tuple arguments, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
   override
-  MySQLPool preparedBatch(String sql, List!(Tuple) batch, Handler!(AsyncResult!(RowSet)) handler);
+  MySQLPool preparedBatch(String sql, List!(Tuple) batch, RowSetHandler handler);
 
   @GenIgnore
   override

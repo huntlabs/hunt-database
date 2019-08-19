@@ -17,7 +17,7 @@
 
 module hunt.database.postgresql.PostgreSQLPool;
 
-import hunt.database.postgresql.impl.PgPoolImpl;
+import hunt.database.postgresql.impl.PostgreSQLPoolImpl;
 
 import hunt.database.base.PoolOptions;
 import hunt.database.base.SqlResult;
@@ -109,19 +109,19 @@ interface PgPool : Pool {
         return new PgPoolImpl(vertx.getOrCreateContext(), false, connectOptions, poolOptions);
     }
 
-    PgPool preparedQuery(string sql, Handler!(AsyncResult!(RowSet)) handler);
+    PgPool preparedQuery(string sql, RowSetHandler handler);
 
 
     // <R> PgPool preparedQuery(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
-    // PgPool query(string sql, Handler!(AsyncResult!(RowSet)) handler);
+    // PgPool query(string sql, RowSetHandler handler);
 
 
     // <R> PgPool query(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
-    // PgPool preparedQuery(string sql, Tuple arguments, Handler!(AsyncResult!(RowSet)) handler);
+    // PgPool preparedQuery(string sql, Tuple arguments, RowSetHandler handler);
 
 
     // <R> PgPool preparedQuery(string sql, Tuple arguments, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
-    // PgPool preparedBatch(string sql, List!(Tuple) batch, Handler!(AsyncResult!(RowSet)) handler);
+    // PgPool preparedBatch(string sql, List!(Tuple) batch, RowSetHandler handler);
 
 
     // <R> PgPool preparedBatch(string sql, List!(Tuple) batch, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);

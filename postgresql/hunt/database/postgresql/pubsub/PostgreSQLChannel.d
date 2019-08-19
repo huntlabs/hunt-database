@@ -34,7 +34,7 @@ interface PgChannel : ReadStream!(String) {
      * @param handler the handler
      * @return a reference to this, so the API can be used fluently
      */
-    PgChannel subscribeHandler(Handler!(Void) handler);
+    PgChannel subscribeHandler(VoidHandler handler);
 
     /**
      * Set or unset an handler to be called when a the channel is notified by Postgres.
@@ -73,7 +73,7 @@ interface PgChannel : ReadStream!(String) {
      * @return a reference to this, so the API can be used fluently
      */
     override
-    PgChannel endHandler(Handler!(Void) endHandler);
+    PgChannel endHandler(VoidHandler endHandler);
 
     override
     PgChannel exceptionHandler(Handler!(Throwable) handler);

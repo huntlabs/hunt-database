@@ -20,53 +20,55 @@ import hunt.database.base.RowIterator;
 import hunt.database.base.RowSet;
 import hunt.database.base.Row;
 
-import java.util.NoSuchElementException;
-import java.util.function.Function;
-import java.util.stream.Collector;
+// import java.util.NoSuchElementException;
+// import java.util.function.Function;
+// import java.util.stream.Collector;
 
-class RowSetImpl : SqlResultBase!(RowSet, RowSetImpl) implements RowSet {
+import hunt.Functions;
 
-  static Collector!(Row, RowSetImpl, RowSet) COLLECTOR = Collector.of(
-    RowSetImpl::new,
-    (set, row) -> {
-      if (set.head is null) {
-        set.head = set.tail = (RowInternal) row;
-      } else {
-        set.tail.setNext((RowInternal) row);;
-        set.tail = set.tail.getNext();
-      }
-    },
-    (set1, set2) -> null, // Shall not be invoked as this is sequential
-    (set) -> set
-  );
+class RowSetImpl : SqlResultBase!(RowSet, RowSetImpl), RowSet {
 
-  static Function!(RowSet, RowSetImpl) FACTORY = rs -> (RowSetImpl) rs;
+    // static Collector!(Row, RowSetImpl, RowSet) COLLECTOR = Collector.of(
+    //     RowSetImpl::new,
+    //     (set, row) -> {
+    //         if (set.head is null) {
+    //             set.head = set.tail = (RowInternal) row;
+    //         } else {
+    //             set.tail.setNext((RowInternal) row);;
+    //             set.tail = set.tail.getNext();
+    //         }
+    //     },
+    //     (set1, set2) -> null, // Shall not be invoked as this is sequential
+    //     (set) -> set
+    // );
 
-  private RowInternal head;
-  private RowInternal tail;
+    // static Function!(RowSet, RowSetImpl) FACTORY = rs -> (RowSetImpl) rs;
 
-  override
-  RowSet value() {
-    return this;
-  }
+    private RowInternal head;
+    private RowInternal tail;
 
-  override
-  RowIterator iterator() {
-    return new RowIterator() {
-      RowInternal current = head;
-      override
-      boolean hasNext() {
-        return current !is null;
-      }
-      override
-      Row next() {
-        if (current is null) {
-          throw new NoSuchElementException();
-        }
-        RowInternal r = current;
-        current = current.getNext();
-        return r;
-      }
-    };
-  }
+    override
+    RowSet value() {
+        return this;
+    }
+
+    // override
+    // RowIterator iterator() {
+    //     return new RowIterator() {
+    //         RowInternal current = head;
+    //         override
+    //         boolean hasNext() {
+    //             return current !is null;
+    //         }
+    //         override
+    //         Row next() {
+    //             if (current is null) {
+    //                 throw new NoSuchElementException();
+    //             }
+    //             RowInternal r = current;
+    //             current = current.getNext();
+    //             return r;
+    //         }
+    //     };
+    // }
 }

@@ -16,16 +16,11 @@
  */
 module hunt.database.postgresql.pubsub.PostgreSQLSubscriber;
 
-import hunt.database.postgresql.PgConnectOptions;
-import hunt.database.postgresql.PgConnection;
-import hunt.database.postgresql.impl.pubsub.PgSubscriberImpl;
+import hunt.database.postgresql.PostgreSQLConnectOptions;
+import hunt.database.postgresql.PostgreSQLConnection;
+import hunt.database.postgresql.impl.pubsub.PostgreSQLSubscriberImpl;
 
-// import io.vertx.codegen.annotations.Fluent;
-// import io.vertx.codegen.annotations.VertxGen;
 import hunt.database.base.AsyncResult;
-
-// import io.vertx.core.Handler;
-// import io.vertx.core.Vertx;
 
 // import java.util.function.Function;
 
@@ -104,7 +99,7 @@ interface PgSubscriber {
      * @param handler the handler
      * @return a reference to this, so the API can be used fluently
      */
-    PgSubscriber closeHandler(Handler!(Void) handler);
+    PgSubscriber closeHandler(VoidHandler handler);
 
     /**
      * @return the actual connection to Postgres, it might be {@code null}

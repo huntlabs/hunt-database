@@ -15,7 +15,7 @@
  *
  */
 
-module hunt.database.base.SqlResult.SqlResult;
+module hunt.database.base.SqlResult;
 
 import hunt.collection.List;
 

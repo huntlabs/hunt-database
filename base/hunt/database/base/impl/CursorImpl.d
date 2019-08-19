@@ -52,7 +52,7 @@ class CursorImpl : Cursor {
     }
 
     override
-    synchronized void read(int count, Handler!(AsyncResult!(RowSet)) handler) {
+    synchronized void read(int count, RowSetHandler handler) {
         if (id is null) {
             id = UUID.randomUUID().toString();
             result = new SqlResultBuilder<>(RowSetImpl.FACTORY, handler);

@@ -22,34 +22,34 @@ import hunt.database.base.Tuple;
 import hunt.database.base.impl.PreparedStatement;
 import hunt.database.base.impl.QueryResultHandler;
 
-import java.util.stream.Collector;
+// import java.util.stream.Collector;
 
-class ExtendedQueryCommand!(T) extends ExtendedQueryCommandBase!(T) {
+class ExtendedQueryCommand(T) : ExtendedQueryCommandBase!(T) {
 
-  private final Tuple params;
+    private Tuple _params;
 
-  ExtendedQueryCommand(PreparedStatement ps,
-                       Tuple params,
-                       boolean singleton,
-                       Collector<Row, ?, T> collector,
-                       QueryResultHandler!(T) resultHandler) {
-    this(ps, params, 0, null, false, singleton, collector, resultHandler);
-  }
+    this(PreparedStatement ps,
+            Tuple params,
+            boolean singleton,
+            // Collector<Row, ?, T> collector,
+            QueryResultHandler!(T) resultHandler) {
+        this(ps, params, 0, null, false, singleton, collector, resultHandler);
+    }
 
-  ExtendedQueryCommand(PreparedStatement ps,
-                       Tuple params,
-                       int fetch,
-                       String cursorId,
-                       boolean suspended,
-                       boolean singleton,
-                       Collector<Row, ?, T> collector,
-                       QueryResultHandler!(T) resultHandler) {
-    super(ps, fetch, cursorId, suspended, singleton, collector, resultHandler);
-    this.params = params;
-  }
+    this(PreparedStatement ps,
+            Tuple params,
+            int fetch,
+            String cursorId,
+            boolean suspended,
+            boolean singleton,
+            // Collector<Row, ?, T> collector,
+            QueryResultHandler!(T) resultHandler) {
+        super(ps, fetch, cursorId, suspended, singleton, collector, resultHandler);
+        this._params = params;
+    }
 
-  Tuple params() {
-    return params;
-  }
+    Tuple params() {
+        return _params;
+    }
 
 }

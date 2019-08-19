@@ -27,13 +27,13 @@ import io.vertx.core.Handler;
 
 import java.util.Iterator;
 
-class RowStreamImpl implements RowStream!(Row), Handler!(AsyncResult!(RowSet)) {
+class RowStreamImpl implements RowStream!(Row), RowSetHandler {
 
   private final PreparedQueryImpl ps;
   private final int fetch;
   private final Tuple params;
 
-  private Handler!(Void) endHandler;
+  private VoidHandler endHandler;
   private Handler!(Row) rowHandler;
   private Handler!(Throwable) exceptionHandler;
   private long demand;
@@ -108,7 +108,7 @@ class RowStreamImpl implements RowStream!(Row), Handler!(AsyncResult!(RowSet)) {
   }
 
   override
-  synchronized RowStream!(Row) endHandler(Handler!(Void) handler) {
+  synchronized RowStream!(Row) endHandler(VoidHandler handler) {
     endHandler = handler;
     return this;
   }

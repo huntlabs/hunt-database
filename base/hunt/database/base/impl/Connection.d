@@ -19,27 +19,29 @@ module hunt.database.base.impl.Connection;
 
 import hunt.database.base.impl.command.CommandBase;
 
-// interface Connection {
+alias DbConnection = Connection;
 
-//     void init(Holder holder);
+interface Connection {
 
-//     bool isSsl();
+    void init(Holder holder);
 
-//     void schedule(ICommand cmd);
+    bool isSsl();
 
-//     void close(Holder holder);
+    void schedule(ICommand cmd);
 
-//     int getProcessId();
+    void close(Holder holder);
 
-//     int getSecretKey();
+    int getProcessId();
 
-//     interface Holder {
+    int getSecretKey();
 
-//         void handleNotification(int processId, String channel, String payload);
+    interface Holder {
 
-//         void handleClosed();
+        void handleNotification(int processId, string channel, string payload);
 
-//         void handleException(Throwable err);
+        void handleClosed();
 
-//     }
-// }
+        void handleException(Throwable err);
+
+    }
+}

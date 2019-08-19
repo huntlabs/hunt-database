@@ -101,20 +101,20 @@ interface PgConnection : SqlConnection {
 
     PgConnection prepare(string sql, Handler!(AsyncResult!(PreparedQuery)) handler);
     PgConnection exceptionHandler(Handler!(Throwable) handler);
-    PgConnection closeHandler(Handler!(Void) handler);
-    PgConnection preparedQuery(string sql, Handler!(AsyncResult!(RowSet)) handler);
+    PgConnection closeHandler(VoidHandler handler);
+    PgConnection preparedQuery(string sql, RowSetHandler handler);
 
 
     // <R> PgConnection preparedQuery(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
-    // PgConnection query(string sql, Handler!(AsyncResult!(RowSet)) handler);
+    // PgConnection query(string sql, RowSetHandler handler);
 
 
     // <R> PgConnection query(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
-    // PgConnection preparedQuery(string sql, Tuple arguments, Handler!(AsyncResult!(RowSet)) handler);
+    // PgConnection preparedQuery(string sql, Tuple arguments, RowSetHandler handler);
 
 
     // <R> PgConnection preparedQuery(string sql, Tuple arguments, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
-    // PgConnection preparedBatch(string sql, List!(Tuple) batch, Handler!(AsyncResult!(RowSet)) handler);
+    // PgConnection preparedBatch(string sql, List!(Tuple) batch, RowSetHandler handler);
 
 
     // <R> PgConnection preparedBatch(string sql, List!(Tuple) batch, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);

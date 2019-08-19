@@ -47,24 +47,24 @@ interface MySQLConnection : SqlConnection {
   MySQLConnection exceptionHandler(Handler!(Throwable) handler);
 
   override
-  MySQLConnection closeHandler(Handler!(Void) handler);
+  MySQLConnection closeHandler(VoidHandler handler);
 
   override
-  MySQLConnection preparedQuery(String sql, Handler!(AsyncResult!(RowSet)) handler);
+  MySQLConnection preparedQuery(String sql, RowSetHandler handler);
 
   @GenIgnore
   override
   <R> MySQLConnection preparedQuery(String sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
   override
-  MySQLConnection query(String sql, Handler!(AsyncResult!(RowSet)) handler);
+  MySQLConnection query(String sql, RowSetHandler handler);
 
   @GenIgnore
   override
   <R> MySQLConnection query(String sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
   override
-  MySQLConnection preparedQuery(String sql, Tuple arguments, Handler!(AsyncResult!(RowSet)) handler);
+  MySQLConnection preparedQuery(String sql, Tuple arguments, RowSetHandler handler);
 
   @GenIgnore
   override
