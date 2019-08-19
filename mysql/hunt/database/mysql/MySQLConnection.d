@@ -77,7 +77,7 @@ interface MySQLConnection : SqlConnection {
    * @return a reference to this, so the API can be used fluently
    */
   @Fluent
-  MySQLConnection ping(Handler!(AsyncResult!(Void)) handler);
+  MySQLConnection ping(VoidHandler handler);
 
   /**
    * Send a INIT_DB command to change the default schema of the connection.
@@ -87,7 +87,7 @@ interface MySQLConnection : SqlConnection {
    * @return a reference to this, so the API can be used fluently
    */
   @Fluent
-  MySQLConnection specifySchema(String schemaName, Handler!(AsyncResult!(Void)) handler);
+  MySQLConnection specifySchema(String schemaName, VoidHandler handler);
 
   /**
    * Send a STATISTICS command to get a human readable string of the server internal status.
@@ -107,7 +107,7 @@ interface MySQLConnection : SqlConnection {
    * @return a reference to this, so the API can be used fluently
    */
   @Fluent
-  MySQLConnection setOption(MySQLSetOption option, Handler!(AsyncResult!(Void)) handler);
+  MySQLConnection setOption(MySQLSetOption option, VoidHandler handler);
 
   /**
    * Send a RESET_CONNECTION command to reset the session state.
@@ -116,7 +116,7 @@ interface MySQLConnection : SqlConnection {
    * @return a reference to this, so the API can be used fluently
    */
   @Fluent
-  MySQLConnection resetConnection(Handler!(AsyncResult!(Void)) handler);
+  MySQLConnection resetConnection(VoidHandler handler);
 
   /**
    * Send a DEBUG command to dump debug information to the server's stdout.
@@ -125,7 +125,7 @@ interface MySQLConnection : SqlConnection {
    * @return a reference to this, so the API can be used fluently
    */
   @Fluent
-  MySQLConnection debug(Handler!(AsyncResult!(Void)) handler);
+  MySQLConnection debug(VoidHandler handler);
 
   /**
    * Send a CHANGE_USER command to change the user of the current connection, this operation will also reset connection state.
@@ -135,5 +135,5 @@ interface MySQLConnection : SqlConnection {
    * @return a reference to this, so the API can be used fluently
    */
   @Fluent
-  MySQLConnection changeUser(MySQLConnectOptions options, Handler!(AsyncResult!(Void)) handler);
+  MySQLConnection changeUser(MySQLConnectOptions options, VoidHandler handler);
 }

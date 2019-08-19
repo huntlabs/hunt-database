@@ -17,117 +17,127 @@
 
 module hunt.database.base.impl.SqlConnectionImpl;
 
+import hunt.database.base.Common;
 import hunt.database.base.SqlConnection;
 import hunt.database.base.impl.command.CommandResponse;
 import hunt.database.base.impl.command.CommandBase;
+import hunt.database.base.impl.SqlConnectionBase;
+import hunt.database.base.impl.TransactionImpl;
 import hunt.database.base.Transaction;
-import io.vertx.core.*;
+
+import hunt.logging.ConsoleLogger;
+// import io.vertx.core.*;
+
+import hunt.Object;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-abstract class SqlConnectionImpl!(C extends SqlConnectionImpl) extends SqlConnectionBase!(C) implements SqlConnection, Connection.Holder {
+abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection //, Connection.Holder 
+         { // if(is(C : SqlConnectionImpl))
 
-  private volatile Handler!(Throwable) exceptionHandler;
-  private volatile Handler!(Void) closeHandler;
-  private TransactionImpl tx;
+    private ThrowableHandler exceptionHandler;
+    private VoidHandler closeHandler;
+    private TransactionImpl tx;
 
-  SqlConnectionImpl(Context context, Connection conn) {
-    super(context, conn);
-  }
-
-  override
-  void handleClosed() {
-    Handler!(Void) handler = closeHandler;
-    if (handler !is null) {
-      context.runOnContext(handler);
+    this(AbstractConnection context, Connection conn) {
+        super(context, conn);
     }
-  }
 
-  override
-  <R> void schedule(CommandBase!(R) cmd, Handler<? super CommandResponse!(R)> handler) {
-    cmd.handler = cr -> {
-      // Tx might be gone ???
-      cr.scheduler = this;
-      handler.handle(cr);
-    };
-    schedule(cmd);
-  }
+    override
+    void handleClosed() {
+        VoidHandler handler = closeHandler;
+        if (handler !is null) {
+            context.runOnContext(handler);
+        }
+    }
 
-  protected void schedule(CommandBase<?> cmd) {
-    if (context == Vertx.currentContext()) {
-      if (tx !is null) {
-        tx.schedule(cmd);
-      } else {
-        conn.schedule(cmd);
-      }
-    } else {
-      context.runOnContext(v -> {
+    // override
+    void schedule(R)(CommandBase!(R) cmd, ResponseHandler!R handler) {
+        cmd.handler = (cr) {
+            // Tx might be gone ???
+            cr.scheduler = this;
+            handler(cr);
+        };
         schedule(cmd);
-      });
     }
-  }
 
-  override
-  void handleException(Throwable err) {
-    Handler!(Throwable) handler = exceptionHandler;
-    if (handler !is null) {
-      context.runOnContext(v -> {
-        handler.handle(err);
-      });
-    } else {
-      err.printStackTrace();
+    protected void schedule(ICommand cmd) {
+        if (context == Vertx.currentContext()) {
+            if (tx !is null) {
+                tx.schedule(cmd);
+            } else {
+                conn.schedule(cmd);
+            }
+        } else {
+            context.runOnContext( (v) {
+                schedule(cmd);
+            });
+        }
     }
-  }
 
-  override
-  boolean isSSL() {
-    return conn.isSsl();
-  }
-
-  override
-  C closeHandler(Handler!(Void) handler) {
-    closeHandler = handler;
-    return (C) this;
-  }
-
-  override
-  C exceptionHandler(Handler!(Throwable) handler) {
-    exceptionHandler = handler;
-    return (C) this;
-  }
-
-  override
-  Transaction begin() {
-    return begin(false);
-  }
-
-  Transaction begin(boolean closeOnEnd) {
-    if (tx !is null) {
-      throw new IllegalStateException();
+    override
+    void handleException(Throwable err) {
+        EventHandler!(Throwable) handler = exceptionHandler;
+        if (handler !is null) {
+            context.runOnContext( (v) {
+                handler(err);
+            });
+        } else {
+            // err.printStackTrace();
+            warning(err);
+        }
     }
-    tx = new TransactionImpl(context, conn, v -> {
-      tx = null;
-      if (closeOnEnd) {
-        close();
-      }
-    });
-    return tx;
-  }
 
-  abstract void handleNotification(int processId, String channel, String payload);
-
-  override
-  void close() {
-    if (context == Vertx.currentContext()) {
-      if (tx !is null) {
-        tx.rollback(ar -> conn.close(this));
-        tx = null;
-      } else {
-        conn.close(this);
-      }
-    } else {
-      context.runOnContext(v -> close());
+    override
+    bool isSSL() {
+        return conn.isSsl();
     }
-  }
+
+    override
+    C closeHandler(VoidHandler handler) {
+        closeHandler = handler;
+        return cast(C) this;
+    }
+
+    override
+    C exceptionHandler(ThrowableHandler handler) {
+        exceptionHandler = handler;
+        return cast(C) this;
+    }
+
+    override
+    Transaction begin() {
+        return begin(false);
+    }
+
+    Transaction begin(bool closeOnEnd) {
+        if (tx !is null) {
+            throw new IllegalStateException();
+        }
+        tx = new TransactionImpl(context, conn, (v) {
+            tx = null;
+            if (closeOnEnd) {
+                close();
+            }
+        });
+        return tx;
+    }
+
+    abstract void handleNotification(int processId, string channel, string payload);
+
+    override
+    void close() {
+        conn.close();
+        // if (context == Vertx.currentContext()) {
+        //     if (tx !is null) {
+        //         tx.rollback(ar -> conn.close(this));
+        //         tx = null;
+        //     } else {
+        //         conn.close(this);
+        //     }
+        // } else {
+        //     context.runOnContext(v -> close());
+        // }
+    }
 }

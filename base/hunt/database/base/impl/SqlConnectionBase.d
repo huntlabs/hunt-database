@@ -19,26 +19,27 @@ module hunt.database.base.impl.SqlConnectionBase;
 
 import hunt.database.base.PreparedQuery;
 import hunt.database.base.impl.command.PrepareStatementCommand;
-// import io.vertx.core.*;
+import hunt.database.base.impl.PreparedQueryImpl;
+
+import hunt.net.AbstractConnection;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 abstract class SqlConnectionBase(C) : SqlClientBase!(C) 
-        if(is(C : SqlConnectionBase)) {
+         { // if(is(C : SqlConnectionBase))
 
-    protected Context context;
-    protected Connection conn;
+    // protected Context context;
+    protected AbstractConnection conn;
 
-    protected this(Context context, Connection conn) {
-        this.context = context;
+    protected this(AbstractConnection conn) {
         this.conn = conn;
     }
 
-    C prepare(string sql, Handler!(AsyncResult!(PreparedQuery)) handler) {
+    C prepare(string sql, PreparedQueryHandler handler) {
         schedule(new PrepareStatementCommand(sql), (cr) {
             if (cr.succeeded()) {
-                handler.handle(Future.succeededFuture(new PreparedQueryImpl(conn, context, cr.result())));
+                handler.handle(Future.succeededFuture(new PreparedQueryImpl(conn, cr.result())));
             } else {
                 handler.handle(Future.failedFuture(cr.cause()));
             }

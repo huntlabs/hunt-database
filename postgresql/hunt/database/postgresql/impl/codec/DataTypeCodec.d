@@ -18,7 +18,7 @@
 module hunt.database.postgresql.impl.codec.DataTypeCodec;
 
 // import com.fasterxml.jackson.databind.JsonNode;
-// import io.netty.buffer.ByteBuf;
+import hunt.net.buffer.ByteBuf;
 // import io.netty.buffer.Unpooled;
 // import io.netty.handler.codec.DecoderException;
 // import io.vertx.core.json.Json;

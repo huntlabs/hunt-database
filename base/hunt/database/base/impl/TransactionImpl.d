@@ -150,7 +150,7 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl) implements Transacti
     commit(null);
   }
 
-  void commit(Handler!(AsyncResult!(Void)) handler) {
+  void commit(VoidHandler handler) {
     switch (status) {
       case ST_BEGIN:
       case ST_PENDING:
@@ -179,7 +179,7 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl) implements Transacti
     rollback(null);
   }
 
-  void rollback(Handler!(AsyncResult!(Void)) handler) {
+  void rollback(VoidHandler handler) {
     schedule(doQuery("ROLLBACK", ar -> {
       disposeHandler.handle(null);
       if (handler !is null) {

@@ -16,7 +16,7 @@
  */
 module hunt.database.postgresql.impl.util.UTF8StringEndDetector;
 
-// import io.netty.util.ByteProcessor;
+import hunt.net.buffer.ByteProcessor;
 
 // /**
 //  * A processor that detects the end of a well formed UTF8 string, starting end ending with a {@code "}.

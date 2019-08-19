@@ -20,6 +20,7 @@ import hunt.database.postgresql.impl.codec.RowResultDecoder;
 import hunt.database.postgresql.impl.codec.PgCommandCodec;
 
 import hunt.database.base.Row;
+import hunt.database.base.impl.RowDecoder;
 import hunt.database.base.impl.RowDesc;
 import hunt.database.base.impl.command.QueryCommandBase;
 
@@ -27,7 +28,8 @@ import hunt.database.base.impl.command.QueryCommandBase;
 
 abstract class QueryCommandBaseCodec(T, C) : PgCommandCodec!(bool, C) { // C extends QueryCommandBase!(T)
 
-    RowResultDecoder<?, T> decoder;
+    // RowResultDecoder<?, T> decoder;
+    AbstractRowResultDecoder!T decoder;
 
     this(C cmd) {
         super(cmd);

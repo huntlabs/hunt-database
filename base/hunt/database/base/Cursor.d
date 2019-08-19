@@ -54,6 +54,6 @@ interface Cursor {
   /**
    * Like {@link #close()} but with a {@code completionHandler} called when the cursor has been released.
    */
-  void close(Handler!(AsyncResult!(Void)) completionHandler);
+  void close(VoidHandler completionHandler);
 
 }

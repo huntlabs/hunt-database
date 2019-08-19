@@ -141,7 +141,7 @@ module hunt.database.postgresql.impl.pubsub.PostgreSQLSubscriberImpl;
 //     }
 
 //     override
-//     synchronized PgSubscriber connect(Handler!(AsyncResult!(Void)) handler) {
+//     synchronized PgSubscriber connect(VoidHandler handler) {
 //         if (closed) {
 //             closed = false;
 //             tryConnect(0, handler);
@@ -149,7 +149,7 @@ module hunt.database.postgresql.impl.pubsub.PostgreSQLSubscriberImpl;
 //         return this;
 //     }
 
-//     private void tryConnect(long delayMillis, Handler!(AsyncResult!(Void)) handler) {
+//     private void tryConnect(long delayMillis, VoidHandler handler) {
 //         if (!connecting) {
 //             connecting = true;
 //             if (delayMillis > 0) {
@@ -160,11 +160,11 @@ module hunt.database.postgresql.impl.pubsub.PostgreSQLSubscriberImpl;
 //         }
 //     }
 
-//     private void doConnect(Handler!(AsyncResult!(Void)) completionHandler) {
+//     private void doConnect(VoidHandler completionHandler) {
 //         PgConnection.connect(vertx, options, ar -> handleConnectResult(completionHandler, ar));
 //     }
 
-//     private synchronized void handleConnectResult(Handler!(AsyncResult!(Void)) completionHandler, AsyncResult!(PgConnection) ar1) {
+//     private synchronized void handleConnectResult(VoidHandler completionHandler, AsyncResult!(PgConnection) ar1) {
 //         connecting = false;
 //         if (ar1.succeeded()) {
 //             conn = ar1.result();

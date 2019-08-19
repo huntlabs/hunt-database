@@ -23,56 +23,56 @@ import hunt.database.base.Row;
 import hunt.database.base.impl.PreparedStatement;
 import hunt.database.base.impl.QueryResultHandler;
 
-import java.util.stream.Collector;
+// import java.util.stream.Collector;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 abstract class ExtendedQueryCommandBase(R) : QueryCommandBase!(R) {
 
-  protected PreparedStatement ps;
-  protected int fetch;
-  protected string cursorId;
-  protected bool suspended;
-  private bool singleton;
+    protected PreparedStatement ps;
+    protected int _fetch;
+    protected string _cursorId;
+    protected bool suspended;
+    private bool singleton;
 
-  this(PreparedStatement ps,
-                           int fetch,
-                           string cursorId,
-                           bool suspended,
-                           bool singleton,
-                           Collector<Row, ?, R> collector,
-                           QueryResultHandler!(R) resultHandler) {
-    super(collector, resultHandler);
-    this.ps = ps;
-    this.fetch = fetch;
-    this.cursorId = cursorId;
-    this.suspended = suspended;
-    this.singleton = singleton;
-  }
+    this(PreparedStatement ps,
+                int fetch,
+                string cursorId,
+                bool suspended,
+                bool singleton,
+            //  Collector<Row, ?, R> collector,
+                QueryResultHandler!(R) resultHandler) {
+        super(resultHandler); // collector, 
+        this.ps = ps;
+        this._fetch = fetch;
+        this._cursorId = cursorId;
+        this.suspended = suspended;
+        this.singleton = singleton;
+    }
 
-  PreparedStatement preparedStatement() {
-    return ps;
-  }
+    PreparedStatement preparedStatement() {
+        return ps;
+    }
 
-  int fetch() {
-    return fetch;
-  }
+    int fetch() {
+        return _fetch;
+    }
 
-  string cursorId() {
-    return cursorId;
-  }
+    string cursorId() {
+        return _cursorId;
+    }
 
-  bool isSuspended() {
-    return suspended;
-  }
+    bool isSuspended() {
+        return suspended;
+    }
 
-  bool isSingleton() {
-    return singleton;
-  }
+    bool isSingleton() {
+        return singleton;
+    }
 
-  override
-  string sql() {
-    return ps.sql();
-  }
+    override
+    string sql() {
+        return ps.sql();
+    }
 }

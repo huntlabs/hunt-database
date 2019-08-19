@@ -15,9 +15,9 @@
  *
  */
 
-module hunt.database.postgresql.PostgreSQLConnection.PostgreSQLConnection;
+module hunt.database.postgresql.PostgreSQLConnection;
 
-import hunt.database.postgresql.impl.PgConnectionImpl;
+import hunt.database.postgresql.impl.PostgreSQLConnectionImpl;
 import hunt.database.base.PreparedQuery;
 import hunt.database.base.SqlResult;
 import hunt.database.base.RowSet;
@@ -87,7 +87,7 @@ interface PgConnection : SqlConnection {
      * @param handler the handler notified if cancelling request is sent
      * @return a reference to this, so the API can be used fluently
      */
-    PgConnection cancelRequest(Handler!(AsyncResult!(Void)) handler);
+    PgConnection cancelRequest(VoidHandler handler);
 
     /**
      * @return The process ID of the target backend

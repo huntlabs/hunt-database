@@ -68,7 +68,7 @@ class MySQLConnectionImpl : SqlConnectionImpl!(MySQLConnectionImpl) implements M
   }
 
   override
-  MySQLConnection ping(Handler!(AsyncResult!(Void)) handler) {
+  MySQLConnection ping(VoidHandler handler) {
     PingCommand cmd = new PingCommand();
     cmd.handler = handler;
     schedule(cmd);
@@ -76,7 +76,7 @@ class MySQLConnectionImpl : SqlConnectionImpl!(MySQLConnectionImpl) implements M
   }
 
   override
-  MySQLConnection specifySchema(String schemaName, Handler!(AsyncResult!(Void)) handler) {
+  MySQLConnection specifySchema(String schemaName, VoidHandler handler) {
     InitDbCommand cmd = new InitDbCommand(schemaName);
     cmd.handler = handler;
     schedule(cmd);
@@ -92,7 +92,7 @@ class MySQLConnectionImpl : SqlConnectionImpl!(MySQLConnectionImpl) implements M
   }
 
   override
-  MySQLConnection setOption(MySQLSetOption option, Handler!(AsyncResult!(Void)) handler) {
+  MySQLConnection setOption(MySQLSetOption option, VoidHandler handler) {
     SetOptionCommand cmd = new SetOptionCommand(option);
     cmd.handler = handler;
     schedule(cmd);
@@ -100,7 +100,7 @@ class MySQLConnectionImpl : SqlConnectionImpl!(MySQLConnectionImpl) implements M
   }
 
   override
-  MySQLConnection resetConnection(Handler!(AsyncResult!(Void)) handler) {
+  MySQLConnection resetConnection(VoidHandler handler) {
     ResetConnectionCommand cmd = new ResetConnectionCommand();
     cmd.handler = handler;
     schedule(cmd);
@@ -108,7 +108,7 @@ class MySQLConnectionImpl : SqlConnectionImpl!(MySQLConnectionImpl) implements M
   }
 
   override
-  MySQLConnection debug(Handler!(AsyncResult!(Void)) handler) {
+  MySQLConnection debug(VoidHandler handler) {
     DebugCommand cmd = new DebugCommand();
     cmd.handler = handler;
     schedule(cmd);
@@ -116,7 +116,7 @@ class MySQLConnectionImpl : SqlConnectionImpl!(MySQLConnectionImpl) implements M
   }
 
   override
-  MySQLConnection changeUser(MySQLConnectOptions options, Handler!(AsyncResult!(Void)) handler) {
+  MySQLConnection changeUser(MySQLConnectOptions options, VoidHandler handler) {
     MySQLCollation collation;
     try {
       collation = MySQLCollation.valueOfName(options.getCollation());

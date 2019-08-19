@@ -88,7 +88,7 @@ import hunt.collection.Map;
 //     }
 
 //     // Called by hook
-//     private void close(Handler!(AsyncResult!(Void)) completionHandler) {
+//     private void close(VoidHandler completionHandler) {
 //         client.close();
 //         completionHandler.handle(Future.succeededFuture());
 //     }

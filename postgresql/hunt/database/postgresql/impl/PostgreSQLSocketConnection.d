@@ -37,7 +37,7 @@ import hunt.util.Common;
 
 
 // alias AsyncConnectHandler = NetEventHandler!(AsyncResult!Connection);
-// alias AsyncVoidResultHandler = EventHandler!(AsyncResult!(Void));
+// alias AsyncVoidResultHandler = EventVoidHandler;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>

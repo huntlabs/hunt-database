@@ -17,7 +17,7 @@
 
 module hunt.database.postgresql.impl.codec.StartupMessage;
 
-// import io.netty.buffer.ByteBuf;
+import hunt.net.buffer.ByteBuf;
 // import io.netty.buffer.Unpooled;
 
 import hunt.collection.Map;

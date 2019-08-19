@@ -21,52 +21,55 @@ import hunt.database.postgresql.impl.util.Util;
 
 import hunt.collection.Arrays;
 import hunt.collection.List;
-import java.util.stream.Stream;
+import hunt.Exceptions;
+// import java.util.stream.Stream;
+
 
 /**
  * @author <a href="mailto:emad.albloushi@gmail.com">Emad Alblueshi</a>
  */
 class PgParamDesc : ParamDesc {
 
-  // OIDs
-  private final DataType[] paramDataTypes;
+    // OIDs
+    private final DataType[] paramDataTypes;
 
-  PgParamDesc(DataType[] paramDataTypes) {
-    this.paramDataTypes = paramDataTypes;
-  }
-
-  DataType[] paramDataTypes() {
-    return paramDataTypes;
-  }
-
-  override
-  String prepare(List!(Object) values) {
-    if (values.size() != paramDataTypes.length) {
-      return buildReport(values);
+    this(DataType[] paramDataTypes) {
+        this.paramDataTypes = paramDataTypes;
     }
-    for (int i = 0;i < paramDataTypes.length;i++) {
-      DataType paramDataType = paramDataTypes[i];
-      Object value = values.get(i);
-      Object val = DataTypeCodec.prepare(paramDataType, value);
-      if (val != value) {
-        if (val == DataTypeCodec.REFUSED_SENTINEL) {
-          return buildReport(values);
-        } else {
-          values.set(i, val);
+
+    DataType[] paramDataTypes() {
+        return paramDataTypes;
+    }
+
+    override
+    string prepare(List!(Object) values) {
+        if (values.size() != paramDataTypes.length) {
+            return buildReport(values);
         }
-      }
+        for (int i = 0;i < paramDataTypes.length;i++) {
+            DataType paramDataType = paramDataTypes[i];
+            Object value = values.get(i);
+            Object val = DataTypeCodec.prepare(paramDataType, value);
+            if (val != value) {
+                if (val == DataTypeCodec.REFUSED_SENTINEL) {
+                    return buildReport(values);
+                } else {
+                    values.set(i, val);
+                }
+            }
+        }
+        return null;
     }
-    return null;
-  }
 
-  private String buildReport(List!(Object) values) {
-    return Util.buildInvalidArgsError(values.stream(), Stream.of(paramDataTypes).map(type -> type.decodingType));
-  }
+    private string buildReport(List!(Object) values) {
+        // return Util.buildInvalidArgsError(values.stream(), Stream.of(paramDataTypes).map(type -> type.decodingType));
+        implementationMissing(false);
+        return "";
+    }
 
-  override
-  string toString() {
-    return "PgParamDesc{" ~
-      "paramDataTypes=" ~ Arrays.toString(paramDataTypes) +
-      '}';
-  }
+    override
+    string toString() {
+        return "PgParamDesc{" ~
+            "paramDataTypes=" ~ paramDataTypes.to!string() ~ "}";
+    }
 }

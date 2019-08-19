@@ -17,26 +17,29 @@
 
 module hunt.database.base.impl.command.CloseCursorCommand;
 
+import hunt.database.base.impl.command.CommandBase;
 import hunt.database.base.impl.PreparedStatement;
+
+import hunt.Object;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 class CloseCursorCommand : CommandBase!(Void) {
 
-  private final String id;
-  private final PreparedStatement statement;
+    private string _id;
+    private PreparedStatement _statement;
 
-  CloseCursorCommand(String id, PreparedStatement statement) {
-    this.id = id;
-    this.statement = statement;
-  }
+    this(string id, PreparedStatement statement) {
+        this._id = id;
+        this._statement = statement;
+    }
 
-  String id() {
-    return id;
-  }
+    string id() {
+        return _id;
+    }
 
-  PreparedStatement statement() {
-    return statement;
-  }
+    PreparedStatement statement() {
+        return _statement;
+    }
 }

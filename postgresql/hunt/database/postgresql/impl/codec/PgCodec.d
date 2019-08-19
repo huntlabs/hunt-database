@@ -16,6 +16,10 @@
  */
 module hunt.database.postgresql.impl.codec.PgCodec;
 
+import hunt.database.postgresql.impl.codec.PgCommandCodec;
+import hunt.database.postgresql.impl.codec.PgDecoder;
+import hunt.database.postgresql.impl.codec.PgEncoder;
+
 // import io.netty.channel.ChannelHandlerContext;
 // import io.netty.channel.CombinedChannelDuplexHandler;
 import hunt.database.base.impl.command.CommandBase;
@@ -25,35 +29,53 @@ import hunt.database.base.impl.command.CommandResponse;
 // import java.util.ArrayDeque;
 // import java.util.Iterator;
 
-class PgCodec : CombinedChannelDuplexHandler!(PgDecoder, PgEncoder) {
+import hunt.net.codec.Codec;
 
-  private final ArrayDeque<PgCommandCodec<?, ?>> inflight = new ArrayDeque<>();
+import std.container.dlist;
 
-  PgCodec() {
-    PgDecoder decoder = new PgDecoder(inflight);
-    PgEncoder encoder = new PgEncoder(decoder, inflight);
-    init(decoder, encoder);
-  }
+/**
+*/
+class PgCodec : Codec { // CombinedChannelDuplexHandler!(PgDecoder, PgEncoder)
 
-  override
-  void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-    fail(ctx, cause);
-    super.exceptionCaught(ctx, cause);
-  }
+    // private ArrayDeque<PgCommandCodec<?, ?>> inflight = new ArrayDeque<>();
+    private DList!(PgCommandCodecBase) inflight;
+    private PgDecoder decoder;
+    private PgEncoder encoder;
 
-  private void fail(ChannelHandlerContext ctx, Throwable cause) {
-    for  (Iterator<PgCommandCodec<?, ?>> it = inflight.iterator(); it.hasNext();) {
-      PgCommandCodec<?, ?> codec = it.next();
-      it.remove();
-      CommandResponse!(Object) failure = CommandResponse.failure(cause);
-      failure.cmd = (CommandBase) codec.cmd;
-      ctx.fireChannelRead(failure);
+    this() {
+        decoder = new PgDecoder(inflight);
+        encoder = new PgEncoder(decoder, inflight);
+        init(decoder, encoder);
     }
-  }
 
-  override
-  void channelInactive(ChannelHandlerContext ctx) throws Exception {
-    fail(ctx, new VertxException("closed"));
-    super.channelInactive(ctx);
-  }
+
+    Encoder getEncoder() {
+        return encoder;
+    }
+
+    Decoder getDecoder() {
+        return decoder;
+    }
+
+    // override
+    // void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+    //     fail(ctx, cause);
+    //     super.exceptionCaught(ctx, cause);
+    // }
+
+    // private void fail(ChannelHandlerContext ctx, Throwable cause) {
+    //     for  (Iterator<PgCommandCodec<?, ?>> it = inflight.iterator(); it.hasNext();) {
+    //         PgCommandCodec<?, ?> codec = it.next();
+    //         it.remove();
+    //         CommandResponse!(Object) failure = CommandResponse.failure(cause);
+    //         failure.cmd = (CommandBase) codec.cmd;
+    //         ctx.fireChannelRead(failure);
+    //     }
+    // }
+
+    // override
+    // void channelInactive(ChannelHandlerContext ctx) {
+    //     fail(ctx, new VertxException("closed"));
+    //     super.channelInactive(ctx);
+    // }
 }

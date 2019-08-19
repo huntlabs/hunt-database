@@ -10,8 +10,12 @@
  */
 module hunt.database.base.AsyncResult;
 
+import hunt.database.base.Common;
+
 import hunt.Exceptions;
 import hunt.Functions;
+
+alias AsyncResultHandler(T) = EventHandler!(AsyncResult!T);
 
 /**
  * Encapsulates the result of an asynchronous operation.

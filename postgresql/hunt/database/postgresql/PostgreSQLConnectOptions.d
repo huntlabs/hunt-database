@@ -18,17 +18,18 @@
 module hunt.database.postgresql.PostgreSQLConnectOptions;
 
 import hunt.database.postgresql.SslMode;
-import hunt.database.postgresql.impl.PgConnectionUriParser;
+// import hunt.database.postgresql.impl.PgConnectionUriParser;
 // import io.vertx.codegen.annotations.DataObject;
 // import io.vertx.core.buffer.Buffer;
 // import io.vertx.core.json.JsonObject;
 // import io.vertx.core.net.*;
 import hunt.database.base.SqlConnectOptions;
 
-import hunt.collections.Collections;
-import hunt.collections.HashMap;
-import hunt.collections.Map;
-import hunt.collections.Set;
+import hunt.collection.Collections;
+import hunt.collection.HashMap;
+import hunt.collection.Map;
+import hunt.collection.Set;
+import hunt.net.util.HttpURI;
 import hunt.Exceptions;
 
 import core.time;

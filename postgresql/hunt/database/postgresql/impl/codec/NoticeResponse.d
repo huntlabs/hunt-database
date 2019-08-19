@@ -17,57 +17,59 @@
 
 module hunt.database.postgresql.impl.codec.NoticeResponse;
 
+import hunt.database.postgresql.impl.codec.Response;
 import hunt.database.base.impl.Notice;
-import io.vertx.core.logging.Logger;
+
+import hunt.logging.ConsoleLogger;
+
+import std.conv;
 
 /**
  * @author <a href="mailto:emad.albloushi@gmail.com">Emad Alblueshi</a>
  */
 
-class NoticeResponse : Response implements Notice {
+class NoticeResponse : Response, Notice {
 
-  override
-  void log(Logger logger) {
-    logger.warn("Backend notice: " ~
-      "severity='" ~ getSeverity() ~ "'" ~
-      ", code='" ~ getCode() ~ "'" ~
-      ", message='" ~ getMessage() ~ "'" ~
-      ", detail='" ~ getDetail() ~ "'" ~
-      ", hint='" ~ getHint() ~ "'" ~
-      ", position='" ~ getPosition() ~ "'" ~
-      ", internalPosition='" ~ getInternalPosition() ~ "'" ~
-      ", internalQuery='" ~ getInternalQuery() ~ "'" ~
-      ", where='" ~ getWhere() ~ "'" ~
-      ", file='" ~ getFile() ~ "'" ~
-      ", line='" ~ getLine() ~ "'" ~
-      ", routine='" ~ getRoutine() ~ "'" ~
-      ", schema='" ~ getSchema() ~ "'" ~
-      ", table='" ~ getTable() ~ "'" ~
-      ", column='" ~ getColumn() ~ "'" ~
-      ", dataType='" ~ getDataType() ~ "'" ~
-      ", constraint='" ~ getConstraint() ~ "'");
-  }
+    override void log() {
+        warning("Backend notice: " ~
+            "severity='" ~ getSeverity() ~ "'" ~
+            ", code='" ~ getCode() ~ "'" ~
+            ", message='" ~ getMessage() ~ "'" ~
+            ", detail='" ~ getDetail() ~ "'" ~
+            ", hint='" ~ getHint() ~ "'" ~
+            ", position='" ~ getPosition() ~ "'" ~
+            ", internalPosition='" ~ getInternalPosition() ~ "'" ~
+            ", internalQuery='" ~ getInternalQuery() ~ "'" ~
+            ", where='" ~ getWhere() ~ "'" ~
+            ", file='" ~ getFile() ~ "'" ~
+            ", line='" ~ getLine() ~ "'" ~
+            ", routine='" ~ getRoutine() ~ "'" ~
+            ", schema='" ~ getSchema() ~ "'" ~
+            ", table='" ~ getTable() ~ "'" ~
+            ", column='" ~ getColumn() ~ "'" ~
+            ", dataType='" ~ getDataType() ~ "'" ~
+            ", constraint='" ~ getConstraint() ~ "'");
+    }
 
-  override
-  string toString() {
-    return "NoticeResponse{" ~
-      "severity='" ~ getSeverity() + '\'' +
-      ", code='" ~ getCode() + '\'' +
-      ", message='" ~ getMessage() + '\'' +
-      ", detail='" ~ getDetail() + '\'' +
-      ", hint='" ~ getHint() + '\'' +
-      ", position='" ~ getPosition() + '\'' +
-      ", internalPosition='" ~ getInternalPosition() + '\'' +
-      ", internalQuery='" ~ getInternalQuery() + '\'' +
-      ", where='" ~ getWhere() + '\'' +
-      ", file='" ~ getFile() + '\'' +
-      ", line='" ~ getLine() + '\'' +
-      ", routine='" ~ getRoutine() + '\'' +
-      ", schema='" ~ getSchema() + '\'' +
-      ", table='" ~ getTable() + '\'' +
-      ", column='" ~ getColumn() + '\'' +
-      ", dataType='" ~ getDataType() + '\'' +
-      ", constraint='" ~ getConstraint() + '\'' +
-      '}';
-  }
+    override string toString() {
+        return "NoticeResponse{" ~
+            "severity='" ~ getSeverity() ~ "\'" ~
+            ", code='" ~ getCode() ~ "\'" ~
+            ", message='" ~ getMessage() ~ "\'" ~
+            ", detail='" ~ getDetail() ~ "\'" ~
+            ", hint='" ~ getHint() ~ "\'" ~
+            ", position='" ~ getPosition() ~ "\'" ~
+            ", internalPosition='" ~ getInternalPosition() ~ "\'" ~
+            ", internalQuery='" ~ getInternalQuery() ~ "\'" ~
+            ", where='" ~ getWhere() ~ "\'" ~
+            ", file='" ~ getFile() ~ "\'" ~
+            ", line='" ~ getLine() ~ "\'" ~
+            ", routine='" ~ getRoutine() ~ "\'" ~
+            ", schema='" ~ getSchema() ~ "\'" ~
+            ", table='" ~ getTable() ~ "\'" ~
+            ", column='" ~ getColumn() ~ "\'" ~
+            ", dataType='" ~ getDataType() ~ "\'" ~
+            ", constraint='" ~ getConstraint() ~ "\'" ~
+            '}';
+    }
 }

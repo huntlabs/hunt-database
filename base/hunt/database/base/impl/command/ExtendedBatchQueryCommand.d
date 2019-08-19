@@ -17,7 +17,7 @@
 
 module hunt.database.base.impl.command.ExtendedBatchQueryCommand;
 
-impprt hunt.database.base.impl.command.ExtendedQueryCommandBase;
+import hunt.database.base.impl.command.ExtendedQueryCommandBase;
 
 import hunt.database.base.Row;
 import hunt.database.base.Tuple;
@@ -28,30 +28,30 @@ import hunt.collection;
 
 class ExtendedBatchQueryCommand(T) : ExtendedQueryCommandBase!(T) {
 
-  private List!(Tuple) params;
+    private List!(Tuple) _params;
 
-  this(PreparedStatement ps,
-                            List!(Tuple) params,
-                            bool singleton,
-                            Collector<Row, ?, T> collector,
-                            QueryResultHandler!(T) resultHandler) {
-    this(ps, params, 0, null, false, singleton, collector, resultHandler);
-  }
+    this(PreparedStatement ps,
+            List!(Tuple) params,
+            bool singleton,
+            // Collector<Row, ?, T> collector,
+            QueryResultHandler!(T) resultHandler) {
+        this(ps, params, 0, null, false, singleton, resultHandler); // collector, 
+    }
 
-  private ExtendedBatchQueryCommand(PreparedStatement ps,
-                            List!(Tuple) params,
-                            int fetch,
-                            string cursorId,
-                            bool suspended,
-                            bool singleton,
-                            Collector<Row, ?, T> collector,
-                            QueryResultHandler!(T) resultHandler) {
-    super(ps, fetch, cursorId, suspended, singleton, collector, resultHandler);
-    this.params = params;
-  }
+    private this(PreparedStatement ps,
+                List!(Tuple) params,
+                int fetch,
+                string cursorId,
+                bool suspended,
+                bool singleton,
+                // Collector<Row, ?, T> collector,
+                QueryResultHandler!(T) resultHandler) {
+        super(ps, fetch, cursorId, suspended, singleton, resultHandler); // collector, 
+        this._params = params;
+    }
 
-  List!(Tuple) params() {
-    return params;
-  }
+    List!(Tuple) params() {
+        return _params;
+    }
 
 }

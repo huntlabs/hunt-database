@@ -78,7 +78,7 @@ interface PgSubscriber {
      * @param handler the handler notified of the connection success or failure
      * @return a reference to this, so the API can be used fluently
      */
-    PgSubscriber connect(Handler!(AsyncResult!(Void)) handler);
+    PgSubscriber connect(VoidHandler handler);
 
     /**
      * Set the reconnect policy that is executed when the subscriber is disconnected.

@@ -43,7 +43,7 @@ template failure(R) {
             }
 
             override R result() {
-                return null;
+                return R.init;
             }
 
             override Throwable cause() {

@@ -29,25 +29,41 @@ import hunt.database.base.impl.RowDecoder;
 import hunt.collection.ByteBuffer;
 import hunt.Functions;
 
-class RowResultDecoder(C, R) : RowDecoder {
+abstract class AbstractRowResultDecoder(R) : RowDecoder {
+
+    bool singleton;
+    PgRowDesc desc;
+
+    this(bool singleton, PgRowDesc desc) {
+        this.singleton = singleton;
+        this.desc = desc;
+    }
+
+    R complete();
+
+    int size();
+
+    void reset();
+    
+}
+
+class RowResultDecoder(C, R) : AbstractRowResultDecoder!R {
 
     Collector!(Row, C, R) collector;
-    bool singleton;
     BiConsumer!(C, Row) accumulator;
-    PgRowDesc desc;
 
     private int size;
     private C container;
     private Row row;
 
     this(Collector!(Row, C, R) collector, bool singleton, PgRowDesc desc) {
+        super(singleton, desc);
+
         this.collector = collector;
-        this.singleton = singleton;
         this.accumulator = collector.accumulator();
-        this.desc = desc;
     }
 
-    int size() {
+    override int size() {
         return size;
     }
 
@@ -84,14 +100,14 @@ class RowResultDecoder(C, R) : RowDecoder {
         size++;
     }
 
-    R complete() {
+    override R complete() {
         if (container is null) {
             container = collector.supplier().get();
         }
         return collector.finisher().apply(container);
     }
 
-    void reset() {
+    override void reset() {
         container = null;
         size = 0;
     }

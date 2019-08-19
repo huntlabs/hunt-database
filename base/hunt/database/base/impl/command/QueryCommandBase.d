@@ -20,7 +20,7 @@ module hunt.database.base.impl.command.QueryCommandBase;
 import hunt.database.base.Row;
 import hunt.database.base.impl.QueryResultHandler;
 
-import java.util.stream.Collector;
+// import java.util.stream.Collector;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -29,20 +29,20 @@ import java.util.stream.Collector;
 abstract class QueryCommandBase(T) : CommandBase!(Boolean) {
 
     private QueryResultHandler!(T) resultHandler;
-    private Collector<Row, ?, T> collector;
+    // private Collector<Row, ?, T> collector;
 
-    this(Collector<Row, ?, T> collector, QueryResultHandler!(T) resultHandler) {
+    this(QueryResultHandler!(T) resultHandler) { // Collector<Row, ?, T> collector, 
         this.resultHandler = resultHandler;
-        this.collector = collector;
+        // this.collector = collector;
     }
 
     QueryResultHandler!(T) resultHandler() {
         return resultHandler;
     }
 
-    Collector<Row, ?, T> collector() {
-        return collector;
-    }
+    // Collector<Row, ?, T> collector() {
+    //     return collector;
+    // }
 
     abstract string sql();
 

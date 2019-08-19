@@ -29,54 +29,54 @@ import java.util.UUID;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-class CursorImpl implements Cursor {
+class CursorImpl : Cursor {
 
-  private final PreparedQueryImpl ps;
-  private final Tuple params;
+    private final PreparedQueryImpl ps;
+    private final Tuple params;
 
-  private String id;
-  private boolean closed;
-  private SqlResultBuilder!(RowSet, RowSetImpl, RowSet) result;
+    private String id;
+    private boolean closed;
+    private SqlResultBuilder!(RowSet, RowSetImpl, RowSet) result;
 
-  CursorImpl(PreparedQueryImpl ps, Tuple params) {
-    this.ps = ps;
-    this.params = params;
-  }
-
-  override
-  synchronized boolean hasMore() {
-    if (result is null) {
-      throw new IllegalStateException("No current cursor read");
+    this(PreparedQueryImpl ps, Tuple params) {
+        this.ps = ps;
+        this.params = params;
     }
-    return result.isSuspended();
-  }
 
-  override
-  synchronized void read(int count, Handler!(AsyncResult!(RowSet)) handler) {
-    if (id is null) {
-      id = UUID.randomUUID().toString();
-      result = new SqlResultBuilder<>(RowSetImpl.FACTORY, handler);
-      ps.execute(params, count, id, false, false, RowSetImpl.COLLECTOR, result, result);
-    } else if (result.isSuspended()) {
-      result = new SqlResultBuilder<>(RowSetImpl.FACTORY, handler);
-      ps.execute(params, count, id, true, false, RowSetImpl.COLLECTOR, result, result);
-    } else {
-      throw new IllegalStateException();
+    override
+    synchronized boolean hasMore() {
+        if (result is null) {
+            throw new IllegalStateException("No current cursor read");
+        }
+        return result.isSuspended();
     }
-  }
 
-  override
-  synchronized void close(Handler!(AsyncResult!(Void)) completionHandler) {
-    if (!closed) {
-      closed = true;
-      if (id is null) {
-        completionHandler.handle(Future.succeededFuture());
-      } else {
-        String id = this.id;
-        this.id = null;
-        result = null;
-        ps.closeCursor(id, completionHandler);
-      }
+    override
+    synchronized void read(int count, Handler!(AsyncResult!(RowSet)) handler) {
+        if (id is null) {
+            id = UUID.randomUUID().toString();
+            result = new SqlResultBuilder<>(RowSetImpl.FACTORY, handler);
+            ps.execute(params, count, id, false, false, RowSetImpl.COLLECTOR, result, result);
+        } else if (result.isSuspended()) {
+            result = new SqlResultBuilder<>(RowSetImpl.FACTORY, handler);
+            ps.execute(params, count, id, true, false, RowSetImpl.COLLECTOR, result, result);
+        } else {
+            throw new IllegalStateException();
+        }
     }
-  }
+
+    override
+    synchronized void close(VoidHandler completionHandler) {
+        if (!closed) {
+            closed = true;
+            if (id is null) {
+                completionHandler.handle(Future.succeededFuture());
+            } else {
+                String id = this.id;
+                this.id = null;
+                result = null;
+                ps.closeCursor(id, completionHandler);
+            }
+        }
+    }
 }

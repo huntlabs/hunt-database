@@ -17,11 +17,14 @@
 
 module hunt.database.base.RowSet;
 
+import hunt.database.base.AsyncResult;
 import hunt.database.base.Row;
 import hunt.database.base.RowIterator;
 import hunt.database.base.SqlResult;
 
 import hunt.util.Common;
+
+alias RowSetHandler = AsyncResultHandler!RowSet;
 
 
 /**

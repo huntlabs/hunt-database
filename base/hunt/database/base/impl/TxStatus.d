@@ -23,9 +23,7 @@ module hunt.database.base.impl.TxStatus;
  *
  */
 enum TxStatus {
-
     IDLE,
     ACTIVE,
-    FAILED;
-
+    FAILED
 }

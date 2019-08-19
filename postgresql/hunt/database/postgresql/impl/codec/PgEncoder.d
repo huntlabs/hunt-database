@@ -16,7 +16,9 @@
  */
 module hunt.database.postgresql.impl.codec.PgEncoder;
 
-// import io.netty.buffer.ByteBuf;
+import hunt.database.postgresql.impl.codec.PgCommandCodec;
+
+import hunt.net.buffer.ByteBuf;
 // import io.netty.channel.ChannelHandlerContext;
 // import io.netty.channel.ChannelOutboundHandlerAdapter;
 // import io.netty.channel.ChannelPromise;
@@ -36,17 +38,23 @@ import hunt.database.base.impl.command.SimpleQueryCommand;
 import hunt.database.postgresql.impl.util.Util;
 
 import hunt.collection.ArrayDeque;
+import hunt.collection.ByteBuffer;
 import hunt.collection.List;
 import hunt.collection.Map;
-
+import hunt.Exceptions;
+import hunt.net.codec.Encoder;
+import hunt.net.Connection;
 // import static hunt.database.postgresql.impl.util.Util.writeCString;
 // import static java.nio.charset.StandardCharsets.*;
+
+
+import std.container.dlist;
 
 /**
  * @author <a href="mailto:emad.albloushi@gmail.com">Emad Alblueshi</a>
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-final class PgEncoder : ChannelOutboundHandlerAdapter {
+final class PgEncoder : EncoderChain {
 
     // Frontend message types for {@link io.reactiverse.pgclient.impl.codec.encoder.MessageEncoder}
 
@@ -60,76 +68,91 @@ final class PgEncoder : ChannelOutboundHandlerAdapter {
     private enum byte CLOSE = 'C';
     private enum byte SYNC = 'S';
 
-    private ArrayDeque<PgCommandCodec<?, ?>> inflight;
-    private ChannelHandlerContext ctx;
-    private ByteBuf outBuffer;
+    // private ArrayDeque<PgCommandCodec<?, ?>> inflight;
+    private DList!(PgCommandCodecBase) inflight;
+    private Connection ctx;
+    private ByteBuffer outBuffer;
     private PgDecoder dec;
 
-    this(PgDecoder dec, ArrayDeque<PgCommandCodec<?, ?>> inflight) {
+    this(PgDecoder dec, ref DList!(PgCommandCodecBase) inflight) {
         this.inflight = inflight;
         this.dec = dec;
     }
 
-    void write(CommandBase<?> cmd) {
-        PgCommandCodec<?, ?> codec = wrap(cmd);
-        codec.completionHandler = resp -> {
-            PgCommandCodec<?, ?> c = inflight.poll();
-            resp.cmd = (CommandBase) c.cmd;
-            ctx.fireChannelRead(resp);
-        };
-        codec.noticeHandler = ctx::fireChannelRead;
+    override void encode(Object message, Connection connection) {
+        implementationMissing();
+	}
+
+    void write(ICommand cmd) {
+        PgCommandCodecBase codec = wrap(cmd);
+
+            implementationMissing(false);
+        // codec.completionHandler = (resp) {
+        //     PgCommandCodecBase c = inflight.poll();
+        //     resp.cmd = cast(CommandBase) c.cmd;
+        //     implementationMissing(false);
+        //     // FIXME: Needing refactor or cleanup -@zxp at 8/14/2019, 2:06:32 PM
+        //     // 
+        //     // ctx.fireChannelRead(resp);
+        // };
+        // codec.noticeHandler = ctx::fireChannelRead;
         inflight.add(codec);
         codec.encode(this);
     }
 
-    private PgCommandCodec<?, ?> wrap(CommandBase<?> cmd) {
-        if (cmd instanceof InitCommand) {
-            return new InitCommandCodec((InitCommand) cmd);
-        } else if (cmd instanceof SimpleQueryCommand<?>) {
-            return new SimpleQueryCodec<>((SimpleQueryCommand<?>) cmd);
-        } else if (cmd instanceof ExtendedQueryCommand<?>) {
-            return new ExtendedQueryCommandCodec<>((ExtendedQueryCommand<?>) cmd);
-        } else if (cmd instanceof ExtendedBatchQueryCommand<?>) {
-            return new ExtendedBatchQueryCommandCodec<>((ExtendedBatchQueryCommand<?>) cmd);
-        } else if (cmd instanceof PrepareStatementCommand) {
-            return new PrepareStatementCommandCodec((PrepareStatementCommand) cmd);
-        } else if (cmd instanceof CloseConnectionCommand) {
-            return CloseConnectionCommandCodec.INSTANCE;
-        } else if (cmd instanceof CloseCursorCommand) {
-            return new ClosePortalCommandCodec((CloseCursorCommand) cmd);
-        } else if (cmd instanceof CloseStatementCommand) {
-            return new CloseStatementCommandCodec((CloseStatementCommand) cmd);
+    private PgCommandCodecBase wrap(ICommand cmd) {
+        InitCommand initCommand = cast(InitCommand) cmd;
+        if (initCommand !is null) {
+            return new InitCommandCodec(initCommand);
         }
+
+        implementationMissing(false);
+        // if (cmd instanceof SimpleQueryCommand<?>) {
+        //     return new SimpleQueryCodec<>((SimpleQueryCommand<?>) cmd);
+        // } else if (cmd instanceof ExtendedQueryCommand<?>) {
+        //     return new ExtendedQueryCommandCodec<>((ExtendedQueryCommand<?>) cmd);
+        // } else if (cmd instanceof ExtendedBatchQueryCommand<?>) {
+        //     return new ExtendedBatchQueryCommandCodec<>((ExtendedBatchQueryCommand<?>) cmd);
+        // } else if (cmd instanceof PrepareStatementCommand) {
+        //     return new PrepareStatementCommandCodec((PrepareStatementCommand) cmd);
+        // } else if (cmd instanceof CloseConnectionCommand) {
+        //     return CloseConnectionCommandCodec.INSTANCE;
+        // } else if (cmd instanceof CloseCursorCommand) {
+        //     return new ClosePortalCommandCodec((CloseCursorCommand) cmd);
+        // } else if (cmd instanceof CloseStatementCommand) {
+        //     return new CloseStatementCommandCodec((CloseStatementCommand) cmd);
+        // }
         throw new AssertionError();
     }
 
-    override
-    void handlerAdded(ChannelHandlerContext ctx) {
-        this.ctx = ctx;
-    }
+    // override
+    // void handlerAdded(ChannelHandlerContext ctx) {
+    //     this.ctx = ctx;
+    // }
 
-    override
-    void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) {
-        if (msg instanceof CommandBase<?>) {
-            CommandBase<?> cmd = (CommandBase<?>) msg;
-            write(cmd);
-        } else {
-            super.write(ctx, msg, promise);
-        }
-    }
+    // override
+    // void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) {
+    //     ICommand cmd = cast(ICommand) msg;
+    //     if (cmd !is null) {
+    //         write(cmd);
+    //     } else {
+    //         super.write(ctx, msg, promise);
+    //     }
+    // }
 
-    override
-    void flush(ChannelHandlerContext ctx) {
-        flush();
-    }
+    // override
+    // void flush(ChannelHandlerContext ctx) {
+    //     flush();
+    // }
 
     void flush() {
         if (outBuffer !is null) {
-            ByteBuf buff = outBuffer;
+            ByteBuffer buff = outBuffer;
             outBuffer = null;
-            ctx.writeAndFlush(buff);
+            connection.write(buff);
+            // ctx.writeAndFlush(buff);
         } else {
-            ctx.flush();
+            // ctx.flush();
         }
     }
 
@@ -171,7 +194,7 @@ final class PgEncoder : ChannelOutboundHandlerAdapter {
      *
      * @param portal
      */
-    void writeClosePortal(String portal) {
+    void writeClosePortal(string portal) {
         ensureBuffer();
         int pos = outBuffer.writerIndex();
         outBuffer.writeByte(CLOSE);
@@ -195,7 +218,7 @@ final class PgEncoder : ChannelOutboundHandlerAdapter {
         Util.writeCStringUTF8(outBuffer, msg.username);
         writeCString(outBuffer, StartupMessage.BUFF_DATABASE);
         Util.writeCStringUTF8(outBuffer, msg.database);
-        for (MapEntry!(String, String) property : msg.properties.entrySet()) {
+        foreach (MapEntry!(string, string) property ; msg.properties) {
             writeCString(outBuffer, property.getKey(), UTF_8);
             writeCString(outBuffer, property.getValue(), UTF_8);
         }
@@ -314,7 +337,7 @@ final class PgEncoder : ChannelOutboundHandlerAdapter {
      *
      * @author <a href="mailto:emad.albloushi@gmail.com">Emad Alblueshi</a>
      */
-    void writeExecute(String portal, int rowCount) {
+    void writeExecute(string portal, int rowCount) {
         ensureBuffer();
         int pos = outBuffer.writerIndex();
         outBuffer.writeByte(EXECUTE);
@@ -335,7 +358,7 @@ final class PgEncoder : ChannelOutboundHandlerAdapter {
      * <p>
      * The response is either {@link BindComplete} or {@link ErrorResponse}.
      */
-    void writeBind(Bind bind, String portal, List!(Object) paramValues) {
+    void writeBind(Bind bind, string portal, List!(Object) paramValues) {
         ensureBuffer();
         int pos = outBuffer.writerIndex();
         outBuffer.writeByte(BIND);
@@ -380,7 +403,7 @@ final class PgEncoder : ChannelOutboundHandlerAdapter {
         // Result columns are all in Binary format
         if (bind.resultColumns.length > 0) {
             outBuffer.writeShort(bind.resultColumns.length);
-            for (PgColumnDesc resultColumn : bind.resultColumns) {
+            foreach (PgColumnDesc resultColumn; bind.resultColumns) {
                 outBuffer.writeShort(resultColumn.dataType.supportsBinary ? 1 : 0);
             }
         } else {

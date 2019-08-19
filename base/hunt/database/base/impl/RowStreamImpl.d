@@ -136,7 +136,7 @@ class RowStreamImpl implements RowStream!(Row), Handler!(AsyncResult!(RowSet)) {
   }
 
   override
-  void close(Handler!(AsyncResult!(Void)) completionHandler) {
+  void close(VoidHandler completionHandler) {
     Cursor c;
     synchronized (this) {
       if ((c = cursor) is null) {

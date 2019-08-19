@@ -52,6 +52,6 @@ interface RowStream!(T) extends ReadStream!(T) {
    *
    * @param completionHandler the completion handler for this operation
    */
-  void close(Handler!(AsyncResult!(Void)) completionHandler);
+  void close(VoidHandler completionHandler);
 
 }

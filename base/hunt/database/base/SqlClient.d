@@ -17,14 +17,13 @@
 
 module hunt.database.base.SqlClient;
 
-import io.vertx.codegen.annotations.Fluent;
-import io.vertx.codegen.annotations.GenIgnore;
-import io.vertx.codegen.annotations.VertxGen;
 import hunt.database.base.AsyncResult;
-import io.vertx.core.Handler;
+import hunt.database.base.Common;
+import hunt.database.base.RowSet;
 
 import hunt.collection.List;
-import java.util.stream.Collector;
+// import java.util.stream.Collector;
+
 
 /**
  * Defines the client operations with a database server.
@@ -40,7 +39,7 @@ interface SqlClient {
      * @param handler the handler notified with the execution result
      * @return a reference to this, so the API can be used fluently
      */
-    SqlClient query(String sql, Handler!(AsyncResult!(RowSet)) handler);
+    SqlClient query(string sql, RowSetHandler handler);
 
     /**
      * Execute a simple query.
@@ -50,7 +49,7 @@ interface SqlClient {
      * @param handler the handler notified with the execution result
      * @return a reference to this, so the API can be used fluently
      */
-    <R> SqlClient query(String sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+    // <R> SqlClient query(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
     /**
      * Prepare and execute a query.
@@ -59,7 +58,7 @@ interface SqlClient {
      * @param handler the handler notified with the execution result
      * @return a reference to this, so the API can be used fluently
      */
-    SqlClient preparedQuery(String sql, Handler!(AsyncResult!(RowSet)) handler);
+    SqlClient preparedQuery(string sql, RowSetHandler handler);
 
     /**
      * Prepare and execute a query.
@@ -69,7 +68,7 @@ interface SqlClient {
      * @param handler the handler notified with the execution result
      * @return a reference to this, so the API can be used fluently
      */
-    <R> SqlClient preparedQuery(String sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+    // <R> SqlClient preparedQuery(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
     /**
      * Prepare and execute a query.
@@ -79,7 +78,7 @@ interface SqlClient {
      * @param handler the handler notified with the execution result
      * @return a reference to this, so the API can be used fluently
      */
-    SqlClient preparedQuery(String sql, Tuple arguments, Handler!(AsyncResult!(RowSet)) handler);
+    SqlClient preparedQuery(string sql, Tuple arguments, RowSetHandler handler);
 
     /**
      * Prepare and execute a query.
@@ -90,7 +89,7 @@ interface SqlClient {
      * @param handler the handler notified with the execution result
      * @return a reference to this, so the API can be used fluently
      */
-    <R> SqlClient preparedQuery(String sql, Tuple arguments, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+    // <R> SqlClient preparedQuery(string sql, Tuple arguments, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
     /**
      * Prepare and execute a createBatch.
@@ -100,7 +99,7 @@ interface SqlClient {
      * @param handler the handler notified with the execution result
      * @return a reference to this, so the API can be used fluently
      */
-    SqlClient preparedBatch(String sql, List!(Tuple) batch, Handler!(AsyncResult!(RowSet)) handler);
+    SqlClient preparedBatch(string sql, List!(Tuple) batch, RowSetHandler handler);
 
     /**
      * Prepare and execute a createBatch.
@@ -111,7 +110,7 @@ interface SqlClient {
      * @param handler the handler notified with the execution result
      * @return a reference to this, so the API can be used fluently
      */
-    <R> SqlClient preparedBatch(String sql, List!(Tuple) batch, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+    // <R> SqlClient preparedBatch(string sql, List!(Tuple) batch, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
     /**
      * Close the client and release the associated resources.

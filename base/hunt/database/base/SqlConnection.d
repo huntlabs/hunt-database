@@ -17,14 +17,14 @@
 
 module hunt.database.base.SqlConnection;
 
-import io.vertx.codegen.annotations.Fluent;
-import io.vertx.codegen.annotations.GenIgnore;
-import io.vertx.codegen.annotations.VertxGen;
 import hunt.database.base.AsyncResult;
-import io.vertx.core.Handler;
+import hunt.database.base.Common;
+import hunt.database.base.PreparedQuery;
+import hunt.database.base.RowSet;
+import hunt.database.base.SqlClient;
 
 import hunt.collection.List;
-import java.util.stream.Collector;
+// import java.util.stream.Collector;
 
 /**
  * A connection to database server.
@@ -34,72 +34,70 @@ import java.util.stream.Collector;
  */
 interface SqlConnection : SqlClient {
 
-  /**
-   * Create a prepared query.
-   *
-   * @param sql the sql
-   * @param handler the handler notified with the prepared query asynchronously
-   */
-  SqlConnection prepare(String sql, Handler!(AsyncResult!(PreparedQuery)) handler);
+    /**
+     * Create a prepared query.
+     *
+     * @param sql the sql
+     * @param handler the handler notified with the prepared query asynchronously
+     */
+    SqlConnection prepare(string sql, PreparedQueryHandler handler);
 
-  /**
-   * Set an handler called with connection errors.
-   *
-   * @param handler the handler
-   * @return a reference to this, so the API can be used fluently
-   */
-  SqlConnection exceptionHandler(Handler!(Throwable) handler);
+    /**
+     * Set an handler called with connection errors.
+     *
+     * @param handler the handler
+     * @return a reference to this, so the API can be used fluently
+     */
+    SqlConnection exceptionHandler(ThrowableHandler handler);
 
-  /**
-   * Set an handler called when the connection is closed.
-   *
-   * @param handler the handler
-   * @return a reference to this, so the API can be used fluently
-   */
-  SqlConnection closeHandler(Handler!(Void) handler);
+    /**
+     * Set an handler called when the connection is closed.
+     *
+     * @param handler the handler
+     * @return a reference to this, so the API can be used fluently
+     */
+    SqlConnection closeHandler(VoidHandler handler);
 
-  /**
-   * Begin a transaction and returns a {@link Transaction} for controlling and tracking
-   * this transaction.
-   * <p/>
-   * When the connection is explicitely closed, any inflight transaction is rollbacked.
-   *
-   * @return the transaction instance
-   */
-  Transaction begin();
+    /**
+     * Begin a transaction and returns a {@link Transaction} for controlling and tracking
+     * this transaction.
+     * <p/>
+     * When the connection is explicitely closed, any inflight transaction is rollbacked.
+     *
+     * @return the transaction instance
+     */
+    Transaction begin();
 
-  /**
-   * @return whether the connection uses SSL
-   */
-  boolean isSSL();
+    /**
+     * @return whether the connection uses SSL
+     */
+    bool isSSL();
 
-  /**
-   * Close the current connection after all the pending commands have been processed.
-   */
-  void close();
+    /**
+     * Close the current connection after all the pending commands have been processed.
+     */
+    void close();
 
-  override
-  SqlConnection preparedQuery(String sql, Handler!(AsyncResult!(RowSet)) handler);
+    SqlConnection preparedQuery(string sql, RowSetHandler handler);
 
-  override
-  @GenIgnore
-  <R> SqlConnection preparedQuery(String sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+    // override
+    // <R> SqlConnection preparedQuery(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
-  override
-  SqlConnection query(String sql, Handler!(AsyncResult!(RowSet)) handler);
+    // override
+    SqlConnection query(string sql, RowSetHandler handler);
 
-  override
-  <R> SqlConnection query(String sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+    // override
+    // <R> SqlConnection query(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
-  override
-  SqlConnection preparedQuery(String sql, Tuple arguments, Handler!(AsyncResult!(RowSet)) handler);
+    // override
+    // SqlConnection preparedQuery(string sql, Tuple arguments, RowSetHandler handler);
 
-  override
-  <R> SqlConnection preparedQuery(String sql, Tuple arguments, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+    // override
+    // <R> SqlConnection preparedQuery(string sql, Tuple arguments, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
-  override
-  SqlConnection preparedBatch(String sql, List!(Tuple) batch, Handler!(AsyncResult!(RowSet)) handler);
+    // override
+    // SqlConnection preparedBatch(string sql, List!(Tuple) batch, RowSetHandler handler);
 
-  override
-  <R> SqlConnection preparedBatch(String sql, List!(Tuple) batch, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+    // override
+    // <R> SqlConnection preparedBatch(string sql, List!(Tuple) batch, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 }

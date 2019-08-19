@@ -46,7 +46,7 @@ interface Transaction : SqlClient {
     /**
      * Like {@link #commit} with an handler to be notified when the transaction commit has completed
      */
-    void commit(Handler!(AsyncResult!(Void)) handler);
+    void commit(VoidHandler handler);
 
     /**
      * Rollback the current transaction.
@@ -56,7 +56,7 @@ interface Transaction : SqlClient {
     /**
      * Like {@link #rollback} with an handler to be notified when the transaction rollback has completed
      */
-    void rollback(Handler!(AsyncResult!(Void)) handler);
+    void rollback(VoidHandler handler);
 
     /**
      * Set an handler to be called when the transaction is aborted.

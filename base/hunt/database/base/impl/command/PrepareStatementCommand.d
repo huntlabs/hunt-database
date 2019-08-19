@@ -21,20 +21,20 @@ import hunt.database.base.impl.PreparedStatement;
 
 class PrepareStatementCommand : CommandBase!(PreparedStatement) {
 
-  private final String sql;
-  long statement; // 0 means unamed statement otherwise CString
-  Object cached;
+    private string sql;
+    long statement; // 0 means unamed statement otherwise CString
+    Object cached;
 
-  PrepareStatementCommand(String sql) {
-    this.sql = sql;
-  }
+    this(string sql) {
+        this.sql = sql;
+    }
 
-  String sql() {
-    return sql;
-  }
+    string sql() {
+        return sql;
+    }
 
-  long statement() {
-    return statement;
-  }
+    long statement() {
+        return statement;
+    }
 
 }

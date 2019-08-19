@@ -17,15 +17,16 @@
 
 module hunt.database.base.PreparedQuery;
 
+import hunt.database.base.Common;
+import hunt.database.base.RowSet;
 import hunt.database.base.impl.ArrayTuple;
-import io.vertx.codegen.annotations.Fluent;
-import io.vertx.codegen.annotations.GenIgnore;
-import io.vertx.codegen.annotations.VertxGen;
 import hunt.database.base.AsyncResult;
-import io.vertx.core.Handler;
 
 import hunt.collection.List;
-import java.util.stream.Collector;
+// import java.util.stream.Collector;
+
+
+alias PreparedQueryHandler = AsyncResultHandler!(PreparedQuery);
 
 /**
  * A prepared query.
@@ -37,16 +38,17 @@ interface PreparedQuery {
     /**
      * Calls {@link #execute(Tuple, Handler)} with an empty tuple argument.
      */
-    default PreparedQuery execute(Handler!(AsyncResult!(RowSet)) handler) {
-        return execute(ArrayTuple.EMPTY, handler);
-    }
+    PreparedQuery execute(RowSetHandler handler);
+    // {
+    //     return execute(ArrayTuple.EMPTY, handler);
+    // }
 
     /**
      * Calls {@link #execute(Tuple, Collector, Handler)} with an empty tuple argument.
      */
-    default <R> PreparedQuery execute(Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler) {
-        return execute(ArrayTuple.EMPTY, collector, handler);
-    }
+    // default <R> PreparedQuery execute(Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler) {
+    //     return execute(ArrayTuple.EMPTY, collector, handler);
+    // }
 
     /**
      * Create a cursor with the provided {@code arguments}.
@@ -54,7 +56,7 @@ interface PreparedQuery {
      * @param args the list of arguments
      * @return the query
      */
-    PreparedQuery execute(Tuple args, Handler!(AsyncResult!(RowSet)) handler);
+    PreparedQuery execute(Tuple args, RowSetHandler handler);
 
     /**
      * Create a cursor with the provided {@code arguments}.
@@ -63,14 +65,15 @@ interface PreparedQuery {
      * @param collector the collector
      * @return the query
      */
-    <R> PreparedQuery execute(Tuple args, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+    // <R> PreparedQuery execute(Tuple args, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
     /**
      * @return create a query cursor with a {@code fetch} size and empty arguments
      */
-    default Cursor cursor() {
-        return cursor(ArrayTuple.EMPTY);
-    }
+    Cursor cursor();
+    // default Cursor cursor() {
+    //     return cursor(ArrayTuple.EMPTY);
+    // }
 
     /**
      * Create a cursor with the provided {@code arguments}.
@@ -98,7 +101,7 @@ interface PreparedQuery {
      * @param argsList the list of tuple for the batch
      * @return the createBatch
      */
-    PreparedQuery batch(List!(Tuple) argsList, Handler!(AsyncResult!(RowSet)) handler);
+    PreparedQuery batch(List!(Tuple) argsList, RowSetHandler handler);
 
     /**
      * Execute a batch.
@@ -107,7 +110,7 @@ interface PreparedQuery {
      * @param collector the collector
      * @return the createBatch
      */
-    <R> PreparedQuery batch(List!(Tuple) argsList, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+    // <R> PreparedQuery batch(List!(Tuple) argsList, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
     /**
      * Close the prepared query and release its resources.
@@ -117,6 +120,6 @@ interface PreparedQuery {
     /**
      * Like {@link #close()} but notifies the {@code completionHandler} when it's closed.
      */
-    void close(Handler!(AsyncResult!(Void)) completionHandler);
+    void close(VoidHandler completionHandler);
 
 }

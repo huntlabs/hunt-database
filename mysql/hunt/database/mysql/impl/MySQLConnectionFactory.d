@@ -52,7 +52,7 @@ class MySQLConnectionFactory {
   }
 
   // Called by hook
-  private void close(Handler!(AsyncResult!(Void)) completionHandler) {
+  private void close(VoidHandler completionHandler) {
     netClient.close();
     completionHandler.handle(Future.succeededFuture());
   }

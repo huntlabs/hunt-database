@@ -17,7 +17,7 @@
 
 module hunt.database.postgresql.impl.util.Util;
 
-// import io.netty.buffer.ByteBuf;
+import hunt.net.buffer.ByteBuf;
 // import io.vertx.core.buffer.Buffer;
 
 // import java.nio.charset.Charset;

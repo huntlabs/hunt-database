@@ -16,9 +16,9 @@
  */
 module hunt.database.postgresql.impl.PostgreSQLConnectionImpl;
 
-import hunt.database.postgresql.PgConnectOptions;
-import hunt.database.postgresql.PgConnection;
-import hunt.database.postgresql.PgNotification;
+import hunt.database.postgresql.PostgreSQLConnectOptions;
+import hunt.database.postgresql.PostgreSQLConnection;
+import hunt.database.postgresql.PostgreSQLNotification;
 import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.SqlConnectionImpl;
 import hunt.database.base.AsyncResult;
@@ -91,7 +91,7 @@ class PgConnectionImpl : SqlConnectionImpl!(PgConnectionImpl), PgConnection  {
     }
 
     override
-    PgConnection cancelRequest(Handler!(AsyncResult!(Void)) handler) {
+    PgConnection cancelRequest(VoidHandler handler) {
         implementationMissing(false);
         // Context current = Vertx.currentContext();
         // if (current == context) {

@@ -17,6 +17,7 @@
 module hunt.database.postgresql.impl.codec.ExtendedQueryCommandCodec;
 
 import hunt.database.postgresql.impl.codec.ExtendedQueryCommandBaseCodec;
+import hunt.database.postgresql.impl.codec.PgEncoder;
 
 import hunt.database.base.impl.command.ExtendedQueryCommand;
 
@@ -33,7 +34,7 @@ class ExtendedQueryCommandCodec(R) : ExtendedQueryCommandBaseCodec!(R, ExtendedQ
             encoder.writeExecute(cmd.cursorId(), cmd.fetch());
             encoder.writeSync();
         } else {
-            PgPreparedStatement ps = (PgPreparedStatement) cmd.preparedStatement();
+            PgPreparedStatement ps = cast(PgPreparedStatement) cmd.preparedStatement();
             if (ps.bind.statement == 0) {
                 encoder.writeParse(new Parse(ps.sql()));
             }
