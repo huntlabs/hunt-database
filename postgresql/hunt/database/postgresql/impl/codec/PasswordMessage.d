@@ -19,6 +19,9 @@ module hunt.database.postgresql.impl.codec.PasswordMessage;
 
 import hunt.database.postgresql.impl.util.MD5Authentication;
 
+import std.digest.md;
+import std.range;
+
 /**
  * @author <a href="mailto:emad.albloushi@gmail.com">Emad Alblueshi</a>
  */
@@ -27,6 +30,11 @@ class PasswordMessage {
     string hash;
 
     this(string username, string password, byte[] salt) {
-        this.hash = salt !is null ? MD5Authentication.encode(username, password, salt) : password;
+        if(salt.empty()) {
+            this.hash = password;
+        } else {
+            auto v = md5Of(cast(byte[])username, cast(byte[])password, salt);
+            this.hash =  v.toHexString();
+        }
     }
 }

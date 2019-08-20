@@ -18,11 +18,21 @@
 module hunt.database.postgresql.impl.codec.PgDecoder;
 
 import hunt.database.postgresql.impl.codec.Bind;
+import hunt.database.postgresql.impl.codec.DataFormat;
+import hunt.database.postgresql.impl.codec.DataType;
+import hunt.database.postgresql.impl.codec.DataTypeDesc;
 import hunt.database.postgresql.impl.codec.Describe;
+import hunt.database.postgresql.impl.codec.ErrorResponse;
+import hunt.database.postgresql.impl.codec.InitCommandCodec;
+import hunt.database.postgresql.impl.codec.NoticeResponse;
+import hunt.database.postgresql.impl.codec.PgColumnDesc;
 import hunt.database.postgresql.impl.codec.PgCommandCodec;
-import hunt.database.postgresql.impl.codec.QueryCommandBaseCodec;
+import hunt.database.postgresql.impl.codec.PgParamDesc;
+import hunt.database.postgresql.impl.codec.PgProtocolConstants;
+import hunt.database.postgresql.impl.codec.PgRowDesc;
 import hunt.database.postgresql.impl.codec.Parse;
 import hunt.database.postgresql.impl.codec.PasswordMessage;
+import hunt.database.postgresql.impl.codec.QueryCommandBaseCodec;
 import hunt.database.postgresql.impl.codec.Response;
 import hunt.database.postgresql.impl.codec.StartupMessage;
 
@@ -44,9 +54,10 @@ import hunt.collection.Map;
 import hunt.Exceptions;
 import hunt.net.codec.Decoder;
 import hunt.net.Connection;
-import hunt.net.buffer.ByteBuf;
+import hunt.net.buffer;
 
 import std.container.dlist;
+import std.conv;
 
 /**
  *
@@ -58,7 +69,7 @@ import std.container.dlist;
 class PgDecoder : Decoder {
 
     // private final ArrayDeque<PgCommandCodec<?, ?>> inflight;
-    // private ByteBufAllocator alloc;
+    private ByteBufAllocator alloc;
     private DList!(PgCommandCodecBase) inflight;
     private ByteBuf inBuffer;
     private CommandCompleteProcessor processor;
@@ -66,6 +77,7 @@ class PgDecoder : Decoder {
     this(ref DList!(PgCommandCodecBase) inflight) {
         this.inflight = inflight;
         processor = new CommandCompleteProcessor();
+        alloc = UnpooledByteBufAllocator.DEFAULT();
     }
 
     // override
@@ -75,8 +87,8 @@ class PgDecoder : Decoder {
 
     // void channelRead(ChannelHandlerContext ctx, Object msg) 
 
-    void decode(ByteBuf buff, Connection connection) {
-        ByteBuf buff = cast(ByteBuf) msg;
+    void decode(ByteBuffer msg, Connection connection) {
+        ByteBuf buff = Unpooled.wrappedBuffer(msg);
         if (inBuffer is null) {
             inBuffer = buff;
         } else {
@@ -121,7 +133,7 @@ class PgDecoder : Decoder {
                         break;
                     }
                     default: {
-                        decodeMessage(ctx, id, inBuffer);
+                        decodeMessage(id, inBuffer);
                     }
                 }
             } finally {
@@ -225,10 +237,10 @@ class PgDecoder : Decoder {
                 fieldName,
                 tableOID,
                 columnAttributeNumber,
-                DataType.valueOf(typeOID),
+                DataTypes.valueOf(typeOID),
                 typeSize,
                 typeModifier,
-                DataFormat.valueOf(textOrBinary)
+                cast(DataFormat)(textOrBinary)
             );
             columns[c] = column;
         }
@@ -371,7 +383,8 @@ class PgDecoder : Decoder {
             case PgProtocolConstants.AUTHENTICATION_TYPE_GSS_CONTINUE:
             case PgProtocolConstants.AUTHENTICATION_TYPE_SSPI:
             default:
-                throw new UnsupportedOperationException("Authentication type " ~ type ~ " is not supported inBuffer the client");
+                throw new UnsupportedOperationException("Authentication type " ~ 
+                    type.to!string() ~ " is not supported inBuffer the client");
         }
     }
 
@@ -392,9 +405,9 @@ class PgDecoder : Decoder {
     }
 
     private void decodeParameterDescription(ByteBuf inBuffer) {
-        DataType[] paramDataTypes = new DataType[inBuffer.readUnsignedShort()];
+        DataTypeDesc[] paramDataTypes = new DataTypeDesc[inBuffer.readUnsignedShort()];
         for (int c = 0; c < paramDataTypes.length; ++c) {
-            paramDataTypes[c] = DataType.valueOf(inBuffer.readInt());
+            paramDataTypes[c] = DataTypes.valueOf(inBuffer.readInt());
         }
         inflight.front().handleParameterDescription(new PgParamDesc(paramDataTypes));
     }

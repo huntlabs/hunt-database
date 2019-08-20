@@ -17,8 +17,10 @@
 module hunt.database.postgresql.impl.codec.InitCommandCodec;
 
 import hunt.database.postgresql.impl.codec.ErrorResponse;
+import hunt.database.postgresql.impl.codec.PasswordMessage;
 import hunt.database.postgresql.impl.codec.PgCommandCodec;
 import hunt.database.postgresql.impl.codec.PgEncoder;
+import hunt.database.postgresql.impl.codec.StartupMessage;
 
 import hunt.database.base.impl.TxStatus;
 import hunt.database.base.impl.command.CommandResponse;
@@ -77,8 +79,8 @@ class InitCommandCodec : PgCommandCodec!(Connection, InitCommand) {
 
     override
     void handleErrorResponse(ErrorResponse errorResponse) {
-        CommandResponse!(Connection) resp = CommandResponse.failure(errorResponse.toException());
-        completionHandler.handle(resp);
+        CommandResponse!(Connection) resp = failure!Connection(errorResponse.toException());
+        completionHandler(resp);
     }
 
     override
@@ -93,10 +95,11 @@ class InitCommandCodec : PgCommandCodec!(Connection, InitCommand) {
         // }
         CommandResponse!(Connection) fut;
         if(encoding != "UTF_8") {
-            fut = CommandResponse.failure(encoding ~ " is not supported in the client only UTF8");
+            fut = failure!(Connection)(encoding ~ " is not supported in the client only UTF8");
         } else {
-            fut = CommandResponse.success(cmd.connection());
+            fut = success!(Connection)(cmd.connection());
         }
-        completionHandler.handle(fut);
+        if(completionHandler !is null)
+            completionHandler(fut);
     }
 }

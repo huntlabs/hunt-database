@@ -47,7 +47,7 @@ class PgCodec : Codec { // CombinedChannelDuplexHandler!(PgDecoder, PgEncoder)
     this() {
         decoder = new PgDecoder(inflight);
         encoder = new PgEncoder(decoder, inflight);
-        init(decoder, encoder);
+        // init(decoder, encoder);
     }
 
 

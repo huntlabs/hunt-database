@@ -17,7 +17,14 @@
 module hunt.database.postgresql.impl.codec.PgEncoder;
 
 import hunt.database.postgresql.impl.codec.Bind;
+import hunt.database.postgresql.impl.codec.DataTypeCodec;
+import hunt.database.postgresql.impl.codec.DataFormat;
+import hunt.database.postgresql.impl.codec.DataType;
+import hunt.database.postgresql.impl.codec.DataTypeDesc;
 import hunt.database.postgresql.impl.codec.Describe;
+import hunt.database.postgresql.impl.codec.Describe;
+import hunt.database.postgresql.impl.codec.InitCommandCodec;
+import hunt.database.postgresql.impl.codec.PgColumnDesc;
 import hunt.database.postgresql.impl.codec.PgCommandCodec;
 import hunt.database.postgresql.impl.codec.PgDecoder;
 import hunt.database.postgresql.impl.codec.Query;
@@ -54,9 +61,9 @@ import hunt.collection.Map;
 import hunt.Exceptions;
 import hunt.net.codec.Encoder;
 import hunt.net.Connection;
-// import static hunt.database.postgresql.impl.util.Util.writeCString;
-// import static java.nio.charset.StandardCharsets.*;
+import hunt.text.Charset;
 
+alias writeCString = Util.writeCString;
 
 import std.container.dlist;
 
@@ -81,7 +88,7 @@ final class PgEncoder : EncoderChain {
     // private ArrayDeque<PgCommandCodec<?, ?>> inflight;
     private DList!(PgCommandCodecBase) inflight;
     private Connection ctx;
-    private ByteBuffer outBuffer;
+    private ByteBuf outBuffer;
     private PgDecoder dec;
 
     this(PgDecoder dec, ref DList!(PgCommandCodecBase) inflight) {
@@ -106,7 +113,7 @@ final class PgEncoder : EncoderChain {
         //     // ctx.fireChannelRead(resp);
         // };
         // codec.noticeHandler = ctx::fireChannelRead;
-        inflight.add(codec);
+        inflight.insertBack(codec);
         codec.encode(this);
     }
 
@@ -157,9 +164,12 @@ final class PgEncoder : EncoderChain {
 
     void flush() {
         if (outBuffer !is null) {
-            ByteBuffer buff = outBuffer;
+            ByteBuf buff = outBuffer;
             outBuffer = null;
-            connection.write(buff);
+            // FIXME: Needing refactor or cleanup -@zxp at 8/20/2019, 5:45:25 PM
+            // 
+            implementationMissing(false);
+            // connection.write(buff);
             // ctx.writeAndFlush(buff);
         } else {
             // ctx.flush();
@@ -229,8 +239,8 @@ final class PgEncoder : EncoderChain {
         writeCString(outBuffer, StartupMessage.BUFF_DATABASE);
         Util.writeCStringUTF8(outBuffer, msg.database);
         foreach (MapEntry!(string, string) property ; msg.properties) {
-            writeCString(outBuffer, property.getKey(), UTF_8);
-            writeCString(outBuffer, property.getValue(), UTF_8);
+            writeCString(outBuffer, property.getKey(), StandardCharsets.UTF_8);
+            writeCString(outBuffer, property.getValue(), StandardCharsets.UTF_8);
         }
 
         outBuffer.writeByte(0);
@@ -353,7 +363,7 @@ final class PgEncoder : EncoderChain {
         outBuffer.writeByte(EXECUTE);
         outBuffer.writeInt(0);
         if (portal !is null) {
-            outBuffer.writeCharSequence(portal, UTF_8);
+            outBuffer.writeCharSequence(portal, StandardCharsets.UTF_8);
         }
         outBuffer.writeByte(0);
         outBuffer.writeInt(rowCount); // Zero denotes "no limit" maybe for ReadStream!(Row)
@@ -374,7 +384,7 @@ final class PgEncoder : EncoderChain {
         outBuffer.writeByte(BIND);
         outBuffer.writeInt(0);
         if (portal !is null) {
-            outBuffer.writeCharSequence(portal, UTF_8);
+            outBuffer.writeCharSequence(portal, StandardCharsets.UTF_8);
         }
         outBuffer.writeByte(0);
         if (bind.statement == 0) {
@@ -396,7 +406,7 @@ final class PgEncoder : EncoderChain {
                 // NULL value
                 outBuffer.writeInt(-1);
             } else {
-                DataType dataType = bind.paramTypes[c];
+                DataTypeDesc dataType = bind.paramTypes[c];
                 if (dataType.supportsBinary) {
                     int idx = outBuffer.writerIndex();
                     outBuffer.writeInt(0);
@@ -425,7 +435,9 @@ final class PgEncoder : EncoderChain {
 
     private void ensureBuffer() {
         if (outBuffer is null) {
-            outBuffer = ctx.alloc().ioBuffer();
+            // outBuffer = ctx.alloc().ioBuffer();
+            import hunt.net.buffer;
+            outBuffer = Unpooled.buffer();
         }
     }
 }

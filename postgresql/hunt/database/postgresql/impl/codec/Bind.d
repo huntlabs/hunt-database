@@ -18,6 +18,7 @@
 module hunt.database.postgresql.impl.codec.Bind;
 
 import hunt.database.postgresql.impl.codec.DataType;
+import hunt.database.postgresql.impl.codec.DataTypeDesc;
 import hunt.database.postgresql.impl.codec.PgColumnDesc;
 
 /**
@@ -26,10 +27,11 @@ import hunt.database.postgresql.impl.codec.PgColumnDesc;
 final class Bind {
 
     long statement;
-    DataType[] paramTypes;
+    // DataType[] paramTypes;
+    DataTypeDesc[] paramTypes;
     PgColumnDesc[] resultColumns;
 
-    this(long statement, DataType[] paramTypes, PgColumnDesc[] resultColumns) {
+    this(long statement, DataTypeDesc[] paramTypes, PgColumnDesc[] resultColumns) {
         this.statement = statement;
         this.paramTypes = paramTypes;
         this.resultColumns = resultColumns;

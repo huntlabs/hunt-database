@@ -38,10 +38,10 @@ class PgColumnDesc {
     int typeModifier;
 
     this(string name, int relationId, short relationAttributeNo, 
-            DataTypeDesc dataType, short length, int typeModifier) {
+            DataTypeDesc dataType, short length, int typeModifier, DataFormat dataFormat) {
         this.name = name;
         this.dataType = dataType;
-        this.dataFormat = dataType.supportsBinary ? DataFormat.BINARY : DataFormat.TEXT;
+        this.dataFormat = dataFormat; // dataType.supportsBinary ? DataFormat.BINARY : DataFormat.TEXT;
         // this.dataType = DataTypeDescs.valueOf(cast(int)dataType);
         // this.dataFormat = dataFormat;
         this.length = length;

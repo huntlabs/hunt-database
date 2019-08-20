@@ -21,13 +21,15 @@ import hunt.database.base.impl.command.CommandBase;
 
 import hunt.Object;
 
+import std.concurrency : initOnce;
+
 class CloseConnectionCommand : CommandBase!(Void) {
 
-    __gshared CloseConnectionCommand INSTANCE;
-
-    shared static this() {
-        INSTANCE = new CloseConnectionCommand();
+    static CloseConnectionCommand INSTANCE() {
+        __gshared CloseConnectionCommand inst;
+        return initOnce!inst(new CloseConnectionCommand());
     }
+
 
     private this() {
         handler = (ar) {};

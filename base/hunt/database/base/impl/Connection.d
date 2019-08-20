@@ -23,7 +23,7 @@ alias DbConnection = Connection;
 
 interface Connection {
 
-    void init(Holder holder);
+    void initHolder(Holder holder);
 
     bool isSsl();
 

@@ -68,7 +68,8 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection //, C
     protected void schedule(ICommand cmd) {
         // if (context == Vertx.currentContext()) {
             if (tx !is null) {
-                tx.schedule(cmd);
+                // tx.schedule(cmd);
+                implementationMissing(false);
             } else {
                 conn.schedule(cmd);
             }
@@ -120,7 +121,7 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection //, C
         if (tx !is null) {
             throw new IllegalStateException();
         }
-        tx = new TransactionImpl(context, conn, (v) {
+        tx = new TransactionImpl(conn, (v) {
             tx = null;
             if (closeOnEnd) {
                 close();
@@ -133,7 +134,7 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection //, C
 
     override
     void close() {
-        conn.close();
+        conn.close(null);
         // if (context == Vertx.currentContext()) {
         //     if (tx !is null) {
         //         tx.rollback(ar -> conn.close(this));

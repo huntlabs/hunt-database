@@ -60,9 +60,9 @@ interface PgPool : Pool {
     /**
      * Like {@link #pool(string, PoolOptions)} with a default {@code poolOptions}.
      */
-    static PgPool pool(string connectionUri) {
-        return pool(connectionUri, new PoolOptions());
-    }
+    // static PgPool pool(string connectionUri) {
+    //     return pool(connectionUri, new PoolOptions());
+    // }
 
     /**
      * Like {@link #pool(PgConnectOptions, PoolOptions)} with {@code connectOptions} build from {@code connectionUri}.

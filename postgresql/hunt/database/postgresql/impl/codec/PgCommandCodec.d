@@ -58,19 +58,17 @@ abstract class PgCommandCodecBase {
     }
 
     void handleRowDescription(PgRowDesc rowDescription) {
-        warning(typeid(this).name ~ " should handle message " ~ rowDescription);
+        warning(typeid(this).name ~ " should handle message " ~ rowDescription.toString());
     }
 
     void handleNoData() {
         warning(typeid(this).name ~ " should handle message NoData");
     }
 
-    void handleNoticeResponse(NoticeResponse noticeResponse) {
-        noticeHandler.handle(noticeResponse);
-    }
+    void handleNoticeResponse(NoticeResponse noticeResponse);
 
     void handleErrorResponse(ErrorResponse errorResponse) {
-        warning(typeid(this).name ~ " should handle message " ~ errorResponse);
+        warning(typeid(this).name ~ " should handle message " ~ errorResponse.toString());
     }
 
     void handlePortalSuspended() {
@@ -138,5 +136,9 @@ abstract class PgCommandCodec(R, C) : PgCommandCodecBase
             resp = success(result, txStatus);
         }
         completionHandler(resp);
+    }
+
+    override void handleNoticeResponse(NoticeResponse noticeResponse) {
+        noticeHandler(noticeResponse);
     }
 }

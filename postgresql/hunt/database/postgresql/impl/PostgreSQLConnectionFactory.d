@@ -190,19 +190,19 @@ class PgConnectionFactory {
 
                 override void exceptionCaught(Connection connection, Exception t) {
                     warning(t);
-                    handler(failedResult(t));
+                    handler(failedResult!(PgSocketConnection)(t));
                 }
 
                 override void failedOpeningConnection(int connectionId, Exception t) {
                     warning(t);
 
-                    handler(failedResult(t));
+                    handler(failedResult!(PgSocketConnection)(t));
                     client.close(); 
                 }
 
                 override void failedAcceptingConnection(int connectionId, Exception t) {
                     warning(t);
-                    handler(failedResult(t));
+                    handler(failedResult!(PgSocketConnection)(t));
                 }
             });        
 
@@ -217,7 +217,7 @@ class PgConnectionFactory {
             }
             
             if(handler !is null)
-                handler(failedResult(e));
+                handler(failedResult!PgSocketConnection(e));
         }
     }
 

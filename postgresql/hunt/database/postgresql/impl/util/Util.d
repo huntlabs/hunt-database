@@ -18,7 +18,7 @@
 module hunt.database.postgresql.impl.util.Util;
 
 import hunt.net.buffer.ByteBuf;
-// import io.vertx.core.buffer.Buffer;
+import hunt.text.Charset;
 
 // import java.nio.charset.Charset;
 // import java.util.stream.Collectors;
@@ -37,33 +37,33 @@ class Util {
     //     return s;
     // }
 
-    // static string readCStringUTF8(ByteBuf src) {
-    //     int len = src.bytesBefore(ZERO);
-    //     string s = src.readCharSequence(len, UTF_8).toString();
-    //     src.readByte();
-    //     return s;
-    // }
+    static string readCStringUTF8(ByteBuf src) {
+        int len = src.bytesBefore(ZERO);
+        string s = src.readCharSequence(len, StandardCharsets.UTF_8).toString();
+        src.readByte();
+        return s;
+    }
 
-    // static void writeCString(ByteBuf dst, string s, Charset charset) {
-    //     dst.writeCharSequence(s, charset);
-    //     dst.writeByte(0);
-    // }
+    static void writeCString(ByteBuf dst, string s, Charset charset) {
+        dst.writeCharSequence(s, charset);
+        dst.writeByte(0);
+    }
 
-    // static void writeCString(ByteBuf dst, ByteBuf buf) {
-    //     // Important : won't not change data index
-    //     dst.writeBytes(buf, buf.readerIndex(), buf.readableBytes());
-    //     dst.writeByte(0);
-    // }
+    static void writeCString(ByteBuf dst, ByteBuf buf) {
+        // Important : won't not change data index
+        dst.writeBytes(buf, buf.readerIndex(), buf.readableBytes());
+        dst.writeByte(0);
+    }
 
-    // static void writeCStringUTF8(ByteBuf dst, string s) {
-    //     dst.writeCharSequence(s, UTF_8);
-    //     dst.writeByte(0);
-    // }
+    static void writeCStringUTF8(ByteBuf dst, string s) {
+        dst.writeCharSequence(s, StandardCharsets.UTF_8);
+        dst.writeByte(0);
+    }
 
-    // static void writeCString(ByteBuf dst, byte[] bytes) {
-    //     dst.writeBytes(bytes, 0, bytes.length);
-    //     dst.writeByte(0);
-    // }
+    static void writeCString(ByteBuf dst, byte[] bytes) {
+        dst.writeBytes(bytes, 0, bytes.length);
+        dst.writeByte(0);
+    }
 
     // static string buildInvalidArgsError(Stream!(Object) values, Stream!(Class) types) {
     //     return "Values [" ~ values.map(string::valueOf).collect(Collectors.joining(", ")) +

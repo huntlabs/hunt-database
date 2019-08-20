@@ -71,7 +71,9 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
 
     override
     C preparedQuery(string sql, Tuple arguments, RowSetHandler handler) {
-        return preparedQuery(sql, arguments, false, RowSetImpl.FACTORY, RowSetImpl.COLLECTOR, handler);
+        // return preparedQuery(sql, arguments, false, RowSetImpl.FACTORY, RowSetImpl.COLLECTOR, handler);
+        implementationMissing(false);
+        return C.init;
     }
 
     // override

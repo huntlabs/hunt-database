@@ -76,7 +76,7 @@ abstract class SocketConnectionBase : DbConnection {
     //     return context;
     // }
 
-    void init() {
+    void initialization() {
 
         import hunt.net.Connection;
         ConnectionEventHandlerAdapter adapter = new ConnectionEventHandlerAdapter();
@@ -102,7 +102,7 @@ abstract class SocketConnectionBase : DbConnection {
     }
 
     override
-    void init(Holder holder) {
+    void initHolder(Holder holder) {
         this.holder = holder;
     }
 

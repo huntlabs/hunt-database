@@ -59,10 +59,10 @@ class PgSocketConnection : SocketConnectionBase {
     }
 
     override
-    void init() {
+    void initialization() {
         codec = new PgCodec();
         socket().setCodec(codec);
-        super.init();
+        super.initialization();
     }
 
     // void sendStartupMessage(String username, String password, String database, Map!(String, String) properties, Handler<? super CommandResponse!(Connection)> completionHandler) {
@@ -73,11 +73,11 @@ class PgSocketConnection : SocketConnectionBase {
 
     void sendCancelRequestMessage(int processId, int secretKey, Callback handler) {
         ByteBuffer buffer = BufferUtils.allocate(16);
-        buffer.appendInt(16);
+        buffer.putInt(16);
         // cancel request code
-        buffer.appendInt(80877102);
-        buffer.appendInt(processId);
-        buffer.appendInt(secretKey);
+        buffer.putInt(80877102);
+        buffer.putInt(processId);
+        buffer.putInt(secretKey);
 
         socket.write(buffer, new class Callback {
 

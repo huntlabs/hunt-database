@@ -28,15 +28,15 @@ abstract class CommandResponse(R) : AsyncResult!(R) {
 
 template failure(R) {
     CommandResponse!(R) failure(string msg) {
-        return failure(new NoStackTraceThrowable(msg), null);
+        return failure!R(new NoStackTraceThrowable(msg), TxStatus.FAILED);
     }
 
     CommandResponse!(R) failure(string msg, TxStatus txStatus) {
-        return failure(new NoStackTraceThrowable(msg), txStatus);
+        return failure!R(new NoStackTraceThrowable(msg), txStatus);
     }
 
     CommandResponse!(R) failure(Throwable cause) {
-        return failure(cause, null);
+        return failure!R(cause, TxStatus.FAILED);
     }
 
     CommandResponse!(R) failure(Throwable cause, TxStatus txStatus) {
@@ -45,19 +45,23 @@ template failure(R) {
                 super(_txStatus);
             }
 
-            override R result() {
-                return R.init;
+            R result() {
+                static if(is(R == class) || is(R == interface)) {
+                    return null;
+                } else {
+                    return R.init;
+                }
             }
 
-            override Throwable cause() {
+            Throwable cause() {
                 return cause;
             }
 
-            override bool succeeded() {
+            bool succeeded() {
                 return false;
             }
 
-            override bool failed() {
+            bool failed() {
                 return true;
             }
         };
@@ -69,7 +73,7 @@ template failure(R) {
 template success(R) {
 
     CommandResponse!(R) success(R result) {
-        return success(result, null);
+        return success(result, TxStatus.IDLE);
     }
 
     CommandResponse!(R) success(R result, TxStatus txStatus) {
@@ -78,19 +82,19 @@ template success(R) {
                 super(txStatus);
             }
 
-            override R result() {
+            R result() {
                 return result;
             }
 
-            override Throwable cause() {
+            Throwable cause() {
                 return null;
             }
 
-            override bool succeeded() {
+            bool succeeded() {
                 return true;
             }
 
-            override bool failed() {
+            bool failed() {
                 return false;
             }
         };

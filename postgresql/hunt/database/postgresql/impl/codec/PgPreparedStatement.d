@@ -26,6 +26,7 @@ import hunt.database.base.impl.PreparedStatement;
 import hunt.database.base.impl.ParamDesc;
 
 // import hunt.collection.Arrays;
+import std.algorithm;
 import hunt.collection.List;
 
 class PgPreparedStatement : PreparedStatement {

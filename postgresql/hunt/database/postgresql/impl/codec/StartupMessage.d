@@ -22,6 +22,8 @@ import hunt.net.buffer.ByteBuf;
 
 import hunt.collection.Map;
 
+import std.concurrency : initOnce;
+
 // import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**

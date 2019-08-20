@@ -220,7 +220,11 @@ AsyncResult!T succeededResult(T)(T v) {
 AsyncResult!T failedResult(T)(Throwable t) {
     return new class AsyncResult!(T) {
         override T result() {
-            return T.init;
+            static if(is(T == class)) {
+                return null;
+            } else {
+                return T.init;
+            }
         }
 
         override Throwable cause() {

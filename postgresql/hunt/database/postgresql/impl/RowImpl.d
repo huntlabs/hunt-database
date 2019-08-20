@@ -32,11 +32,13 @@ import hunt.database.base.impl.RowDesc;
 import hunt.database.base.impl.RowInternal;
 // import io.vertx.core.buffer.Buffer;
 
+import hunt.collection.List;
+import hunt.Exceptions;
 import hunt.math.BigDecimal;
-// import java.time.*;
-// import java.time.temporal.Temporal;
-// import hunt.collection.List;
-// import java.util.UUID;
+
+import std.algorithm;
+import std.string;
+
 
 class RowImpl : ArrayTuple, RowInternal {
 
@@ -45,7 +47,7 @@ class RowImpl : ArrayTuple, RowInternal {
     private RowDesc desc;
 
     this(RowDesc desc) {
-        super(desc.columnNames().size());
+        super(cast(int)desc.columnNames().length);
         this.desc = desc;
     }
 
@@ -56,16 +58,16 @@ class RowImpl : ArrayTuple, RowInternal {
 
     override
     string getColumnName(int pos) {
-        List!(string) columnNames = desc.columnNames();
-        return pos < 0 || columnNames.size() - 1 < pos ? null : columnNames.get(pos);
+        string[] columnNames = desc.columnNames();
+        return pos < 0 || columnNames.length - 1 < pos ? null : columnNames[pos];
     }
 
     override
     int getColumnIndex(string name) {
-        if (name is null) {
+        if (name.empty()) {
             throw new NullPointerException();
         }
-        return desc.columnNames().indexOf(name);
+        return cast(int)desc.columnNames().countUntil(name);
     }
 
     // override
