@@ -22,6 +22,7 @@ import hunt.database.postgresql.impl.codec.Parse;
 import hunt.database.postgresql.impl.codec.PgCommandCodec;
 import hunt.database.postgresql.impl.codec.PgEncoder;
 import hunt.database.postgresql.impl.codec.PgParamDesc;
+import hunt.database.postgresql.impl.codec.PgPreparedStatement;
 import hunt.database.postgresql.impl.codec.PgRowDesc;
 
 
@@ -69,7 +70,7 @@ class PrepareStatementCommandCodec : PgCommandCodec!(PreparedStatement, PrepareS
 
     override
     void handleErrorResponse(ErrorResponse errorResponse) {
-        failure = errorResponse.toException();
+        _failure = errorResponse.toException();
     }
 
     override

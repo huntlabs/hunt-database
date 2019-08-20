@@ -42,7 +42,7 @@ class PgParamDesc : ParamDesc {
         this._paramDataTypes = paramDataTypes;
     }
 
-    DataType[] paramDataTypes() {
+    DataTypeDesc[] paramDataTypes() {
         return _paramDataTypes;
     }
 
@@ -51,17 +51,18 @@ class PgParamDesc : ParamDesc {
         if (values.size() != cast(int)_paramDataTypes.length) {
             return buildReport(values);
         }
-        for (size_t i = 0;i < _paramDataTypes.length;i++) {
+        for (int i = 0;i < cast(int)_paramDataTypes.length;i++) {
             DataTypeDesc paramDataType = _paramDataTypes[i];
             Object value = values.get(i);
-            Object val = DataTypeCodec.prepare(paramDataType, value);
-            if (val != value) {
-                if (val == DataTypeCodec.REFUSED_SENTINEL) {
-                    return buildReport(values);
-                } else {
-                    values.set(i, val);
-                }
-            }
+            implementationMissing(false);
+            // Object val = DataTypeCodec.prepare(paramDataType, value);
+            // if (val != value) {
+            //     if (val == DataTypeCodec.REFUSED_SENTINEL) {
+            //         return buildReport(values);
+            //     } else {
+            //         values.set(i, val);
+            //     }
+            // }
         }
         return null;
     }

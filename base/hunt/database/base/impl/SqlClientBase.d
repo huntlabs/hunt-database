@@ -17,6 +17,7 @@
 
 module hunt.database.base.impl.SqlClientBase;
 
+import hunt.database.base.impl.ArrayTuple;
 import hunt.database.base.impl.RowSetImpl;
 
 import hunt.database.base.impl.command.CommandScheduler;
@@ -24,15 +25,18 @@ import hunt.database.base.impl.command.ExtendedBatchQueryCommand;
 import hunt.database.base.impl.command.ExtendedQueryCommand;
 import hunt.database.base.impl.command.PrepareStatementCommand;
 import hunt.database.base.impl.command.SimpleQueryCommand;
-import hunt.database.base.SqlResult;
+
 import hunt.database.base.RowSet;
 import hunt.database.base.Row;
 import hunt.database.base.SqlClient;
+import hunt.database.base.SqlResult;
 import hunt.database.base.Tuple;
 import hunt.database.base.AsyncResult;
 
+import hunt.collection.List;
 import hunt.Exceptions;
 import hunt.net.AbstractConnection;
+
 
 // import io.vertx.core.Future;
 // import io.vertx.core.Handler;
@@ -105,20 +109,22 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
     //     return (C) this;
     // }
 
-    // override
-    // C preparedQuery(string sql, RowSetHandler handler) {
-    //     return preparedQuery(sql, ArrayTuple.EMPTY, handler);
-    // }
+    override
+    C preparedQuery(string sql, RowSetHandler handler) {
+        return preparedQuery(sql, ArrayTuple.EMPTY, handler);
+    }
 
     // override
     // <R> C preparedQuery(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler) {
     //     return preparedQuery(sql, ArrayTuple.EMPTY, collector, handler);
     // }
 
-    // override
-    // C preparedBatch(string sql, List!(Tuple) batch, RowSetHandler handler) {
-    //     return preparedBatch(sql, batch, false, RowSetImpl.FACTORY, RowSetImpl.COLLECTOR, handler);
-    // }
+    override
+    C preparedBatch(string sql, List!(Tuple) batch, RowSetHandler handler) {
+        // return preparedBatch(sql, batch, false, RowSetImpl.FACTORY, RowSetImpl.COLLECTOR, handler);
+        implementationMissing(false);
+        return null;
+    }
 
     // override
     // <R> C preparedBatch(string sql, List!(Tuple) batch, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler) {

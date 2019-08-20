@@ -68,10 +68,9 @@ class ArrayTuple : ArrayList!(Object), Tuple {
     //     return null;
     // }
 
-    // override
-    // Object getValue(int pos) {
-    //     return get(pos);
-    // }
+    Object getValue(int pos) {
+        return get(pos);
+    }
 
     // override
     // Short getShort(int pos) {

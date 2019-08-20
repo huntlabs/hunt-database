@@ -17,6 +17,8 @@
 
 module hunt.database.postgresql.impl.codec.DataTypeCodec;
 
+import hunt.database.postgresql.impl.codec.DataType;
+
 // import com.fasterxml.jackson.databind.JsonNode;
 import hunt.net.buffer.ByteBuf;
 // import io.netty.buffer.Unpooled;
@@ -48,6 +50,10 @@ import hunt.database.base.data.Numeric;
 // import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 // import static java.time.format.DateTimeFormatter.ISO_LOCAL_TIME;
 // import static java.util.concurrent.TimeUnit.*;
+
+import hunt.Exceptions;
+
+import std.concurrency : initOnce;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -85,8 +91,11 @@ class DataTypeCodec {
     // private static final LocalDateTime LOCAL_DATE_TIME_EPOCH = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
     // private static final OffsetDateTime OFFSET_DATE_TIME_EPOCH = LocalDateTime.of(2000, 1, 1, 0, 0, 0).atOffset(ZoneOffset.UTC);
 
-    // // Sentinel used when an object is refused by the data type
-    // static final Object REFUSED_SENTINEL = new Object();
+    // Sentinel used when an object is refused by the data type
+    static Object REFUSED_SENTINEL() {
+        __gshared Object inst;
+        return initOnce!inst(new Object());
+    }
 
     // private static final IntFunction!(Boolean[]) BOOLEAN_ARRAY_FACTORY = size -> size == 0 ? empty_boolean_array : new Boolean[size];
     // private static final IntFunction!(Short[]) SHORT_ARRAY_FACTORY = size -> size == 0 ? empty_short_array : new Short[size];
@@ -131,31 +140,32 @@ class DataTypeCodec {
     //     .appendOffset("+HH:mm", "00:00")
     //     .toFormatter();
 
-    // static void encodeText(DataType id, Object value, ByteBuf buff) {
-    //     int index = buff.writerIndex();
-    //     buff.writeInt(0);
-    //     textEncode(id, value, buff);
-    //     buff.setInt(index, buff.writerIndex() - index - 4);
-    // }
+    static void encodeText(DataType id, Object value, ByteBuf buff) {
+        int index = buff.writerIndex();
+        buff.writeInt(0);
+        textEncode(id, value, buff);
+        buff.setInt(index, buff.writerIndex() - index - 4);
+    }
 
-    // private static void textEncode(DataType id, Object value, ByteBuf buff) {
-    //     switch (id) {
-    //         case NUMERIC:
-    //             textEncodeNUMERIC((Number) value, buff);
-    //             break;
-    //         case NUMERIC_ARRAY:
-    //             textEncodeNUMERIC_ARRAY((Number[]) value, buff);
-    //             break;
-    //         case UNKNOWN:
-    //             //default to treating unknown as a string
-    //             buff.writeCharSequence(String.valueOf(value), StandardCharsets.UTF_8);
-    //             break;
-    //         default:
-    //             logger.debug("Data type " ~ id ~ " does not support text encoding");
-    //             buff.writeCharSequence(String.valueOf(value), StandardCharsets.UTF_8);
-    //             break;
-    //     }
-    // }
+    private static void textEncode(DataType id, Object value, ByteBuf buff) {
+        implementationMissing(false);
+        // switch (id) {
+        //     case NUMERIC:
+        //         textEncodeNUMERIC((Number) value, buff);
+        //         break;
+        //     case NUMERIC_ARRAY:
+        //         textEncodeNUMERIC_ARRAY((Number[]) value, buff);
+        //         break;
+        //     case UNKNOWN:
+        //         //default to treating unknown as a string
+        //         buff.writeCharSequence(String.valueOf(value), StandardCharsets.UTF_8);
+        //         break;
+        //     default:
+        //         logger.debug("Data type " ~ id ~ " does not support text encoding");
+        //         buff.writeCharSequence(String.valueOf(value), StandardCharsets.UTF_8);
+        //         break;
+        // }
+    }
 
     // static void encodeBinary(DataType id, Object value, ByteBuf buff) {
     //     switch (id) {

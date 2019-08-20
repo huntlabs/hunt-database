@@ -25,12 +25,17 @@ import hunt.database.base.impl.command.CommandResponse;
 import hunt.database.base.impl.command.CommandBase;
 import hunt.database.base.impl.SqlConnectionBase;
 import hunt.database.base.impl.TransactionImpl;
+import hunt.database.base.PreparedQuery;
+import hunt.database.base.RowSet;
 import hunt.database.base.Transaction;
+import hunt.database.base.Tuple;
 
 import hunt.Exceptions;
 import hunt.logging.ConsoleLogger;
 import hunt.net.AbstractConnection;
 import hunt.Object;
+
+import hunt.collection.List;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -45,6 +50,28 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection //, C
     this(Connection conn) {
         super(conn);
     }
+
+    override C query(string sql, RowSetHandler handler) {
+        return super.query(sql, handler);
+    }
+
+
+    override C prepare(string sql, PreparedQueryHandler handler) {
+        return super.prepare(sql, handler);
+    }
+
+    override C preparedQuery(string sql, RowSetHandler handler) {
+        return super.preparedQuery(sql, handler);
+    }
+
+    override C preparedQuery(string sql, Tuple arguments, RowSetHandler handler) {
+        return super.preparedQuery(sql, arguments, handler);
+    }
+
+
+    // override C preparedBatch(string sql, List!(Tuple) batch, RowSetHandler handler) {
+    //     return super.preparedBatch(sql, batch, handler);
+    // }
 
     // override
     void handleClosed() {

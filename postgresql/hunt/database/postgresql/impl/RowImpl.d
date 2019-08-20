@@ -194,11 +194,13 @@ class RowImpl : ArrayTuple, RowInternal {
     //     return pos == -1 ? null : getBoolean(pos);
     // }
 
-    // override
-    // Object getValue(string name) {
-    //     int pos = desc.columnIndex(name);
-    //     return pos == -1 ? null : getValue(pos);
-    // }
+    override
+    Object getValue(string name) {
+        int pos = desc.columnIndex(name);
+        return pos == -1 ? null : getValue(pos);
+    }
+
+    alias getValue = ArrayTuple.getValue;
 
     // override
     // Short getShort(string name) {

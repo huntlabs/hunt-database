@@ -43,7 +43,7 @@ import hunt.collection.List;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  * @author <a href="mailto:emad.albloushi@gmail.com">Emad Alblueshi</a>
  */
-interface PgConnection : SqlConnection {
+interface PgConnection : SqlConnection { // 
 
     /**
      * Connects to the database and returns the connection if that succeeds.
@@ -103,10 +103,10 @@ interface PgConnection : SqlConnection {
      */
     int secretKey();
 
-    PgConnection prepare(string sql, PreparedQueryHandler handler);
-    PgConnection exceptionHandler(ExceptionHandler handler);
-    PgConnection closeHandler(VoidHandler handler);
-    PgConnection preparedQuery(string sql, RowSetHandler handler);
+    // PgConnection prepare(string sql, PreparedQueryHandler handler);
+    // PgConnection exceptionHandler(ExceptionHandler handler);
+    // PgConnection closeHandler(VoidHandler handler);
+    // PgConnection preparedQuery(string sql, RowSetHandler handler);
 
 
     // <R> PgConnection preparedQuery(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);

@@ -18,9 +18,10 @@
 module hunt.database.postgresql.impl.codec.StartupMessage;
 
 import hunt.net.buffer.ByteBuf;
-// import io.netty.buffer.Unpooled;
+import hunt.net.buffer.Unpooled;
 
 import hunt.collection.Map;
+import hunt.text.Charset;
 
 import std.concurrency : initOnce;
 
@@ -31,8 +32,15 @@ import std.concurrency : initOnce;
  */
 class StartupMessage {
 
-    // static ByteBuf BUFF_USER = Unpooled.copiedBuffer("user", UTF_8).asReadOnly();
-    // static ByteBuf BUFF_DATABASE = Unpooled.copiedBuffer("database", UTF_8).asReadOnly();
+    static ByteBuf BUFF_USER() {
+        __gshared ByteBuf inst;
+        return initOnce!inst(Unpooled.copiedBuffer("user", StandardCharsets.UTF_8).asReadOnly());
+    }
+
+    static ByteBuf BUFF_DATABASE() {
+        __gshared ByteBuf inst;
+        return initOnce!inst(Unpooled.copiedBuffer("database", StandardCharsets.UTF_8).asReadOnly());
+    }
 
     string username;
     string database;

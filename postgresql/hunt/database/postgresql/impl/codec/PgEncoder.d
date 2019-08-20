@@ -410,10 +410,13 @@ final class PgEncoder : EncoderChain {
                 if (dataType.supportsBinary) {
                     int idx = outBuffer.writerIndex();
                     outBuffer.writeInt(0);
-                    DataTypeCodec.encodeBinary(dataType, param, outBuffer);
+                    // FIXME: Needing refactor or cleanup -@zxp at 8/20/2019, 5:57:19 PM
+                    // 
+                    implementationMissing(false);
+                    // DataTypeCodec.encodeBinary(dataType, param, outBuffer);
                     outBuffer.setInt(idx, outBuffer.writerIndex() - idx - 4);
                 } else {
-                    DataTypeCodec.encodeText(dataType, param, outBuffer);
+                    DataTypeCodec.encodeText(cast(DataType)dataType.id, param, outBuffer);
                 }
             }
         }
@@ -422,7 +425,7 @@ final class PgEncoder : EncoderChain {
 
         // Result columns are all in Binary format
         if (bind.resultColumns.length > 0) {
-            outBuffer.writeShort(bind.resultColumns.length);
+            outBuffer.writeShort(cast(int)bind.resultColumns.length);
             foreach (PgColumnDesc resultColumn; bind.resultColumns) {
                 outBuffer.writeShort(resultColumn.dataType.supportsBinary ? 1 : 0);
             }

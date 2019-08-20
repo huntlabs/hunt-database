@@ -17,6 +17,7 @@
 
 module hunt.database.postgresql.impl.util.Util;
 
+import hunt.Byte;
 import hunt.net.buffer.ByteBuf;
 import hunt.text.Charset;
 
@@ -30,16 +31,16 @@ class Util {
 
     private enum byte ZERO = 0;
 
-    // static string readCString(ByteBuf src, Charset charset) {
-    //     int len = src.bytesBefore(ZERO);
-    //     string s = src.readCharSequence(len, charset).toString();
-    //     src.readByte();
-    //     return s;
-    // }
+    static string readCString(ByteBuf src, Charset charset) {
+        int len = src.bytesBefore(ZERO);
+        string s = src.readCharSequence(len, charset);
+        src.readByte();
+        return s;
+    }
 
     static string readCStringUTF8(ByteBuf src) {
         int len = src.bytesBefore(ZERO);
-        string s = src.readCharSequence(len, StandardCharsets.UTF_8).toString();
+        string s = src.readCharSequence(len, StandardCharsets.UTF_8);
         src.readByte();
         return s;
     }
@@ -61,7 +62,7 @@ class Util {
     }
 
     static void writeCString(ByteBuf dst, byte[] bytes) {
-        dst.writeBytes(bytes, 0, bytes.length);
+        dst.writeBytes(bytes, 0, cast(int)bytes.length);
         dst.writeByte(0);
     }
 
@@ -77,11 +78,11 @@ class Util {
     // static int writeHexString(Buffer buffer, ByteBuf to) {
     //     int len = buffer.length();
     //     for (int i = 0; i < len; i++) {
-    //         final int b = Byte.toUnsignedInt(buffer.getByte(i));
-    //         final int firstDigit = b >> 4;
-    //         final byte firstHexDigit = (byte)bin2hex(firstDigit);
-    //         final int secondDigit = b & FIRST_HALF_BYTE_MASK;
-    //         final byte secondHexDigit = (byte)bin2hex(secondDigit);
+    //         int b = Byte.toUnsignedInt(buffer.getByte(i));
+    //         int firstDigit = b >> 4;
+    //         byte firstHexDigit = cast(byte)bin2hex(firstDigit);
+    //         int secondDigit = b & FIRST_HALF_BYTE_MASK;
+    //         byte secondHexDigit = cast(byte)bin2hex(secondDigit);
     //         to.writeByte(firstHexDigit);
     //         to.writeByte(secondHexDigit);
     //     }
@@ -89,10 +90,10 @@ class Util {
     // }
 
     // private static int bin2hex(int digit){
-    //     final int isLessOrEqual9 =(digit-10)>>31;
+    //     int isLessOrEqual9 =(digit-10)>>31;
     //     //isLessOrEqual9==0xff<->digit<=9
     //     //bin2hexAsciiDistance=digit<=9?48:87;
-    //     final int bin2hexAsciiDistance = 48+((~isLessOrEqual9)&39);
+    //     int bin2hexAsciiDistance = 48+((~isLessOrEqual9)&39);
     //     return digit+bin2hexAsciiDistance;
     // }
 }

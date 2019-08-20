@@ -30,7 +30,7 @@ import hunt.net.AbstractConnection;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-abstract class SqlConnectionBase(C) : SqlClientBase!(C) 
+abstract class SqlConnectionBase(C) : SqlClientBase!(C)
          { // if(is(C : SqlConnectionBase))
 
     // protected Context context;

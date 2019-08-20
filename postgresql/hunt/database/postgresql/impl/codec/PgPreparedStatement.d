@@ -18,6 +18,7 @@
 module hunt.database.postgresql.impl.codec.PgPreparedStatement;
 
 import hunt.database.postgresql.impl.codec.Bind;
+import hunt.database.postgresql.impl.codec.DataFormat;
 import hunt.database.postgresql.impl.codec.PgColumnDesc;
 import hunt.database.postgresql.impl.codec.PgParamDesc;
 import hunt.database.postgresql.impl.codec.PgRowDesc;
@@ -26,8 +27,10 @@ import hunt.database.base.impl.PreparedStatement;
 import hunt.database.base.impl.ParamDesc;
 
 // import hunt.collection.Arrays;
-import std.algorithm;
 import hunt.collection.List;
+
+import std.algorithm;
+import std.array;
 
 class PgPreparedStatement : PreparedStatement {
 
@@ -49,16 +52,14 @@ class PgPreparedStatement : PreparedStatement {
                     c.relationAttributeNo,
                     c.dataType,
                     c.length,
-                    c.typeModifier))
-                .array);
-
-                // ,
-                //     c.dataType.supportsBinary ? DataFormat.BINARY : DataFormat.TEXT
+                    c.typeModifier,
+                    c.dataType.supportsBinary ? DataFormat.BINARY : DataFormat.TEXT)
+                ).array());
         }
 
-        this.paramDesc = paramDesc;
-        this.rowDesc = rowDesc;
-        this.sql = sql;
+        this._paramDesc = paramDesc;
+        this._rowDesc = rowDesc;
+        this._sql = sql;
         this.bind = new Bind(statement, paramDesc !is null ? paramDesc.paramDataTypes() : null, 
             rowDesc !is null ? rowDesc.columns : EMPTY_COLUMNS);
     }

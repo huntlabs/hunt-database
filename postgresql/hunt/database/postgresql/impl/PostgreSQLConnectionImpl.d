@@ -22,20 +22,42 @@ import hunt.database.postgresql.PostgreSQLConnectOptions;
 import hunt.database.postgresql.PostgreSQLConnection;
 import hunt.database.postgresql.PostgreSQLNotification;
 
+import hunt.database.base.AsyncResult;
 import hunt.database.base.Common;
 import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.SqlConnectionImpl;
-import hunt.database.base.AsyncResult;
+import hunt.database.base.SqlResult;
+import hunt.database.base.RowSet;
+import hunt.database.base.Row;
+import hunt.database.base.SqlClient;
+import hunt.database.base.Tuple;
 
 // import io.vertx.core.Context;
 // import io.vertx.core.Future;
 // import io.vertx.core.Handler;
 // import io.vertx.core.Vertx;
 
+import hunt.collection.List;
 import hunt.Exceptions;
 
 
 class PgConnectionImpl : SqlConnectionImpl!(PgConnectionImpl), PgConnection  {
+
+    override PgConnectionImpl query(string sql, RowSetHandler handler) {
+        return super.query(sql, handler);
+    }
+
+    override PgConnectionImpl preparedQuery(string sql, RowSetHandler handler) {
+        return super.preparedQuery(sql, handler);
+    }
+
+    override PgConnectionImpl preparedQuery(string sql, Tuple arguments, RowSetHandler handler) {
+        return super.preparedQuery(sql, arguments, handler);
+    }
+
+    override PgConnectionImpl preparedBatch(string sql, List!(Tuple) batch, RowSetHandler handler) {
+        return super.preparedBatch(sql, batch, handler);
+    }
 
     // static void connect(Vertx vertx, PgConnectOptions options, Handler!(AsyncResult!(PgConnection)) handler) {
     //     Context ctx = Vertx.currentContext();
