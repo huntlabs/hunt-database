@@ -23,28 +23,28 @@ import hunt.collection.List;
 
 abstract class SqlResultBase(T, R) : SqlResult!(T) { //  extends SqlResultBase!(T, R)
 
-    int updated;
-    List!(string) columnNames;
-    int size;
-    R next;
+    int _updated;
+    List!(string) _columnNames;
+    int _size;
+    R _next;
 
     override
     List!(string) columnsNames() {
-        return columnNames;
+        return _columnNames;
     }
 
     override
     int rowCount() {
-        return updated;
+        return _updated;
     }
 
     override
     int size() {
-        return size;
+        return _size;
     }
 
     override
     R next() {
-        return next;
+        return _next;
     }
 }

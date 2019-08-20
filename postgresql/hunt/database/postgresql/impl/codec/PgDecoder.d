@@ -17,7 +17,15 @@
 
 module hunt.database.postgresql.impl.codec.PgDecoder;
 
+import hunt.database.postgresql.impl.codec.Bind;
+import hunt.database.postgresql.impl.codec.Describe;
+import hunt.database.postgresql.impl.codec.PgCommandCodec;
 import hunt.database.postgresql.impl.codec.QueryCommandBaseCodec;
+import hunt.database.postgresql.impl.codec.Parse;
+import hunt.database.postgresql.impl.codec.PasswordMessage;
+import hunt.database.postgresql.impl.codec.Response;
+import hunt.database.postgresql.impl.codec.StartupMessage;
+
 
 // import io.netty.buffer.ByteBufAllocator;
 // import io.netty.buffer.CompositeByteBuf;
@@ -126,7 +134,7 @@ class PgDecoder : Decoder {
         }
     }
 
-    private void decodeMessage(ChannelHandlerContext ctx, byte id, ByteBuf inBuffer) {
+    private void decodeMessage(byte id, ByteBuf inBuffer) {
         switch (id) {
             case PgProtocolConstants.MESSAGE_TYPE_ROW_DESCRIPTION: {
                 decodeRowDescription(inBuffer);
@@ -177,7 +185,7 @@ class PgDecoder : Decoder {
                 break;
             }
             case PgProtocolConstants.MESSAGE_TYPE_NOTIFICATION_RESPONSE: {
-                decodeNotificationResponse(ctx, inBuffer);
+                decodeNotificationResponse(inBuffer);
                 break;
             }
             default: {
@@ -407,17 +415,18 @@ class PgDecoder : Decoder {
         inflight.front().handleBackendKeyData(processId, secretKey);
     }
 
-    private void decodeNotificationResponse(ChannelHandlerContext ctx, ByteBuf inBuffer) {
-        ctx.fireChannelRead(new Notification(inBuffer.readInt(), Util.readCStringUTF8(inBuffer), Util.readCStringUTF8(inBuffer)));
+    private void decodeNotificationResponse(ByteBuf inBuffer) { // ChannelHandlerContext ctx, 
+        implementationMissing(false);
+        // ctx.fireChannelRead(new Notification(inBuffer.readInt(), Util.readCStringUTF8(inBuffer), Util.readCStringUTF8(inBuffer)));
     }
 }
 
 
 
 static class CommandCompleteProcessor : ByteProcessor {
-    private static final byte SPACE = 32;
+    private enum byte SPACE = 32;
     private int rows;
-    boolean afterSpace;
+    bool afterSpace;
 
     int parse(ByteBuf inBuffer) {
         afterSpace = false;
@@ -427,8 +436,8 @@ static class CommandCompleteProcessor : ByteProcessor {
     }
 
     override
-    boolean process(byte value) {
-        boolean space = value == SPACE;
+    bool process(byte value) {
+        bool space = value == SPACE;
         if (afterSpace) {
             if (space) {
                 rows = 0;

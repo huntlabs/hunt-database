@@ -16,8 +16,11 @@
  */
 module hunt.database.postgresql.impl.codec.CloseConnectionCommandCodec;
 
+import hunt.database.postgresql.impl.codec.PgCommandCodec;
 import hunt.database.postgresql.impl.codec.PgEncoder;
 import hunt.database.base.impl.command.CloseConnectionCommand;
+
+import hunt.Object;
 
 import std.concurrency : initOnce;
 

@@ -17,6 +17,8 @@
 
 module hunt.database.base.impl.SqlClientBase;
 
+import hunt.database.base.impl.RowSetImpl;
+
 import hunt.database.base.impl.command.CommandScheduler;
 import hunt.database.base.impl.command.ExtendedBatchQueryCommand;
 import hunt.database.base.impl.command.ExtendedQueryCommand;
@@ -29,6 +31,7 @@ import hunt.database.base.SqlClient;
 import hunt.database.base.Tuple;
 import hunt.database.base.AsyncResult;
 
+import hunt.Exceptions;
 import hunt.net.AbstractConnection;
 
 // import io.vertx.core.Future;
@@ -41,11 +44,13 @@ import hunt.net.AbstractConnection;
 
 /**
 */
-abstract class SqlClientBase(C) : SqlClient, CommandScheduler if(is(C : SqlClient)) {
+abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : SqlClient))
 
     override
     C query(string sql, RowSetHandler handler) {
-        return query(sql, false, RowSetImpl.FACTORY, RowSetImpl.COLLECTOR, handler);
+        // return query(sql, false, RowSetImpl.FACTORY, RowSetImpl.COLLECTOR, handler);
+        implementationMissing(false);
+        return C.init;
     }
 
     // override

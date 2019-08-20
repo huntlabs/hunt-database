@@ -19,24 +19,24 @@ module hunt.database.base.impl.StringLongSequence;
 
 class StringLongSequence {
 
-  private short count;
+    private short count;
 
-  long next() {
-    short val = count++;
-    long next = 0x30_30_30_00_00_00_00_00L;
-    next |= toHex(val >> 12 & 0xF) << 32;
-    next |= toHex(val >>  8 & 0xF) << 24;
-    next |= toHex(val >>  4 & 0xF) << 16;
-    next |= toHex(val >>  0 & 0xF) << 8;
-    return next;
-  }
-
-  private static long toHex(int c) {
-    if (c < 10) {
-      return (byte)('0' + c);
-    } else {
-      return (byte)('A' + c - 10);
+    long next() {
+        short val = count++;
+        long next = 0x30_30_30_00_00_00_00_00L;
+        next |= toHex(val >> 12 & 0xF) << 32;
+        next |= toHex(val >>  8 & 0xF) << 24;
+        next |= toHex(val >>  4 & 0xF) << 16;
+        next |= toHex(val >>  0 & 0xF) << 8;
+        return next;
     }
-  }
+
+    private static long toHex(int c) {
+        if (c < 10) {
+            return cast(byte)('0' + c);
+        } else {
+            return cast(byte)('A' + c - 10);
+        }
+    }
 
 }

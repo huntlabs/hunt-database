@@ -32,17 +32,17 @@ class PgPreparedStatement : PreparedStatement {
 
     private enum PgColumnDesc[] EMPTY_COLUMNS = [];
 
-    string sql;
+    string _sql;
     Bind bind;
-    PgParamDesc paramDesc;
-    PgRowDesc rowDesc;
+    PgParamDesc _paramDesc;
+    PgRowDesc _rowDesc;
 
     this(string sql, long statement, PgParamDesc paramDesc, PgRowDesc rowDesc) {
 
         // Fix to use binary when possible
         if (rowDesc !is null) {
             rowDesc = new PgRowDesc(rowDesc.columns
-                .map(c => new PgColumnDesc(
+                .map!(c => new PgColumnDesc(
                     c.name,
                     c.relationId,
                     c.relationAttributeNo,
@@ -64,17 +64,17 @@ class PgPreparedStatement : PreparedStatement {
 
     override
     ParamDesc paramDesc() {
-        return paramDesc;
+        return _paramDesc;
     }
 
     override
     PgRowDesc rowDesc() {
-        return rowDesc;
+        return _rowDesc;
     }
 
     override
     string sql() {
-        return sql;
+        return _sql;
     }
 
     override

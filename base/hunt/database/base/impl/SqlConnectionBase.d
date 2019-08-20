@@ -18,11 +18,13 @@
 module hunt.database.base.impl.SqlConnectionBase;
 
 import hunt.database.base.impl.SqlClientBase;
+import hunt.database.base.impl.Connection;
 
 import hunt.database.base.PreparedQuery;
 import hunt.database.base.impl.command.PrepareStatementCommand;
 import hunt.database.base.impl.PreparedQueryImpl;
 
+import hunt.Exceptions;
 import hunt.net.AbstractConnection;
 
 /**
@@ -32,20 +34,21 @@ abstract class SqlConnectionBase(C) : SqlClientBase!(C)
          { // if(is(C : SqlConnectionBase))
 
     // protected Context context;
-    protected AbstractConnection conn;
+    protected Connection conn;
 
-    protected this(AbstractConnection conn) {
+    protected this(Connection conn) {
         this.conn = conn;
     }
 
     C prepare(string sql, PreparedQueryHandler handler) {
-        schedule(new PrepareStatementCommand(sql), (cr) {
-            if (cr.succeeded()) {
-                handler.handle(Future.succeededFuture(new PreparedQueryImpl(conn, cr.result())));
-            } else {
-                handler.handle(Future.failedFuture(cr.cause()));
-            }
-        });
+        implementationMissing(false);
+        // schedule(new PrepareStatementCommand(sql), (cr) {
+        //     if (cr.succeeded()) {
+        //         handler.handle(Future.succeededFuture(new PreparedQueryImpl(conn, cr.result())));
+        //     } else {
+        //         handler.handle(Future.failedFuture(cr.cause()));
+        //     }
+        // });
         return cast(C) this;
     }
 }

@@ -1,7 +1,9 @@
 module hunt.database.base.impl.PreparedStatementCache;
 
+import hunt.database.base.impl.Connection;
 
 import hunt.database.base.impl.command.CloseStatementCommand;
+import hunt.database.base.impl.command.CommandResponse;
 import hunt.database.base.impl.PreparedStatement;
 import hunt.database.base.impl.SocketConnectionBase;
 
@@ -15,9 +17,9 @@ import hunt.concurrency.LinkedBlockingQueue;
  */
 class PreparedStatementCache : LinkedHashMap!(string, CachedPreparedStatement) {
     private int capacity;
-    private Connection conn;
+    private DbConnection conn;
 
-    this(int capacity, Connection conn) {
+    this(int capacity, DbConnection conn) {
         super(capacity, 0.75f, true);
         this.capacity = capacity;
         this.conn = conn;
@@ -85,7 +87,7 @@ class CachedPreparedStatement { // : Handler!(CommandResponse!(PreparedStatement
         }
     }
 
-    override
+    // override
     void handle(CommandResponse!(PreparedStatement) event) {
         resp = event;
         ResponseHandler!(PreparedStatement) waiter;

@@ -4,5 +4,5 @@ import hunt.Object;
 
 alias EventHandler(T) = void delegate(T t); 
 
-alias ThrowableHandler = EventHandler!(Throwable);
+alias ExceptionHandler = EventHandler!(Throwable);
 alias VoidHandler = EventHandler!Void;

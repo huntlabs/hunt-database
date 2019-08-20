@@ -45,9 +45,9 @@ class LineSegment {
         if (that is null)
             return false;
 
-        if (!p1 == that.p1)
+        if (p1 != that.p1)
             return false;
-        if (!p2 == that.p2)
+        if (p2 != that.p2)
             return false;
 
         return true;

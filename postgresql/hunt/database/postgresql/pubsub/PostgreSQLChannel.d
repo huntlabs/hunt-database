@@ -26,56 +26,56 @@ module hunt.database.postgresql.pubsub.PostgreSQLChannel;
  * <p/>
  * When paused the channel discards the messages.
  */
-interface PgChannel : ReadStream!(String) {
+// interface PgChannel : ReadStream!(String) {
 
-    /**
-     * Set an handler called when the the channel get subscribed.
-     *
-     * @param handler the handler
-     * @return a reference to this, so the API can be used fluently
-     */
-    PgChannel subscribeHandler(VoidHandler handler);
+//     /**
+//      * Set an handler called when the the channel get subscribed.
+//      *
+//      * @param handler the handler
+//      * @return a reference to this, so the API can be used fluently
+//      */
+//     PgChannel subscribeHandler(VoidHandler handler);
 
-    /**
-     * Set or unset an handler to be called when a the channel is notified by Postgres.
-     * <p/>
-     * <ul>
-     *   <li>when the handler is set, the subscriber sends a {@code LISTEN} command if needed</li>
-     *   <li>when the handler is unset, the subscriber sends a {@code UNLISTEN} command if needed</li>
-     * </ul>
-     *
-     * @param handler the handler
-     * @return a reference to this, so the API can be used fluently
-     */
-    override
-    PgChannel handler(Handler!(String) handler);
+//     /**
+//      * Set or unset an handler to be called when a the channel is notified by Postgres.
+//      * <p/>
+//      * <ul>
+//      *   <li>when the handler is set, the subscriber sends a {@code LISTEN} command if needed</li>
+//      *   <li>when the handler is unset, the subscriber sends a {@code UNLISTEN} command if needed</li>
+//      * </ul>
+//      *
+//      * @param handler the handler
+//      * @return a reference to this, so the API can be used fluently
+//      */
+//     override
+//     PgChannel handler(Handler!(String) handler);
 
-    /**
-     * Pause the channel, all notifications are discarded.
-     *
-     * @return a reference to this, so the API can be used fluently
-     */
-    override
-    PgChannel pause();
+//     /**
+//      * Pause the channel, all notifications are discarded.
+//      *
+//      * @return a reference to this, so the API can be used fluently
+//      */
+//     override
+//     PgChannel pause();
 
-    /**
-     * Resume the channel.
-     *
-     * @return a reference to this, so the API can be used fluently
-     */
-    override
-    PgChannel resume();
+//     /**
+//      * Resume the channel.
+//      *
+//      * @return a reference to this, so the API can be used fluently
+//      */
+//     override
+//     PgChannel resume();
 
-    /**
-     * Set an handler to be called when no more notifications will be received.
-     *
-     * @param endHandler the handler
-     * @return a reference to this, so the API can be used fluently
-     */
-    override
-    PgChannel endHandler(VoidHandler endHandler);
+//     /**
+//      * Set an handler to be called when no more notifications will be received.
+//      *
+//      * @param endHandler the handler
+//      * @return a reference to this, so the API can be used fluently
+//      */
+//     override
+//     PgChannel endHandler(VoidHandler endHandler);
 
-    override
-    PgChannel exceptionHandler(Handler!(Throwable) handler);
+//     override
+//     PgChannel exceptionHandler(Handler!(Throwable) handler);
 
-}
+// }

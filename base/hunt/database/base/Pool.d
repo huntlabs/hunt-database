@@ -18,6 +18,7 @@
 module hunt.database.base.Pool;
 
 import hunt.database.base.AsyncResult;
+import hunt.database.base.SqlClient;
 
 import hunt.collection.List;
 // import java.util.stream.Collector;
@@ -27,31 +28,31 @@ import hunt.collection.List;
  *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-// interface Pool : SqlClient {
+interface Pool : SqlClient {
 
 //     override
-//     Pool preparedQuery(String sql, RowSetHandler handler);
+//     Pool preparedQuery(string sql, RowSetHandler handler);
 
 //     override
-//     <R> Pool preparedQuery(String sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+//     <R> Pool preparedQuery(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
 //     override
-//     Pool query(String sql, RowSetHandler handler);
+//     Pool query(string sql, RowSetHandler handler);
 
 //     override
-//     <R> Pool query(String sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+//     <R> Pool query(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
 //     override
-//     Pool preparedQuery(String sql, Tuple arguments, RowSetHandler handler);
+//     Pool preparedQuery(string sql, Tuple arguments, RowSetHandler handler);
 
 //     override
-//     <R> Pool preparedQuery(String sql, Tuple arguments, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+//     <R> Pool preparedQuery(string sql, Tuple arguments, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
 //     override
-//     Pool preparedBatch(String sql, List!(Tuple) batch, RowSetHandler handler);
+//     Pool preparedBatch(string sql, List!(Tuple) batch, RowSetHandler handler);
 
 //     override
-//     <R> Pool preparedBatch(String sql, List!(Tuple) batch, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+//     <R> Pool preparedBatch(string sql, List!(Tuple) batch, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
 //     /**
 //      * Get a connection from the pool.
@@ -68,9 +69,9 @@ import hunt.collection.List;
 //      */
 //     void begin(Handler!(AsyncResult!(Transaction)) handler);
 
-//     /**
-//      * Close the pool and release the associated resources.
-//      */
-//     void close();
+    /**
+     * Close the pool and release the associated resources.
+     */
+    void close();
 
-// }
+}

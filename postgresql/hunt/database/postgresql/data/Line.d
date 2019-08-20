@@ -1,5 +1,6 @@
 module hunt.database.postgresql.data.Line;
 
+import hunt.Double;
 
 /**
  * Line data type in Postgres represented by the linear equation Ax + By + C = 0, where A and B are not both zero.

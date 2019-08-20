@@ -17,7 +17,9 @@
 
 module hunt.database.postgresql.PostgreSQLConnection;
 
+import hunt.database.postgresql.PostgreSQLNotification;
 import hunt.database.postgresql.impl.PostgreSQLConnectionImpl;
+
 
 import hunt.database.base.Common;
 import hunt.database.base.PreparedQuery;
@@ -80,7 +82,7 @@ interface PgConnection : SqlConnection {
      * @param handler the handler
      * @return the transaction instance
      */
-    PgConnection notificationHandler(Handler!(PgNotification) handler);
+    PgConnection notificationHandler(PgNotificationHandler handler);
 
     /**
      * Send a request cancellation message to tell the server to cancel processing request in this connection.
@@ -102,7 +104,7 @@ interface PgConnection : SqlConnection {
     int secretKey();
 
     PgConnection prepare(string sql, PreparedQueryHandler handler);
-    PgConnection exceptionHandler(Handler!(Throwable) handler);
+    PgConnection exceptionHandler(ExceptionHandler handler);
     PgConnection closeHandler(VoidHandler handler);
     PgConnection preparedQuery(string sql, RowSetHandler handler);
 

@@ -19,6 +19,11 @@ module hunt.database.postgresql.PostgreSQLNotification;
 // import io.vertx.codegen.annotations.DataObject;
 // import io.vertx.core.json.JsonObject;
 
+
+import hunt.database.base.Common;
+
+alias PgNotificationHandler = EventHandler!(PgNotification);
+
 /**
  * A notification emited by Postgres.
  */

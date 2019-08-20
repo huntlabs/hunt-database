@@ -208,7 +208,7 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
         return this;
     }
 
-    private CommandBase doQuery(string sql, RowSetHandler handler) {
+    private ICommand doQuery(string sql, RowSetHandler handler) {
         SqlResultBuilder!(RowSet, RowSetImpl, RowSet) b = new SqlResultBuilder!(RowSet, RowSetImpl, RowSet)(RowSetImpl.FACTORY, handler);
         SimpleQueryCommand!(RowSet) cmd = new SimpleQueryCommand!(RowSet)(sql, false, RowSetImpl.COLLECTOR, b);
         cmd.handler = b;

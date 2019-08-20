@@ -23,7 +23,7 @@ import hunt.database.base.impl.Notice;
 import hunt.database.base.impl.Notification;
 import hunt.database.base.impl.PreparedStatement;
 import hunt.database.base.impl.PreparedStatementCache;
-
+import hunt.database.base.impl.StringLongSequence;
 
 import hunt.collection.ArrayDeque;
 import hunt.collection.Deque;

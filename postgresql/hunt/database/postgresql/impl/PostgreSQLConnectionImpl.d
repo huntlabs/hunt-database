@@ -34,7 +34,6 @@ import hunt.database.base.AsyncResult;
 
 import hunt.Exceptions;
 
-alias PgNotificationHandler = EventHandler!(PgNotification);
 
 class PgConnectionImpl : SqlConnectionImpl!(PgConnectionImpl), PgConnection  {
 
@@ -64,25 +63,25 @@ class PgConnectionImpl : SqlConnectionImpl!(PgConnectionImpl), PgConnection  {
     // }
 
     private PgConnectionFactory factory;
-    private PgNotificationHandler notificationHandler;
+    private PgNotificationHandler _notificationHandler;
 
-    this(PgConnectionFactory factory, Context context, Connection conn) {
-        super(context, conn);
+    this(PgConnectionFactory factory, Connection conn) {
+        super(conn);
 
         this.factory = factory;
     }
 
     override
     PgConnection notificationHandler(PgNotificationHandler handler) {
-        notificationHandler = handler;
+        _notificationHandler = handler;
         return this;
     }
 
-
+    override
     void handleNotification(int processId, string channel, string payload) {
-        PgNotificationHandler handler = notificationHandler;
+        PgNotificationHandler handler = _notificationHandler;
         if (handler !is null) {
-            handler.handle(new PgNotification().setProcessId(processId).setChannel(channel).setPayload(payload));
+            handler(new PgNotification().setProcessId(processId).setChannel(channel).setPayload(payload));
         }
     }
 

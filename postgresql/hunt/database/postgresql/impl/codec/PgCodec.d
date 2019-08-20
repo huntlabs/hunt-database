@@ -30,6 +30,8 @@ import hunt.database.base.impl.command.CommandResponse;
 // import java.util.Iterator;
 
 import hunt.net.codec.Codec;
+import hunt.net.codec.Encoder;
+import hunt.net.codec.Decoder;
 
 import std.container.dlist;
 

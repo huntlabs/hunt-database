@@ -49,7 +49,7 @@ interface SqlConnection : SqlClient {
      * @param handler the handler
      * @return a reference to this, so the API can be used fluently
      */
-    SqlConnection exceptionHandler(ThrowableHandler handler);
+    SqlConnection exceptionHandler(ExceptionHandler handler);
 
     /**
      * Set an handler called when the connection is closed.

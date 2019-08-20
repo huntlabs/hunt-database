@@ -17,7 +17,9 @@
 
 module hunt.database.postgresql.PostgreSQLPool;
 
+import hunt.database.postgresql.PostgreSQLConnectOptions;
 import hunt.database.postgresql.impl.PostgreSQLPoolImpl;
+
 
 import hunt.database.base.PoolOptions;
 import hunt.database.base.SqlResult;
@@ -25,9 +27,8 @@ import hunt.database.base.RowSet;
 import hunt.database.base.Row;
 import hunt.database.base.Pool;
 import hunt.database.base.Tuple;
-// import io.vertx.codegen.annotations.GenIgnore;
-// import io.vertx.codegen.annotations.VertxGen;
 import hunt.database.base.AsyncResult;
+
 // import io.vertx.core.Handler;
 // import io.vertx.core.Vertx;
 // import io.vertx.core.VertxOptions;
@@ -45,16 +46,16 @@ interface PgPool : Pool {
     /**
      * Like {@link #pool(PoolOptions)} with a default {@code poolOptions}.
      */
-    static PgPool pool() {
-        return pool(PgConnectOptions.fromEnv(), new PoolOptions());
-    }
+    // static PgPool pool() {
+    //     return pool(PgConnectOptions.fromEnv(), new PoolOptions());
+    // }
 
     /**
      * Like {@link #pool(PgConnectOptions, PoolOptions)} with {@code connectOptions} build from the environment variables.
      */
-    static PgPool pool(PoolOptions poolOptions) {
-        return pool(PgConnectOptions.fromEnv(), poolOptions);
-    }
+    // static PgPool pool(PoolOptions poolOptions) {
+    //     return pool(PgConnectOptions.fromEnv(), poolOptions);
+    // }
 
     /**
      * Like {@link #pool(string, PoolOptions)} with a default {@code poolOptions}.
@@ -66,9 +67,9 @@ interface PgPool : Pool {
     /**
      * Like {@link #pool(PgConnectOptions, PoolOptions)} with {@code connectOptions} build from {@code connectionUri}.
      */
-    static PgPool pool(string connectionUri, PoolOptions poolOptions) {
-        return pool(PgConnectOptions.fromUri(connectionUri), poolOptions);
-    }
+    // static PgPool pool(string connectionUri, PoolOptions poolOptions) {
+    //     return pool(PgConnectOptions.fromUri(connectionUri), poolOptions);
+    // }
 
     /**
      * Like {@link #pool(Vertx, PgConnectOptions, PoolOptions)} with {@code connectOptions} build from the environment variables.
@@ -105,9 +106,9 @@ interface PgPool : Pool {
     /**
      * Like {@link #pool(PgConnectOptions, PoolOptions)} with a specific {@link Vertx} instance.
      */
-    static PgPool pool(Vertx vertx, PgConnectOptions connectOptions, PoolOptions poolOptions) {
-        return new PgPoolImpl(vertx.getOrCreateContext(), false, connectOptions, poolOptions);
-    }
+    // static PgPool pool(Vertx vertx, PgConnectOptions connectOptions, PoolOptions poolOptions) {
+    //     return new PgPoolImpl(vertx.getOrCreateContext(), false, connectOptions, poolOptions);
+    // }
 
     PgPool preparedQuery(string sql, RowSetHandler handler);
 

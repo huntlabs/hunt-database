@@ -1,5 +1,7 @@
 module hunt.database.postgresql.data.Polygon;
 
+import hunt.database.postgresql.data.Point;
+
 import hunt.collection.ArrayList;
 import hunt.collection.List;
 import hunt.text.StringBuilder;

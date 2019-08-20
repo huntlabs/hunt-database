@@ -12,7 +12,7 @@ import hunt.text.StringBuilder;
  * or closed, where the first and last points are considered connected.
  */
 class Path {
-    private bool isOpen;
+    private bool _isOpen;
     private List!(Point) points;
 
     this() {
@@ -20,7 +20,7 @@ class Path {
     }
 
     this(bool isOpen, List!(Point) points) {
-        this.isOpen = isOpen;
+        this._isOpen = isOpen;
         this.points = points;
     }
 
@@ -29,11 +29,11 @@ class Path {
     // }
 
     bool isOpen() {
-        return isOpen;
+        return _isOpen;
     }
 
     void setOpen(bool open) {
-        isOpen = open;
+        _isOpen = open;
     }
 
     List!(Point) getPoints() {
@@ -52,13 +52,13 @@ class Path {
         if (path is null)
             return false;
 
-        if (isOpen != path.isOpen)
+        if (_isOpen != path._isOpen)
             return false;
         return points == path.points;
     }
 
     override size_t toHash() @trusted nothrow {
-        int result = (isOpen ? 1 : 0);
+        size_t result = (_isOpen ? 1 : 0);
         result = 31 * result + points.toHash();
         return result;
     }
@@ -66,7 +66,7 @@ class Path {
     override string toString() {
         string left;
         string right;
-        if (isOpen) {
+        if (_isOpen) {
             left = "[";
             right = "]";
         } else {

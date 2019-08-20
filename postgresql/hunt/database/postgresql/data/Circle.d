@@ -46,7 +46,7 @@ class Circle {
         if(that is null) return false;
 
         if (radius != that.radius) return false;
-        if (!centerPoint == that.centerPoint) return false;
+        if (centerPoint != that.centerPoint) return false;
 
         return true;
     }

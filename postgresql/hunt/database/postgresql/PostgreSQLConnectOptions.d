@@ -474,9 +474,9 @@ class PgConnectOptions : SqlConnectOptions {
 
     override
     size_t toHash() @trusted nothrow {
-        int result = super.toHash();
+        size_t result = super.toHash();
         result = 31 * result + pipeliningLimit;
-        result = 31 * result + sslMode.toHash();
+        result = 31 * result + sslMode.hashOf();
         return result;
     }
 

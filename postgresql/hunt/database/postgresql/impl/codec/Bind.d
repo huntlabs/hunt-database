@@ -18,6 +18,7 @@
 module hunt.database.postgresql.impl.codec.Bind;
 
 import hunt.database.postgresql.impl.codec.DataType;
+import hunt.database.postgresql.impl.codec.PgColumnDesc;
 
 /**
  * @author <a href="mailto:emad.albloushi@gmail.com">Emad Alblueshi</a>

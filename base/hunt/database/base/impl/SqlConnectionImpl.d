@@ -27,9 +27,9 @@ import hunt.database.base.impl.SqlConnectionBase;
 import hunt.database.base.impl.TransactionImpl;
 import hunt.database.base.Transaction;
 
+import hunt.Exceptions;
 import hunt.logging.ConsoleLogger;
 import hunt.net.AbstractConnection;
-
 import hunt.Object;
 
 /**
@@ -38,19 +38,20 @@ import hunt.Object;
 abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection //, Connection.Holder 
          { // if(is(C : SqlConnectionImpl))
 
-    private ThrowableHandler exceptionHandler;
-    private VoidHandler closeHandler;
+    private ExceptionHandler _exceptionHandler;
+    private VoidHandler _closeHandler;
     private TransactionImpl tx;
 
-    this(AbstractConnection context, Connection conn) {
-        super(context, conn);
+    this(Connection conn) {
+        super(conn);
     }
 
     // override
     void handleClosed() {
-        VoidHandler handler = closeHandler;
+        VoidHandler handler = _closeHandler;
         if (handler !is null) {
-            context.runOnContext(handler);
+            // context.runOnContext(handler);
+            handler(null);
         }
     }
 
@@ -65,26 +66,28 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection //, C
     }
 
     protected void schedule(ICommand cmd) {
-        if (context == Vertx.currentContext()) {
+        // if (context == Vertx.currentContext()) {
             if (tx !is null) {
                 tx.schedule(cmd);
             } else {
                 conn.schedule(cmd);
             }
-        } else {
-            context.runOnContext( (v) {
-                schedule(cmd);
-            });
-        }
+        // } else {
+        //     context.runOnContext( (v) {
+        //         schedule(cmd);
+        //     });
+        // }
+
     }
 
-    override
+    // override
     void handleException(Throwable err) {
-        EventHandler!(Throwable) handler = exceptionHandler;
+        EventHandler!(Throwable) handler = _exceptionHandler;
         if (handler !is null) {
-            context.runOnContext( (v) {
-                handler(err);
-            });
+            handler(err);
+            // context.runOnContext( (v) {
+            //     handler(err);
+            // });
         } else {
             // err.printStackTrace();
             warning(err);
@@ -98,13 +101,13 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection //, C
 
     override
     C closeHandler(VoidHandler handler) {
-        closeHandler = handler;
+        _closeHandler = handler;
         return cast(C) this;
     }
 
     override
-    C exceptionHandler(ThrowableHandler handler) {
-        exceptionHandler = handler;
+    C exceptionHandler(ExceptionHandler handler) {
+        _exceptionHandler = handler;
         return cast(C) this;
     }
 

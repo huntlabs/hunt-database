@@ -16,6 +16,8 @@
  */
 module hunt.database.postgresql.impl.codec.PgParamDesc;
 
+import hunt.database.postgresql.impl.codec.DataType;
+
 import hunt.database.base.impl.ParamDesc;
 import hunt.database.postgresql.impl.util.Util;
 
@@ -31,23 +33,23 @@ import hunt.Exceptions;
 class PgParamDesc : ParamDesc {
 
     // OIDs
-    private final DataType[] paramDataTypes;
+    private DataType[] _paramDataTypes;
 
     this(DataType[] paramDataTypes) {
-        this.paramDataTypes = paramDataTypes;
+        this._paramDataTypes = paramDataTypes;
     }
 
     DataType[] paramDataTypes() {
-        return paramDataTypes;
+        return _paramDataTypes;
     }
 
     override
     string prepare(List!(Object) values) {
-        if (values.size() != paramDataTypes.length) {
+        if (values.size() != _paramDataTypes.length) {
             return buildReport(values);
         }
-        for (int i = 0;i < paramDataTypes.length;i++) {
-            DataType paramDataType = paramDataTypes[i];
+        for (int i = 0;i < _paramDataTypes.length;i++) {
+            DataType paramDataType = _paramDataTypes[i];
             Object value = values.get(i);
             Object val = DataTypeCodec.prepare(paramDataType, value);
             if (val != value) {
@@ -70,6 +72,6 @@ class PgParamDesc : ParamDesc {
     override
     string toString() {
         return "PgParamDesc{" ~
-            "paramDataTypes=" ~ paramDataTypes.to!string() ~ "}";
+            "paramDataTypes=" ~ _paramDataTypes.to!string() ~ "}";
     }
 }

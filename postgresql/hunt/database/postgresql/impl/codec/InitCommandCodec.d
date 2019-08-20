@@ -16,6 +16,7 @@
  */
 module hunt.database.postgresql.impl.codec.InitCommandCodec;
 
+import hunt.database.postgresql.impl.codec.ErrorResponse;
 import hunt.database.postgresql.impl.codec.PgCommandCodec;
 import hunt.database.postgresql.impl.codec.PgEncoder;
 

@@ -17,6 +17,7 @@
 module hunt.database.postgresql.impl.codec.ClosePortalCommandCodec;
 
 import hunt.database.postgresql.impl.codec.PgCommandCodec;
+import hunt.database.postgresql.impl.codec.PgEncoder;
 
 import hunt.database.base.impl.command.CloseCursorCommand;
 

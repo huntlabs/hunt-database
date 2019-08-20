@@ -17,6 +17,8 @@
 
 module hunt.database.base.impl.command.InitCommand;
 
+import hunt.database.base.impl.command.CommandBase;
+
 import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.SocketConnectionBase;
 
@@ -30,22 +32,21 @@ import hunt.collection.Map;
 class InitCommand : CommandBase!(Connection) {
 
     private SocketConnectionBase conn;
-    private string username;
-    private string password;
-    private string database;
-    private Map!(string, string) properties;
+    private string _username;
+    private string _password;
+    private string _database;
+    private Map!(string, string) _properties;
 
-    this(
-        SocketConnectionBase conn,
-        string username,
-        string password,
-        string database,
-        Map!(string, string) properties) {
+    this(SocketConnectionBase conn,
+            string username,
+            string password,
+            string database,
+            Map!(string, string) properties) {
         this.conn = conn;
-        this.username = username;
-        this.password = password;
-        this.database = database;
-        this.properties = properties;
+        this._username = username;
+        this._password = password;
+        this._database = database;
+        this._properties = properties;
     }
 
     SocketConnectionBase connection() {
@@ -53,19 +54,19 @@ class InitCommand : CommandBase!(Connection) {
     }
 
     string username() {
-        return username;
+        return _username;
     }
 
     string password() {
-        return password;
+        return _password;
     }
 
     string database() {
-        return database;
+        return _database;
     }
 
     Map!(string, string) properties() {
-        return properties;
+        return _properties;
     }
 
 }

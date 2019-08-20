@@ -17,9 +17,9 @@ class Box {
         this.lowerLeftCorner = lowerLeftCorner;
     }
 
-    this(JsonObject json) {
-        BoxConverter.fromJson(json, this);
-    }
+    // this(JsonObject json) {
+    //     BoxConverter.fromJson(json, this);
+    // }
 
     Point getUpperRightCorner() {
         return upperRightCorner;
@@ -47,9 +47,9 @@ class Box {
         if (box is null)
             return false;
 
-        if (!upperRightCorner == box.upperRightCorner)
+        if (upperRightCorner != box.upperRightCorner)
             return false;
-        if (!lowerLeftCorner == box.lowerLeftCorner)
+        if (lowerLeftCorner != box.lowerLeftCorner)
             return false;
 
         return true;
