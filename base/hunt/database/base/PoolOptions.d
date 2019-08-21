@@ -17,6 +17,8 @@
 
 module hunt.database.base.PoolOptions;
 
+import hunt.Exceptions;
+
 // import io.vertx.codegen.annotations.DataObject;
 // import io.vertx.core.json.JsonObject;
 
@@ -114,7 +116,7 @@ class PoolOptions {
 
     override
     size_t toHash() @trusted nothrow {
-        int result = super.toHash();
+        size_t result = super.toHash();
         result = 31 * result + maxSize;
         return result;
     }

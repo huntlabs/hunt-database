@@ -1,10 +1,9 @@
 module hunt.database.base.SqlConnectOptions;
 
-// import io.vertx.codegen.annotations.DataObject;
-// import io.vertx.core.json.JsonObject;
 import hunt.net.NetClientOptions;
 
 import hunt.collection;
+import hunt.Exceptions;
 
 import std.array;
 

@@ -11,6 +11,9 @@
 		},
 		{
 			"path": "postgresql"
+		},
+		{
+			"path": "examples/UnitTest"
 		}
 	],
 	"settings": {}

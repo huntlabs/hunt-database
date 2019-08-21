@@ -17,55 +17,62 @@
 
 module hunt.database.base.impl.SqlResultBuilder;
 
+import hunt.database.base.impl.QueryResultHandler;
+import hunt.database.base.impl.RowDesc;
+
 import hunt.database.base.SqlResult;
 import hunt.database.base.AsyncResult;
-import io.vertx.core.Handler;
+// import io.vertx.core.Handler;
 
-import java.util.function.Function;
+
+import hunt.Functions;
 
 /**
  * A query result handler for building a {@link SqlResult}.
  */
-class SqlResultBuilder!(T, R extends SqlResultBase!(T, R), L extends SqlResult!(T)) implements QueryResultHandler!(T), Handler!(AsyncResult!(Boolean)) {
+class SqlResultBuilder(T, R, L) : QueryResultHandler!(T) { // , Handler!(AsyncResult!(bool))
 
-  private final Handler!(AsyncResult!(L)) handler;
-  private final Function!(T, R) factory;
-  private R first;
-  private boolean suspended;
+    // R extends SqlResultBase!(T, R)
+    // L extends SqlResult!(T)
 
-  SqlResultBuilder(Function!(T, R) factory, Handler!(AsyncResult!(L)) handler) {
-    this.factory = factory;
-    this.handler = handler;
-  }
+    private AsyncResultHandler!(L) handler;
+    private Function!(T, R) factory;
+    private R first;
+    private bool suspended;
 
-  override
-  void handleResult(int updatedCount, int size, RowDesc desc, T result) {
-    R r = factory.apply(result);
-    r.updated = updatedCount;
-    r.size = size;
-    r.columnNames = desc !is null ? desc.columnNames() : null;
-    handleResult(r);
-  }
-
-  private void handleResult(R result) {
-    if (first is null) {
-      first = result;
-    } else {
-      R h = first;
-      while (h.next !is null) {
-        h = h.next;
-      }
-      h.next = result;
+    this(Function!(T, R) factory, AsyncResultHandler!(L) handler) {
+        this.factory = factory;
+        this.handler = handler;
     }
-  }
 
-  override
-  void handle(AsyncResult!(Boolean) res) {
-    suspended = res.succeeded() && res.result();
-    handler.handle((AsyncResult!(L)) res.map(first));
-  }
+    override
+    void handleResult(int updatedCount, int size, RowDesc desc, T result) {
+        R r = factory.apply(result);
+        r.updated = updatedCount;
+        r.size = size;
+        r.columnNames = desc !is null ? desc.columnNames() : null;
+        handleResult(r);
+    }
 
-  boolean isSuspended() {
-    return suspended;
-  }
+    private void handleResult(R result) {
+        if (first is null) {
+            first = result;
+        } else {
+            R h = first;
+            while (h.next !is null) {
+                h = h.next;
+            }
+            h.next = result;
+        }
+    }
+
+    // override
+    void handle(AsyncResult!(bool) res) {
+        suspended = res.succeeded() && res.result();
+        handler(cast(AsyncResult!(L)) res.map(first));
+    }
+
+    bool isSuspended() {
+        return suspended;
+    }
 }

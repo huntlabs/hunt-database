@@ -26,6 +26,7 @@ import hunt.math.BigInteger;
 import hunt.Number;
 
 import std.concurrency : initOnce;
+import std.conv;
 
 
 /**
@@ -38,7 +39,7 @@ final class Numeric : Number {
      */
     static Numeric NaN() {
         __gshared Numeric inst;
-        return initOnce!inst(new Numeric(Double.NaN));
+        return initOnce!inst(new Numeric(new Double(Double.NaN)));
     }
 
     private Number value;
@@ -159,7 +160,7 @@ final class Numeric : Number {
         } else if (isNaN()) {
             return null;
         } else {
-            return new BigInteger(Long.toString(value.longValue()));
+            return new BigInteger(to!string(value.longValue()));
         }
     }
 
@@ -181,7 +182,9 @@ final class Numeric : Number {
                 // TODO: Tasks pending completion -@zxp at 8/12/2019, 3:15:15 PM
                 // 
                 // return l == r;
-                return l.compareTo(r) == 0;
+                // return l.compareTo(r) == 0;
+                implementationMissing(false);
+                return false;
             }
         }
         return false;
@@ -189,7 +192,15 @@ final class Numeric : Number {
 
     override
     size_t toHash() @trusted nothrow {
-        return cast(size_t)intValue();
+        try {
+            return cast(size_t)intValue();
+        } catch(Exception ex) {
+            version(HUNT_DEBUG) {
+                import hunt.logging.ConsoleLogger;
+                trace(ex);
+            }
+            return 0;
+        }
     }
 
     override

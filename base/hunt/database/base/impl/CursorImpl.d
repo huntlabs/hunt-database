@@ -17,25 +17,30 @@
 
 module hunt.database.base.impl.CursorImpl;
 
+import hunt.database.base.impl.PreparedQueryImpl;
+import hunt.database.base.impl.RowSetImpl;
+import hunt.database.base.impl.SqlResultBuilder;
+
 import hunt.database.base.AsyncResult;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
+import hunt.database.base.Common;
 import hunt.database.base.Cursor;
 import hunt.database.base.RowSet;
 import hunt.database.base.Tuple;
 
-import java.util.UUID;
+import hunt.Exceptions;
+
+import std.uuid;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 class CursorImpl : Cursor {
 
-    private final PreparedQueryImpl ps;
-    private final Tuple params;
+    private PreparedQueryImpl ps;
+    private Tuple params;
 
-    private String id;
-    private boolean closed;
+    private string id;
+    private bool closed;
     private SqlResultBuilder!(RowSet, RowSetImpl, RowSet) result;
 
     this(PreparedQueryImpl ps, Tuple params) {
@@ -44,7 +49,7 @@ class CursorImpl : Cursor {
     }
 
     override
-    synchronized boolean hasMore() {
+    bool hasMore() {
         if (result is null) {
             throw new IllegalStateException("No current cursor read");
         }
@@ -52,27 +57,29 @@ class CursorImpl : Cursor {
     }
 
     override
-    synchronized void read(int count, RowSetHandler handler) {
+    void read(int count, RowSetHandler handler) {
         if (id is null) {
-            id = UUID.randomUUID().toString();
-            result = new SqlResultBuilder<>(RowSetImpl.FACTORY, handler);
-            ps.execute(params, count, id, false, false, RowSetImpl.COLLECTOR, result, result);
+            id = randomUUID().toString();
+            result = new SqlResultBuilder!(RowSet, RowSetImpl, RowSet)(RowSetImpl.FACTORY, handler);
+            // ps.execute(params, count, id, false, false, RowSetImpl.COLLECTOR, result, result);
+            implementationMissing(false);
         } else if (result.isSuspended()) {
-            result = new SqlResultBuilder<>(RowSetImpl.FACTORY, handler);
-            ps.execute(params, count, id, true, false, RowSetImpl.COLLECTOR, result, result);
+            result = new SqlResultBuilder!(RowSet, RowSetImpl, RowSet)(RowSetImpl.FACTORY, handler);
+            // ps.execute(params, count, id, true, false, RowSetImpl.COLLECTOR, result, result);
+            implementationMissing(false);
         } else {
             throw new IllegalStateException();
         }
     }
 
     override
-    synchronized void close(VoidHandler completionHandler) {
+    void close(VoidHandler completionHandler) {
         if (!closed) {
             closed = true;
             if (id is null) {
-                completionHandler.handle(Future.succeededFuture());
+                completionHandler(cast(Object)null); // Future.succeededFuture()
             } else {
-                String id = this.id;
+                string id = this.id;
                 this.id = null;
                 result = null;
                 ps.closeCursor(id, completionHandler);

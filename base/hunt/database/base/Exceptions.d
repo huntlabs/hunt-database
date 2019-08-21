@@ -6,6 +6,6 @@ module hunt.database.base.Exceptions;
 class NoStackTraceThrowable : Throwable {
 
     this(string message) {
-        super(message, null, false, false);
+        super(message);
     }
 }

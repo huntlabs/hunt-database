@@ -17,173 +17,179 @@
 
 module hunt.database.base.impl.RowStreamImpl;
 
+import hunt.database.base.impl.PreparedQueryImpl;
+
 import hunt.database.base.Cursor;
+import hunt.database.base.Common;
 import hunt.database.base.RowSet;
 import hunt.database.base.RowStream;
 import hunt.database.base.Row;
 import hunt.database.base.Tuple;
 import hunt.database.base.AsyncResult;
-import io.vertx.core.Handler;
 
-import java.util.Iterator;
+import hunt.Exceptions;
 
-class RowStreamImpl implements RowStream!(Row), RowSetHandler {
+import std.conv;
+import std.range;
 
-  private final PreparedQueryImpl ps;
-  private final int fetch;
-  private final Tuple params;
+class RowStreamImpl : RowStream!(Row) { // , RowSetHandler 
 
-  private VoidHandler endHandler;
-  private Handler!(Row) rowHandler;
-  private Handler!(Throwable) exceptionHandler;
-  private long demand;
-  private boolean emitting;
-  private Cursor cursor;
+    private PreparedQueryImpl ps;
+    private int _fetch;
+    private Tuple params;
 
-  private Iterator!(Row) result;
+    private VoidHandler _endHandler;
+    private EventHandler!(Row) rowHandler;
+    private EventHandler!(Throwable) _exceptionHandler;
+    private long demand;
+    private bool emitting;
+    private Cursor cursor;
 
-  RowStreamImpl(PreparedQueryImpl ps, int fetch, Tuple params) {
-    this.ps = ps;
-    this.fetch = fetch;
-    this.params = params;
-    this.demand = Long.MAX_VALUE;
-  }
+    private InputRange!(Row) result;
 
-  override
-  synchronized RowStream!(Row) exceptionHandler(Handler!(Throwable) handler) {
-    exceptionHandler = handler;
-    return this;
-  }
+    this(PreparedQueryImpl ps, int fetch, Tuple params) {
+        this.ps = ps;
+        this._fetch = fetch;
+        this.params = params;
+        this.demand = long.max;
+    }
 
-  override
-  RowStream!(Row) handler(Handler!(Row) handler) {
-    Cursor c;
-    synchronized (this) {
-      if (handler !is null) {
-        if (cursor is null) {
-          rowHandler = handler;
-          c = cursor = ps.cursor(params);
-        } else {
-          throw new UnsupportedOperationException("Handle me gracefully");
-        }
-      } else {
-        if (cursor !is null) {
-          cursor = null;
-        } else {
-          rowHandler = null;
-        }
+    override
+    RowStream!(Row) exceptionHandler(ExceptionHandler handler) {
+        _exceptionHandler = handler;
         return this;
-      }
     }
-    c.read(fetch, this);
-    return this;
-  }
 
-  override
-  synchronized RowStream!(Row) pause() {
-    demand = 0L;
-    return this;
-  }
-
-  RowStream!(Row) fetch(long amount) {
-    if (amount < 0L) {
-      throw new IllegalArgumentException("Invalid fetch amount " ~ amount);
-    }
-    synchronized (this) {
-      demand += amount;
-      if (demand < 0L) {
-        demand = Long.MAX_VALUE;
-      }
-      if (cursor is null) {
-        return this;
-      }
-    }
-    checkPending();
-    return this;
-  }
-
-  override
-  RowStream!(Row) resume() {
-    return fetch(Long.MAX_VALUE);
-  }
-
-  override
-  synchronized RowStream!(Row) endHandler(VoidHandler handler) {
-    endHandler = handler;
-    return this;
-  }
-
-  override
-  void handle(AsyncResult!(RowSet) ar) {
-    if (ar.failed()) {
-      Handler!(Throwable) handler;
-      synchronized (RowStreamImpl.this) {
-        cursor = null;
-        handler = exceptionHandler;
-      }
-      if (handler !is null) {
-        handler.handle(ar.cause());
-      }
-    } else {
-      result = ar.result().iterator();
-      checkPending();
-    }
-  }
-
-  override
-  void close() {
-    close(ar -> {});
-  }
-
-  override
-  void close(VoidHandler completionHandler) {
-    Cursor c;
-    synchronized (this) {
-      if ((c = cursor) is null) {
-        return;
-      }
-      cursor = null;
-    }
-    c.close(completionHandler);
-  }
-
-  private void checkPending() {
-    synchronized (RowStreamImpl.this) {
-      if (emitting) {
-        return;
-      }
-      emitting = true;
-    }
-    while (true) {
-      synchronized (RowStreamImpl.this) {
-        if (demand == 0L || result is null) {
-          emitting = false;
-          break;
+    override
+    RowStream!(Row) handler(EventHandler!(Row) handler) {
+        Cursor c;
+        synchronized (this) {
+            if (handler !is null) {
+                if (cursor is null) {
+                    rowHandler = handler;
+                    c = cursor = ps.cursor(params);
+                } else {
+                    throw new UnsupportedOperationException("Handle me gracefully");
+                }
+            } else {
+                if (cursor !is null) {
+                    cursor = null;
+                } else {
+                    rowHandler = null;
+                }
+                return this;
+            }
         }
-        Handler handler;
-        Object event;
-        if (result.hasNext()) {
-          handler = rowHandler;
-          event = result.next();
-          if (demand != Long.MAX_VALUE) {
-            demand--;
-          }
+        c.read(_fetch, this);
+        return this;
+    }
+
+    override
+    RowStream!(Row) pause() {
+        demand = 0L;
+        return this;
+    }
+
+    RowStream!(Row) fetch(long amount) {
+        if (amount < 0L) {
+            throw new IllegalArgumentException("Invalid fetch amount " ~ amount.to!string());
+        }
+        synchronized (this) {
+            demand += amount;
+            if (demand < 0L) {
+                demand = long.max;
+            }
+            if (cursor is null) {
+                return this;
+            }
+        }
+        checkPending();
+        return this;
+    }
+
+    override
+    RowStream!(Row) resume() {
+        return fetch(long.max);
+    }
+
+    override
+    RowStream!(Row) endHandler(VoidHandler handler) {
+        _endHandler = handler;
+        return this;
+    }
+
+    // override
+    void handle(AsyncResult!(RowSet) ar) {
+        if (ar.failed()) {
+            ExceptionHandler handler;
+            synchronized (this) {
+                cursor = null;
+                handler = _exceptionHandler;
+            }
+            if (handler !is null) {
+                handler(ar.cause());
+            }
         } else {
-          result = null;
-          emitting = false;
-          if (cursor.hasMore()) {
-            cursor.read(fetch, this);
-            break;
-          } else {
+            result = ar.result().iterator();
+            checkPending();
+        }
+    }
+
+    // override
+    void close() {
+        close(null);
+    }
+
+    // override
+    void close(VoidHandler completionHandler) {
+        Cursor c;
+        synchronized (this) {
+            if ((c = cursor) is null) {
+                return;
+            }
             cursor = null;
-            handler = endHandler;
-            event = null;
-          }
         }
-        if (handler !is null) {
-          handler.handle(event);
-        }
-      }
+        c.close(completionHandler);
     }
-  }
+
+    private void checkPending() {
+        synchronized (this) {
+            if (emitting) {
+                return;
+            }
+            emitting = true;
+        }
+        implementationMissing(false);
+        // while (true) {
+        //     synchronized (this) {
+        //         if (demand == 0L || result is null) {
+        //             emitting = false;
+        //             break;
+        //         }
+        //         EventHandler!(Row) handler;
+        //         Object event;
+        //         if (result.hasNext()) {
+        //             handler = rowHandler;
+        //             event = result.next();
+        //             if (demand != long.max) {
+        //                 demand--;
+        //             }
+        //         } else {
+        //             result = null;
+        //             emitting = false;
+        //             if (cursor.hasMore()) {
+        //                 cursor.read(_fetch, this);
+        //                 break;
+        //             } else {
+        //                 cursor = null;
+        //                 handler = _endHandler;
+        //                 event = null;
+        //             }
+        //         }
+        //         if (handler !is null) {
+        //             handler(event);
+        //         }
+        //     }
+        // }
+    }
 }

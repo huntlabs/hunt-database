@@ -17,16 +17,18 @@
 
 module hunt.database.base.impl.SqlResultImpl;
 
-class SqlResultImpl!(T) extends SqlResultBase!(T, SqlResultImpl!(T)) {
+import hunt.database.base.impl.SqlResultBase;
 
-  private final T value;
+class SqlResultImpl(T) : SqlResultBase!(T, SqlResultImpl!(T)) {
 
-  SqlResultImpl(T value) {
-    this.value = value;
-  }
+    private T _value;
 
-  override
-  T value() {
-    return value;
-  }
+    this(T value) {
+        this._value = value;
+    }
+
+    override
+    T value() {
+        return _value;
+    }
 }

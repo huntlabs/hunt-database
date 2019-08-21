@@ -17,3 +17,9 @@
 
 module hunt.database.postgresql;
 
+public import hunt.database.postgresql.PostgreSQLConnection;
+public import hunt.database.postgresql.PostgreSQLConnectOptions;
+public import hunt.database.postgresql.PostgreSQLException;
+public import hunt.database.postgresql.PostgreSQLNotification;
+public import hunt.database.postgresql.PostgreSQLPool;
+public import hunt.database.postgresql.SslMode;

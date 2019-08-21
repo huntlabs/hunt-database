@@ -60,7 +60,7 @@ class PreparedStatementCache : LinkedHashMap!(string, CachedPreparedStatement) {
         if (size() == 0) {
             return null;
         }
-        return cast(MapEntry!(string, CachedPreparedStatement)) entrySet().toArray()[size() - 1];
+        return cast(MapEntry!(string, CachedPreparedStatement)) this.toArray()[size() - 1];
     }
 }
 

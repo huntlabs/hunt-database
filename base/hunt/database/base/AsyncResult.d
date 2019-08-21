@@ -147,7 +147,11 @@ interface AsyncResult(T) {
                 } else if (this.outer.failed()) {
                     return mapper(this.outer.cause());
                 } else {
-                    return null;
+                    static if(is(T == class) || is(T == interface)) {
+                        return null;
+                    } else {
+                        return T.init;
+                    }
                 }
             }
 

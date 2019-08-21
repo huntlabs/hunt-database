@@ -18,7 +18,10 @@
 module hunt.database.base.impl.PreparedQueryImpl;
 
 import hunt.database.base.impl.Connection;
+import hunt.database.base.impl.CursorImpl;
+import hunt.database.base.impl.RowSetImpl;
 import hunt.database.base.impl.PreparedStatement;
+
 
 import hunt.database.base.impl.command.CloseCursorCommand;
 import hunt.database.base.impl.command.CloseStatementCommand;
@@ -35,6 +38,7 @@ import hunt.database.base.Tuple;
 // import io.vertx.core.*;
 
 import hunt.collection.List;
+import hunt.Exceptions;
 // import java.util.concurrent.atomic.AtomicBoolean;
 // import java.util.function.Function;
 // import java.util.stream.Collector;
@@ -58,7 +62,9 @@ class PreparedQueryImpl : PreparedQuery {
 
     override
     PreparedQuery execute(Tuple args, RowSetHandler handler) {
-        return execute(args, false, RowSetImpl.FACTORY, RowSetImpl.COLLECTOR, handler);
+        // return execute(args, false, RowSetImpl.FACTORY, RowSetImpl.COLLECTOR, handler);
+        implementationMissing(false);
+        return null;
     }
 
     // PreparedQuery execute(R)(Tuple args, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler) {
@@ -157,18 +163,20 @@ class PreparedQueryImpl : PreparedQuery {
 
     override
     void close(VoidHandler completionHandler) {
-        if (closed.compareAndSet(false, true)) {
-            CloseStatementCommand cmd = new CloseStatementCommand(ps);
-            cmd.handler = completionHandler;
-            conn.schedule(cmd);
-        } else {
-            completionHandler.handle(Future.failedFuture("Already closed"));
-        }
+        // if (closed.compareAndSet(false, true)) {
+        //     CloseStatementCommand cmd = new CloseStatementCommand(ps);
+        //     cmd.handler = completionHandler;
+        //     conn.schedule(cmd);
+        // } else {
+        //     completionHandler.handle(Future.failedFuture("Already closed"));
+        // }
+        implementationMissing(false);
     }
 
     void closeCursor(string cursorId, VoidHandler handler) {
         CloseCursorCommand cmd = new CloseCursorCommand(cursorId, ps);
-        cmd.handler = handler;
+        // cmd.handler = handler;
+        implementationMissing(false);
         conn.schedule(cmd);
     }
 }

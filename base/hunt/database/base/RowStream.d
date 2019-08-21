@@ -20,38 +20,34 @@ module hunt.database.base.RowStream;
 import hunt.database.base.AsyncResult;
 // import io.vertx.core.streams.ReadStream;
 
+import hunt.database.base.Common;
 
 
-// /**
-//  * A row oriented stream.
-//  */
-// interface RowStream(T) : ReadStream!(T) {
+/**
+ * A row oriented stream.
+ */
+interface RowStream(T) { // : ReadStream!(T)
 
-//     override
-//     RowStream!(T) exceptionHandler(Handler!(Throwable) handler);
+    RowStream!(T) exceptionHandler(ExceptionHandler handler);
 
-//     override
-//     RowStream!(T) handler(Handler!(T) handler);
+    RowStream!(T) handler(EventHandler!(T) handler);
 
-//     override
-//     RowStream!(T) pause();
+    RowStream!(T) pause();
 
-//     override
-//     RowStream!(T) resume();
+    RowStream!(T) resume();
 
-//     override
-//     RowStream!(T) endHandler(VoidHandler endHandler);
+    RowStream!(T) endHandler(VoidHandler endHandler);
 
-//     /**
-//      * Close the stream and release the resources.
-//      */
-//     void close();
+    /**
+     * Close the stream and release the resources.
+     */
+    void close();
 
-//     /**
-//      * Close the stream and release the resources.
-//      *
-//      * @param completionHandler the completion handler for this operation
-//      */
-//     void close(VoidHandler completionHandler);
+    /**
+     * Close the stream and release the resources.
+     *
+     * @param completionHandler the completion handler for this operation
+     */
+    void close(VoidHandler completionHandler);
 
-// }
+}

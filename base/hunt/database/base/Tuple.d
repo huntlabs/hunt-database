@@ -422,13 +422,13 @@ interface Tuple {
     //  */
     // Tuple addBoolean(Boolean value);
 
-    // /**
-    //  * Add an object value at the end of the tuple.
-    //  *
-    //  * @param value the value
-    //  * @return a reference to this, so the API can be used fluently
-    //  */
-    // Tuple addValue(Object value);
+    /**
+     * Add an object value at the end of the tuple.
+     *
+     * @param value the value
+     * @return a reference to this, so the API can be used fluently
+     */
+    Tuple addValue(Object value);
 
     // /**
     //  * Add a short value at the end of the tuple.

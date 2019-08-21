@@ -365,11 +365,11 @@ class ArrayTuple : ArrayList!(Object), Tuple {
     //     return this;
     // }
 
-    // override
-    // Tuple addValue(Object value) {
-    //     add(value);
-    //     return this;
-    // }
+    override
+    Tuple addValue(Object value) {
+        add(value);
+        return this;
+    }
 
     // override
     // Tuple addShort(Short value) {

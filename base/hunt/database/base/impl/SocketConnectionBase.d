@@ -30,6 +30,7 @@ import hunt.collection.Deque;
 import hunt.Exceptions;
 import hunt.logging.ConsoleLogger;
 import hunt.net.AbstractConnection;
+import hunt.net.Exceptions;
 import hunt.Object;
 
 import std.container.dlist;
@@ -98,7 +99,7 @@ abstract class SocketConnectionBase : DbConnection {
     }
 
     bool isSsl() {
-        return _socket.isSsl();
+        return _socket.isSecured();
     }
 
     override
@@ -146,7 +147,7 @@ abstract class SocketConnectionBase : DbConnection {
         PreparedStatementCache psCache = this.psCache;
         PrepareStatementCommand psCmd = cast(PrepareStatementCommand) cmd;
         if (psCache !is null && psCmd !is null) {
-            if (psCmd.sql().length() > preparedStatementCacheSqlLimit) {
+            if (psCmd.sql().length > preparedStatementCacheSqlLimit) {
                 // do not cache the statements
                 return;
             }
@@ -230,7 +231,7 @@ abstract class SocketConnectionBase : DbConnection {
         handleClose(null);
     }
 
-    private synchronized void handleException(Throwable t) {
+    private void handleException(Throwable t) {
         DecoderException err = cast(DecoderException) t;
         if (err !is null) {
             t = err.next;

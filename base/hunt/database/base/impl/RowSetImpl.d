@@ -45,7 +45,9 @@ class RowSetImpl : SqlResultBase!(RowSet, RowSetImpl), RowSet {
     //     (set) -> set
     // );
 
-    // static Function!(RowSet, RowSetImpl) FACTORY = rs -> (RowSetImpl) rs;
+    static Function!(RowSet, RowSetImpl) FACTORY() {
+        return (rs) { return cast(RowSetImpl) rs; } ;
+    }
 
     private RowInternal head;
     private RowInternal tail;
