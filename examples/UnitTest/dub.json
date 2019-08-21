@@ -1,0 +1,20 @@
+{
+	"name": "unittest",
+	"targetType":"executable",
+    "description": "Some unit tests for hunt-database.",
+    "copyright": "Copyright (C) 2018-2019, HuntLabs",
+    "homepage": "https://www.huntlabs.net",
+    "license": "Apache-2.0",
+    "versions": ["HUNT_DEBUG", "HUNT_IO_DEBUG", "HUNT_NET_DEBUG"],
+	"dependencies":{
+		"postgresql":{
+			"path" :"../../postgresql"
+		},
+		"hunt-net":{
+			"path" :"../../../hunt-net"
+		}
+	},
+	"subConfigurations": {
+		"hunt-net" : "ssl"
+	}
+}
