@@ -29,10 +29,6 @@ import hunt.database.base.Row;
 import hunt.database.base.SqlConnection;
 import hunt.database.base.Tuple;
 
-// import io.vertx.codegen.annotations.Fluent;
-// import io.vertx.codegen.annotations.GenIgnore;
-// import io.vertx.codegen.annotations.VertxGen;
-// import io.vertx.core.*;
 
 import hunt.collection.List;
 // import java.util.stream.Collector;

@@ -23,7 +23,7 @@ import hunt.database.postgresql.SslMode;
 
 import hunt.database.base.AsyncResult;
 import hunt.database.base.Common;
-// import hunt.database.base.impl.Connection;
+import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.command.CommandResponse;
 
 // import io.vertx.core.*;
@@ -113,18 +113,17 @@ class PgConnectionFactory {
         client.close();
     }
 
-    // void connectAndInit(AsyncResultHandler!(DbConnection) completionHandler) {
-    //     implementationMissing(false);
-    //     // connect(ar -> {
-    //     //     if (ar.succeeded()) {
-    //     //         PgSocketConnection conn = ar.result();
-    //     //         conn.init();
-    //     //         conn.sendStartupMessage(username, password, database, properties, completionHandler);
-    //     //     } else {
-    //     //         completionHandler.handle(CommandResponse.failure(ar.cause()));
-    //     //     }
-    //     // });
-    // }
+    void connectAndInit(AsyncResultHandler!(DbConnection) completionHandler) {
+        connect( (ar) {
+            if (ar.succeeded()) {
+                PgSocketConnection conn = ar.result();
+                conn.initialization();
+                conn.sendStartupMessage(username, password, database, properties, (r) { completionHandler(r); });
+            } else {
+                completionHandler(failure!(DbConnection)(ar.cause()));
+            }
+        });
+    }
 
     void connect(AsyncResultHandler!(PgSocketConnection) handler) {
         doConnect(false, handler);

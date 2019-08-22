@@ -88,6 +88,10 @@ final class Numeric : Number {
         this.value = value;
     }
 
+    byte byteValue() {
+        return value.byteValue();
+    }
+
     override
     short shortValue() {
         return value.shortValue();

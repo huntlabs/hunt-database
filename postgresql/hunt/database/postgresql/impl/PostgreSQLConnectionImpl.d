@@ -32,10 +32,6 @@ import hunt.database.base.Row;
 import hunt.database.base.SqlClient;
 import hunt.database.base.Tuple;
 
-// import io.vertx.core.Context;
-// import io.vertx.core.Future;
-// import io.vertx.core.Handler;
-// import io.vertx.core.Vertx;
 
 import hunt.collection.List;
 import hunt.Exceptions;
@@ -59,35 +55,24 @@ class PgConnectionImpl : SqlConnectionImpl!(PgConnectionImpl), PgConnection  {
         return super.preparedBatch(sql, batch, handler);
     }
 
-    // static void connect(Vertx vertx, PgConnectOptions options, Handler!(AsyncResult!(PgConnection)) handler) {
-    //     Context ctx = Vertx.currentContext();
-    //     if (ctx !is null) {
-    //         PgConnectionFactory client = new PgConnectionFactory(ctx, false, options);
-    //         client.connectAndInit(ar -> {
-    //             if (ar.succeeded()) {
-    //                 Connection conn = ar.result();
-    //                 PgConnectionImpl p = new PgConnectionImpl(client, ctx, conn);
-    //                 conn.init(p);
-    //                 handler.handle(Future.succeededFuture(p));
-    //             } else {
-    //                 handler.handle(Future.failedFuture(ar.cause()));
-    //             }
-    //         });
-    //     } else {
-    //         vertx.runOnContext(v -> {
-    //             if (options.isUsingDomainSocket() && !vertx.isNativeTransportEnabled()) {
-    //                 handler.handle(Future.failedFuture("Native transport is not available"));
-    //             } else {
-    //                 connect(vertx, options, handler);
-    //             }
-    //         });
-    //     }
-    // }
+    static void connect(PgConnectOptions options, AsyncResultHandler!(PgConnection) handler) {
+        PgConnectionFactory client = new PgConnectionFactory(options);
+        client.connectAndInit( (ar) {
+            if (ar.succeeded()) {
+                DbConnection conn = ar.result();
+                PgConnectionImpl p = new PgConnectionImpl(client, conn);
+                conn.initHolder(p);
+                handler(succeededResult!(PgConnection)(p));
+            } else {
+                handler(failedResult!(PgConnection)(ar.cause()));
+            }
+        });
+    }
 
     private PgConnectionFactory factory;
     private PgNotificationHandler _notificationHandler;
 
-    this(PgConnectionFactory factory, Connection conn) {
+    this(PgConnectionFactory factory, DbConnection conn) {
         super(conn);
 
         this.factory = factory;

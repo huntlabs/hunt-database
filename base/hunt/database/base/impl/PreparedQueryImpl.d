@@ -17,6 +17,7 @@
 
 module hunt.database.base.impl.PreparedQueryImpl;
 
+import hunt.database.base.impl.ArrayTuple;
 import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.CursorImpl;
 import hunt.database.base.impl.RowSetImpl;
@@ -48,16 +49,22 @@ import hunt.Exceptions;
  */
 class PreparedQueryImpl : PreparedQuery {
 
-    private Connection conn;
+    private DbConnection conn;
     // private Context context;
     private PreparedStatement ps;
     // private AtomicBoolean closed = new AtomicBoolean();
     private shared bool closed = false;
 
-    this(Connection conn, PreparedStatement ps) { // Context context, 
+    this(DbConnection conn, PreparedStatement ps) { // Context context, 
         this.conn = conn;
         // this.context = context;
         this.ps = ps;
+    }
+
+    PreparedQuery execute(RowSetHandler handler) {
+
+        implementationMissing(false);
+        return null;
     }
 
     override
@@ -67,7 +74,7 @@ class PreparedQueryImpl : PreparedQuery {
         return null;
     }
 
-    // PreparedQuery execute(R)(Tuple args, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler) {
+    // PreparedQuery execute(R)(Tuple args, Handler!(AsyncResult!(SqlResult!(R))) handler) { // Collector<Row, ?, R> collector, 
     //     return execute(args, true, SqlResultImpl::new, collector, handler);
     // }
 
@@ -112,6 +119,10 @@ class PreparedQueryImpl : PreparedQuery {
     //     return this;
     // }
 
+    Cursor cursor() {
+        return cursor(ArrayTuple.EMPTY);
+    }
+
     // override
     Cursor cursor(Tuple args) {
         string msg = ps.prepare(cast(List!(Object)) args);
@@ -127,9 +138,11 @@ class PreparedQueryImpl : PreparedQuery {
         // });
     }
 
-    // PreparedQuery batch(List!(Tuple) argsList, RowSetHandler handler) {
-    //     return batch(argsList, false, RowSetImpl.FACTORY, RowSetImpl.COLLECTOR, handler);
-    // }
+    PreparedQuery batch(List!(Tuple) argsList, RowSetHandler handler) {
+        // return batch(argsList, false, RowSetImpl.FACTORY, RowSetImpl.COLLECTOR, handler);
+        implementationMissing(false);
+        return null;
+    }
 
     // override
     // <R> PreparedQuery batch(List!(Tuple) argsList, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler) {

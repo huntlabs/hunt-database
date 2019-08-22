@@ -77,7 +77,7 @@ interface AsyncResult(T) {
         return new class AsyncResult!(U) {
             override U result() {
                 if (succeeded()) {
-                    return mapper.apply(this.outer.result());
+                    return mapper(this.outer.result());
                 } else {
                     return null;
                 }
@@ -108,7 +108,7 @@ interface AsyncResult(T) {
      * @return the mapped async result
      */
     final AsyncResult!(V) map(V)(V value) {
-        return map((t) => value);
+        return map!(V)((t) => value);
     }
 
     /**
@@ -123,7 +123,7 @@ interface AsyncResult(T) {
      * @return the mapped async result
      */
     final AsyncResult!(V) mapEmpty(V)() {
-        return map(V.init);
+        return map!(V)(V.init);
     }
 
     /**
@@ -224,7 +224,7 @@ AsyncResult!T succeededResult(T)(T v) {
 AsyncResult!T failedResult(T)(Throwable t) {
     return new class AsyncResult!(T) {
         override T result() {
-            static if(is(T == class)) {
+            static if(is(T == class) || is(T == interface)) {
                 return null;
             } else {
                 return T.init;

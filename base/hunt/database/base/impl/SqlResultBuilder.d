@@ -47,10 +47,10 @@ class SqlResultBuilder(T, R, L) : QueryResultHandler!(T) { // , Handler!(AsyncRe
 
     override
     void handleResult(int updatedCount, int size, RowDesc desc, T result) {
-        R r = factory.apply(result);
-        r.updated = updatedCount;
-        r.size = size;
-        r.columnNames = desc !is null ? desc.columnNames() : null;
+        R r = factory(result);
+        r._updated = updatedCount;
+        r._size = size;
+        r._columnNames = desc !is null ? desc.columnNames() : null;
         handleResult(r);
     }
 

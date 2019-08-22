@@ -18,21 +18,28 @@ module hunt.database.base.impl.TransactionImpl;
 
 import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.RowSetImpl;
+import hunt.database.base.impl.SqlClientBase;
 import hunt.database.base.impl.SqlConnectionBase;
+import hunt.database.base.impl.SqlResultBuilder;
 
+import hunt.database.base.SqlClient;
 import hunt.database.base.Common;
 import hunt.database.base.Transaction;
 import hunt.database.base.impl.command.CommandResponse;
 import hunt.database.base.impl.command.CommandBase;
 import hunt.database.base.impl.command.QueryCommandBase;
 import hunt.database.base.impl.command.SimpleQueryCommand;
+import hunt.database.base.PreparedQuery;
 import hunt.database.base.RowSet;
+
+import hunt.Exceptions;
 // import io.vertx.core.*;
 
 // import java.util.ArrayDeque;
 // import java.util.Deque;
 
 import std.container.dlist;
+
 
 
 class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
@@ -48,11 +55,23 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
     private VoidHandler failedHandler;
     private int status = ST_BEGIN;
 
-    this(Connection conn, VoidHandler disposeHandler) { // Context context, 
+    this(DbConnection conn, VoidHandler disposeHandler) { // Context context, 
         super(conn); // context, 
         this.disposeHandler = disposeHandler;
         // doSchedule(doQuery("BEGIN", this::afterBegin));
     }
+
+    override Transaction prepare(string sql, PreparedQueryHandler handler) {
+        return super.prepare(sql, handler);
+    }
+    alias prepare = SqlConnectionBase!(TransactionImpl).prepare;
+
+    override SqlClient query(string sql, RowSetHandler handler) {
+        return super.query(sql, handler);
+        // implementationMissing(false);
+        // return null;
+    }
+    alias query = SqlClientBase!(TransactionImpl).query;
 
     // private void doSchedule(ICommand cmd) {
     //     if (context == Vertx.currentContext()) {
@@ -164,21 +183,26 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
             case ST_BEGIN:
             case ST_PENDING:
             case ST_PROCESSING:
-                schedule(doQuery("COMMIT", (ar) {
-                    disposeHandler.handle(null);
-                    if (handler !is null) {
-                        if (ar.succeeded()) {
-                            handler(Future.succeededFuture());
-                        } else {
-                            handler(Future.failedFuture(ar.cause()));
-                        }
-                    }
-                }));
+            implementationMissing(false);
+                // schedule(doQuery("COMMIT", (ar) {
+                //     disposeHandler.handle(null);
+                //     if (handler !is null) {
+                //         if (ar.succeeded()) {
+                //             handler(Future.succeededFuture());
+                //         } else {
+                //             handler(Future.failedFuture(ar.cause()));
+                //         }
+                //     }
+                // }));
                 break;
             case ST_COMPLETED:
                 if (handler !is null) {
-                    handler.handle(Future.failedFuture("Transaction already completed"));
+                    // handler.handle(Future.failedFuture("Transaction already completed"));
+                    implementationMissing(false);
                 }
+                break;
+
+            default:
                 break;
         }
     }
@@ -189,12 +213,13 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
     }
 
     void rollback(VoidHandler handler) {
-        schedule(doQuery("ROLLBACK", (ar) {
-            disposeHandler(null);
-            if (handler !is null) {
-                handler(ar.mapEmpty());
-            }
-        }));
+        implementationMissing(false);
+        // schedule(doQuery("ROLLBACK", (ar) {
+        //     disposeHandler(null);
+        //     if (handler !is null) {
+        //         handler(ar.mapEmpty());
+        //     }
+        // }));
     }
 
     override
@@ -210,8 +235,10 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
 
     private ICommand doQuery(string sql, RowSetHandler handler) {
         SqlResultBuilder!(RowSet, RowSetImpl, RowSet) b = new SqlResultBuilder!(RowSet, RowSetImpl, RowSet)(RowSetImpl.FACTORY, handler);
-        SimpleQueryCommand!(RowSet) cmd = new SimpleQueryCommand!(RowSet)(sql, false, RowSetImpl.COLLECTOR, b);
-        cmd.handler = b;
-        return cmd;
+        // SimpleQueryCommand!(RowSet) cmd = new SimpleQueryCommand!(RowSet)(sql, false, b); // RowSetImpl.COLLECTOR,
+        // cmd.handler = b;
+        // return cmd;
+        implementationMissing(false);
+        return null;
     }
 }

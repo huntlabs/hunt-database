@@ -34,11 +34,12 @@ abstract class SqlConnectionBase(C) : SqlClientBase!(C)
          { // if(is(C : SqlConnectionBase))
 
     // protected Context context;
-    protected Connection conn;
+    protected DbConnection conn;
 
-    protected this(Connection conn) {
+    protected this(DbConnection conn) {
         this.conn = conn;
     }
+    
 
     C prepare(string sql, PreparedQueryHandler handler) {
         implementationMissing(false);

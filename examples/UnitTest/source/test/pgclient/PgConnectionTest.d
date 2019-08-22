@@ -17,8 +17,12 @@
 
 module test.pgclient.PgConnectionTest;
 
+import test.pgclient.PgConnectionTestBase;
+
 import hunt.database.base;
 import hunt.database.postgresql;
+
+import hunt.database.postgresql.impl;
 
 import hunt.Assert;
 import hunt.Exceptions;
@@ -31,26 +35,31 @@ import hunt.collection;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-// class PgConnectionTest : PgConnectionTestBase {
+class PgConnectionTest : PgConnectionTestBase {
 
-//     this() {
-//         connector = (handler) -> PgConnection.connect(vertx, options, ar -> {
-//             handler.handle(ar.map(p -> p));
-//         });
-//     }
+    this() {
+        connector = (handler) {
+            PgConnectionImpl.connect(options, (ar) {
+
+            });
+        };
+        // connector = (handler) -> PgConnection.connect(vertx, options, ar -> {
+        //     handler.handle(ar.map(p -> p));
+        // });
+    }
+
+    @Test
+    void testSettingSchema() {
+        options.addProperty("search_path", "myschema");
+        // connector.accept(ctx.asyncAssertSuccess(conn -> {
+        //     conn.query("SHOW search_path;", ctx.asyncAssertSuccess(pgRowSet -> {
+        //         ctx.assertEquals("myschema", pgRowSet.iterator().next().getString("search_path"));
+        //     }));
+        // }));
+    }
 
 //     @Test
-//     void testSettingSchema(TestContext ctx) {
-//         options.addProperty("search_path", "myschema");
-//         connector.accept(ctx.asyncAssertSuccess(conn -> {
-//             conn.query("SHOW search_path;", ctx.asyncAssertSuccess(pgRowSet -> {
-//                 ctx.assertEquals("myschema", pgRowSet.iterator().next().getString("search_path"));
-//             }));
-//         }));
-//     }
-
-//     @Test
-//     void testBatchUpdate(TestContext ctx) {
+//     void testBatchUpdate() {
 //         Async async = ctx.async();
 //         connector.accept(ctx.asyncAssertSuccess(conn -> {
 //             deleteFromTestTable(ctx, conn, () -> {
@@ -76,7 +85,7 @@ import hunt.collection;
 //     }
 
 //     @Test
-//     void testQueueQueries(TestContext ctx) {
+//     void testQueueQueries() {
 //         int num = 1000;
 //         Async async = ctx.async(num + 1);
 //         connector.accept(ctx.asyncAssertSuccess(conn -> {
@@ -100,7 +109,7 @@ import hunt.collection;
 //     }
 
 //     @Test
-//     void testCancelRequest(TestContext ctx) {
+//     void testCancelRequest() {
 //         Async async = ctx.async(2);
 //         connector.accept(ctx.asyncAssertSuccess(conn -> {
 //             conn.query("SELECT pg_sleep(10)", ctx.asyncAssertFailure(error -> {
@@ -116,4 +125,4 @@ import hunt.collection;
 //             conn.close();
 //         }));
 //     }
-// }
+}

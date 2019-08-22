@@ -19,9 +19,9 @@ module hunt.database.base.impl.Connection;
 
 import hunt.database.base.impl.command.CommandBase;
 
-alias DbConnection = Connection;
+// alias DbConnection = Connection;
 
-interface Connection {
+interface DbConnection {
 
     void initHolder(Holder holder);
 

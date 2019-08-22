@@ -17,6 +17,8 @@
 
 module hunt.database.base.impl.command.QueryCommandBase;
 
+import hunt.database.base.impl.command.CommandBase;
+
 import hunt.database.base.Row;
 import hunt.database.base.impl.QueryResultHandler;
 
@@ -26,18 +28,18 @@ import hunt.database.base.impl.QueryResultHandler;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 
-abstract class QueryCommandBase(T) : CommandBase!(Boolean) {
+abstract class QueryCommandBase(T) : CommandBase!(bool) {
 
-    private QueryResultHandler!(T) resultHandler;
+    private QueryResultHandler!(T) _resultHandler;
     // private Collector<Row, ?, T> collector;
 
     this(QueryResultHandler!(T) resultHandler) { // Collector<Row, ?, T> collector, 
-        this.resultHandler = resultHandler;
+        this._resultHandler = resultHandler;
         // this.collector = collector;
     }
 
     QueryResultHandler!(T) resultHandler() {
-        return resultHandler;
+        return _resultHandler;
     }
 
     // Collector<Row, ?, T> collector() {

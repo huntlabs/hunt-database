@@ -80,7 +80,7 @@ class RowStreamImpl : RowStream!(Row) { // , RowSetHandler
                 return this;
             }
         }
-        c.read(_fetch, this);
+        c.read(_fetch, &handle);
         return this;
     }
 

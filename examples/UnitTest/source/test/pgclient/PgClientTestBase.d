@@ -17,11 +17,14 @@
 
 module test.pgclient.PgClientTestBase;
 
+import test.pgclient.PgTestBase;
+
 import hunt.database.base;
 import hunt.database.postgresql;
 
 import hunt.Assert;
 import hunt.Exceptions;
+import hunt.Functions;
 import hunt.logging.ConsoleLogger;
 import hunt.util.Common;
 import hunt.util.UnitTest;
@@ -35,10 +38,11 @@ import hunt.collection;
 abstract class PgClientTestBase(C) : PgTestBase if(is(C : SqlClient)) {
 
     // Vertx vertx;
-    // Consumer!(Handler!(AsyncResult!(C))) connector;
+    
+    Consumer!(AsyncResultHandler!(C)) connector;
 
     @Before
-    void setup() {
+    override void setup() {
         super.setup();
         // vertx = Vertx.vertx();
     }

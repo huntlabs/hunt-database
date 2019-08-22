@@ -40,7 +40,7 @@ class RowDesc {
 		if (columnName.empty) {
 			throw new NullPointerException("Column name must not be null");
 		}
-		return _columnNames.countUntil(columnName);
+		return cast(int)_columnNames.countUntil(columnName);
 	}
 
 	string[] columnNames() {

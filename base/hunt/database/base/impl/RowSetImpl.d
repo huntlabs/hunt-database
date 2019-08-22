@@ -23,10 +23,7 @@ import hunt.database.base.RowIterator;
 import hunt.database.base.RowSet;
 import hunt.database.base.Row;
 
-// import java.util.NoSuchElementException;
-// import java.util.function.Function;
-// import java.util.stream.Collector;
-
+import hunt.Exceptions;
 import hunt.Functions;
 
 class RowSetImpl : SqlResultBase!(RowSet, RowSetImpl), RowSet {
@@ -57,23 +54,65 @@ class RowSetImpl : SqlResultBase!(RowSet, RowSetImpl), RowSet {
         return this;
     }
 
-    // override
-    // RowIterator iterator() {
-    //     return new RowIterator() {
-    //         RowInternal current = head;
-    //         override
-    //         boolean hasNext() {
-    //             return current !is null;
-    //         }
-    //         override
-    //         Row next() {
-    //             if (current is null) {
-    //                 throw new NoSuchElementException();
-    //             }
-    //             RowInternal r = current;
-    //             current = current.getNext();
-    //             return r;
-    //         }
-    //     };
+    override
+    string[] columnsNames() {
+        return _columnNames;
+    }
+
+    override
+    int rowCount() {
+        return _updated;
+    }
+
+    override
+    int size() {
+        return _size;
+    }
+
+    override
+    RowSetImpl next() {
+        return _next;
+    }
+
+    alias next = SqlResultBase!(RowSet, RowSetImpl).next;
+
+    // override int size() {
+    //     return super.size();
     // }
+    
+    // override int rowCount() {
+    //     return super.rowCount();
+    // }
+
+    // override string[] columnsNames() {
+    //     return super.columnsNames();
+    // }
+
+    int opApply(scope int delegate(ref Row) dg) {
+
+        implementationMissing(false);
+        return 0;
+    }
+
+    override
+    RowIterator iterator() {
+        implementationMissing(false);
+        return null;
+        // return new RowIterator() {
+        //     RowInternal current = head;
+        //     override
+        //     boolean hasNext() {
+        //         return current !is null;
+        //     }
+        //     override
+        //     Row next() {
+        //         if (current is null) {
+        //             throw new NoSuchElementException();
+        //         }
+        //         RowInternal r = current;
+        //         current = current.getNext();
+        //         return r;
+        //     }
+        // };
+    }
 }

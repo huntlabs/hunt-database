@@ -24,27 +24,43 @@ import hunt.collection.List;
 abstract class SqlResultBase(T, R) : SqlResult!(T) { //  extends SqlResultBase!(T, R)
 
     int _updated;
-    List!(string) _columnNames;
+    string[] _columnNames;
     int _size;
     R _next;
 
-    override
-    List!(string) columnsNames() {
-        return _columnNames;
+    // override
+    // string[] columnsNames() {
+    //     return _columnNames;
+    // }
+
+    void columnsNames(string[] v) {
+        this._columnNames = v;
     }
 
-    override
-    int rowCount() {
-        return _updated;
+    // override
+    // int rowCount() {
+    //     return _updated;
+    // }
+
+    void rowCount(int v) {
+        this._updated = v;
     }
 
-    override
-    int size() {
-        return _size;
+    // override
+    // int size() {
+    //     return _size;
+    // }
+
+    void size(int v) {
+        this._size = v;
     }
 
-    override
-    R next() {
-        return _next;
+    // override
+    // R next() {
+    //     return _next;
+    // }
+
+    void next(R v) {
+        this._next = v;
     }
 }

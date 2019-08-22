@@ -30,10 +30,12 @@ import hunt.collection.Deque;
 import hunt.Exceptions;
 import hunt.logging.ConsoleLogger;
 import hunt.net.AbstractConnection;
+import hunt.net.Connection;
 import hunt.net.Exceptions;
 import hunt.Object;
 
 import std.container.dlist;
+import std.conv;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -87,7 +89,7 @@ abstract class SocketConnectionBase : DbConnection {
             try {
                 handleMessage(msg);
             } catch (Exception e) {
-                handleException(e);
+                handleException(conn, e);
             }
         });
 
@@ -161,14 +163,15 @@ abstract class SocketConnectionBase : DbConnection {
                 if (psCache.size() >= psCache.getCapacity() && !psCache.isReady()) {
                     // only if the prepared statement is ready then it can be evicted
                 } else {
-                    psCmd.statement = psSeq.next();
+                    psCmd._statement = psSeq.next();
                     psCmd.cached = cached = new CachedPreparedStatement();
                     psCache.put(psCmd.sql(), cached);
                     ResponseHandler!(PreparedStatement) a = psCmd.handler;
                     (cast(CachedPreparedStatement) psCmd.cached).get(a);
+                    implementationMissing(false);
 // FIXME: Needing refactor or cleanup -@zxp at 8/14/2019, 10:54:17 AM                    
 // to check
-                    psCmd.handler = cast(ResponseHandler!(PreparedStatement)) psCmd.cached;
+                    // psCmd.handler = cast(ResponseHandler!(PreparedStatement)) psCmd.cached;
                 }
             }
         }
@@ -178,7 +181,7 @@ abstract class SocketConnectionBase : DbConnection {
             pending.insertBack(cmd);
             checkPending();
         } else {
-            cmd.fail(new IOException("Connection not open " ~ status));
+            cmd.fail(new IOException("Connection not open " ~ status.to!string()));
         }
     }
 
@@ -189,7 +192,7 @@ abstract class SocketConnectionBase : DbConnection {
         ConnectionEventHandler ctx = _socket.getHandler();
         if (inflight < pipeliningLimit) {
             ICommand cmd;
-            while (inflight < pipeliningLimit && (cmd = pending.poll()) !is null) {
+            while (inflight < pipeliningLimit && (cmd = pollPending()) !is null) {
                 inflight++;
                 // ctx.write(cast(Object)cmd);
                 ctx.messageReceived(_socket, cast(Object)cmd);
@@ -198,23 +201,33 @@ abstract class SocketConnectionBase : DbConnection {
         }
     }
 
+    private ICommand pollPending() {
+        if(pending.empty())
+            return null;
+        ICommand c = pending.front;
+        pending.removeFront();
+        return c;
+
+    }
+
     private void handleMessage(Object msg) {
-        CommandResponse resp = cast(CommandResponse) msg;
-        if (resp !is null) {
-            inflight--;
-            checkPending();
-            resp.cmd.handler.handle(msg);
-        } 
+        implementationMissing(false);
+        // CommandResponse resp = cast(CommandResponse) msg;
+        // if (resp !is null) {
+        //     inflight--;
+        //     checkPending();
+        //     resp.cmd.handler.handle(msg);
+        // } 
 
-        Notification n = cast(Notification) msg;
-        if (n !is null) {
-            handleNotification(n);
-        }
+        // Notification n = cast(Notification) msg;
+        // if (n !is null) {
+        //     handleNotification(n);
+        // }
 
-        Notice notice = cast(Notice) msg;
-        if (notice !is null) {
-            handleNotice(notice);
-        }
+        // Notice notice = cast(Notice) msg;
+        // if (notice !is null) {
+        //     handleNotice(notice);
+        // }
     }
 
     private void handleNotification(Notification response) {
@@ -227,11 +240,11 @@ abstract class SocketConnectionBase : DbConnection {
         notice.log();
     }
 
-    private void handleClosed(Void v) {
+    private void handleClosed(hunt.net.Connection.Connection v) {
         handleClose(null);
     }
 
-    private void handleException(Throwable t) {
+    private void handleException(hunt.net.Connection.Connection c, Throwable t) {
         DecoderException err = cast(DecoderException) t;
         if (err !is null) {
             t = err.next;

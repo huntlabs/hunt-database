@@ -20,6 +20,7 @@ module hunt.database.postgresql.impl.PostgreSQLSocketConnection;
 // import io.netty.channel.ChannelPipeline;
 // import io.netty.handler.codec.DecoderException;
 
+import hunt.database.base.AsyncResult;
 import hunt.database.base.Common;
 import hunt.database.postgresql.impl.codec.PgCodec;
 import hunt.database.base.impl.Connection;
@@ -65,11 +66,12 @@ class PgSocketConnection : SocketConnectionBase {
         super.initialization();
     }
 
-    // void sendStartupMessage(String username, String password, String database, Map!(String, String) properties, Handler<? super CommandResponse!(Connection)> completionHandler) {
-    //     InitCommand cmd = new InitCommand(this, username, password, database, properties);
-    //     cmd.handler = completionHandler;
-    //     schedule(cmd);
-    // }
+    void sendStartupMessage(string username, string password, string database, Map!(string, string) properties,
+        ResponseHandler!(DbConnection) completionHandler) {
+        InitCommand cmd = new InitCommand(this, username, password, database, properties);
+        cmd.handler = completionHandler;
+        schedule(cmd);
+    }
 
     void sendCancelRequestMessage(int processId, int secretKey, Callback handler) {
         ByteBuffer buffer = BufferUtils.allocate(16);

@@ -46,7 +46,7 @@ interface SqlResult(T) {
      *
      * @return the list of names of columns.
      */
-    List!(string) columnsNames();
+    string[] columnsNames();
 
     /**
      * Get the number of rows in the PgResult.

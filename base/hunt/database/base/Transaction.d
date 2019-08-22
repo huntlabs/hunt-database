@@ -65,8 +65,7 @@ interface Transaction : SqlClient {
      */
     Transaction abortHandler(VoidHandler handler);
 
-    override
-    Transaction query(string sql, RowSetHandler handler);
+    // Transaction query(string sql, RowSetHandler handler);
 
     // override
     // <R> Transaction query(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);

@@ -9,6 +9,7 @@ import hunt.database.base.impl.SocketConnectionBase;
 
 import hunt.collection.LinkedHashMap;
 import hunt.collection.Map;
+import hunt.Exceptions;
 
 import hunt.concurrency.LinkedBlockingQueue;
 
@@ -60,7 +61,9 @@ class PreparedStatementCache : LinkedHashMap!(string, CachedPreparedStatement) {
         if (size() == 0) {
             return null;
         }
-        return cast(MapEntry!(string, CachedPreparedStatement)) this.toArray()[size() - 1];
+        // return cast(MapEntry!(string, CachedPreparedStatement)) entrySet().toArray()[size() - 1];
+        implementationMissing(false);
+        return null;
     }
 }
 
@@ -93,7 +96,7 @@ class CachedPreparedStatement { // : Handler!(CommandResponse!(PreparedStatement
         ResponseHandler!(PreparedStatement) waiter;
         while(!waiters.empty()) {
             waiter = waiters.front();
-            waiter.handle(resp);
+            waiter(resp);
             waiters.removeFront();
         }
         // while ((waiter = waiters.poll()) !is null) {

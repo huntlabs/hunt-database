@@ -29,7 +29,7 @@ import hunt.collection.Map;
  *
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-class InitCommand : CommandBase!(Connection) {
+class InitCommand : CommandBase!(DbConnection) {
 
     private SocketConnectionBase conn;
     private string _username;

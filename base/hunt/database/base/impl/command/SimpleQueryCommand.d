@@ -17,6 +17,8 @@
 
 module hunt.database.base.impl.command.SimpleQueryCommand;
 
+import hunt.database.base.impl.command.QueryCommandBase;
+
 import hunt.database.base.Row;
 import hunt.database.base.impl.QueryResultHandler;
 
@@ -35,7 +37,7 @@ class SimpleQueryCommand(T) : QueryCommandBase!(T) {
             bool singleton,
             // Collector<Row, ?, T> collector,
             QueryResultHandler!(T) resultHandler) {
-        super(collector, resultHandler);
+        super(resultHandler); // collector, 
         this._sql = sql;
         this._singleton = singleton;
     }

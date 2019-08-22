@@ -40,14 +40,14 @@ import hunt.collection.List;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection //, Connection.Holder 
+abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbConnection.Holder //, 
          { // if(is(C : SqlConnectionImpl))
 
     private ExceptionHandler _exceptionHandler;
     private VoidHandler _closeHandler;
     private TransactionImpl tx;
 
-    this(Connection conn) {
+    this(DbConnection conn) {
         super(conn);
     }
 

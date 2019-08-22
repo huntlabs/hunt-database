@@ -17,6 +17,8 @@
 
 module test.pgclient.PgConnectionTestBase;
 
+import test.pgclient.PgClientTestBase;
+
 import hunt.database.base;
 import hunt.database.postgresql;
 
@@ -39,10 +41,10 @@ import hunt.collection;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 
-// abstract class PgConnectionTestBase : PgClientTestBase!(SqlConnection) {
+abstract class PgConnectionTestBase : PgClientTestBase!(SqlConnection) {
 
 //     @Test
-//     void testDisconnectAbruptly(TestContext ctx) {
+//     void testDisconnectAbruptly() {
 //         Async async = ctx.async();
 //         ProxyServer proxy = ProxyServer.create(vertx, options.getPort(), options.getHost());
 //         proxy.proxyHandler(conn -> {
@@ -62,7 +64,7 @@ import hunt.collection;
 //     }
 
 //     @Test
-//     void testProtocolError(TestContext ctx) {
+//     void testProtocolError() {
 //         Async async = ctx.async();
 //         ProxyServer proxy = ProxyServer.create(vertx, options.getPort(), options.getHost());
 //         CompletableFuture!(Void) connected = new CompletableFuture<>();
@@ -96,7 +98,7 @@ import hunt.collection;
 //     }
 
 //     @Test
-//     void testTx(TestContext ctx) {
+//     void testTx() {
 //         Async async = ctx.async();
 //         connector.accept(ctx.asyncAssertSuccess(conn -> {
 //             conn.query("BEGIN", ctx.asyncAssertSuccess(result1 -> {
@@ -110,20 +112,19 @@ import hunt.collection;
 //         }));
 //     }
 // /*
-//     @Test
-//     void testSQLConnection(TestContext ctx) {
-//         Async async = ctx.async();
-//         PgClientImpl client = (PgClientImpl) PgClient.create(vertx, options);
-//         client.connect(ctx.asyncAssertSuccess(conn -> {
-//             conn.query("SELECT 1", ctx.asyncAssertSuccess(result -> {
-//                 ctx.assertEquals(1, result.rowCount());
-//                 async.complete();
-//             }));
-//         }));
-//     }
+    // @Test
+    // void testSQLConnection() {
+    //     PgClientImpl client = (PgClientImpl) PgClient.create(vertx, options);
+    //     client.connect(ctx.asyncAssertSuccess(conn -> {
+    //         conn.query("SELECT 1", ctx.asyncAssertSuccess(result -> {
+    //             ctx.assertEquals(1, result.rowCount());
+    //             async.complete();
+    //         }));
+    //     }));
+    // }
 
 //     @Test
-//     void testSelectForQueryWithParams(TestContext ctx) {
+//     void testSelectForQueryWithParams() {
 //         Async async = ctx.async();
 //         PgClientImpl client = (PgClientImpl) PgClient.create(vertx, options);
 //         client.connect(c -> {
@@ -137,7 +138,7 @@ import hunt.collection;
 //     }
 
 //     @Test
-//     void testInsertForUpdateWithParams(TestContext ctx) {
+//     void testInsertForUpdateWithParams() {
 //         Async async = ctx.async();
 //         PgClientImpl client = (PgClientImpl) PgClient.create(vertx, options);
 //         client.connect(c -> {
@@ -151,7 +152,7 @@ import hunt.collection;
 //     }
 
 //     @Test
-//     void testUpdateForUpdateWithParams(TestContext ctx) {
+//     void testUpdateForUpdateWithParams() {
 //         Async async = ctx.async();
 //         PgClientImpl client = (PgClientImpl) PgClient.create(vertx, options);
 //         client.connect(c -> {
@@ -165,7 +166,7 @@ import hunt.collection;
 //     }
 
 //     @Test
-//     void testDeleteForUpdateWithParams(TestContext ctx) {
+//     void testDeleteForUpdateWithParams() {
 //         Async async = ctx.async();
 //         PgClientImpl client = (PgClientImpl) PgClient.create(vertx, options);
 //         client.connect(c -> {
@@ -179,7 +180,7 @@ import hunt.collection;
 //     }
 
 //     @Test
-//     void testGetDefaultTx(TestContext ctx) {
+//     void testGetDefaultTx() {
 //         Async async = ctx.async();
 //         PgClientImpl client = (PgClientImpl) PgClient.create(vertx, options);
 //         client.connect(c -> {
@@ -192,7 +193,7 @@ import hunt.collection;
 //     }
 
 //     @Test
-//     void testSetUnsupportedTx(TestContext ctx) {
+//     void testSetUnsupportedTx() {
 //         Async async = ctx.async();
 //         PgClientImpl client = (PgClientImpl) PgClient.create(vertx, options);
 //         client.connect(c -> {
@@ -205,7 +206,7 @@ import hunt.collection;
 //     }
 
 //     @Test
-//     void testSetAndGetReadUncommittedTx(TestContext ctx) {
+//     void testSetAndGetReadUncommittedTx() {
 //         Async async = ctx.async();
 //         PgClientImpl client = (PgClientImpl) PgClient.create(vertx, options);
 //         client.connect(c -> {
@@ -220,7 +221,7 @@ import hunt.collection;
 //     }
 
 //     @Test
-//     void testSetAndGetReadCommittedTx(TestContext ctx) {
+//     void testSetAndGetReadCommittedTx() {
 //         Async async = ctx.async();
 //         PgClientImpl client = (PgClientImpl) PgClient.create(vertx, options);
 //         client.connect(c -> {
@@ -235,7 +236,7 @@ import hunt.collection;
 //     }
 
 //     @Test
-//     void testSetAndGetRepeatableReadTx(TestContext ctx) {
+//     void testSetAndGetRepeatableReadTx() {
 //         Async async = ctx.async();
 //         PgClientImpl client = (PgClientImpl) PgClient.create(vertx, options);
 //         client.connect(c -> {
@@ -250,7 +251,7 @@ import hunt.collection;
 //     }
 
 //     @Test
-//     void testSetAndGetSerializableTx(TestContext ctx) {
+//     void testSetAndGetSerializableTx() {
 //         Async async = ctx.async();
 //         PgClientImpl client = (PgClientImpl) PgClient.create(vertx, options);
 //         client.connect(c -> {
@@ -266,7 +267,7 @@ import hunt.collection;
 // */
 
 //     @Test
-//     void testUpdateError(TestContext ctx) {
+//     void testUpdateError() {
 //         Async async = ctx.async();
 //         connector.accept(ctx.asyncAssertSuccess(conn -> {
 //             conn.query("INSERT INTO Fortune (id, message) VALUES (1, 'Duplicate')", ctx.asyncAssertFailure(err -> {
@@ -281,7 +282,7 @@ import hunt.collection;
 //     }
 
 //     @Test
-//     void testBatchInsertError(TestContext ctx) {
+//     void testBatchInsertError() {
 //         Async async = ctx.async();
 //         connector.accept(ctx.asyncAssertSuccess(conn -> {
 //             int id = randomWorld();
@@ -299,7 +300,7 @@ import hunt.collection;
 //     }
 
 //     @Test
-//     void testCloseOnUndeploy(TestContext ctx) {
+//     void testCloseOnUndeploy() {
 //         Async done = ctx.async();
 //         vertx.deployVerticle(new AbstractVerticle() {
 //             override
@@ -317,16 +318,16 @@ import hunt.collection;
 //     }
 
 //     @Test
-//     void testTransactionCommit(TestContext ctx) {
+//     void testTransactionCommit() {
 //         testTransactionCommit(ctx, Runnable::run);
 //     }
 
 //     @Test
-//     void testTransactionCommitFromAnotherThread(TestContext ctx) {
+//     void testTransactionCommitFromAnotherThread() {
 //         testTransactionCommit(ctx, t -> new Thread(t).start());
 //     }
 
-//     private void testTransactionCommit(TestContext ctx, Executor exec) {
+//     private void testTransactionCommit(, Executor exec) {
 //         Async done = ctx.async();
 //         connector.accept(ctx.asyncAssertSuccess(conn -> {
 //             deleteFromTestTable(ctx, conn, () -> {
@@ -358,16 +359,16 @@ import hunt.collection;
 //     }
 
 //     @Test
-//     void testTransactionRollback(TestContext ctx) {
+//     void testTransactionRollback() {
 //         testTransactionRollback(ctx, Runnable::run);
 //     }
 
 //     @Test
-//     void testTransactionRollbackFromAnotherThread(TestContext ctx) {
+//     void testTransactionRollbackFromAnotherThread() {
 //         testTransactionRollback(ctx, t -> new Thread(t).start());
 //     }
 
-//     private void testTransactionRollback(TestContext ctx, Executor exec) {
+//     private void testTransactionRollback(, Executor exec) {
 //         Async done = ctx.async();
 //         connector.accept(ctx.asyncAssertSuccess(conn -> {
 //             deleteFromTestTable(ctx, conn, () -> {
@@ -400,7 +401,7 @@ import hunt.collection;
 //     }
 
 //     @Test
-//     void testTransactionAbort(TestContext ctx) {
+//     void testTransactionAbort() {
 //         Async done = ctx.async();
 //         connector.accept(ctx.asyncAssertSuccess(conn -> {
 //             deleteFromTestTable(ctx, conn, () -> {
@@ -428,4 +429,4 @@ import hunt.collection;
 //             });
 //         }));
 //     }
-// }
+}

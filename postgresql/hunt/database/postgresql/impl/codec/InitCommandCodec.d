@@ -31,7 +31,9 @@ import hunt.database.postgresql.impl.PostgreSQLSocketConnection;
 // import java.nio.charset.Charset;
 // import java.nio.charset.StandardCharsets;
 
-class InitCommandCodec : PgCommandCodec!(Connection, InitCommand) {
+private alias Connection = DbConnection;
+
+class InitCommandCodec : PgCommandCodec!(DbConnection, InitCommand) {
 
     private PgEncoder encoder;
     private string encoding;

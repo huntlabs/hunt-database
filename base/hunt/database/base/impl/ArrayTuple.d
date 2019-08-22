@@ -49,6 +49,15 @@ class ArrayTuple : ArrayList!(Object), Tuple {
         super(c);
     }
 
+    override int size() {
+        return super.size();
+    }
+
+    override void clear() {
+        super.clear();
+    }
+
+
     // override
     // <T> T get(Class!(T) type, int pos) {
     //     throw new UnsupportedOperationException();
