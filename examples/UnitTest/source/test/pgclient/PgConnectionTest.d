@@ -39,8 +39,10 @@ class PgConnectionTest : PgConnectionTestBase {
 
     this() {
         connector = (handler) {
+                info("connecting ...");
             PgConnectionImpl.connect(options, (ar) {
-
+                info("xxxxx");
+                // handler(ar.map);
             });
         };
         // connector = (handler) -> PgConnection.connect(vertx, options, ar -> {
@@ -51,6 +53,12 @@ class PgConnectionTest : PgConnectionTestBase {
     @Test
     void testSettingSchema() {
         options.addProperty("search_path", "myschema");
+        connector((conn) {
+            
+                trace(typeid(conn));
+                // assert(result.succeeded());
+
+        });
         // connector.accept(ctx.asyncAssertSuccess(conn -> {
         //     conn.query("SHOW search_path;", ctx.asyncAssertSuccess(pgRowSet -> {
         //         ctx.assertEquals("myschema", pgRowSet.iterator().next().getString("search_path"));

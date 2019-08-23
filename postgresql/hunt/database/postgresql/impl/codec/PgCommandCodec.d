@@ -34,6 +34,8 @@ import hunt.logging.ConsoleLogger;
 /**
 */
 abstract class PgCommandCodecBase {
+    
+    EventHandler!(NoticeResponse) noticeHandler;
 
     abstract void encode(PgEncoder encoder);
 
@@ -108,7 +110,6 @@ abstract class PgCommandCodec(R, C) : PgCommandCodecBase
         if(is(C : CommandBase!(R))) {
 
     ResponseHandler!R completionHandler;
-    EventHandler!(NoticeResponse) noticeHandler;
     Throwable _failure;
     R result;
     C cmd;
@@ -135,10 +136,15 @@ abstract class PgCommandCodec(R, C) : PgCommandCodecBase
         } else {
             resp = success(result, txStatus);
         }
-        completionHandler(resp);
+
+        if(completionHandler !is null)
+            completionHandler(resp);
     }
 
     override void handleNoticeResponse(NoticeResponse noticeResponse) {
-        noticeHandler(noticeResponse);
+        warning("noticeHandler");
+        if(noticeHandler !is null) {
+            noticeHandler(noticeResponse);
+        }
     }
 }

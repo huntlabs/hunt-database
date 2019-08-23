@@ -28,10 +28,8 @@ import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.command.InitCommand;
 import hunt.database.postgresql.impl.PostgreSQLSocketConnection;
 
-// import java.nio.charset.Charset;
-// import java.nio.charset.StandardCharsets;
-
-private alias Connection = DbConnection;
+import hunt.logging.ConsoleLogger;
+import hunt.Exceptions;
 
 class InitCommandCodec : PgCommandCodec!(DbConnection, InitCommand) {
 
@@ -44,30 +42,35 @@ class InitCommandCodec : PgCommandCodec!(DbConnection, InitCommand) {
 
     override
     void encode(PgEncoder encoder) {
+        version(HUNT_DB_DEBUG) tracef("running here");
         this.encoder = encoder;
         encoder.writeStartupMessage(new StartupMessage(cmd.username(), cmd.database(), cmd.properties()));
     }
 
     override
     void handleAuthenticationMD5Password(byte[] salt) {
+        version(HUNT_DB_DEBUG) tracef("salt: %(%02X %)", salt);
         encoder.writePasswordMessage(new PasswordMessage(cmd.username(), cmd.password(), salt));
         encoder.flush();
     }
 
     override
     void handleAuthenticationClearTextPassword() {
+        version(HUNT_DB_DEBUG) tracef("running here");
         encoder.writePasswordMessage(new PasswordMessage(cmd.username(), cmd.password(), null));
         encoder.flush();
     }
 
     override
     void handleAuthenticationOk() {
+        version(HUNT_DB_DEBUG) tracef("running here");
 //      handler.handle(Future.succeededFuture(conn));
 //      handler = null;
     }
 
     override
     void handleParameterStatus(string key, string value) {
+        version(HUNT_DB_DEBUG) tracef("key: %s, value: %s", key, value);
         if(key == "client_encoding") {
             encoding = value;
         }
@@ -75,18 +78,22 @@ class InitCommandCodec : PgCommandCodec!(DbConnection, InitCommand) {
 
     override
     void handleBackendKeyData(int processId, int secretKey) {
+        version(HUNT_DB_DEBUG) tracef("processId: %d, secretKey: %d", processId, secretKey);
         (cast(PgSocketConnection)cmd.connection()).processId = processId;
         (cast(PgSocketConnection)cmd.connection()).secretKey = secretKey;
     }
 
     override
     void handleErrorResponse(ErrorResponse errorResponse) {
-        CommandResponse!(Connection) resp = failure!Connection(errorResponse.toException());
-        completionHandler(resp);
+        version(HUNT_DB_DEBUG) warningf("errorResponse: %s", errorResponse.toString());
+        CommandResponse!(DbConnection) resp = failure!DbConnection(errorResponse.toException());
+        if(completionHandler !is null)
+            completionHandler(resp);
     }
 
     override
     void handleReadyForQuery(TxStatus txStatus) {
+        version(HUNT_DB_DEBUG) tracef("txStatus: %s", txStatus);
         // The final phase before returning the connection
         // We should make sure we are supporting only UTF8
         // https://www.postgresql.org/docs/9.5/static/multibyte.html#MULTIBYTE-CHARSET-SUPPORTED
@@ -95,11 +102,11 @@ class InitCommandCodec : PgCommandCodec!(DbConnection, InitCommand) {
         //     cs = Charset.forName(encoding);
         // } catch (Exception ignore) {
         // }
-        CommandResponse!(Connection) fut;
+        CommandResponse!(DbConnection) fut;
         if(encoding != "UTF_8") {
-            fut = failure!(Connection)(encoding ~ " is not supported in the client only UTF8");
+            fut = failure!(DbConnection)(encoding ~ " is not supported in the client only UTF8");
         } else {
-            fut = success!(Connection)(cmd.connection());
+            fut = success!(DbConnection)(cmd.connection());
         }
         if(completionHandler !is null)
             completionHandler(fut);

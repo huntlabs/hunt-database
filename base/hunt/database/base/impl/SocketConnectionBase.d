@@ -188,14 +188,15 @@ abstract class SocketConnectionBase : DbConnection {
 
     private void checkPending() {
         // ChannelHandlerContext ctx = _socket.channelHandlerContext();
-        import hunt.net.Connection;
-        ConnectionEventHandler ctx = _socket.getHandler();
+        // import hunt.net.Connection;
+        // ConnectionEventHandler ctx = _socket.getHandler();
         if (inflight < pipeliningLimit) {
             ICommand cmd;
             while (inflight < pipeliningLimit && (cmd = pollPending()) !is null) {
                 inflight++;
-                // ctx.write(cast(Object)cmd);
-                ctx.messageReceived(_socket, cast(Object)cmd);
+                // _socket.write(cast(Object)cmd)
+                tracef("encoding %s ... ", typeid(cast(Object)cmd));
+                _socket.encode(cast(Object)cmd);
             }
             // ctx.flush();
         }
@@ -211,7 +212,15 @@ abstract class SocketConnectionBase : DbConnection {
     }
 
     private void handleMessage(Object msg) {
+        trace(typeid(msg));
         implementationMissing(false);
+
+        // CommandBase!DbConnection resp = cast(CommandBase!DbConnection)msg;
+        // if(resp !is null) {
+        //     inflight--;
+        //     checkPending();
+        //     // resp.handler(msg);
+        // }
         // CommandResponse resp = cast(CommandResponse) msg;
         // if (resp !is null) {
         //     inflight--;

@@ -33,8 +33,7 @@ class PasswordMessage {
         if(salt.empty()) {
             this.hash = password;
         } else {
-            auto v = md5Of(cast(byte[])username, cast(byte[])password, salt);
-            this.hash =  v.toHexString();
+            this.hash = MD5Authentication.encode(username, password, salt);
         }
     }
 }

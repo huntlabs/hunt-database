@@ -17,48 +17,28 @@
 
 module hunt.database.postgresql.impl.util.MD5Authentication;
 
-// import java.security.MessageDigest;
-// import java.security.NoSuchAlgorithmException;
+import std.digest.md;
 
-// import static java.nio.charset.StandardCharsets.*;
 
-// class MD5Authentication {
+class MD5Authentication {
 
-//     private final static char[] HEX_ALPHABET = "0123456789abcdef".toCharArray();
+    static string encode(string username, string password, byte[] salt) {
 
-//     private static String toHex(byte[] bytes) {
-//         char[] hexChars = new char[bytes.length * 2];
-//         for ( int j = 0; j < bytes.length; j++ ) {
-//             int v = bytes[j] & 0xFF;
-//             hexChars[j * 2] = HEX_ALPHABET[v >>> 4];
-//             hexChars[j * 2 + 1] = HEX_ALPHABET[v & 0x0F];
-//         }
-//         return new String(hexChars);
-//     }
+        scope MD5Digest md5 = new MD5Digest();
 
-//     static String encode(String username, String password, byte[] salt) {
+        md5.put(cast(ubyte[])password);
+        md5.put(cast(ubyte[])username);
 
-//         byte[] digest, passDigest;
+        string str = toHexString!(LetterCase.lower)(md5.finish());
+        md5.put(cast(ubyte[])str);
+        md5.put(cast(ubyte[])salt);
 
-//         MessageDigest messageDigest;
+        return "md5" ~ toHexString!(LetterCase.lower)(md5.finish());
+    }
 
-//         try {
-//             messageDigest = MessageDigest.getInstance("MD5");
-//         }
-//         catch (NoSuchAlgorithmException e) {
-//             throw new RuntimeException(e);
-//         }
+    unittest {
+        string v = encode("postgres", "123456", cast(byte[])[0x3b, 0xd3, 0x50, 0x01]);
+        assert(v == "md54b6f61eb0d581191ced4adbe41458d05");
+    }
 
-//         messageDigest.update(password.getBytes(UTF_8));
-//         messageDigest.update(username.getBytes(UTF_8));
-//         digest = messageDigest.digest();
-
-//         byte[] hexDigest = toHex(digest).getBytes(US_ASCII);
-
-//         messageDigest.update(hexDigest);
-//         messageDigest.update(salt);
-//         passDigest = messageDigest.digest();
-
-//         return "md5" ~ toHex(passDigest);
-//     }
-// }
+}

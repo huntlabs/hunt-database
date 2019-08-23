@@ -59,6 +59,8 @@ import hunt.net.buffer;
 import std.container.dlist;
 import std.conv;
 
+import hunt.logging.ConsoleLogger;
+
 /**
  *
  * Decoder for <a href="https://www.postgresql.org/docs/9.5/static/protocol.html">PostgreSQL protocol</a>
@@ -68,14 +70,13 @@ import std.conv;
 
 class PgDecoder : Decoder {
 
-    // private final ArrayDeque<PgCommandCodec<?, ?>> inflight;
     private ByteBufAllocator alloc;
-    private DList!(PgCommandCodecBase) inflight;
+    private DList!(PgCommandCodecBase) *inflight;
     private ByteBuf inBuffer;
     private CommandCompleteProcessor processor;
 
     this(ref DList!(PgCommandCodecBase) inflight) {
-        this.inflight = inflight;
+        this.inflight = &inflight;
         processor = new CommandCompleteProcessor();
         alloc = UnpooledByteBufAllocator.DEFAULT();
     }
@@ -88,6 +89,8 @@ class PgDecoder : Decoder {
     // void channelRead(ChannelHandlerContext ctx, Object msg) 
 
     void decode(ByteBuffer msg, Connection connection) {
+        tracef("decoding buffer: %s", msg.toString());
+
         ByteBuf buff = Unpooled.wrappedBuffer(msg);
         if (inBuffer is null) {
             inBuffer = buff;
@@ -100,6 +103,7 @@ class PgDecoder : Decoder {
             }
             composite.addComponent(true, buff);
         }
+
         while (true) {
             int available = inBuffer.readableBytes();
             if (available < 5) {
@@ -115,6 +119,7 @@ class PgDecoder : Decoder {
             int writerIndex = inBuffer.writerIndex();
             try {
                 inBuffer.setIndex(beginIdx + 5, endIdx);
+                infof("Protocol id=%d", id);
                 switch (id) {
                     case PgProtocolConstants.MESSAGE_TYPE_READY_FOR_QUERY: {
                         decodeReadyForQuery(inBuffer);
@@ -135,6 +140,12 @@ class PgDecoder : Decoder {
                     default: {
                         decodeMessage(id, inBuffer);
                     }
+                }
+            } catch(Throwable ex) {
+                version(HUNT_DEBUG) {
+                    warning(ex);
+                } else {
+                    warning(ex.msg);
                 }
             } finally {
                 inBuffer.setIndex(endIdx, writerIndex);
@@ -361,20 +372,29 @@ class PgDecoder : Decoder {
 
     private void decodeAuthentication(ByteBuf inBuffer) {
 
+        if(inflight.empty()) {
+            warning("inflight is empty");
+            return;
+        }
+
         int type = inBuffer.readInt();
+        tracef("type=%d", type);
+
+        PgCommandCodecBase cmdCodec = inflight.front();
+
         switch (type) {
             case PgProtocolConstants.AUTHENTICATION_TYPE_OK: {
-                inflight.front().handleAuthenticationOk();
+                cmdCodec.handleAuthenticationOk();
             }
             break;
             case PgProtocolConstants.AUTHENTICATION_TYPE_MD5_PASSWORD: {
                 byte[] salt = new byte[4];
                 inBuffer.readBytes(salt);
-                inflight.front().handleAuthenticationMD5Password(salt);
+                cmdCodec.handleAuthenticationMD5Password(salt);
             }
             break;
             case PgProtocolConstants.AUTHENTICATION_TYPE_CLEARTEXT_PASSWORD: {
-                inflight.front().handleAuthenticationClearTextPassword();
+                cmdCodec.handleAuthenticationClearTextPassword();
             }
             break;
             case PgProtocolConstants.AUTHENTICATION_TYPE_KERBEROS_V5:

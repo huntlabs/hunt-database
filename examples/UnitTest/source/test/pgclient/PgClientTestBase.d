@@ -43,6 +43,7 @@ abstract class PgClientTestBase(C) : PgTestBase if(is(C : SqlClient)) {
 
     @Before
     override void setup() {
+        info("running here");
         super.setup();
         // vertx = Vertx.vertx();
     }
@@ -50,16 +51,17 @@ abstract class PgClientTestBase(C) : PgTestBase if(is(C : SqlClient)) {
     @After
     void teardown() {
         // vertx.close(ctx.asyncAssertSuccess());
+        info("running here");
     }
 
-    @Test
-    void testConnectNonSSLServer() {
-        // options.setSslMode(SslMode.REQUIRE).setTrustAll(true);
-        // connector.accept(ctx.asyncAssertFailure(err -> {
-        //     ctx.assertEquals("Postgres Server does not handle SSL connection", err.getMessage());
-        //     async.complete();
-        // }));
-    }
+    // @Test
+    // void testConnectNonSSLServer() {
+    //     // options.setSslMode(SslMode.REQUIRE).setTrustAll(true);
+    //     // connector.accept(ctx.asyncAssertFailure(err -> {
+    //     //     ctx.assertEquals("Postgres Server does not handle SSL connection", err.getMessage());
+    //     //     async.complete();
+    //     // }));
+    // }
 
     // @Test
     // void testMultipleQuery() {

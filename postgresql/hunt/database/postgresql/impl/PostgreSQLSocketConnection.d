@@ -32,6 +32,7 @@ import hunt.collection.ByteBuffer;
 import hunt.collection.BufferUtils;
 import hunt.collection.Map;
 import hunt.Exceptions;
+import hunt.logging.ConsoleLogger;
 import hunt.net.AbstractConnection;
 import hunt.net.Exceptions;
 import hunt.util.Common;
@@ -70,6 +71,9 @@ class PgSocketConnection : SocketConnectionBase {
         ResponseHandler!(DbConnection) completionHandler) {
         InitCommand cmd = new InitCommand(this, username, password, database, properties);
         cmd.handler = completionHandler;
+        version(HUNT_DEBUG) {
+            trace("Sending InitCommand");
+        }
         schedule(cmd);
     }
 

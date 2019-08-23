@@ -35,23 +35,26 @@ import hunt.database.postgresql.impl.codec.Response;
 import hunt.database.postgresql.impl.codec.StartupMessage;
 
 
-import hunt.net.buffer.ByteBuf;
+import hunt.net.buffer;
 // import io.netty.channel.ChannelHandlerContext;
 // import io.netty.channel.ChannelOutboundHandlerAdapter;
 // import io.netty.channel.ChannelPromise;
 
+import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.ParamDesc;
 import hunt.database.base.impl.RowDesc;
 import hunt.database.base.impl.TxStatus;
-import hunt.database.base.impl.command.CloseConnectionCommand;
-import hunt.database.base.impl.command.CloseCursorCommand;
-import hunt.database.base.impl.command.CloseStatementCommand;
-import hunt.database.base.impl.command.ExtendedBatchQueryCommand;
-import hunt.database.base.impl.command.ExtendedQueryCommand;
-import hunt.database.base.impl.command.InitCommand;
-import hunt.database.base.impl.command.CommandBase;
-import hunt.database.base.impl.command.PrepareStatementCommand;
-import hunt.database.base.impl.command.SimpleQueryCommand;
+import hunt.database.base.impl.command;
+// import hunt.database.base.impl.command.CommandResponse;
+// import hunt.database.base.impl.command.CloseConnectionCommand;
+// import hunt.database.base.impl.command.CloseCursorCommand;
+// import hunt.database.base.impl.command.CloseStatementCommand;
+// import hunt.database.base.impl.command.ExtendedBatchQueryCommand;
+// import hunt.database.base.impl.command.ExtendedQueryCommand;
+// import hunt.database.base.impl.command.InitCommand;
+// import hunt.database.base.impl.command.CommandBase;
+// import hunt.database.base.impl.command.PrepareStatementCommand;
+// import hunt.database.base.impl.command.SimpleQueryCommand;
 import hunt.database.postgresql.impl.util.Util;
 
 import hunt.collection.ArrayDeque;
@@ -59,6 +62,7 @@ import hunt.collection.ByteBuffer;
 import hunt.collection.List;
 import hunt.collection.Map;
 import hunt.Exceptions;
+import hunt.logging.ConsoleLogger;
 import hunt.net.codec.Encoder;
 import hunt.net.Connection;
 import hunt.text.Charset;
@@ -86,24 +90,59 @@ final class PgEncoder : EncoderChain {
     private enum byte SYNC = 'S';
 
     // private ArrayDeque<PgCommandCodec<?, ?>> inflight;
-    private DList!(PgCommandCodecBase) inflight;
+    private DList!(PgCommandCodecBase) *inflight;
     private Connection ctx;
     private ByteBuf outBuffer;
     private PgDecoder dec;
 
     this(PgDecoder dec, ref DList!(PgCommandCodecBase) inflight) {
-        this.inflight = inflight;
+        this.inflight = &inflight;
         this.dec = dec;
     }
 
     override void encode(Object message, Connection connection) {
-        implementationMissing();
-	}
+        // implementationMissing();
 
-    void write(ICommand cmd) {
-        PgCommandCodecBase codec = wrap(cmd);
+        ctx = connection;
 
+        ICommand cmd = cast(ICommand)message;
+        if(cmd is null) {
+            warningf("The message is not a ICommand: %s", typeid(message));
+        }
+
+        tracef("%s", typeid(message));
+
+        PgCommandCodecBase codec; // = wrap(cmd);
+
+        InitCommand initCommand = cast(InitCommand) cmd;
+        if (initCommand !is null) {
+            InitCommandCodec cmdCodec = new InitCommandCodec(initCommand);
+
+            cmdCodec.completionHandler = (resp) {
+                warning(typeid(resp));
+                CommandResponse!DbConnection h = resp;
+
+                PgCommandCodecBase c = inflight.front();
+                assert(cmdCodec is c);
+                inflight.removeFront();
+
+                h.cmd = cast(InitCommand)cmdCodec.cmd;
+                // warning("do something??");
+                // FIXME: Needing refactor or cleanup -@zxp at 8/14/2019, 2:06:32 PM
+                // 
+                // ctx.fireChannelRead(resp);
+            };
+
+            codec = cmdCodec;
+
+            inflight.insertBack(codec);
+            codec.encode(this);
+            flush();
+        } else {
             implementationMissing(false);
+        }
+
+        // implementationMissing(false);
         // codec.completionHandler = (resp) {
         //     PgCommandCodecBase c = inflight.poll();
         //     resp.cmd = cast(CommandBase) c.cmd;
@@ -112,10 +151,29 @@ final class PgEncoder : EncoderChain {
         //     // 
         //     // ctx.fireChannelRead(resp);
         // };
+
+
         // codec.noticeHandler = ctx::fireChannelRead;
-        inflight.insertBack(codec);
-        codec.encode(this);
-    }
+        // inflight.insertBack(codec);
+        // codec.encode(this);
+	}
+
+    // void write(ICommand cmd) {
+    //     PgCommandCodecBase codec = wrap(cmd);
+
+    //         implementationMissing(false);
+    //     // codec.completionHandler = (resp) {
+    //     //     PgCommandCodecBase c = inflight.poll();
+    //     //     resp.cmd = cast(CommandBase) c.cmd;
+    //     //     implementationMissing(false);
+    //     //     // FIXME: Needing refactor or cleanup -@zxp at 8/14/2019, 2:06:32 PM
+    //     //     // 
+    //     //     // ctx.fireChannelRead(resp);
+    //     // };
+    //     // codec.noticeHandler = ctx::fireChannelRead;
+    //     inflight.insertBack(codec);
+    //     codec.encode(this);
+    // }
 
     private PgCommandCodecBase wrap(ICommand cmd) {
         InitCommand initCommand = cast(InitCommand) cmd;
@@ -143,9 +201,11 @@ final class PgEncoder : EncoderChain {
     }
 
     // override
-    // void handlerAdded(ChannelHandlerContext ctx) {
-    //     this.ctx = ctx;
-    // }
+    void handlerAdded(Connection ctx) {
+        // TODO: Tasks pending completion -@zxp at 8/22/2019, 5:50:54 PM
+        // 
+        this.ctx = ctx;
+    }
 
     // override
     // void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) {
@@ -163,14 +223,19 @@ final class PgEncoder : EncoderChain {
     // }
 
     void flush() {
+        trace("flushing ...");
+
+        if(ctx is null) {
+            warning("ctx is null");
+            return ;
+        }
+
         if (outBuffer !is null) {
             ByteBuf buff = outBuffer;
             outBuffer = null;
-            // FIXME: Needing refactor or cleanup -@zxp at 8/20/2019, 5:45:25 PM
-            // 
-            implementationMissing(false);
-            // connection.write(buff);
-            // ctx.writeAndFlush(buff);
+            version(HUNT_DEBUG) tracef("buffer: %s", buff.toString());
+            byte[] avaliableData = buff.getReadableBytes();
+            ctx.write(cast(const(ubyte)[])avaliableData);
         } else {
             // ctx.flush();
         }
@@ -438,8 +503,6 @@ final class PgEncoder : EncoderChain {
 
     private void ensureBuffer() {
         if (outBuffer is null) {
-            // outBuffer = ctx.alloc().ioBuffer();
-            import hunt.net.buffer;
             outBuffer = Unpooled.buffer();
         }
     }
