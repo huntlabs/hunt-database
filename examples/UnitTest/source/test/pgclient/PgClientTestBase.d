@@ -39,7 +39,8 @@ abstract class PgClientTestBase(C) : PgTestBase if(is(C : SqlClient)) {
 
     // Vertx vertx;
     
-    Consumer!(AsyncResultHandler!(C)) connector;
+    // Consumer!(AsyncResultHandler!(C)) connector;
+    Consumer!(Action1!C) connector;
 
     @Before
     override void setup() {

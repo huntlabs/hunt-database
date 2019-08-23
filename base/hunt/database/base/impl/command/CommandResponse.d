@@ -24,6 +24,12 @@ abstract class CommandResponse(R) : AsyncResult!(R) {
     TxStatus txStatus() {
         return _txStatus;
     }
+
+    void notifyCommandResponse() {
+        if(cmd !is null) {
+            cmd.notifyResponse(this);
+        }
+    }
 }
 
 template failure(R) {
@@ -39,7 +45,7 @@ template failure(R) {
         return failure!R(cause, TxStatus.FAILED);
     }
 
-    CommandResponse!(R) failure(Throwable cause, TxStatus txStatus) {
+    CommandResponse!(R) failure(Throwable r, TxStatus txStatus) {
         return new class CommandResponse!(R) {
             this() {
                 super(_txStatus);
@@ -54,7 +60,7 @@ template failure(R) {
             }
 
             Throwable cause() {
-                return cause;
+                return r;
             }
 
             bool succeeded() {
@@ -76,14 +82,14 @@ template success(R) {
         return success(result, TxStatus.IDLE);
     }
 
-    CommandResponse!(R) success(R result, TxStatus txStatus) {
+    CommandResponse!(R) success(R r, TxStatus txStatus) {
         return new class CommandResponse!(R) {
             this() {
                 super(txStatus);
             }
 
             R result() {
-                return result;
+                return r;
             }
 
             Throwable cause() {

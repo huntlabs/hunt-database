@@ -39,24 +39,37 @@ class PgConnectionTest : PgConnectionTestBase {
 
     this() {
         connector = (handler) {
-                info("connecting ...");
-            PgConnectionImpl.connect(options, (ar) {
-                info("xxxxx");
-                // handler(ar.map);
+            trace("Initializing connect ...");
+            PgConnectionImpl.connect(options, (AsyncResult!PgConnection ar) {
+                // mapping PgConnection to SqlConnection
+                // handler(ar.map!(SqlConnection)( p => p));
+
+                if(ar.succeeded()) {
+                    handler(ar.result());
+                } else {
+                    warning(ar.cause().msg);
+                }
             });
         };
-        // connector = (handler) -> PgConnection.connect(vertx, options, ar -> {
-        //     handler.handle(ar.map(p -> p));
-        // });
     }
 
     @Test
     void testSettingSchema() {
         options.addProperty("search_path", "myschema");
-        connector((conn) {
-            
-                trace(typeid(conn));
-                // assert(result.succeeded());
+        connector((SqlConnection conn) {
+            trace(typeid(conn));
+            conn.query("SHOW search_path;", (AsyncResult!RowSet ar)  {
+                if(ar.succeeded()) {
+                    RowSet pgRowSet = ar.result();
+                    trace(typeid(pgRowSet));
+
+                    // string v = pgRowSet.iterator().next().getString("search_path");
+
+                    // ctx.assertEquals("myschema", pgRowSet.iterator().next().getString("search_path"));
+                } else {
+                    warning(ar.cause().msg);
+                }
+            });
 
         });
         // connector.accept(ctx.asyncAssertSuccess(conn -> {

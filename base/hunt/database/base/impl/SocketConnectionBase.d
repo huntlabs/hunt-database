@@ -81,14 +81,14 @@ abstract class SocketConnectionBase : DbConnection {
 
     void initialization() {
 
-        import hunt.net.Connection;
         ConnectionEventHandlerAdapter adapter = new ConnectionEventHandlerAdapter();
         adapter.onClosed(&handleClosed);
         adapter.onException(&handleException);
         adapter.onMessageReceived((conn, msg) {
+            version(HUNT_DB_DEBUG) trace("A message received.");
             try {
-                handleMessage(msg);
-            } catch (Exception e) {
+                handleMessage(conn, msg);
+            } catch (Throwable e) {
                 handleException(conn, e);
             }
         });
@@ -187,8 +187,6 @@ abstract class SocketConnectionBase : DbConnection {
 
 
     private void checkPending() {
-        // ChannelHandlerContext ctx = _socket.channelHandlerContext();
-        // import hunt.net.Connection;
         // ConnectionEventHandler ctx = _socket.getHandler();
         if (inflight < pipeliningLimit) {
             ICommand cmd;
@@ -211,22 +209,23 @@ abstract class SocketConnectionBase : DbConnection {
 
     }
 
-    private void handleMessage(Object msg) {
-        trace(typeid(msg));
-        implementationMissing(false);
-
+    private void handleMessage(Connection conn, Object msg) {
+        tracef("handling a message: %s", typeid(msg));
         // CommandBase!DbConnection resp = cast(CommandBase!DbConnection)msg;
         // if(resp !is null) {
         //     inflight--;
         //     checkPending();
         //     // resp.handler(msg);
         // }
-        // CommandResponse resp = cast(CommandResponse) msg;
-        // if (resp !is null) {
-        //     inflight--;
-        //     checkPending();
-        //     resp.cmd.handler.handle(msg);
-        // } 
+
+        CommandResponse!DbConnection resp = cast(CommandResponse!DbConnection) msg;
+        if (resp !is null) {
+            tracef("inflight=%d", inflight);
+            inflight--;
+            checkPending();
+            // resp.cmd.handler(resp);
+            resp.notifyCommandResponse();
+        } 
 
         // Notification n = cast(Notification) msg;
         // if (n !is null) {

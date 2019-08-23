@@ -118,8 +118,12 @@ class PgConnectionFactory {
             if (ar.succeeded()) {
                 PgSocketConnection conn = ar.result();
                 conn.initialization();
-                conn.sendStartupMessage(username, password, database, properties, (r) { completionHandler(r); });
-            } else {
+                conn.sendStartupMessage(username, password, database, properties, 
+                    (r) { 
+                        if(completionHandler !is null) completionHandler(r); 
+                    }
+                );
+            } else if(completionHandler !is null) {
                 completionHandler(failure!(DbConnection)(ar.cause()));
             }
         });

@@ -38,9 +38,6 @@ import hunt.net.Exceptions;
 import hunt.util.Common;
 
 
-// alias AsyncConnectHandler = NetEventHandler!(AsyncResult!Connection);
-// alias AsyncVoidResultHandler = EventVoidHandler;
-
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */

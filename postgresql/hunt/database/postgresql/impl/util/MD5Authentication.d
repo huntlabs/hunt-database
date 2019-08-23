@@ -19,7 +19,8 @@ module hunt.database.postgresql.impl.util.MD5Authentication;
 
 import std.digest.md;
 
-
+/**
+*/
 class MD5Authentication {
 
     static string encode(string username, string password, byte[] salt) {

@@ -110,7 +110,7 @@ final class PgEncoder : EncoderChain {
             warningf("The message is not a ICommand: %s", typeid(message));
         }
 
-        tracef("%s", typeid(message));
+        infof("encoding a message: %s", typeid(message));
 
         PgCommandCodecBase codec; // = wrap(cmd);
 
@@ -119,7 +119,7 @@ final class PgEncoder : EncoderChain {
             InitCommandCodec cmdCodec = new InitCommandCodec(initCommand);
 
             cmdCodec.completionHandler = (resp) {
-                warning(typeid(resp));
+                infof("message encoding completed: %s", typeid(resp));
                 CommandResponse!DbConnection h = resp;
 
                 PgCommandCodecBase c = inflight.front();
@@ -127,6 +127,18 @@ final class PgEncoder : EncoderChain {
                 inflight.removeFront();
 
                 h.cmd = cast(InitCommand)cmdCodec.cmd;
+
+                ConnectionEventHandler handler = ctx.getHandler();
+
+                if(h.failed()) {
+                    Throwable th = h.cause();
+                    version(HUNT_DB_DEBUG) {
+                        warning(th.msg);
+                    }
+                    handler.exceptionCaught(ctx, cast(Exception)th);
+                } else {
+                    handler.messageReceived(ctx, resp);
+                }
                 // warning("do something??");
                 // FIXME: Needing refactor or cleanup -@zxp at 8/14/2019, 2:06:32 PM
                 // 
@@ -157,23 +169,6 @@ final class PgEncoder : EncoderChain {
         // inflight.insertBack(codec);
         // codec.encode(this);
 	}
-
-    // void write(ICommand cmd) {
-    //     PgCommandCodecBase codec = wrap(cmd);
-
-    //         implementationMissing(false);
-    //     // codec.completionHandler = (resp) {
-    //     //     PgCommandCodecBase c = inflight.poll();
-    //     //     resp.cmd = cast(CommandBase) c.cmd;
-    //     //     implementationMissing(false);
-    //     //     // FIXME: Needing refactor or cleanup -@zxp at 8/14/2019, 2:06:32 PM
-    //     //     // 
-    //     //     // ctx.fireChannelRead(resp);
-    //     // };
-    //     // codec.noticeHandler = ctx::fireChannelRead;
-    //     inflight.insertBack(codec);
-    //     codec.encode(this);
-    // }
 
     private PgCommandCodecBase wrap(ICommand cmd) {
         InitCommand initCommand = cast(InitCommand) cmd;

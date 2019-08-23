@@ -32,6 +32,7 @@ import hunt.database.base.Row;
 import hunt.database.base.SqlClient;
 import hunt.database.base.Tuple;
 
+import hunt.logging.ConsoleLogger;
 
 import hunt.collection.List;
 import hunt.Exceptions;
@@ -57,13 +58,17 @@ class PgConnectionImpl : SqlConnectionImpl!(PgConnectionImpl), PgConnection  {
 
     static void connect(PgConnectOptions options, AsyncResultHandler!(PgConnection) handler) {
         PgConnectionFactory client = new PgConnectionFactory(options);
+        trace("connecting ...");
         client.connectAndInit( (ar) {
+            info("connection result: ", ar.succeeded());
             if (ar.succeeded()) {
                 DbConnection conn = ar.result();
                 PgConnectionImpl p = new PgConnectionImpl(client, conn);
                 conn.initHolder(p);
-                handler(succeededResult!(PgConnection)(p));
-            } else {
+                if(handler !is null) {
+                    handler(succeededResult!(PgConnection)(p));
+                }
+            } else if(handler !is null) {
                 handler(failedResult!(PgConnection)(ar.cause()));
             }
         });

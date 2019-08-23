@@ -63,14 +63,14 @@ class InitCommandCodec : PgCommandCodec!(DbConnection, InitCommand) {
 
     override
     void handleAuthenticationOk() {
-        version(HUNT_DB_DEBUG) tracef("running here");
+        version(HUNT_DB_DEBUG) info("Authentication done.");
 //      handler.handle(Future.succeededFuture(conn));
 //      handler = null;
     }
 
     override
     void handleParameterStatus(string key, string value) {
-        version(HUNT_DB_DEBUG) tracef("key: %s, value: %s", key, value);
+        version(HUNT_DB_DEBUG_MORE) tracef("key: %s, value: %s", key, value);
         if(key == "client_encoding") {
             encoding = value;
         }
@@ -93,7 +93,7 @@ class InitCommandCodec : PgCommandCodec!(DbConnection, InitCommand) {
 
     override
     void handleReadyForQuery(TxStatus txStatus) {
-        version(HUNT_DB_DEBUG) tracef("txStatus: %s", txStatus);
+        version(HUNT_DB_DEBUG) tracef("txStatus: %s, encoding: %s", txStatus, encoding);
         // The final phase before returning the connection
         // We should make sure we are supporting only UTF8
         // https://www.postgresql.org/docs/9.5/static/multibyte.html#MULTIBYTE-CHARSET-SUPPORTED
@@ -103,7 +103,7 @@ class InitCommandCodec : PgCommandCodec!(DbConnection, InitCommand) {
         // } catch (Exception ignore) {
         // }
         CommandResponse!(DbConnection) fut;
-        if(encoding != "UTF_8") {
+        if(encoding != "UTF8") {
             fut = failure!(DbConnection)(encoding ~ " is not supported in the client only UTF8");
         } else {
             fut = success!(DbConnection)(cmd.connection());

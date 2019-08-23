@@ -39,10 +39,7 @@ class Util {
     }
 
     static string readCStringUTF8(ByteBuf src) {
-        int len = src.bytesBefore(ZERO);
-        string s = src.readCharSequence(len, StandardCharsets.UTF_8);
-        src.readByte();
-        return s;
+        return readCString(src, StandardCharsets.UTF_8);
     }
 
     static void writeCString(ByteBuf dst, string s, Charset charset) {
