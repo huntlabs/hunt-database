@@ -19,7 +19,10 @@ module hunt.database.base.impl.SqlClientBase;
 
 import hunt.database.base.impl.ArrayTuple;
 import hunt.database.base.impl.RowSetImpl;
+import hunt.database.base.impl.SqlResultBuilder;
 
+import hunt.database.base.impl.command.CommandBase;
+import hunt.database.base.impl.command.CommandResponse;
 import hunt.database.base.impl.command.CommandScheduler;
 import hunt.database.base.impl.command.ExtendedBatchQueryCommand;
 import hunt.database.base.impl.command.ExtendedQueryCommand;
@@ -35,14 +38,9 @@ import hunt.database.base.AsyncResult;
 
 import hunt.collection.List;
 import hunt.Exceptions;
+import hunt.Functions;
 import hunt.net.AbstractConnection;
 
-
-// import io.vertx.core.Future;
-// import io.vertx.core.Handler;
-
-// import hunt.collection.List;
-// import java.util.function.Function;
 // import java.util.stream.Collector;
 
 
@@ -52,9 +50,9 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
 
     override
     C query(string sql, RowSetHandler handler) {
-        // return query(sql, false, RowSetImpl.FACTORY, RowSetImpl.COLLECTOR, handler);
-        implementationMissing(false);
-        return C.init;
+        return query!(RowSet, RowSetImpl, RowSet)(sql, false, RowSetImpl.FACTORY, handler); // RowSetImpl.COLLECTOR, 
+        // implementationMissing(false);
+        // return C.init;
     }
 
     // override
@@ -62,22 +60,22 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
     //     return query(sql, true, SqlResultImpl::new, collector, handler);
     // }
 
-    // private <R1, R2 extends SqlResultBase!(R1, R2), R3 extends SqlResult!(R1)> C query(
-    //     string sql,
-    //     boolean singleton,
-    //     Function!(R1, R2) factory,
-    //     Collector<Row, ?, R1> collector,
-    //     Handler!(AsyncResult!(R3)) handler) {
-    //     SqlResultBuilder!(R1, R2, R3) b = new SqlResultBuilder<>(factory, handler);
-    //     schedule(new SimpleQueryCommand<>(sql, singleton, collector, b), b);
-    //     return (C) this;
-    // }
+    private C query(R1, R2, R3)(
+        string sql,
+        bool singleton,
+        Function!(R1, R2) factory,
+        // Collector<Row, ?, R1> collector,
+        AsyncResultHandler!(R3) handler) {
+        SqlResultBuilder!(R1, R2, R3) b = new SqlResultBuilder!(R1, R2, R3)(factory, handler);
+        schedule!(bool)(new SimpleQueryCommand!(R1)(sql, singleton, b), (r) { b.handle(r); }); //collector, 
+        return cast(C) this;
+    }
 
     override
     C preparedQuery(string sql, Tuple arguments, RowSetHandler handler) {
         // return preparedQuery(sql, arguments, false, RowSetImpl.FACTORY, RowSetImpl.COLLECTOR, handler);
         implementationMissing(false);
-        return C.init;
+        return cast(C) this;
     }
 
     // override
@@ -161,4 +159,17 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
     //     });
     //     return (C) this;
     // }
+
+    void schedule(R)(CommandBase!(R) cmd, ResponseHandler!R handler) {
+        cmd.handler = (cr) {
+            // Tx might be gone ???
+            cr.scheduler = this;
+            handler(cr);
+        };
+        schedule(cmd);
+    }
+
+    protected void schedule(ICommand cmd) {
+        throw new NotImplementedException();
+    }
 }

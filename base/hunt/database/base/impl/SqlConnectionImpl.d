@@ -83,16 +83,16 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbCo
     }
 
     // override
-    void schedule(R)(CommandBase!(R) cmd, ResponseHandler!R handler) {
-        cmd.handler = (cr) {
-            // Tx might be gone ???
-            cr.scheduler = this;
-            handler(cr);
-        };
-        schedule(cmd);
-    }
+    // void schedule(R)(CommandBase!(R) cmd, ResponseHandler!R handler) {
+    //     cmd.handler = (cr) {
+    //         // Tx might be gone ???
+    //         cr.scheduler = this;
+    //         handler(cr);
+    //     };
+    //     schedule(cmd);
+    // }
 
-    protected void schedule(ICommand cmd) {
+    override protected void schedule(ICommand cmd) {
         // if (context == Vertx.currentContext()) {
             if (tx !is null) {
                 // tx.schedule(cmd);

@@ -139,10 +139,6 @@ final class PgEncoder : EncoderChain {
                 } else {
                     handler.messageReceived(ctx, resp);
                 }
-                // warning("do something??");
-                // FIXME: Needing refactor or cleanup -@zxp at 8/14/2019, 2:06:32 PM
-                // 
-                // ctx.fireChannelRead(resp);
             };
 
             codec = cmdCodec;
