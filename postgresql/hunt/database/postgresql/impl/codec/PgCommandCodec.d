@@ -22,13 +22,14 @@ import hunt.database.postgresql.impl.codec.PgParamDesc;
 import hunt.database.postgresql.impl.codec.PgEncoder;
 import hunt.database.postgresql.impl.codec.PgRowDesc;
 
+import hunt.database.base.Common;
 import hunt.database.base.impl.TxStatus;
 import hunt.database.base.impl.command.CommandResponse;
 import hunt.database.base.impl.command.CommandBase;
 
-import hunt.database.base.Common;
-
+import hunt.Exceptions;
 import hunt.logging.ConsoleLogger;
+import hunt.net.buffer.ByteBuf;
 
 
 /**
@@ -38,6 +39,10 @@ abstract class PgCommandCodecBase {
     EventHandler!(NoticeResponse) noticeHandler;
 
     abstract void encode(PgEncoder encoder);
+
+    void decodeRow(int len, ByteBuf inBuffer) {
+        throw new NotImplementedException();
+    }
 
     void handleBackendKeyData(int processId, int secretKey) {
         warning(typeid(this).name ~ " should handle message BackendKeyData");

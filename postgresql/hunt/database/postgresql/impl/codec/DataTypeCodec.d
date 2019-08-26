@@ -20,7 +20,6 @@ module hunt.database.postgresql.impl.codec.DataTypeCodec;
 import hunt.database.postgresql.impl.codec.DataType;
 
 // import com.fasterxml.jackson.databind.JsonNode;
-import hunt.net.buffer.ByteBuf;
 // import io.netty.buffer.Unpooled;
 // import io.netty.handler.codec.DecoderException;
 // import io.vertx.core.json.Json;
@@ -51,7 +50,11 @@ import hunt.database.base.data.Numeric;
 // import static java.time.format.DateTimeFormatter.ISO_LOCAL_TIME;
 // import static java.util.concurrent.TimeUnit.*;
 
+import hunt.Byte;
 import hunt.Exceptions;
+import hunt.logging.ConsoleLogger;
+import hunt.net.buffer.ByteBuf;
+import hunt.String;
 
 import std.concurrency : initOnce;
 
@@ -344,6 +347,16 @@ class DataTypeCodec {
     //     }
     // }
 
+    static Object decodeBinary(DataType id, int index, int len, ByteBuf buff) {
+        byte[] buffer = new byte[len];
+        buff.getBytes(index, buffer);
+        
+        tracef("DataType: %d, data: %(%02X %)", id, buffer);
+        implementationMissing(false);
+
+        return new Bytes(buffer);
+    }
+
     // static Object decodeBinary(DataType id, int index, int len, ByteBuf buff) {
     //     switch (id) {
     //         case BOOL:
@@ -463,6 +476,17 @@ class DataTypeCodec {
     //             return defaultDecodeBinary(index, len, buff);
     //     }
     // }
+
+    static Object decodeText(DataType id, int index, int len, ByteBuf buff) {
+
+        byte[] buffer = new byte[len];
+        buff.getBytes(index, buffer);
+        
+        tracef("DataType: %s(%d), data: %s", id, id, cast(string)buffer);
+        // FIXME: Needing refactor or cleanup -@zxp at 8/26/2019, 3:21:03 PM
+        // 
+        return new String(cast(string)buffer);
+    }
 
     // static Object decodeText(DataType id, int index, int len, ByteBuf buff) {
     //     switch (id) {

@@ -211,31 +211,26 @@ abstract class SocketConnectionBase : DbConnection {
 
     private void handleMessage(Connection conn, Object msg) {
         tracef("handling a message: %s", typeid(msg));
-        // CommandBase!DbConnection resp = cast(CommandBase!DbConnection)msg;
-        // if(resp !is null) {
-        //     inflight--;
-        //     checkPending();
-        //     // resp.handler(msg);
-        // }
 
-        CommandResponse!DbConnection resp = cast(CommandResponse!DbConnection) msg;
+        ICommandResponse resp = cast(ICommandResponse) msg;
         if (resp !is null) {
             tracef("inflight=%d", inflight);
             inflight--;
             checkPending();
-            // resp.cmd.handler(resp);
             resp.notifyCommandResponse();
+            return;
         } 
 
-        // Notification n = cast(Notification) msg;
-        // if (n !is null) {
-        //     handleNotification(n);
-        // }
+        Notification n = cast(Notification) msg;
+        if (n !is null) {
+            handleNotification(n);
+            return;
+        }
 
-        // Notice notice = cast(Notice) msg;
-        // if (notice !is null) {
-        //     handleNotice(notice);
-        // }
+        Notice notice = cast(Notice) msg;
+        if (notice !is null) {
+            handleNotice(notice);
+        }
     }
 
     private void handleNotification(Notification response) {

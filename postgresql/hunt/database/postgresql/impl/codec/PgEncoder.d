@@ -32,7 +32,10 @@ import hunt.database.postgresql.impl.codec.QueryCommandBaseCodec;
 import hunt.database.postgresql.impl.codec.Parse;
 import hunt.database.postgresql.impl.codec.PasswordMessage;
 import hunt.database.postgresql.impl.codec.Response;
+import hunt.database.postgresql.impl.codec.SimpleQueryCodec;
 import hunt.database.postgresql.impl.codec.StartupMessage;
+
+
 
 
 import hunt.net.buffer;
@@ -55,7 +58,9 @@ import hunt.database.base.impl.command;
 // import hunt.database.base.impl.command.CommandBase;
 // import hunt.database.base.impl.command.PrepareStatementCommand;
 // import hunt.database.base.impl.command.SimpleQueryCommand;
+import hunt.database.base.RowSet;
 import hunt.database.postgresql.impl.util.Util;
+
 
 import hunt.collection.ArrayDeque;
 import hunt.collection.ByteBuffer;
@@ -146,19 +151,46 @@ final class PgEncoder : EncoderChain {
             inflight.insertBack(codec);
             codec.encode(this);
             flush();
+            return;
+        } 
+
+        SimpleQueryCommand!(RowSet) simpleCommand = cast(SimpleQueryCommand!(RowSet))cmd;
+        if(simpleCommand !is null) {
+            SimpleQueryCodec!RowSet cmdCodec = new SimpleQueryCodec!RowSet(simpleCommand);
+
+            cmdCodec.completionHandler = (resp) {
+                infof("message encoding completed: %s", typeid(resp));
+                CommandResponse!bool h = resp;
+
+                PgCommandCodecBase c = inflight.front();
+                assert(cmdCodec is c);
+                inflight.removeFront();
+
+                h.cmd = simpleCommand; // cast(InitCommand)cmdCodec.cmd;
+
+                ConnectionEventHandler handler = ctx.getHandler();
+
+                if(h.failed()) {
+                    Throwable th = h.cause();
+                    version(HUNT_DB_DEBUG) {
+                        warning(th.msg);
+                    }
+                    handler.exceptionCaught(ctx, cast(Exception)th);
+                } else {
+                    handler.messageReceived(ctx, resp);
+                }
+            };
+
+            codec = cmdCodec;
+            inflight.insertBack(codec);
+            codec.encode(this);
+            flush();
         } else {
+
             implementationMissing(false);
         }
 
-        // implementationMissing(false);
-        // codec.completionHandler = (resp) {
-        //     PgCommandCodecBase c = inflight.poll();
-        //     resp.cmd = cast(CommandBase) c.cmd;
-        //     implementationMissing(false);
-        //     // FIXME: Needing refactor or cleanup -@zxp at 8/14/2019, 2:06:32 PM
-        //     // 
-        //     // ctx.fireChannelRead(resp);
-        // };
+
 
 
         // codec.noticeHandler = ctx::fireChannelRead;

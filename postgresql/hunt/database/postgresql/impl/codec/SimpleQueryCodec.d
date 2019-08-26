@@ -21,11 +21,14 @@ import hunt.database.postgresql.impl.codec.Query;
 import hunt.database.postgresql.impl.codec.PgEncoder;
 import hunt.database.postgresql.impl.codec.PgRowDesc;
 import hunt.database.postgresql.impl.codec.RowResultDecoder;
+import hunt.database.base.impl.RowSetImpl;
 
 import hunt.database.base.impl.command.SimpleQueryCommand;
 
 import hunt.logging.ConsoleLogger;
 
+/**
+*/
 class SimpleQueryCodec(T) : QueryCommandBaseCodec!(T, SimpleQueryCommand!(T)) {
 
     this(SimpleQueryCommand!(T) cmd) {
@@ -34,12 +37,13 @@ class SimpleQueryCodec(T) : QueryCommandBaseCodec!(T, SimpleQueryCommand!(T)) {
 
     override
     void encode(PgEncoder encoder) {
+        tracef("sql: %s", cmd.sql());
         encoder.writeQuery(new Query(cmd.sql()));
     }
 
     override
     void handleRowDescription(PgRowDesc rowDescription) {
-        decoder = new RowResultDecoder!T(cmd.collector(), cmd.isSingleton(), rowDescription);
+        decoder = new RowResultDecoder!(T)(cmd.isSingleton(), rowDescription); // cmd.collector(), 
     }
 
     override

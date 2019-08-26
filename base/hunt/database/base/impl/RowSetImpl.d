@@ -28,6 +28,15 @@ import hunt.Functions;
 
 class RowSetImpl : SqlResultBase!(RowSet, RowSetImpl), RowSet {
 
+    static void accumulator(RowSetImpl set, Row row) {
+        if (set.head is null) {
+            set.head = set.tail = cast(RowInternal) row;
+        } else {
+            set.tail.setNext(cast(RowInternal) row);
+            set.tail = set.tail.getNext();
+        }
+    }    
+
     // static Collector!(Row, RowSetImpl, RowSet) COLLECTOR = Collector.of(
     //     RowSetImpl::new,
     //     (set, row) -> {
@@ -76,6 +85,15 @@ class RowSetImpl : SqlResultBase!(RowSet, RowSetImpl), RowSet {
 
     alias next = SqlResultBase!(RowSet, RowSetImpl).next;
 
+    void append(Row row) {
+        if (this.head is null) {
+            this.head = this.tail = cast(RowInternal) row;
+        } else {
+            this.tail.setNext(cast(RowInternal) row);
+            this.tail = this.tail.getNext();
+        }        
+    }
+
     // override int size() {
     //     return super.size();
     // }
@@ -90,29 +108,72 @@ class RowSetImpl : SqlResultBase!(RowSet, RowSetImpl), RowSet {
 
     int opApply(scope int delegate(ref Row) dg) {
 
-        implementationMissing(false);
-        return 0;
+        int result = 0;
+        RowInternal cur = head;
+        while(cur !is null) {
+            Row r = cur;
+            result = dg(r);
+            cur = cur.getNext();
+        }
+        return result;        
     }
 
     override
     RowIterator iterator() {
-        implementationMissing(false);
-        return null;
-        // return new RowIterator() {
-        //     RowInternal current = head;
-        //     override
-        //     boolean hasNext() {
-        //         return current !is null;
-        //     }
-        //     override
-        //     Row next() {
-        //         if (current is null) {
-        //             throw new NoSuchElementException();
-        //         }
-        //         RowInternal r = current;
-        //         current = current.getNext();
-        //         return r;
-        //     }
-        // };
+        return new IteratorImpl();
+    }
+
+    private class IteratorImpl : RowIterator {
+        RowInternal current;
+
+        this() {
+            current = head;
+        }
+
+        bool empty() {
+            return current is null;
+        }
+
+        Row front() {
+            if (current is null) {
+                throw new NoSuchElementException();
+            }
+
+            return current;
+        }
+
+        void popFront() {
+            if (current is null) {
+                throw new NoSuchElementException();
+            }
+            current = current.getNext();
+        }
+
+        Row moveFront() {
+            throw new NotImplementedException();
+        }
+
+        int opApply(scope int delegate(Row) dg) {
+            int result = 0;
+            RowInternal cur = head;
+            while(cur !is null) {
+                result = dg(cur);
+                cur = cur.getNext();
+            }
+            return result;
+        }
+
+        /// Ditto
+        int opApply(scope int delegate(size_t, Row) dg) {
+            int result = 0;
+            size_t index = 0;
+            RowInternal cur = head;
+            while(cur !is null) {
+                result = dg(index++, cur);
+                cur = cur.getNext();
+            }
+            return result;   
+        }
+
     }
 }

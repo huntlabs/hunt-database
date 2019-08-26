@@ -31,6 +31,8 @@ import hunt.database.base.data.Numeric;
 
 import hunt.util.ObjectUtils;
 
+import std.format;
+import std.conv;
 
 /**
  * PostgreSQL <a href="https://github.com/postgres/postgres/blob/master/src/include/catalog/pg_type.h">object
@@ -57,6 +59,10 @@ struct DataTypeDesc {
         this.supportsBinary = supportsBinary;
         this.encodingType = encodingType;
         this.decodingType = decodingType;
+    }
+
+    string toString() {
+        return format("DataType=%s(%d), supportsBinary=%s", cast(DataType)id, id, supportsBinary);
     }
 
     // static DataType valueOf(int oid) {

@@ -119,7 +119,7 @@ class PgDecoder : Decoder {
             int writerIndex = inBuffer.writerIndex();
             try {
                 inBuffer.setIndex(beginIdx + 5, endIdx);
-                infof("Protocol id=%d", id);
+                infof("Protocol(Message type) id=%c", cast(char)id);
                 switch (id) {
                     case PgProtocolConstants.MESSAGE_TYPE_READY_FOR_QUERY: {
                         decodeReadyForQuery(inBuffer);
@@ -228,10 +228,9 @@ class PgDecoder : Decoder {
 
     private void decodeDataRow(ByteBuf inBuffer) {
         PgCommandCodecBase codec = inflight.front();
-        implementationMissing(false);
-        // QueryCommandBaseCodec<?, ?> cmd = (QueryCommandBaseCodec<?, ?>) codec;
-        // int len = inBuffer.readUnsignedShort();
-        // cmd.decoder.decodeRow(len, inBuffer);
+        tracef("decoding data row: %s", typeid(codec));
+        int len = inBuffer.readUnsignedShort();
+        codec.decodeRow(len, inBuffer);
     }
 
     private void  decodeRowDescription(ByteBuf inBuffer) {

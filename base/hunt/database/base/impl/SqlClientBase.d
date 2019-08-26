@@ -61,13 +61,16 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
     // }
 
     private C query(R1, R2, R3)(
-        string sql,
-        bool singleton,
-        Function!(R1, R2) factory,
-        // Collector<Row, ?, R1> collector,
-        AsyncResultHandler!(R3) handler) {
+                string sql,
+                bool singleton,
+                Function!(R1, R2) factory,
+                AsyncResultHandler!(R3) handler) {
+
         SqlResultBuilder!(R1, R2, R3) b = new SqlResultBuilder!(R1, R2, R3)(factory, handler);
-        schedule!(bool)(new SimpleQueryCommand!(R1)(sql, singleton, b), (r) { b.handle(r); }); //collector, 
+        schedule!(bool)(new SimpleQueryCommand!(R1)(sql, singleton, b), 
+                (CommandResponse!bool r) { 
+                    b.handle(r); 
+                });
         return cast(C) this;
     }
 

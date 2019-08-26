@@ -22,9 +22,8 @@ import hunt.database.base.impl.RowDesc;
 
 import hunt.database.base.SqlResult;
 import hunt.database.base.AsyncResult;
-// import io.vertx.core.Handler;
 
-
+import hunt.logging.ConsoleLogger;
 import hunt.Functions;
 
 /**
@@ -69,7 +68,7 @@ class SqlResultBuilder(T, R, L) : QueryResultHandler!(T) { // , Handler!(AsyncRe
     // override
     void handle(AsyncResult!(bool) res) {
         suspended = res.succeeded() && res.result();
-        handler(cast(AsyncResult!(L)) res.map(first));
+        handler(res.map!(L)(first)); // AsyncResult!(RowSetImpl)
     }
 
     bool isSuspended() {

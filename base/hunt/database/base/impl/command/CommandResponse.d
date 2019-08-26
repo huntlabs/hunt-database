@@ -10,7 +10,14 @@ import hunt.database.base.impl.TxStatus;
 
 alias ResponseHandler(R) = EventHandler!(CommandResponse!(R));
 
-abstract class CommandResponse(R) : AsyncResult!(R) {
+
+interface ICommandResponse {
+    TxStatus txStatus();
+
+    void notifyCommandResponse();  
+}
+
+abstract class CommandResponse(R) : AsyncResult!(R), ICommandResponse {
 
     // The connection that executed the command
     CommandScheduler scheduler;

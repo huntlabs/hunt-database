@@ -16,6 +16,7 @@
  */
 module hunt.database.postgresql.impl.codec.QueryCommandBaseCodec;
 
+import hunt.database.postgresql.impl.codec.ErrorResponse;
 import hunt.database.postgresql.impl.codec.RowResultDecoder;
 import hunt.database.postgresql.impl.codec.PgCommandCodec;
 
@@ -23,6 +24,9 @@ import hunt.database.base.Row;
 import hunt.database.base.impl.RowDecoder;
 import hunt.database.base.impl.RowDesc;
 import hunt.database.base.impl.command.QueryCommandBase;
+
+import hunt.Exceptions;
+import hunt.net.buffer.ByteBuf;
 
 // import java.util.stream.Collector;
 
@@ -38,25 +42,31 @@ abstract class QueryCommandBaseCodec(T, C) : PgCommandCodec!(bool, C) { // C ext
     override
     void handleCommandComplete(int updated) {
         this.result = false;
-        T result;
+        T r;
         int size;
         RowDesc desc;
         if (decoder !is null) {
-            result = decoder.complete();
+            r = decoder.complete();
             desc = decoder.desc;
             size = decoder.size();
             decoder.reset();
         } else {
-            result = emptyResult(cmd.collector());
+            
+            implementationMissing(false);
+            // r = emptyResult(cmd.collector());
             size = 0;
             desc = null;
         }
-        cmd.resultHandler().handleResult(updated, size, desc, result);
+        cmd.resultHandler().handleResult(updated, size, desc, r);
     }
 
     override
     void handleErrorResponse(ErrorResponse errorResponse) {
-        failure = errorResponse.toException();
+        _failure = errorResponse.toException();
+    }
+
+    override void decodeRow(int len, ByteBuf inBuffer) {
+        decoder.decodeRow(len, inBuffer);
     }
 
     // private static <A, T> T emptyResult(Collector!(Row, A, T) collector) {

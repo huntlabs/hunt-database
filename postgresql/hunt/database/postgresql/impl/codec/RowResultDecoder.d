@@ -17,18 +17,29 @@
 
 module hunt.database.postgresql.impl.codec.RowResultDecoder;
 
+import hunt.database.postgresql.impl.codec.DataFormat;
+import hunt.database.postgresql.impl.codec.DataType;
+import hunt.database.postgresql.impl.codec.DataTypeCodec;
 import hunt.database.postgresql.impl.codec.PgRowDesc;
+import hunt.database.postgresql.impl.codec.PgColumnDesc;
+// import hunt.database.postgresql.impl.codec.PgColumnDesc;
 
 import hunt.database.base.Row;
+import hunt.database.base.impl.RowSetImpl;
 import hunt.database.postgresql.impl.RowImpl;
+
 import hunt.database.base.impl.RowDecoder;
 
 // import java.util.function.BiConsumer;
 // import java.util.stream.Collector;
 
-import hunt.collection.ByteBuffer;
+import hunt.Exceptions;
 import hunt.Functions;
+import hunt.logging.ConsoleLogger;
+import hunt.net.buffer.ByteBuf;
 
+/**
+*/
 abstract class AbstractRowResultDecoder(R) : RowDecoder {
 
     bool singleton;
@@ -47,30 +58,26 @@ abstract class AbstractRowResultDecoder(R) : RowDecoder {
     
 }
 
-class RowResultDecoder(C, R) : AbstractRowResultDecoder!R {
+/**
+*/
+class RowResultDecoder(R) : AbstractRowResultDecoder!R {
 
-    Collector!(Row, C, R) collector;
-    BiConsumer!(C, Row) accumulator;
-
-    private int size;
-    private C container;
+    private int _size;
+    private RowSetImpl container;
     private Row row;
 
-    this(Collector!(Row, C, R) collector, bool singleton, PgRowDesc desc) {
+    this(bool singleton, PgRowDesc desc) {
         super(singleton, desc);
-
-        this.collector = collector;
-        this.accumulator = collector.accumulator();
     }
 
     override int size() {
-        return size;
+        return _size;
     }
 
-    override
-    void decodeRow(int len, ByteBuffer buffer) {
+    // override
+    void decodeRow(int len, ByteBuf buffer) {
         if (container is null) {
-            container = collector.supplier().get();
+            container = new RowSetImpl(); 
         }
         if (singleton) {
             if (row is null) {
@@ -81,34 +88,41 @@ class RowResultDecoder(C, R) : AbstractRowResultDecoder!R {
         } else {
             row = new RowImpl(desc);
         }
+
         Row row = new RowImpl(desc);
         for (int c = 0; c < len; ++c) {
             int length = buffer.readInt();
             Object decoded = null;
             if (length != -1) {
                 PgColumnDesc columnDesc = desc.columns[c];
+
+                tracef("Column: name=%s, (%s), dataFormat=%s", 
+                    columnDesc.name, columnDesc.dataType, columnDesc.dataFormat);
+
                 if (columnDesc.dataFormat == DataFormat.BINARY) {
-                    decoded = DataTypeCodec.decodeBinary(columnDesc.dataType, buffer.readerIndex(), length, buffer);
+                    decoded = DataTypeCodec.decodeBinary(cast(DataType)columnDesc.dataType.id, 
+                        buffer.readerIndex(), length, buffer);
                 } else {
-                    decoded = DataTypeCodec.decodeText(columnDesc.dataType, buffer.readerIndex(), length, buffer);
+                    decoded = DataTypeCodec.decodeText(cast(DataType)columnDesc.dataType.id, 
+                        buffer.readerIndex(), length, buffer);
                 }
                 buffer.skipBytes(length);
             }
             row.addValue(decoded);
         }
-        accumulator.accept(container, row);
-        size++;
+        container.append(row);
+        _size++;
     }
 
     override R complete() {
         if (container is null) {
-            container = collector.supplier().get();
+            container = new RowSetImpl(); 
         }
-        return collector.finisher().apply(container);
+        return container;
     }
 
     override void reset() {
         container = null;
-        size = 0;
+        _size = 0;
     }
 }

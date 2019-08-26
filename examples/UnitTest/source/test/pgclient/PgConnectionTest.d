@@ -59,13 +59,19 @@ class PgConnectionTest : PgConnectionTestBase {
         connector((SqlConnection conn) {
             trace(typeid(conn));
             conn.query("SHOW search_path;", (AsyncResult!RowSet ar)  {
+                assert(ar !is null);
                 if(ar.succeeded()) {
                     RowSet pgRowSet = ar.result();
-                    trace(typeid(pgRowSet));
+                    trace(typeid(cast(Object)pgRowSet));
 
-                    // string v = pgRowSet.iterator().next().getString("search_path");
-
-                    // ctx.assertEquals("myschema", pgRowSet.iterator().next().getString("search_path"));
+                    RowIterator iterator = pgRowSet.iterator();
+                    assert(!iterator.empty());
+                    Row row = iterator.front();
+                    Object value = row.getValue("search_path");
+                    trace(typeid(value));
+                    string v = value.toString();
+                    assert(v == "myschema");
+                    info("test done");
                 } else {
                     warning(ar.cause().msg);
                 }
