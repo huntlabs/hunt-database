@@ -22,11 +22,12 @@ import hunt.database.postgresql.impl.codec.DataFormat;
 import hunt.database.postgresql.impl.codec.DataType;
 import hunt.database.postgresql.impl.codec.DataTypeDesc;
 import hunt.database.postgresql.impl.codec.Describe;
-import hunt.database.postgresql.impl.codec.Describe;
+import hunt.database.postgresql.impl.codec.ExtendedQueryCommandCodec;
 import hunt.database.postgresql.impl.codec.InitCommandCodec;
 import hunt.database.postgresql.impl.codec.PgColumnDesc;
 import hunt.database.postgresql.impl.codec.PgCommandCodec;
 import hunt.database.postgresql.impl.codec.PgDecoder;
+import hunt.database.postgresql.impl.codec.PrepareStatementCommandCodec;
 import hunt.database.postgresql.impl.codec.Query;
 import hunt.database.postgresql.impl.codec.QueryCommandBaseCodec;
 import hunt.database.postgresql.impl.codec.Parse;
@@ -34,8 +35,6 @@ import hunt.database.postgresql.impl.codec.PasswordMessage;
 import hunt.database.postgresql.impl.codec.Response;
 import hunt.database.postgresql.impl.codec.SimpleQueryCodec;
 import hunt.database.postgresql.impl.codec.StartupMessage;
-
-
 
 
 import hunt.net.buffer;
@@ -65,6 +64,7 @@ import hunt.text.Charset;
 alias writeCString = Util.writeCString;
 
 import std.container.dlist;
+import std.range;
 
 /**
  * @author <a href="mailto:emad.albloushi@gmail.com">Emad Alblueshi</a>
@@ -119,9 +119,6 @@ final class PgEncoder : EncoderChain {
             assert(cmdCodec is c);
             inflight.removeFront();
 
-            // h.cmd = cast(InitCommand)cmdCodec.cmd;
-            // assert(h.cmd !is null);
-
             ConnectionEventHandler handler = ctx.getHandler();
 
             if(resp.failed()) {
@@ -151,20 +148,20 @@ final class PgEncoder : EncoderChain {
             return new SimpleQueryCodec!RowSet(simpleCommand);
         }
 
-        // PrepareStatementCommand prepareCommand = cast(PrepareStatementCommand)cmd;
-        // if(simpleCommand !is null) {
-        //     return new PrepareStatementCommand(prepareCommand);
-        // }
+        PrepareStatementCommand prepareCommand = cast(PrepareStatementCommand)cmd;
+        if(prepareCommand !is null) {
+            return new PrepareStatementCommandCodec(prepareCommand);
+        }
+
+        ExtendedQueryCommand!RowSet extendedCommand = cast(ExtendedQueryCommand!RowSet)cmd;
+        if(extendedCommand !is null) {
+            return new ExtendedQueryCommandCodec!RowSet(extendedCommand);
+        }
 
         implementationMissing(false);
-        // if (cmd instanceof SimpleQueryCommand<?>) {
-        //     return new SimpleQueryCodec<>((SimpleQueryCommand<?>) cmd);
-        // } else if (cmd instanceof ExtendedQueryCommand<?>) {
-        //     return new ExtendedQueryCommandCodec<>((ExtendedQueryCommand<?>) cmd);
+
         // } else if (cmd instanceof ExtendedBatchQueryCommand<?>) {
         //     return new ExtendedBatchQueryCommandCodec<>((ExtendedBatchQueryCommand<?>) cmd);
-        // } else if (cmd instanceof PrepareStatementCommand) {
-        //     return new PrepareStatementCommandCodec((PrepareStatementCommand) cmd);
         // } else if (cmd instanceof CloseConnectionCommand) {
         //     return CloseConnectionCommandCodec.INSTANCE;
         // } else if (cmd instanceof CloseCursorCommand) {
@@ -210,6 +207,9 @@ final class PgEncoder : EncoderChain {
             outBuffer = null;
             version(HUNT_DB_DEBUG_MORE) tracef("buffer: %s", buff.toString());
             byte[] avaliableData = buff.getReadableBytes();
+            version(HUNT_DB_DEBUG) {
+                tracef("buffer data: %s", cast(string)avaliableData);
+            }
             ctx.write(cast(const(ubyte)[])avaliableData);
         } else {
             // ctx.flush();
@@ -418,7 +418,7 @@ final class PgEncoder : EncoderChain {
      * <p>
      * The response is either {@link BindComplete} or {@link ErrorResponse}.
      */
-    void writeBind(Bind bind, string portal, List!(Object) paramValues) {
+    void writeBind(Bind bind, string portal, List!(string) paramValues) {
         ensureBuffer();
         int pos = outBuffer.writerIndex();
         outBuffer.writeByte(BIND);
@@ -441,23 +441,23 @@ final class PgEncoder : EncoderChain {
         }
         outBuffer.writeShort(paramLen);
         for (int c = 0;c < paramLen;c++) {
-            Object param = paramValues.get(c);
-            if (param is null) {
+            string param = paramValues.get(c);
+            if (param.empty()) {
                 // NULL value
                 outBuffer.writeInt(-1);
             } else {
                 DataTypeDesc dataType = bind.paramTypes[c];
+                tracef("dataType: %s, param: %s", dataType, param);
+
                 if (dataType.supportsBinary) {
                     int idx = outBuffer.writerIndex();
                     outBuffer.writeInt(0);
-                    // FIXME: Needing refactor or cleanup -@zxp at 8/20/2019, 5:57:19 PM
-                    // 
-                    implementationMissing(false);
-                    // DataTypeCodec.encodeBinary(dataType, param, outBuffer);
+                    DataTypeCodec.encodeBinary(cast(DataType)dataType.id, param, outBuffer);
                     outBuffer.setInt(idx, outBuffer.writerIndex() - idx - 4);
                 } else {
                     DataTypeCodec.encodeText(cast(DataType)dataType.id, param, outBuffer);
                 }
+
             }
         }
 

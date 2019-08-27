@@ -194,9 +194,9 @@ abstract class SocketConnectionBase : DbConnection {
                 inflight++;
                 // _socket.write(cast(Object)cmd)
                 version(HUNT_DB_DEBUG_MORE) {
-                    tracef("encoding %s ... ", typeid(cast(Object)cmd));
+                    tracef("chekcing %s ... ", typeid(cast(Object)cmd));
                 } else version(HUNT_DB_DEBUG) {
-                    tracef("encoding %s ... ", typeid(cast(Object)cmd));
+                    tracef("chekcing %s ... ", typeid(cast(Object)cmd));
                 } 
                 _socket.encode(cast(Object)cmd);
             }

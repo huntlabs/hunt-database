@@ -45,6 +45,7 @@ class InitCommandCodec : PgCommandCodec!(DbConnection, InitCommand) {
         version(HUNT_DB_DEBUG) tracef("running here");
         this.encoder = encoder;
         encoder.writeStartupMessage(new StartupMessage(cmd.username(), cmd.database(), cmd.properties()));
+        // encoder.flush();
     }
 
     override

@@ -17,33 +17,33 @@
 module hunt.database.postgresql.impl.codec.ExtendedQueryCommandBaseCodec;
 
 import hunt.database.postgresql.impl.codec.QueryCommandBaseCodec;
+import hunt.database.postgresql.impl.codec.PgRowDesc;
+import hunt.database.postgresql.impl.codec.PgPreparedStatement;
 import hunt.database.postgresql.impl.codec.RowResultDecoder;
 
 import hunt.database.base.impl.RowDesc;
 import hunt.database.base.impl.command.ExtendedQueryCommandBase;
 
 import hunt.Exceptions;
+import hunt.logging.ConsoleLogger;
 
 abstract class ExtendedQueryCommandBaseCodec(R, C) : QueryCommandBaseCodec!(R, C) { // extends ExtendedQueryCommandBase!(R)
 
     this(C cmd) {
         super(cmd);
-        // TODO: Tasks pending completion -@zxp at 8/14/2019, 11:47:10 AM
-        // 
-        implementationMissing(false);
-        // decoder = new RowResultDecoder<>(cmd.collector(), cmd.isSingleton(), 
-        //     (cast(PgPreparedStatement)cmd.preparedStatement()).rowDesc());
+        decoder = new RowResultDecoder!R(cmd.isSingleton(), 
+            (cast(PgPreparedStatement)cmd.preparedStatement()).rowDesc());
     }
 
     override
     void handleRowDescription(PgRowDesc rowDescription) {
-        implementationMissing(false);
-        // decoder = new RowResultDecoder<>(cmd.collector(), cmd.isSingleton(), rowDescription);
+        decoder = new RowResultDecoder!(R)(cmd.isSingleton(), rowDescription);
     }
 
     override
     void handleParseComplete() {
         // Response to Parse
+        version(HUNT_DB_DEBUG) info("running here");
     }
 
     override
@@ -59,5 +59,6 @@ abstract class ExtendedQueryCommandBaseCodec(R, C) : QueryCommandBaseCodec!(R, C
     override
     void handleBindComplete() {
         // Response to Bind
+        version(HUNT_DB_DEBUG) info("running here");
     }
 }

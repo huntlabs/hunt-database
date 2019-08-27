@@ -8,9 +8,9 @@ import hunt.database.base.Common;
 import hunt.database.base.Exceptions;
 import hunt.database.base.impl.TxStatus;
 
+import hunt.logging.ConsoleLogger;
 
 alias ResponseHandler(R) = EventHandler!(CommandResponse!(R));
-// alias ResponseHandler(R) = EventHandler!(CommandResponse!(R));
 alias CommandHandler = EventHandler!(IAsyncResult);
 
 
@@ -40,6 +40,11 @@ abstract class CommandResponse(R) : AsyncResult!(R), ICommandResponse {
             cmd.notifyResponse(this);
         }
     }
+
+    // void schedule(S)(CommandBase!(S) cmd, ResponseHandler!S handler) {
+
+    //     trace(typeid(cast(Object)scheduler));
+    // }
 }
 
 template failure(R) {

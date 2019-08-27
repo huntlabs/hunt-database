@@ -55,6 +55,9 @@ import hunt.Exceptions;
 import hunt.logging.ConsoleLogger;
 import hunt.net.buffer.ByteBuf;
 import hunt.String;
+import hunt.text.Charset;
+
+import std.conv;
 
 import std.concurrency : initOnce;
 
@@ -143,15 +146,17 @@ class DataTypeCodec {
     //     .appendOffset("+HH:mm", "00:00")
     //     .toFormatter();
 
-    static void encodeText(DataType id, Object value, ByteBuf buff) {
+    static void encodeText(DataType id, string value, ByteBuf buff) {
         int index = buff.writerIndex();
         buff.writeInt(0);
         textEncode(id, value, buff);
         buff.setInt(index, buff.writerIndex() - index - 4);
     }
 
-    private static void textEncode(DataType id, Object value, ByteBuf buff) {
-        implementationMissing(false);
+    private static void textEncode(DataType id, string value, ByteBuf buff) {
+        buff.writeCharSequence(value, StandardCharsets.UTF_8);
+
+        // implementationMissing(false);
         // switch (id) {
         //     case NUMERIC:
         //         textEncodeNUMERIC((Number) value, buff);
@@ -170,8 +175,14 @@ class DataTypeCodec {
         // }
     }
 
-    // static void encodeBinary(DataType id, Object value, ByteBuf buff) {
-    //     switch (id) {
+
+    // static void encodeBinary(DataType id, string value, ByteBuf buff) {
+    //     binaryEncodeVARCHAR(value, buff);
+    // }
+
+    static void encodeBinary(DataType id, string value, ByteBuf buff) {
+        with(DataType)
+        switch (id) {
     //         case BOOL:
     //             binaryEncodeBOOL((Boolean) value, buff);
     //             break;
@@ -184,9 +195,10 @@ class DataTypeCodec {
     //         case INT2_ARRAY:
     //             binaryEncodeArray((Number[]) value, DataType.INT2, buff);
     //             break;
-    //         case INT4:
-    //             binaryEncodeINT4((Number) value, buff);
-    //             break;
+            case INT4:
+                // binaryEncodeINT4((Number) value, buff);
+                binaryEncodeINT4(value, buff);
+                break;
     //         case INT4_ARRAY:
     //             binaryEncodeArray((Number[]) value, DataType.INT4, buff);
     //             break;
@@ -340,12 +352,12 @@ class DataTypeCodec {
     //         case INTERVAL_ARRAY:
     //             binaryEncodeArray((Interval[]) value, DataType.INTERVAL, buff);
     //             break;
-    //         default:
-    //             logger.debug("Data type " ~ id ~ " does not support binary encoding");
-    //             defaultEncodeBinary(value, buff);
-    //             break;
-    //     }
-    // }
+            default:
+                warningf("Data type %s(%d) does not support binary encoding", id, cast(int)id);
+                defaultEncodeBinary(value, buff);
+                break;
+        }
+    }
 
     static Object decodeBinary(DataType id, int index, int len, ByteBuf buff) {
         byte[] buffer = new byte[len];
@@ -649,10 +661,10 @@ class DataTypeCodec {
     //     return textdecodeTEXT(index, len, buff);
     // }
 
-    // private static void defaultEncodeBinary(Object value, ByteBuf buff) {
-    //     // Default to null
-    //     buff.writeInt(-1);
-    // }
+    private static void defaultEncodeBinary(string value, ByteBuf buff) {
+        // Default to null
+        buff.writeInt(-1);
+    }
 
     // private static Object defaultDecodeBinary(int index, int len, ByteBuf buff) {
     //     // Default to null
@@ -695,9 +707,9 @@ class DataTypeCodec {
     //     return buff.getInt(index);
     // }
 
-    // private static void binaryEncodeINT4(Number value, ByteBuf buff) {
-    //     buff.writeInt(value.intValue());
-    // }
+    private static void binaryEncodeINT4(string value, ByteBuf buff) {
+        buff.writeInt(to!int(value));
+    }
 
     // private static Long textDecodeINT8(int index, int len, ByteBuf buff) {
     //     return decodeDecStringToLong(index, len, buff);
@@ -951,6 +963,11 @@ class DataTypeCodec {
     //     String s = String.valueOf(value);
     //     buff.writeCharSequence(s, StandardCharsets.UTF_8);
     // }
+
+    private static void binaryEncodeVARCHAR(string value, ByteBuf buff) {
+        // String s = String.valueOf(value);
+        buff.writeCharSequence(value, StandardCharsets.UTF_8);
+    }
 
     // private static String textDecodeVARCHAR(int index, int len, ByteBuf buff) {
     //     return buff.getCharSequence(index, len, StandardCharsets.UTF_8).toString();

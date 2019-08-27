@@ -54,7 +54,7 @@ class PgParamDesc : ParamDesc {
             DataTypeDesc paramDataType = _paramDataTypes[i];
             string value = values.get(i);
             implementationMissing(false);
-            trace("DataType: %s, value: %s", paramDataType, value);
+            tracef("DataType: %s, value: %s", paramDataType, value);
             // Object val = DataTypeCodec.prepare(paramDataType, value);
             // if (val != value) {
             //     if (val == DataTypeCodec.REFUSED_SENTINEL) {

@@ -17,6 +17,8 @@
 
 module hunt.database.base.impl.command.ExtendedQueryCommand;
 
+import hunt.database.base.impl.command.ExtendedQueryCommandBase;
+
 import hunt.database.base.Row;
 import hunt.database.base.Tuple;
 import hunt.database.base.impl.PreparedStatement;
@@ -24,27 +26,29 @@ import hunt.database.base.impl.QueryResultHandler;
 
 // import java.util.stream.Collector;
 
+/**
+*/
 class ExtendedQueryCommand(T) : ExtendedQueryCommandBase!(T) {
 
     private Tuple _params;
 
     this(PreparedStatement ps,
             Tuple params,
-            boolean singleton,
+            bool singleton,
             // Collector<Row, ?, T> collector,
             QueryResultHandler!(T) resultHandler) {
-        this(ps, params, 0, null, false, singleton, collector, resultHandler);
+        this(ps, params, 0, null, false, singleton, resultHandler);
     }
 
     this(PreparedStatement ps,
             Tuple params,
             int fetch,
-            String cursorId,
-            boolean suspended,
-            boolean singleton,
+            string cursorId,
+            bool suspended,
+            bool singleton,
             // Collector<Row, ?, T> collector,
             QueryResultHandler!(T) resultHandler) {
-        super(ps, fetch, cursorId, suspended, singleton, collector, resultHandler);
+        super(ps, fetch, cursorId, suspended, singleton, resultHandler);
         this._params = params;
     }
 

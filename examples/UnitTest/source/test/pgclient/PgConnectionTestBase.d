@@ -112,27 +112,10 @@ abstract class PgConnectionTestBase : PgClientTestBase!(SqlConnection) {
 //         }));
 //     }
 // /*
-    @Test
-    void testSQLConnection() {
-        connector((SqlConnection conn) {
-             conn.query("SELECT 1", (AsyncResult!RowSet ar) {
-                if(ar.succeeded()) {
-                    RowSet result = ar.result();
-                    assert(1 == result.rowCount());
-                } else {
-                    warning(ar.cause().msg);
-                }
-
-                conn.close();
-            });
-        });
-    }
-
     // @Test
-    // void testSelectForQueryWithParams() {
-
+    // void testSQLConnection() {
     //     connector((SqlConnection conn) {
-    //          conn.preparedQuery("SELECT * FROM Fortune WHERE id=$1", Tuple.of("1"), (AsyncResult!RowSet ar) {
+    //          conn.query("SELECT 1", (AsyncResult!RowSet ar) {
     //             if(ar.succeeded()) {
     //                 RowSet result = ar.result();
     //                 assert(1 == result.rowCount());
@@ -143,18 +126,40 @@ abstract class PgConnectionTestBase : PgClientTestBase!(SqlConnection) {
     //             conn.close();
     //         });
     //     });
-
-    //     // Async async = ctx.async();
-    //     // PgClientImpl client = (PgClientImpl) PgClient.create(vertx, options);
-    //     // client.connect(c -> {
-    //     //     SQLConnection conn = c.result();
-    //     //     conn.queryWithParams("SELECT * FROM Fortune WHERE id=$1", new JsonArray().add(1) ,
-    //     //         ctx.asyncAssertSuccess(result -> {
-    //     //         ctx.assertEquals(1, result.rowCount());
-    //     //         async.complete();
-    //     //     }));
-    //     // });
     // }
+
+    @Test
+    void testSelectForQueryWithParams() {
+
+        connector((SqlConnection conn) {
+             conn.preparedQuery("SELECT * FROM Fortune WHERE id=$1", Tuple.of("1"), (AsyncResult!RowSet ar) {
+                if(ar.succeeded()) {
+                    RowSet result = ar.result();
+                    assert(1 == result.rowCount());
+                } else {
+                    warning(ar.cause().msg);
+                }
+
+                conn.close();
+            });
+        });
+
+        // connector((SqlConnection conn) {
+        //      auto stmt = conn.preparedQuery("SELECT * FROM Fortune WHERE id=$1");
+        //      stmt.setPerameter(5454);
+
+        //      conn.query(stmt, (AsyncResult!RowSet ar) {
+        //         if(ar.succeeded()) {
+        //             RowSet result = ar.result();
+        //             assert(1 == result.rowCount());
+        //         } else {
+        //             warning(ar.cause().msg);
+        //         }
+
+        //         conn.close();
+        //     });
+        // });
+    }
 
 //     @Test
 //     void testInsertForUpdateWithParams() {
