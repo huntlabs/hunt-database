@@ -477,7 +477,7 @@ class DataTypeCodec {
     //     }
     // }
 
-    static Object decodeText(DataType id, int index, int len, ByteBuf buff) {
+    static string decodeText(DataType id, int index, int len, ByteBuf buff) {
 
         byte[] buffer = new byte[len];
         buff.getBytes(index, buffer);
@@ -485,7 +485,8 @@ class DataTypeCodec {
         tracef("DataType: %s(%d), data: %s", id, id, cast(string)buffer);
         // FIXME: Needing refactor or cleanup -@zxp at 8/26/2019, 3:21:03 PM
         // 
-        return new String(cast(string)buffer);
+        // return new String(cast(string)buffer);
+        return cast(string)buffer;
     }
 
     // static Object decodeText(DataType id, int index, int len, ByteBuf buff) {

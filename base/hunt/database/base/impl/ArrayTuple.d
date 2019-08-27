@@ -34,7 +34,7 @@ import std.concurrency : initOnce;
 
 /**
 */
-class ArrayTuple : ArrayList!(Object), Tuple {
+class ArrayTuple : ArrayList!(string), Tuple {
 
     static Tuple EMPTY() {
         __gshared Tuple inst;
@@ -45,7 +45,7 @@ class ArrayTuple : ArrayList!(Object), Tuple {
         super(len);
     }
 
-    this(Collection!(Object) c) {
+    this(Collection!(string) c) {
         super(c);
     }
 
@@ -77,7 +77,7 @@ class ArrayTuple : ArrayList!(Object), Tuple {
     //     return null;
     // }
 
-    Object getValue(int pos) {
+    string getValue(int pos) {
         return get(pos);
     }
 
@@ -375,7 +375,7 @@ class ArrayTuple : ArrayList!(Object), Tuple {
     // }
 
     override
-    Tuple addValue(Object value) {
+    Tuple addValue(string value) {
         add(value);
         return this;
     }

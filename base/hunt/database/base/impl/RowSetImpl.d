@@ -37,20 +37,6 @@ class RowSetImpl : SqlResultBase!(RowSet, RowSetImpl), RowSet {
         }
     }    
 
-    // static Collector!(Row, RowSetImpl, RowSet) COLLECTOR = Collector.of(
-    //     RowSetImpl::new,
-    //     (set, row) -> {
-    //         if (set.head is null) {
-    //             set.head = set.tail = (RowInternal) row;
-    //         } else {
-    //             set.tail.setNext((RowInternal) row);;
-    //             set.tail = set.tail.getNext();
-    //         }
-    //     },
-    //     (set1, set2) -> null, // Shall not be invoked as this is sequential
-    //     (set) -> set
-    // );
-
     static Function!(RowSet, RowSetImpl) FACTORY() {
         return (rs) { return cast(RowSetImpl) rs; } ;
     }

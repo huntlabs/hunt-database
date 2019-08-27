@@ -195,7 +195,7 @@ class RowImpl : ArrayTuple, RowInternal {
     // }
 
     override
-    Object getValue(string name) {
+    string getValue(string name) {
         int pos = desc.columnIndex(name);
         return pos == -1 ? null : getValue(pos);
     }

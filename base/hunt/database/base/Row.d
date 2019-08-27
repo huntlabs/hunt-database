@@ -55,7 +55,7 @@ interface Row : Tuple {
      * @param name the column
      * @return the value or {@code null}
      */
-    Object getValue(string name);
+    string getValue(string name);
 
     // /**
     //  * Get a short value at {@code pos}.

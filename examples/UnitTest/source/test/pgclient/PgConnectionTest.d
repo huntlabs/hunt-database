@@ -67,9 +67,10 @@ class PgConnectionTest : PgConnectionTestBase {
                     RowIterator iterator = pgRowSet.iterator();
                     assert(!iterator.empty());
                     Row row = iterator.front();
-                    Object value = row.getValue("search_path");
-                    trace(typeid(value));
-                    string v = value.toString();
+                    // Object value = row.getValue("search_path");
+                    // trace(typeid(value));
+                    // string v = value.toString();
+                    string v = row.getValue("search_path");
                     assert(v == "myschema");
                     info("test done");
                 } else {
@@ -78,11 +79,6 @@ class PgConnectionTest : PgConnectionTestBase {
             });
 
         });
-        // connector.accept(ctx.asyncAssertSuccess(conn -> {
-        //     conn.query("SHOW search_path;", ctx.asyncAssertSuccess(pgRowSet -> {
-        //         ctx.assertEquals("myschema", pgRowSet.iterator().next().getString("search_path"));
-        //     }));
-        // }));
     }
 
 //     @Test

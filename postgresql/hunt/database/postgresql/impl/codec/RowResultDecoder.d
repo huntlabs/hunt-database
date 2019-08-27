@@ -92,7 +92,7 @@ class RowResultDecoder(R) : AbstractRowResultDecoder!R {
         Row row = new RowImpl(desc);
         for (int c = 0; c < len; ++c) {
             int length = buffer.readInt();
-            Object decoded = null;
+            string decoded = null;
             if (length != -1) {
                 PgColumnDesc columnDesc = desc.columns[c];
 
@@ -100,8 +100,9 @@ class RowResultDecoder(R) : AbstractRowResultDecoder!R {
                     columnDesc.name, columnDesc.dataType, columnDesc.dataFormat);
 
                 if (columnDesc.dataFormat == DataFormat.BINARY) {
-                    decoded = DataTypeCodec.decodeBinary(cast(DataType)columnDesc.dataType.id, 
-                        buffer.readerIndex(), length, buffer);
+                    implementationMissing(false);
+                    // decoded = DataTypeCodec.decodeBinary(cast(DataType)columnDesc.dataType.id, 
+                    //     buffer.readerIndex(), length, buffer);
                 } else {
                     decoded = DataTypeCodec.decodeText(cast(DataType)columnDesc.dataType.id, 
                         buffer.readerIndex(), length, buffer);
