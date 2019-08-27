@@ -84,8 +84,8 @@ abstract class SocketConnectionBase : DbConnection {
         ConnectionEventHandlerAdapter adapter = new ConnectionEventHandlerAdapter();
         adapter.onClosed(&handleClosed);
         adapter.onException(&handleException);
-        adapter.onMessageReceived((conn, msg) {
-            version(HUNT_DB_DEBUG) trace("A message received.");
+        adapter.onMessageReceived((Connection conn, Object msg) {
+            version(HUNT_DB_DEBUG) tracef("A message received. %s", typeid(msg));
             try {
                 handleMessage(conn, msg);
             } catch (Throwable e) {
@@ -193,7 +193,11 @@ abstract class SocketConnectionBase : DbConnection {
             while (inflight < pipeliningLimit && (cmd = pollPending()) !is null) {
                 inflight++;
                 // _socket.write(cast(Object)cmd)
-                tracef("encoding %s ... ", typeid(cast(Object)cmd));
+                version(HUNT_DB_DEBUG_MORE) {
+                    tracef("encoding %s ... ", typeid(cast(Object)cmd));
+                } else version(HUNT_DB_DEBUG) {
+                    tracef("encoding %s ... ", typeid(cast(Object)cmd));
+                } 
                 _socket.encode(cast(Object)cmd);
             }
             // ctx.flush();
@@ -210,11 +214,11 @@ abstract class SocketConnectionBase : DbConnection {
     }
 
     private void handleMessage(Connection conn, Object msg) {
-        tracef("handling a message: %s", typeid(msg));
+        version(HUNT_DB_DEBUG) tracef("handling a message: %s", typeid(msg));
 
         ICommandResponse resp = cast(ICommandResponse) msg;
         if (resp !is null) {
-            tracef("inflight=%d", inflight);
+            // tracef("inflight=%d", inflight);
             inflight--;
             checkPending();
             resp.notifyCommandResponse();

@@ -23,5 +23,5 @@ import hunt.collection.List;
  * @author <a href="mailto:emad.albloushi@gmail.com">Emad Alblueshi</a>
  */
 abstract class ParamDesc {
-    abstract string prepare(List!(Object) values);
+    abstract string prepare(List!(string) values);
 }

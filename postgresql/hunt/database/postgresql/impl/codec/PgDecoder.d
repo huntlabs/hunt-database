@@ -89,7 +89,7 @@ class PgDecoder : Decoder {
     // void channelRead(ChannelHandlerContext ctx, Object msg) 
 
     void decode(ByteBuffer msg, Connection connection) {
-        tracef("decoding buffer: %s", msg.toString());
+        version(HUNT_DB_DEBUG_MORE) tracef("decoding buffer: %s", msg.toString());
 
         ByteBuf buff = Unpooled.wrappedBuffer(msg);
         if (inBuffer is null) {
@@ -119,7 +119,7 @@ class PgDecoder : Decoder {
             int writerIndex = inBuffer.writerIndex();
             try {
                 inBuffer.setIndex(beginIdx + 5, endIdx);
-                infof("Protocol(Message type) id=%c", cast(char)id);
+                version(HUNT_DB_DEBUG_MORE) infof("Protocol(Message type) id=%c", cast(char)id);
                 switch (id) {
                     case PgProtocolConstants.MESSAGE_TYPE_READY_FOR_QUERY: {
                         decodeReadyForQuery(inBuffer);
@@ -228,7 +228,7 @@ class PgDecoder : Decoder {
 
     private void decodeDataRow(ByteBuf inBuffer) {
         PgCommandCodecBase codec = inflight.front();
-        tracef("decoding data row: %s", typeid(codec));
+        version(HUNT_DB_DEBUG_MORE) tracef("decoding data row: %s", typeid(codec));
         int len = inBuffer.readUnsignedShort();
         codec.decodeRow(len, inBuffer);
     }
@@ -377,7 +377,7 @@ class PgDecoder : Decoder {
         }
 
         int type = inBuffer.readInt();
-        tracef("type=%d", type);
+        version(HUNT_DB_DEBUG_MORE) tracef("type=%d", type);
 
         PgCommandCodecBase cmdCodec = inflight.front();
 

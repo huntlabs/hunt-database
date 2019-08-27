@@ -124,7 +124,8 @@ final class PgEncoder : EncoderChain {
             InitCommandCodec cmdCodec = new InitCommandCodec(initCommand);
 
             cmdCodec.completionHandler = (resp) {
-                infof("message encoding completed: %s", typeid(resp));
+                version(HUNT_DB_DEBUG) infof("message encoding completed");
+                version(HUNT_DB_DEBUG_MORE)  tracef("%s", typeid(resp));
                 CommandResponse!DbConnection h = resp;
 
                 PgCommandCodecBase c = inflight.front();
@@ -158,8 +159,10 @@ final class PgEncoder : EncoderChain {
         if(simpleCommand !is null) {
             SimpleQueryCodec!RowSet cmdCodec = new SimpleQueryCodec!RowSet(simpleCommand);
 
-            cmdCodec.completionHandler = (resp) {
-                infof("message encoding completed: %s", typeid(resp));
+            cmdCodec.completionHandler = (CommandResponse!bool resp) {
+                version(HUNT_DB_DEBUG) infof("message encoding completed");
+                version(HUNT_DB_DEBUG_MORE)  tracef("%s", typeid(resp));
+
                 CommandResponse!bool h = resp;
 
                 PgCommandCodecBase c = inflight.front();
@@ -246,7 +249,7 @@ final class PgEncoder : EncoderChain {
     // }
 
     void flush() {
-        trace("flushing ...");
+        version(HUNT_DB_DEBUG) trace("flushing ...");
 
         if(ctx is null) {
             warning("ctx is null");
@@ -256,7 +259,7 @@ final class PgEncoder : EncoderChain {
         if (outBuffer !is null) {
             ByteBuf buff = outBuffer;
             outBuffer = null;
-            version(HUNT_DEBUG) tracef("buffer: %s", buff.toString());
+            version(HUNT_DB_DEBUG_MORE) tracef("buffer: %s", buff.toString());
             byte[] avaliableData = buff.getReadableBytes();
             ctx.write(cast(const(ubyte)[])avaliableData);
         } else {

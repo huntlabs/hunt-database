@@ -30,5 +30,5 @@ interface PreparedStatement {
 
     string sql();
 
-    string prepare(List!(Object) values);
+    string prepare(List!(string) values);
 }

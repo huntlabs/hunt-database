@@ -125,7 +125,7 @@ class PreparedQueryImpl : PreparedQuery {
 
     // override
     Cursor cursor(Tuple args) {
-        string msg = ps.prepare(cast(List!(Object)) args);
+        string msg = ps.prepare(cast(List!(string)) args);
         if (msg !is null) {
             throw new IllegalArgumentException(msg);
         }

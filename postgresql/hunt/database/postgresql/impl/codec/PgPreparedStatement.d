@@ -80,7 +80,7 @@ class PgPreparedStatement : PreparedStatement {
     }
 
     override
-    string prepare(List!(Object) values) {
+    string prepare(List!(string) values) {
         return paramDesc.prepare(values);
     }
 }

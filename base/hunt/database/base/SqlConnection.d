@@ -23,6 +23,7 @@ import hunt.database.base.PreparedQuery;
 import hunt.database.base.RowSet;
 import hunt.database.base.SqlClient;
 import hunt.database.base.Transaction;
+import hunt.database.base.Tuple;
 
 import hunt.collection.List;
 // import java.util.stream.Collector;
@@ -90,8 +91,8 @@ interface SqlConnection : SqlClient {
     // override
     // <R> SqlConnection query(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
-    // override
-    // SqlConnection preparedQuery(string sql, Tuple arguments, RowSetHandler handler);
+    override
+    SqlConnection preparedQuery(string sql, Tuple arguments, RowSetHandler handler);
 
     // override
     // <R> SqlConnection preparedQuery(string sql, Tuple arguments, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);

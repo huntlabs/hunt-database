@@ -49,7 +49,7 @@ class InitCommandCodec : PgCommandCodec!(DbConnection, InitCommand) {
 
     override
     void handleAuthenticationMD5Password(byte[] salt) {
-        version(HUNT_DB_DEBUG) tracef("salt: %(%02X %)", salt);
+        version(HUNT_DB_DEBUG_MORE) tracef("salt: %(%02X %)", salt);
         encoder.writePasswordMessage(new PasswordMessage(cmd.username(), cmd.password(), salt));
         encoder.flush();
     }

@@ -20,13 +20,12 @@ import hunt.database.postgresql.impl.codec.DataType;
 import hunt.database.postgresql.impl.codec.DataTypeCodec;
 import hunt.database.postgresql.impl.codec.DataTypeDesc;
 
-
 import hunt.database.base.impl.ParamDesc;
 import hunt.database.postgresql.impl.util.Util;
 
 import hunt.collection.List;
 import hunt.Exceptions;
-// import java.util.stream.Stream;
+import hunt.logging.ConsoleLogger;
 
 import std.conv;
 
@@ -47,14 +46,15 @@ class PgParamDesc : ParamDesc {
     }
 
     override
-    string prepare(List!(Object) values) {
+    string prepare(List!(string) values) {
         if (values.size() != cast(int)_paramDataTypes.length) {
             return buildReport(values);
         }
         for (int i = 0;i < cast(int)_paramDataTypes.length;i++) {
             DataTypeDesc paramDataType = _paramDataTypes[i];
-            Object value = values.get(i);
+            string value = values.get(i);
             implementationMissing(false);
+            trace("DataType: %s, value: %s", paramDataType, value);
             // Object val = DataTypeCodec.prepare(paramDataType, value);
             // if (val != value) {
             //     if (val == DataTypeCodec.REFUSED_SENTINEL) {
@@ -67,7 +67,7 @@ class PgParamDesc : ParamDesc {
         return null;
     }
 
-    private string buildReport(List!(Object) values) {
+    private string buildReport(List!(string) values) {
         // return Util.buildInvalidArgsError(values.stream(), Stream.of(paramDataTypes).map(type -> type.decodingType));
         implementationMissing(false);
         return "";

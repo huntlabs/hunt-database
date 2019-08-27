@@ -18,6 +18,7 @@
 module hunt.database.base.impl.SqlClientBase;
 
 import hunt.database.base.impl.ArrayTuple;
+import hunt.database.base.impl.PreparedStatement;
 import hunt.database.base.impl.RowSetImpl;
 import hunt.database.base.impl.SqlResultBuilder;
 
@@ -39,6 +40,7 @@ import hunt.database.base.AsyncResult;
 import hunt.collection.List;
 import hunt.Exceptions;
 import hunt.Functions;
+import hunt.logging.ConsoleLogger;
 import hunt.net.AbstractConnection;
 
 // import java.util.stream.Collector;
@@ -51,8 +53,6 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
     override
     C query(string sql, RowSetHandler handler) {
         return query!(RowSet, RowSetImpl, RowSet)(sql, false, RowSetImpl.FACTORY, handler); // RowSetImpl.COLLECTOR, 
-        // implementationMissing(false);
-        // return C.init;
     }
 
     // override
@@ -68,47 +68,56 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
 
         SqlResultBuilder!(R1, R2, R3) b = new SqlResultBuilder!(R1, R2, R3)(factory, handler);
         schedule!(bool)(new SimpleQueryCommand!(R1)(sql, singleton, b), 
-                (CommandResponse!bool r) { 
-                    b.handle(r); 
-                });
+            (CommandResponse!bool r) { 
+                b.handle(r); 
+            }
+        );
         return cast(C) this;
     }
 
     override
     C preparedQuery(string sql, Tuple arguments, RowSetHandler handler) {
-        // return preparedQuery(sql, arguments, false, RowSetImpl.FACTORY, RowSetImpl.COLLECTOR, handler);
-        implementationMissing(false);
-        return cast(C) this;
+        return preparedQuery!(RowSet, RowSetImpl, RowSet)(sql, arguments, false, RowSetImpl.FACTORY, handler); // RowSetImpl.COLLECTOR, 
+        // implementationMissing(false);
+        // return cast(C) this;
     }
 
     // override
-    // <R> C preparedQuery(string sql, Tuple arguments, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler) {
+    // C preparedQuery(R)(string sql, Tuple arguments, Handler!(AsyncResult!(SqlResult!(R))) handler) {
     //     return preparedQuery(sql, arguments, true, SqlResultImpl::new, collector, handler);
     // }
 
-    // private <R1, R2 extends SqlResultBase!(R1, R2), R3 extends SqlResult!(R1)> C preparedQuery(
-    //     string sql,
-    //     Tuple arguments,
-    //     boolean singleton,
-    //     Function!(R1, R2) factory,
-    //     Collector<Row, ?, R1> collector,
-    //     Handler!(AsyncResult!(R3)) handler) {
-    //     schedule(new PrepareStatementCommand(sql), cr -> {
-    //         if (cr.succeeded()) {
-    //             PreparedStatement ps = cr.result();
-    //             string msg = ps.prepare((List!(Object)) arguments);
-    //             if (msg !is null) {
-    //                 handler.handle(Future.failedFuture(msg));
-    //             } else {
-    //                 SqlResultBuilder!(R1, R2, R3) b = new SqlResultBuilder<>(factory, handler);
-    //                 cr.scheduler.schedule(new ExtendedQueryCommand<>(ps, arguments, singleton, collector, b), b);
-    //             }
-    //         } else {
-    //             handler.handle(Future.failedFuture(cr.cause()));
-    //         }
-    //     });
-    //     return (C) this;
-    // }
+    // <R1, R2 extends SqlResultBase!(R1, R2), R3 extends SqlResult!(R1)> 
+    private C preparedQuery(R1, R2, R3)(
+            string sql,
+            Tuple arguments,
+            bool singleton,
+            Function!(R1, R2) factory,
+            AsyncResultHandler!(R3) handler) {
+
+        schedule!(PreparedStatement)(new PrepareStatementCommand(sql), 
+            (CommandResponse!PreparedStatement cr) {
+                if (cr.succeeded()) {
+                    PreparedStatement ps = cr.result();
+                    string msg = ps.prepare(cast(List!(string)) arguments);
+                    if (msg !is null) {
+                        handler(failedResult!(R3)(new Exception(msg)));
+                    } else {
+                        SqlResultBuilder!(R1, R2, R3) b = new SqlResultBuilder!(R1, R2, R3)(factory, handler);
+                        implementationMissing(false);
+                        // cr.scheduler.schedule(new ExtendedQueryCommand<>(ps, arguments, singleton, collector, b), b);
+                    }
+                } else {
+                    version(HUNT_DB_DEBUG) {
+                        warning(cr.cause());
+                    }
+                    handler(failedResult!(R3)(cr.cause()));
+                }
+            }
+        );
+
+        return cast(C) this;
+    }
 
     override
     C preparedQuery(string sql, RowSetHandler handler) {
