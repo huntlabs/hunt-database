@@ -48,16 +48,6 @@ import hunt.database.base.impl.ParamDesc;
 import hunt.database.base.impl.RowDesc;
 import hunt.database.base.impl.TxStatus;
 import hunt.database.base.impl.command;
-// import hunt.database.base.impl.command.CommandResponse;
-// import hunt.database.base.impl.command.CloseConnectionCommand;
-// import hunt.database.base.impl.command.CloseCursorCommand;
-// import hunt.database.base.impl.command.CloseStatementCommand;
-// import hunt.database.base.impl.command.ExtendedBatchQueryCommand;
-// import hunt.database.base.impl.command.ExtendedQueryCommand;
-// import hunt.database.base.impl.command.InitCommand;
-// import hunt.database.base.impl.command.CommandBase;
-// import hunt.database.base.impl.command.PrepareStatementCommand;
-// import hunt.database.base.impl.command.SimpleQueryCommand;
 import hunt.database.base.RowSet;
 import hunt.database.postgresql.impl.util.Util;
 
@@ -120,72 +110,9 @@ final class PgEncoder : EncoderChain {
 
         PgCommandCodecBase cmdCodec = wrap(cmd);
 
-        if(cmdCodec !is null) {
-            cmdCodec.completionHandler = (resp) {
-                version(HUNT_DB_DEBUG) infof("message encoding completed");
-                version(HUNT_DB_DEBUG_MORE)  tracef("%s", typeid(cast(Object)resp));
-                // CommandResponse!DbConnection h = resp;
-
-                PgCommandCodecBase c = inflight.front();
-                assert(cmdCodec is c);
-                inflight.removeFront();
-
-                // h.cmd = cast(InitCommand)cmdCodec.cmd;
-                // assert(h.cmd !is null);
-
-                ConnectionEventHandler handler = ctx.getHandler();
-
-                if(resp.failed()) {
-                    Throwable th = resp.cause();
-                    version(HUNT_DB_DEBUG) {
-                        warning(th.msg);
-                    }
-                    handler.exceptionCaught(ctx, cast(Exception)th);
-                } else {
-                    handler.messageReceived(ctx, cast(Object)resp);
-                }
-            };
-
-            // codec = cmdCodec;
-
-            inflight.insertBack(cmdCodec);
-            cmdCodec.encode(this);
-            flush();
-        }
-
-        // InitCommand initCommand = cast(InitCommand) cmd;
-        // if (initCommand !is null) {
-        //     encode(initCommand);
-        //     return;
-        // } 
-
-        // SimpleQueryCommand!(RowSet) simpleCommand = cast(SimpleQueryCommand!(RowSet))cmd;
-        // if(simpleCommand !is null) {
-        //     encode(simpleCommand);
-        //     return;
-        // } 
-        
-        // PrepareStatementCommand prepareCommand = cast(PrepareStatementCommand)cmd;
-        // if(prepareCommand !is null) {
-
-        // } else {
-        //     implementationMissing(false);
-        // }
-
-
-
-
-        // codec.noticeHandler = ctx::fireChannelRead;
-        // inflight.insertBack(codec);
-        // codec.encode(this);
-	}
-
-    private void encode(InitCommand initCommand) {
-        InitCommandCodec cmdCodec = new InitCommandCodec(initCommand);
-
         cmdCodec.completionHandler = (resp) {
-            // version(HUNT_DB_DEBUG) infof("message encoding completed");
-            // version(HUNT_DB_DEBUG_MORE)  tracef("%s", typeid(resp));
+            version(HUNT_DB_DEBUG) infof("message encoding completed");
+            version(HUNT_DB_DEBUG_MORE)  tracef("%s", typeid(cast(Object)resp));
             // CommandResponse!DbConnection h = resp;
 
             PgCommandCodecBase c = inflight.front();
@@ -208,80 +135,10 @@ final class PgEncoder : EncoderChain {
             }
         };
 
-        // codec = cmdCodec;
-
         inflight.insertBack(cmdCodec);
         cmdCodec.encode(this);
         flush();
-    }
-
-    private void encode(SimpleQueryCommand!(RowSet) simpleCommand) {
-        SimpleQueryCodec!RowSet cmdCodec = new SimpleQueryCodec!RowSet(simpleCommand);
-
-        cmdCodec.completionHandler = (resp) {
-            version(HUNT_DB_DEBUG) infof("message encoding completed");
-            version(HUNT_DB_DEBUG_MORE)  tracef("%s", typeid(cast(Object)resp));
-
-            // CommandResponse!bool h = resp;
-
-            PgCommandCodecBase c = inflight.front();
-            assert(cmdCodec is c);
-            inflight.removeFront();
-
-            // h.cmd = simpleCommand; // cast(InitCommand)cmdCodec.cmd;
-
-            ConnectionEventHandler handler = ctx.getHandler();
-
-            if(resp.failed()) {
-                Throwable th = resp.cause();
-                version(HUNT_DB_DEBUG) {
-                    warning(th.msg);
-                }
-                handler.exceptionCaught(ctx, cast(Exception)th);
-            } else {
-                handler.messageReceived(ctx, cast(Object)resp);
-            }
-        };
-
-        // codec = cmdCodec;
-        inflight.insertBack(cmdCodec);
-        cmdCodec.encode(this);
-        flush();
-    }
-
-    private void encode(PrepareStatementCommand prepareCommand) {
-        // PrepareStatementCommandCodec cmdCodec = new PrepareStatementCommandCodec(simpleCommand);
-
-        // cmdCodec.completionHandler = (CommandResponse!bool resp) {
-        //     version(HUNT_DB_DEBUG) infof("message encoding completed");
-        //     version(HUNT_DB_DEBUG_MORE)  tracef("%s", typeid(resp));
-
-        //     CommandResponse!bool h = resp;
-
-        //     PgCommandCodecBase c = inflight.front();
-        //     assert(cmdCodec is c);
-        //     inflight.removeFront();
-
-        //     h.cmd = simpleCommand; // cast(InitCommand)cmdCodec.cmd;
-
-        //     ConnectionEventHandler handler = ctx.getHandler();
-
-        //     if(h.failed()) {
-        //         Throwable th = h.cause();
-        //         version(HUNT_DB_DEBUG) {
-        //             warning(th.msg);
-        //         }
-        //         handler.exceptionCaught(ctx, cast(Exception)th);
-        //     } else {
-        //         handler.messageReceived(ctx, resp);
-        //     }
-        // };
-
-        // // codec = cmdCodec;
-        // inflight.insertBack(cmdCodec);
-        // cmdCodec.encode(this);
-        // flush();
-    }    
+	}
 
     private PgCommandCodecBase wrap(ICommand cmd) {
         InitCommand initCommand = cast(InitCommand) cmd;
