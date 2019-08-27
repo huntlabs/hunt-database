@@ -17,27 +17,7 @@ import hunt.Functions;
 
 alias AsyncResultHandler(T) = Action1!(AsyncResult!T);
 
-/**
- * Encapsulates the result of an asynchronous operation.
- * <p>
- * Many operations in Vert.x APIs provide results back by passing an instance of this in a {@link hunt.net.Handler}.
- * <p>
- * The result can either have failed or succeeded.
- * <p>
- * If it failed then the cause of the failure is available with {@link #cause}.
- * <p>
- * If it succeeded then the actual result is available with {@link #result}
- *
- * @author <a href="http://tfox.org">Tim Fox</a>
- */
-interface AsyncResult(T) {
-
-    /**
-     * The result of the operation. This will be null if the operation failed.
-     *
-     * @return the result or null if the operation failed.
-     */
-    T result();
+interface IAsyncResult {
 
     /**
      * A Throwable describing failure. This will be null if the operation succeeded.
@@ -59,6 +39,30 @@ interface AsyncResult(T) {
      * @return true if it failed or false otherwise
      */
     bool failed();
+
+}
+
+/**
+ * Encapsulates the result of an asynchronous operation.
+ * <p>
+ * Many operations in Vert.x APIs provide results back by passing an instance of this in a {@link hunt.net.Handler}.
+ * <p>
+ * The result can either have failed or succeeded.
+ * <p>
+ * If it failed then the cause of the failure is available with {@link #cause}.
+ * <p>
+ * If it succeeded then the actual result is available with {@link #result}
+ *
+ * @author <a href="http://tfox.org">Tim Fox</a>
+ */
+interface AsyncResult(T) : IAsyncResult {
+
+    /**
+     * The result of the operation. This will be null if the operation failed.
+     *
+     * @return the result or null if the operation failed.
+     */
+    T result();
 
     /**
      * Apply a {@code mapper} function on this async result.<p>

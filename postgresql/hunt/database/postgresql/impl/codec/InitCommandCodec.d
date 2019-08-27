@@ -87,8 +87,10 @@ class InitCommandCodec : PgCommandCodec!(DbConnection, InitCommand) {
     void handleErrorResponse(ErrorResponse errorResponse) {
         version(HUNT_DB_DEBUG) warningf("errorResponse: %s", errorResponse.toString());
         CommandResponse!(DbConnection) resp = failure!DbConnection(errorResponse.toException());
-        if(completionHandler !is null)
+        if(completionHandler !is null) {
+            resp.cmd = cmd;
             completionHandler(resp);
+        }
     }
 
     override
@@ -102,13 +104,15 @@ class InitCommandCodec : PgCommandCodec!(DbConnection, InitCommand) {
         //     cs = Charset.forName(encoding);
         // } catch (Exception ignore) {
         // }
-        CommandResponse!(DbConnection) fut;
+        CommandResponse!(DbConnection) resp;
         if(encoding != "UTF8") {
-            fut = failure!(DbConnection)(encoding ~ " is not supported in the client only UTF8");
+            resp = failure!(DbConnection)(encoding ~ " is not supported in the client only UTF8");
         } else {
-            fut = success!(DbConnection)(cmd.connection());
+            resp = success!(DbConnection)(cmd.connection());
         }
-        if(completionHandler !is null)
-            completionHandler(fut);
+        if(completionHandler !is null) {
+            resp.cmd = cmd;
+            completionHandler(resp);
+        }
     }
 }

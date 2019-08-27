@@ -8,7 +8,10 @@ import hunt.database.base.Common;
 import hunt.database.base.Exceptions;
 import hunt.database.base.impl.TxStatus;
 
+
 alias ResponseHandler(R) = EventHandler!(CommandResponse!(R));
+// alias ResponseHandler(R) = EventHandler!(CommandResponse!(R));
+alias CommandHandler = EventHandler!(IAsyncResult);
 
 
 interface ICommandResponse {

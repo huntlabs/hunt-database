@@ -37,6 +37,7 @@ import hunt.net.buffer.ByteBuf;
 abstract class PgCommandCodecBase {
     
     EventHandler!(NoticeResponse) noticeHandler;
+    CommandHandler completionHandler;
 
     abstract void encode(PgEncoder encoder);
 
@@ -114,7 +115,7 @@ abstract class PgCommandCodecBase {
 abstract class PgCommandCodec(R, C) : PgCommandCodecBase
         if(is(C : CommandBase!(R))) {
 
-    ResponseHandler!R completionHandler;
+    // ResponseHandler!R completionHandler;
     Throwable _failure;
     R result;
     C cmd;
@@ -142,8 +143,10 @@ abstract class PgCommandCodec(R, C) : PgCommandCodecBase
             resp = success(result, txStatus);
         }
 
-        if(completionHandler !is null)
+        if(completionHandler !is null) {
+            resp.cmd = cmd;
             completionHandler(resp);
+        }
     }
 
     override void handleNoticeResponse(NoticeResponse noticeResponse) {

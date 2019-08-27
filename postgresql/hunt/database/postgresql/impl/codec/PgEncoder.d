@@ -115,83 +115,62 @@ final class PgEncoder : EncoderChain {
             warningf("The message is not a ICommand: %s", typeid(message));
         }
 
+        version(HUNT_DB_DEBUG) 
         infof("encoding a message: %s", typeid(message));
 
-        PgCommandCodecBase codec; // = wrap(cmd);
+        PgCommandCodecBase cmdCodec = wrap(cmd);
 
-        InitCommand initCommand = cast(InitCommand) cmd;
-        if (initCommand !is null) {
-            InitCommandCodec cmdCodec = new InitCommandCodec(initCommand);
-
+        if(cmdCodec !is null) {
             cmdCodec.completionHandler = (resp) {
                 version(HUNT_DB_DEBUG) infof("message encoding completed");
-                version(HUNT_DB_DEBUG_MORE)  tracef("%s", typeid(resp));
-                CommandResponse!DbConnection h = resp;
+                version(HUNT_DB_DEBUG_MORE)  tracef("%s", typeid(cast(Object)resp));
+                // CommandResponse!DbConnection h = resp;
 
                 PgCommandCodecBase c = inflight.front();
                 assert(cmdCodec is c);
                 inflight.removeFront();
 
-                h.cmd = cast(InitCommand)cmdCodec.cmd;
+                // h.cmd = cast(InitCommand)cmdCodec.cmd;
+                // assert(h.cmd !is null);
 
                 ConnectionEventHandler handler = ctx.getHandler();
 
-                if(h.failed()) {
-                    Throwable th = h.cause();
+                if(resp.failed()) {
+                    Throwable th = resp.cause();
                     version(HUNT_DB_DEBUG) {
                         warning(th.msg);
                     }
                     handler.exceptionCaught(ctx, cast(Exception)th);
                 } else {
-                    handler.messageReceived(ctx, resp);
+                    handler.messageReceived(ctx, cast(Object)resp);
                 }
             };
 
-            codec = cmdCodec;
+            // codec = cmdCodec;
 
-            inflight.insertBack(codec);
-            codec.encode(this);
+            inflight.insertBack(cmdCodec);
+            cmdCodec.encode(this);
             flush();
-            return;
-        } 
-
-        SimpleQueryCommand!(RowSet) simpleCommand = cast(SimpleQueryCommand!(RowSet))cmd;
-        if(simpleCommand !is null) {
-            SimpleQueryCodec!RowSet cmdCodec = new SimpleQueryCodec!RowSet(simpleCommand);
-
-            cmdCodec.completionHandler = (CommandResponse!bool resp) {
-                version(HUNT_DB_DEBUG) infof("message encoding completed");
-                version(HUNT_DB_DEBUG_MORE)  tracef("%s", typeid(resp));
-
-                CommandResponse!bool h = resp;
-
-                PgCommandCodecBase c = inflight.front();
-                assert(cmdCodec is c);
-                inflight.removeFront();
-
-                h.cmd = simpleCommand; // cast(InitCommand)cmdCodec.cmd;
-
-                ConnectionEventHandler handler = ctx.getHandler();
-
-                if(h.failed()) {
-                    Throwable th = h.cause();
-                    version(HUNT_DB_DEBUG) {
-                        warning(th.msg);
-                    }
-                    handler.exceptionCaught(ctx, cast(Exception)th);
-                } else {
-                    handler.messageReceived(ctx, resp);
-                }
-            };
-
-            codec = cmdCodec;
-            inflight.insertBack(codec);
-            codec.encode(this);
-            flush();
-        } else {
-
-            implementationMissing(false);
         }
+
+        // InitCommand initCommand = cast(InitCommand) cmd;
+        // if (initCommand !is null) {
+        //     encode(initCommand);
+        //     return;
+        // } 
+
+        // SimpleQueryCommand!(RowSet) simpleCommand = cast(SimpleQueryCommand!(RowSet))cmd;
+        // if(simpleCommand !is null) {
+        //     encode(simpleCommand);
+        //     return;
+        // } 
+        
+        // PrepareStatementCommand prepareCommand = cast(PrepareStatementCommand)cmd;
+        // if(prepareCommand !is null) {
+
+        // } else {
+        //     implementationMissing(false);
+        // }
 
 
 
@@ -201,11 +180,124 @@ final class PgEncoder : EncoderChain {
         // codec.encode(this);
 	}
 
+    private void encode(InitCommand initCommand) {
+        InitCommandCodec cmdCodec = new InitCommandCodec(initCommand);
+
+        cmdCodec.completionHandler = (resp) {
+            // version(HUNT_DB_DEBUG) infof("message encoding completed");
+            // version(HUNT_DB_DEBUG_MORE)  tracef("%s", typeid(resp));
+            // CommandResponse!DbConnection h = resp;
+
+            PgCommandCodecBase c = inflight.front();
+            assert(cmdCodec is c);
+            inflight.removeFront();
+
+            // h.cmd = cast(InitCommand)cmdCodec.cmd;
+            // assert(h.cmd !is null);
+
+            ConnectionEventHandler handler = ctx.getHandler();
+
+            if(resp.failed()) {
+                Throwable th = resp.cause();
+                version(HUNT_DB_DEBUG) {
+                    warning(th.msg);
+                }
+                handler.exceptionCaught(ctx, cast(Exception)th);
+            } else {
+                handler.messageReceived(ctx, cast(Object)resp);
+            }
+        };
+
+        // codec = cmdCodec;
+
+        inflight.insertBack(cmdCodec);
+        cmdCodec.encode(this);
+        flush();
+    }
+
+    private void encode(SimpleQueryCommand!(RowSet) simpleCommand) {
+        SimpleQueryCodec!RowSet cmdCodec = new SimpleQueryCodec!RowSet(simpleCommand);
+
+        cmdCodec.completionHandler = (resp) {
+            version(HUNT_DB_DEBUG) infof("message encoding completed");
+            version(HUNT_DB_DEBUG_MORE)  tracef("%s", typeid(cast(Object)resp));
+
+            // CommandResponse!bool h = resp;
+
+            PgCommandCodecBase c = inflight.front();
+            assert(cmdCodec is c);
+            inflight.removeFront();
+
+            // h.cmd = simpleCommand; // cast(InitCommand)cmdCodec.cmd;
+
+            ConnectionEventHandler handler = ctx.getHandler();
+
+            if(resp.failed()) {
+                Throwable th = resp.cause();
+                version(HUNT_DB_DEBUG) {
+                    warning(th.msg);
+                }
+                handler.exceptionCaught(ctx, cast(Exception)th);
+            } else {
+                handler.messageReceived(ctx, cast(Object)resp);
+            }
+        };
+
+        // codec = cmdCodec;
+        inflight.insertBack(cmdCodec);
+        cmdCodec.encode(this);
+        flush();
+    }
+
+    private void encode(PrepareStatementCommand prepareCommand) {
+        // PrepareStatementCommandCodec cmdCodec = new PrepareStatementCommandCodec(simpleCommand);
+
+        // cmdCodec.completionHandler = (CommandResponse!bool resp) {
+        //     version(HUNT_DB_DEBUG) infof("message encoding completed");
+        //     version(HUNT_DB_DEBUG_MORE)  tracef("%s", typeid(resp));
+
+        //     CommandResponse!bool h = resp;
+
+        //     PgCommandCodecBase c = inflight.front();
+        //     assert(cmdCodec is c);
+        //     inflight.removeFront();
+
+        //     h.cmd = simpleCommand; // cast(InitCommand)cmdCodec.cmd;
+
+        //     ConnectionEventHandler handler = ctx.getHandler();
+
+        //     if(h.failed()) {
+        //         Throwable th = h.cause();
+        //         version(HUNT_DB_DEBUG) {
+        //             warning(th.msg);
+        //         }
+        //         handler.exceptionCaught(ctx, cast(Exception)th);
+        //     } else {
+        //         handler.messageReceived(ctx, resp);
+        //     }
+        // };
+
+        // // codec = cmdCodec;
+        // inflight.insertBack(cmdCodec);
+        // cmdCodec.encode(this);
+        // flush();
+    }    
+
     private PgCommandCodecBase wrap(ICommand cmd) {
         InitCommand initCommand = cast(InitCommand) cmd;
         if (initCommand !is null) {
             return new InitCommandCodec(initCommand);
         }
+
+        SimpleQueryCommand!(RowSet) simpleCommand = cast(SimpleQueryCommand!(RowSet))cmd;
+        if(simpleCommand !is null) {
+            return new SimpleQueryCodec!RowSet(simpleCommand);
+        }
+
+        // PrepareStatementCommand prepareCommand = cast(PrepareStatementCommand)cmd;
+        // if(simpleCommand !is null) {
+        //     return new PrepareStatementCommand(prepareCommand);
+        // }
 
         implementationMissing(false);
         // if (cmd instanceof SimpleQueryCommand<?>) {
