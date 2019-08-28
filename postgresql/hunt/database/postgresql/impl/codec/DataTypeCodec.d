@@ -84,7 +84,7 @@ class DataTypeCodec {
     // private static final Polygon[] empty_polygon_array = new Polygon[0];
     // private static final Circle[] empty_circle_array = new Circle[0];
     // private static final Interval[] empty_interval_array = new Interval[0];
-    // private static final Boolean[] empty_boolean_array = new Boolean[0];
+    // private static final bool[] empty_boolean_array = new bool[0];
     // private static final Integer[] empty_integer_array = new Integer[0];
     // private static final Short[] empty_short_array = new Short[0];
     // private static final Long[] empty_long_array = new Long[0];
@@ -100,7 +100,7 @@ class DataTypeCodec {
         return initOnce!inst(new Object());
     }
 
-    // private static final IntFunction!(Boolean[]) BOOLEAN_ARRAY_FACTORY = size -> size == 0 ? empty_boolean_array : new Boolean[size];
+    // private static final IntFunction!(bool[]) BOOLEAN_ARRAY_FACTORY = size -> size == 0 ? empty_boolean_array : new bool[size];
     // private static final IntFunction!(Short[]) SHORT_ARRAY_FACTORY = size -> size == 0 ? empty_short_array : new Short[size];
     // private static final IntFunction!(Integer[]) INTEGER_ARRAY_FACTORY = size -> size == 0 ? empty_integer_array : new Integer[size];
     // private static final IntFunction!(Long[]) LONG_ARRAY_FACTORY = size -> size == 0 ? empty_long_array : new Long[size];
@@ -151,9 +151,6 @@ class DataTypeCodec {
     }
 
     private static void textEncode(DataType id, ref Variant value, ByteBuf buff) {
-        // buff.writeCharSequence(value, StandardCharsets.UTF_8);
-
-        // implementationMissing(false);
         switch (id) {
             case DataType.NUMERIC:
                 implementationMissing(false);
@@ -175,79 +172,74 @@ class DataTypeCodec {
     }
 
 
-    // static void encodeBinary(DataType id, string value, ByteBuf buff) {
-    //     binaryEncodeVARCHAR(value, buff);
-    // }
-
     static void encodeBinary(DataType id, ref Variant value, ByteBuf buff) {
         switch (id) {
-    //         case DataType.BOOL:
-    //             binaryEncodeBOOL((Boolean) value, buff);
-    //             break;
-    //         case DataType.BOOL_ARRAY:
-    //             binaryEncodeArray((Boolean[]) value, DataType.BOOL, buff);
-    //             break;
-    //         case DataType.INT2:
-    //             binaryEncodeINT2((Number) value, buff);
-    //             break;
-    //         case DataType.INT2_ARRAY:
-    //             binaryEncodeArray((Number[]) value, DataType.INT2, buff);
-    //             break;
+            case DataType.BOOL:
+                binaryEncodeBOOL(value, buff);
+                break;
+            case DataType.BOOL_ARRAY:
+                binaryEncodeArray!(bool)(value, DataType.BOOL, buff);
+                break;
+            case DataType.INT2:
+                binaryEncodeINT2(value, buff);
+                break;
+            case DataType.INT2_ARRAY:
+                binaryEncodeArray!(short)(value, DataType.INT2, buff);
+                break;
             case DataType.INT4:
-                // binaryEncodeINT4((Number) value, buff);
                 binaryEncodeINT4(value, buff);
                 break;
-    //         case DataType.INT4_ARRAY:
-    //             binaryEncodeArray((Number[]) value, DataType.INT4, buff);
-    //             break;
-    //         case DataType.INT8:
-    //             binaryEncodeINT8((Number) value, buff);
-    //             break;
-    //         case DataType.INT8_ARRAY:
-    //             binaryEncodeArray((Number[]) value, DataType.INT8, buff);
-    //             break;
-    //         case DataType.FLOAT4:
-    //             binaryEncodeFLOAT4((Number) value, buff);
-    //             break;
-    //         case DataType.FLOAT4_ARRAY:
-    //             binaryEncodeArray((Number[]) value, DataType.FLOAT4, buff);
-    //             break;
-    //         case DataType.FLOAT8:
-    //             binaryEncodeFLOAT8((Number) value, buff);
-    //             break;
-    //         case DataType.FLOAT8_ARRAY:
-    //             binaryEncodeArray((Number[]) value, DataType.FLOAT8, buff);
-    //             break;
-    //         case DataType.CHAR:
-    //             binaryEncodeCHAR((String) value, buff);
-    //             break;
-    //         case DataType.CHAR_ARRAY:
-    //             binaryEncodeArray((String[]) value, DataType.CHAR, buff);
-    //             break;
-    //         case DataType.VARCHAR:
-    //             binaryEncodeVARCHAR((String) value, buff);
-    //             break;
-    //         case DataType.VARCHAR_ARRAY:
-    //             binaryEncodeArray((String[]) value, DataType.VARCHAR, buff);
-    //             break;
-    //         case DataType.BPCHAR:
-    //             binaryEncodeBPCHAR((String) value, buff);
-    //             break;
-    //         case DataType.BPCHAR_ARRAY:
-    //             binaryEncodeArray((String[]) value, DataType.BPCHAR, buff);
-    //             break;
-    //         case DataType.TEXT:
-    //             binaryEncodeTEXT((String) value, buff);
-    //             break;
-    //         case DataType.TEXT_ARRAY:
-    //             binaryEncodeArray((String[]) value, DataType.TEXT, buff);
-    //             break;
-    //         case DataType.NAME:
-    //             binaryEncodeNAME((String) value, buff);
-    //             break;
-    //         case DataType.NAME_ARRAY:
-    //             binaryEncodeArray((String[]) value, DataType.NAME, buff);
-    //             break;
+            case DataType.INT4_ARRAY:
+                binaryEncodeArray!(int)(value, DataType.INT4, buff);
+                break;
+            case DataType.INT8:
+                binaryEncodeINT8(value, buff);
+                break;
+            case DataType.INT8_ARRAY:
+                binaryEncodeArray!(long)(value, DataType.INT8, buff);
+                break;
+            case DataType.FLOAT4:
+                binaryEncodeFLOAT4(value, buff);
+                break;
+            case DataType.FLOAT4_ARRAY:
+                binaryEncodeArray!(float)(value, DataType.FLOAT4, buff);
+                break;
+            case DataType.FLOAT8:
+                binaryEncodeFLOAT8(value, buff);
+                break;
+            case DataType.FLOAT8_ARRAY:
+                binaryEncodeArray!(double)(value, DataType.FLOAT8, buff);
+                break;
+            case DataType.CHAR:
+                binaryEncodeCHAR(value, buff);
+                break;
+            case DataType.CHAR_ARRAY:
+                binaryEncodeArray!(string)(value, DataType.CHAR, buff);
+                break;
+            case DataType.VARCHAR:
+                binaryEncodeVARCHAR(value, buff);
+                break;
+            case DataType.VARCHAR_ARRAY:
+                binaryEncodeArray!(string)(value, DataType.VARCHAR, buff);
+                break;
+            case DataType.BPCHAR:
+                binaryEncodeBPCHAR(value, buff);
+                break;
+            case DataType.BPCHAR_ARRAY:
+                binaryEncodeArray!(string)(value, DataType.BPCHAR, buff);
+                break;
+            case DataType.TEXT:
+                binaryEncodeTEXT(value, buff);
+                break;
+            case DataType.TEXT_ARRAY:
+                binaryEncodeArray!(string)(value, DataType.TEXT, buff);
+                break;
+            case DataType.NAME:
+                binaryEncodeNAME(value, buff);
+                break;
+            case DataType.NAME_ARRAY:
+                binaryEncodeArray!(string)(value, DataType.NAME, buff);
+                break;
     //         case DataType.DATE:
     //             binaryEncodeDATE((LocalDate) value, buff);
     //             break;
@@ -278,12 +270,12 @@ class DataTypeCodec {
     //         case DataType.TIMESTAMPTZ_ARRAY:
     //             binaryEncodeArray((OffsetDateTime[]) value, DataType.TIMESTAMPTZ, buff);
     //             break;
-    //         case DataType.BYTEA:
-    //             binaryEncodeBYTEA((Buffer) value, buff);
-    //             break;
-    //         case DataType.BYTEA_ARRAY:
-    //             binaryEncodeArray((Buffer[]) value, DataType.BYTEA, buff);
-    //             break;
+            case DataType.BYTEA:
+                binaryEncodeBYTEA(value, buff);
+                break;
+            case DataType.BYTEA_ARRAY:
+                binaryEncodeArray!(byte)(value, DataType.BYTEA, buff);
+                break;
     //         case DataType.UUID:
     //             binaryEncodeUUID((UUID) value, buff);
     //             break;
@@ -693,19 +685,20 @@ class DataTypeCodec {
     //     return null;
     // }
 
-    // private static void binaryEncodeBOOL(Boolean value, ByteBuf buff) {
-    //     buff.writeBoolean(value);
-    // }
+    private static void binaryEncodeBOOL(ref Variant value, ByteBuf buff) {
+        assert(value.type == typeid(bool));
+        buff.writeBoolean(value.get!(bool));
+    }
 
-    // private static Boolean binaryDecodeBOOL(int index, int len, ByteBuf buff) {
+    // private static bool binaryDecodeBOOL(int index, int len, ByteBuf buff) {
     //     return buff.getBoolean(index);
     // }
 
-    // private static Boolean textDecodeBOOL(int index, int len, ByteBuf buff) {
+    // private static bool textDecodeBOOL(int index, int len, ByteBuf buff) {
     //     if(buff.getByte(index) == 't') {
-    //         return Boolean.TRUE;
+    //         return bool.TRUE;
     //     } else {
-    //         return Boolean.FALSE;
+    //         return bool.FALSE;
     //     }
     // }
 
@@ -717,9 +710,10 @@ class DataTypeCodec {
     //     return buff.getShort(index);
     // }
 
-    // private static void binaryEncodeINT2(Number value, ByteBuf buff) {
-    //     buff.writeShort(value.shortValue());
-    // }
+    private static void binaryEncodeINT2(ref Variant value, ByteBuf buff) {
+        assert(value.type == typeid(short) || value.type == typeid(ushort));
+        buff.writeShort(value.get!(int)());
+    }
 
     private static int textDecodeINT4(int index, int len, ByteBuf buff) {
         return cast(int) decodeDecStringToLong(index, len, buff);
@@ -730,7 +724,7 @@ class DataTypeCodec {
     }
 
     private static void binaryEncodeINT4(ref Variant value, ByteBuf buff) {
-        assert(value.type == typeid(int));
+        assert(value.type == typeid(int) || value.type == typeid(uint));
         buff.writeInt(value.get!(int));
     }
 
@@ -742,9 +736,10 @@ class DataTypeCodec {
     //     return buff.getLong(index);
     // }
 
-    // private static void binaryEncodeINT8(Number value, ByteBuf buff) {
-    //     buff.writeLong(value.longValue());
-    // }
+    private static void binaryEncodeINT8(ref Variant value, ByteBuf buff) {
+        assert(value.type == typeid(long) || value.type == typeid(ulong));
+        buff.writeLong(value.get!(long));
+    }
 
     // private static Float textDecodeFLOAT4(int index, int len, ByteBuf buff) {
     //     // Todo optimize that
@@ -756,13 +751,15 @@ class DataTypeCodec {
     //     return buff.getFloat(index);
     // }
 
-    // private static void binaryEncodeFLOAT4(Number value, ByteBuf buff) {
-    //     buff.writeFloat(value.floatValue());
-    // }
+    private static void binaryEncodeFLOAT4(ref Variant value, ByteBuf buff) {
+        assert(value.type == typeid(float));
+        buff.writeFloat(value.get!(float)());
+    }
 
-    // private static void binaryEncodeFLOAT8(Number value, ByteBuf buff) {
-    //     buff.writeDouble(value.doubleValue());
-    // }
+    private static void binaryEncodeFLOAT8(ref Variant value, ByteBuf buff) {
+        assert(value.type == typeid(double));
+        buff.writeDouble(value.get!(double)());
+    }
 
     // private static Double binaryDecodeFLOAT8(int index, int len, ByteBuf buff) {
     //     return buff.getDouble(index);
@@ -845,7 +842,7 @@ class DataTypeCodec {
     //     // Path representation: (p1,p2...pn) or [p1,p2...pn]
     //     byte first = buff.getByte(index);
     //     byte last = buff.getByte(index + len - 1);
-    //     boolean isOpen;
+    //     bool isOpen;
     //     if (first == '(' && last == ')') {
     //         isOpen = false;
     //     } else if (first == '[' && last == ']') {
@@ -905,7 +902,7 @@ class DataTypeCodec {
     //         chunks.add(value.substring(idx, newIdx));
     //         idx = newIdx + 1;
     //     }
-    //     boolean hasTime = chunks.size() % 2 == 1;
+    //     bool hasTime = chunks.size() % 2 == 1;
     //     int dateChunkMax = hasTime ? chunks.size() - 1 : chunks.size();
     //     for (int i = 0; i < dateChunkMax; i += 2) {
     //         int val = Integer.parseInt(chunks.get(i));
@@ -926,7 +923,7 @@ class DataTypeCodec {
     //     }
     //     if (hasTime) {
     //         String timeChunk = chunks.get(chunks.size() - 1);
-    //         boolean isNeg = timeChunk.charAt(0) == '-';
+    //         bool isNeg = timeChunk.charAt(0) == '-';
     //         if (isNeg) timeChunk = timeChunk.substring(1);
     //         int sidx = 0;
     //         for (;;) {
@@ -970,9 +967,9 @@ class DataTypeCodec {
     //     textEncodeArray(value, DataType.NUMERIC, buff);
     // }
 
-    // private static void binaryEncodeCHAR(String value, ByteBuf buff) {
-    //     binaryEncodeTEXT(value, buff);
-    // }
+    private static void binaryEncodeCHAR(ref Variant value, ByteBuf buff) {
+        binaryEncodeTEXT(value, buff);
+    }
 
     // private static String textDecodeCHAR(int index, int len, ByteBuf buff) {
     //     return buff.getCharSequence(index, len, StandardCharsets.UTF_8).toString();
@@ -982,15 +979,13 @@ class DataTypeCodec {
     //     return binaryDecodeTEXT(index, len, buff);
     // }
 
-    // private static void binaryEncodeVARCHAR(String value, ByteBuf buff) {
-    //     String s = String.valueOf(value);
-    //     buff.writeCharSequence(s, StandardCharsets.UTF_8);
-    // }
-
-    private static void binaryEncodeVARCHAR(string value, ByteBuf buff) {
+    private static void binaryEncodeVARCHAR(ref Variant value, ByteBuf buff) {
         // String s = String.valueOf(value);
-        buff.writeCharSequence(value, StandardCharsets.UTF_8);
+        assert(value.type == typeid(string));
+        buff.writeCharSequence(value.get!(string), StandardCharsets.UTF_8);
     }
+    alias binaryEncodeNAME = binaryEncodeVARCHAR;
+    alias binaryEncodeBPCHAR = binaryEncodeVARCHAR;
 
     // private static String textDecodeVARCHAR(int index, int len, ByteBuf buff) {
     //     return buff.getCharSequence(index, len, StandardCharsets.UTF_8).toString();
@@ -1004,8 +999,9 @@ class DataTypeCodec {
     //     return buff.getCharSequence(index, len, StandardCharsets.UTF_8).toString();
     // }
 
-    // private static void binaryEncodeBPCHAR(String value, ByteBuf buff) {
-    //     buff.writeCharSequence(value, StandardCharsets.UTF_8);
+    // private static void binaryEncodeBPCHAR(ref Variant value, ByteBuf buff) {
+    //     // buff.writeCharSequence(value, StandardCharsets.UTF_8);
+    //     binaryEncodeVARCHAR(value, buff);
     // }
 
     // private static String binaryDecodeBPCHAR(int index, int len, ByteBuf buff) {
@@ -1016,10 +1012,11 @@ class DataTypeCodec {
         return buff.getCharSequence(index, len, StandardCharsets.UTF_8); // .toString();
     }
 
-    // private static void binaryEncodeTEXT(String value, ByteBuf buff) {
-    //     String s = String.valueOf(value);
-    //     buff.writeCharSequence(s, StandardCharsets.UTF_8);
-    // }
+    private static void binaryEncodeTEXT(ref Variant value, ByteBuf buff) {
+        assert(value.type == typeid(string));
+        string s = value.toString();
+        buff.writeCharSequence(s, StandardCharsets.UTF_8);
+    }
 
     // private static String binaryDecodeTEXT(int index, int len, ByteBuf buff) {
     //     return buff.getCharSequence(index, len, StandardCharsets.UTF_8).toString();
@@ -1028,7 +1025,6 @@ class DataTypeCodec {
     // private static String textDecodeNAME(int index, int len, ByteBuf buff) {
     //     return buff.getCharSequence(index, len, StandardCharsets.UTF_8).toString();
     // }
-
 
     // private static void binaryEncodeNAME(String value, ByteBuf buff) {
     //     String s = String.valueOf(value);
@@ -1121,10 +1117,11 @@ class DataTypeCodec {
     //     }
     // }
 
-    // private static void binaryEncodeBYTEA(Buffer value, ByteBuf buff) {
-    //     ByteBuf byteBuf = value.getByteBuf();
-    //     buff.writeBytes(byteBuf);
-    // }
+    private static void binaryEncodeBYTEA(ref Variant value, ByteBuf buff) {
+        assert(value.type == typeid(byte[]) || value.type == typeid(ubyte[]));
+        // ByteBuf byteBuf = value.getByteBuf();
+        buff.writeBytes(value.get!(byte[])());
+    }
 
     // private static Buffer binaryDecodeBYTEA(int index, int len, ByteBuf buff) {
     //     return Buffer.buffer(buff.copy(index, len));
@@ -1196,7 +1193,7 @@ class DataTypeCodec {
 
     // private static Path binaryDecodePath(int index, int len, ByteBuf buff) {
     //     byte first = buff.getByte(index);
-    //     boolean isOpen;
+    //     bool isOpen;
     //     if (first == 0) {
     //         isOpen = true;
     //     } else if (first == 1) {
@@ -1406,7 +1403,7 @@ class DataTypeCodec {
     //     return (byte)(((ch & 0x1F) + ((ch >> 6) * 0x19) - 0x10) & 0x0F);
     // }
 
-    // private static boolean isHexFormat(int index, int len, ByteBuf buff) {
+    // private static bool isHexFormat(int index, int len, ByteBuf buff) {
     //     return len >= 2 && buff.getByte(index) == '\\' && buff.getByte(index + 1) == 'x';
     // }
 
@@ -1471,29 +1468,40 @@ class DataTypeCodec {
     //     return array;
     // }
 
-    // private static <T> void binaryEncodeArray(T[] values, DataType type, ByteBuf buff){
-    //     int startIndex = buff.writerIndex();
-    //     buff.writeInt(1);             // ndim
-    //     buff.writeInt(0);             // dataoffset
-    //     buff.writeInt(type.id);       // elemtype
-    //     buff.writeInt(values.length); // dimension
-    //     buff.writeInt(1);             // lower bnds
-    //     boolean hasNulls = false;
-    //     for (T value : values) {
-    //         if (value is null) {
-    //             hasNulls = true;
-    //             buff.writeInt(-1);
-    //         } else {
-    //             int idx = buff.writerIndex();
-    //             buff.writeInt(0);
-    //             encodeBinary(type, value, buff);
-    //             buff.setInt(idx, buff.writerIndex() - idx - 4);
-    //         }
-    //     }
-    //     if (hasNulls) {
-    //         buff.setInt(startIndex + 4, 1);
-    //     }
-    // }
+    private static void binaryEncodeArray(T)(ref Variant data, DataType type, ByteBuf buff){
+        assert(data.type == typeid(T[]));
+        T[] values = data.get!(T[])();
+
+        int startIndex = buff.writerIndex();
+        buff.writeInt(1);             // ndim
+        buff.writeInt(0);             // dataoffset
+        buff.writeInt(cast(int)type);       // elemtype
+        buff.writeInt(cast(int)values.length); // dimension
+        buff.writeInt(1);             // lower bnds
+        bool hasNulls = false;
+        foreach (T value ; values) {
+            static if(is(T == class) || is(T == interface)) {
+                if (value is null) {
+                    hasNulls = true;
+                    buff.writeInt(-1);
+                    continue;
+                }
+            } 
+
+            int idx = buff.writerIndex();
+            buff.writeInt(0);
+            static if(is(T == Variant)) {
+                encodeBinary(type, value, buff);
+            } else {
+                Variant v = value;
+                encodeBinary(type, v, buff);
+            }
+            buff.setInt(idx, buff.writerIndex() - idx - 4);
+        }
+        if (hasNulls) {
+            buff.setInt(startIndex + 4, 1);
+        }
+    }
 
     // private static <T> T[] textDecodeArray(IntFunction!(T[]) supplier, DataType type, int index, int len, ByteBuf buff) {
     //     List!(T) list = new ArrayList<>();
@@ -1501,7 +1509,7 @@ class DataTypeCodec {
     //     int to = index + len - 1; // Set index before '}'
     //     while (from < to) {
     //         // Escaped content ?
-    //         boolean escaped = buff.getByte(from) == '"';
+    //         bool escaped = buff.getByte(from) == '"';
     //         int idx;
     //         if (escaped) {
     //             idx = buff.forEachByte(from, to - from, new UTF8StringEndDetector());
@@ -1528,7 +1536,7 @@ class DataTypeCodec {
     //         ) {
     //         return null;
     //     } else {
-    //         boolean escaped = buff.getByte(index) == '"';
+    //         bool escaped = buff.getByte(index) == '"';
     //         if (escaped) {
     //             // Some escaping - improve that later...
     //             String s = buff.toString(index + 1, len - 2, StandardCharsets.UTF_8);
