@@ -123,7 +123,7 @@ class PgConnectionFactory {
                     }
                 );
             } else if(completionHandler !is null) {
-                completionHandler(failure!(DbConnection)(ar.cause()));
+                completionHandler(failedResponse!(DbConnection)(ar.cause()));
             }
         });
     }

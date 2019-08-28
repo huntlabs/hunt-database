@@ -37,7 +37,7 @@ abstract class CommandBase(R) : ICommand {
     final bool handlerExist() { return handler !is null; }
 
     final void fail(Throwable err) {
-        handler(failure!R(err));
+        handler(failedResponse!R(err));
     }
 
     void notifyResponse(CommandResponse!(R) response) {

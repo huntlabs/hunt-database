@@ -47,20 +47,20 @@ abstract class CommandResponse(R) : AsyncResult!(R), ICommandResponse {
     // }
 }
 
-template failure(R) {
-    CommandResponse!(R) failure(string msg) {
-        return failure!R(new NoStackTraceThrowable(msg), TxStatus.FAILED);
+template failedResponse(R) {
+    CommandResponse!(R) failedResponse(string msg) {
+        return failedResponse!R(new NoStackTraceThrowable(msg), TxStatus.FAILED);
     }
 
-    CommandResponse!(R) failure(string msg, TxStatus txStatus) {
-        return failure!R(new NoStackTraceThrowable(msg), txStatus);
+    CommandResponse!(R) failedResponse(string msg, TxStatus txStatus) {
+        return failedResponse!R(new NoStackTraceThrowable(msg), txStatus);
     }
 
-    CommandResponse!(R) failure(Throwable cause) {
-        return failure!R(cause, TxStatus.FAILED);
+    CommandResponse!(R) failedResponse(Throwable cause) {
+        return failedResponse!R(cause, TxStatus.FAILED);
     }
 
-    CommandResponse!(R) failure(Throwable r, TxStatus txStatus) {
+    CommandResponse!(R) failedResponse(Throwable r, TxStatus txStatus) {
         return new class CommandResponse!(R) {
             this() {
                 super(_txStatus);
@@ -91,13 +91,13 @@ template failure(R) {
 
 /**
 */
-template success(R) {
+template succeededResponse(R) {
 
-    CommandResponse!(R) success(R result) {
-        return success(result, TxStatus.IDLE);
+    CommandResponse!(R) succeededResponse(R result) {
+        return succeededResponse(result, TxStatus.IDLE);
     }
 
-    CommandResponse!(R) success(R r, TxStatus txStatus) {
+    CommandResponse!(R) succeededResponse(R r, TxStatus txStatus) {
         return new class CommandResponse!(R) {
             this() {
                 super(txStatus);

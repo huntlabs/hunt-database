@@ -29,7 +29,6 @@ import hunt.logging.ConsoleLogger;
 
 import std.variant;
 
-
 /**
 */
 class ExtendedBatchQueryCommandCodec(R) : ExtendedQueryCommandBaseCodec!(R,
@@ -45,6 +44,7 @@ class ExtendedBatchQueryCommandCodec(R) : ExtendedQueryCommandBaseCodec!(R,
             encoder.writeSync();
         } else {
             PgPreparedStatement ps = cast(PgPreparedStatement) cmd.preparedStatement();
+            version(HUNT_DB_DEBUG) tracef("batch sql: %s", ps.sql());
             if (ps.bind.statement == 0) {
                 encoder.writeParse(new Parse(ps.sql()));
             }

@@ -138,9 +138,9 @@ abstract class PgCommandCodec(R, C) : PgCommandCodecBase
     override void handleReadyForQuery(TxStatus txStatus) {
         CommandResponse!(R) resp;
         if (_failure !is null) {
-            resp = failure!(R)(_failure, txStatus);
+            resp = failedResponse!(R)(_failure, txStatus);
         } else {
-            resp = success(result, txStatus);
+            resp = succeededResponse(result, txStatus);
         }
 
         if(completionHandler !is null) {

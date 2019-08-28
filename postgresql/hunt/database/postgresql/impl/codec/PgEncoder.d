@@ -17,7 +17,6 @@
 module hunt.database.postgresql.impl.codec.PgEncoder;
 
 import hunt.database.postgresql.impl.codec.Bind;
-
 import hunt.database.postgresql.impl.codec.CloseConnectionCommandCodec;
 import hunt.database.postgresql.impl.codec.ClosePortalCommandCodec;
 import hunt.database.postgresql.impl.codec.CloseStatementCommandCodec;
@@ -40,12 +39,7 @@ import hunt.database.postgresql.impl.codec.PasswordMessage;
 import hunt.database.postgresql.impl.codec.Response;
 import hunt.database.postgresql.impl.codec.SimpleQueryCodec;
 import hunt.database.postgresql.impl.codec.StartupMessage;
-
-
-import hunt.net.buffer;
-// import io.netty.channel.ChannelHandlerContext;
-// import io.netty.channel.ChannelOutboundHandlerAdapter;
-// import io.netty.channel.ChannelPromise;
+import hunt.database.postgresql.impl.util.Util;
 
 import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.ParamDesc;
@@ -53,7 +47,6 @@ import hunt.database.base.impl.RowDesc;
 import hunt.database.base.impl.TxStatus;
 import hunt.database.base.impl.command;
 import hunt.database.base.RowSet;
-import hunt.database.postgresql.impl.util.Util;
 
 
 import hunt.collection.ArrayDeque;
@@ -62,6 +55,7 @@ import hunt.collection.List;
 import hunt.collection.Map;
 import hunt.Exceptions;
 import hunt.logging.ConsoleLogger;
+import hunt.net.buffer;
 import hunt.net.codec.Encoder;
 import hunt.net.Connection;
 import hunt.text.Charset;
@@ -78,7 +72,7 @@ import std.variant;
  */
 final class PgEncoder : EncoderChain {
 
-    // Frontend message types for {@link io.reactiverse.pgclient.impl.codec.encoder.MessageEncoder}
+    // Frontend message types for {@link pgclient.impl.codec.encoder.MessageEncoder}
 
     private enum byte PASSWORD_MESSAGE = 'p';
     private enum byte QUERY = 'Q';
@@ -102,8 +96,6 @@ final class PgEncoder : EncoderChain {
     }
 
     override void encode(Object message, Connection connection) {
-        // implementationMissing();
-
         ctx = connection;
 
         ICommand cmd = cast(ICommand)message;
@@ -184,30 +176,14 @@ final class PgEncoder : EncoderChain {
             return new CloseStatementCommandCodec(statementCommand);
         }
 
-
         throw new AssertionError();
     }
 
     // override
-    void handlerAdded(Connection ctx) {
-        // TODO: Tasks pending completion -@zxp at 8/22/2019, 5:50:54 PM
-        // 
-        this.ctx = ctx;
-    }
-
-    // override
-    // void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) {
-    //     ICommand cmd = cast(ICommand) msg;
-    //     if (cmd !is null) {
-    //         write(cmd);
-    //     } else {
-    //         super.write(ctx, msg, promise);
-    //     }
-    // }
-
-    // override
-    // void flush(ChannelHandlerContext ctx) {
-    //     flush();
+    // void handlerAdded(Connection ctx) {
+    //     // TODO: Tasks pending completion -@zxp at 8/22/2019, 5:50:54 PM
+    //     // 
+    //     this.ctx = ctx;
     // }
 
     void flush() {

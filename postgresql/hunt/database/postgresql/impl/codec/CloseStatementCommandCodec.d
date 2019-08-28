@@ -40,7 +40,7 @@ class CloseStatementCommandCodec : PgCommandCodec!(Void, CloseStatementCommand) 
         } else {
         }
         */
-        CommandResponse!(Void) resp = success(cast(Void)null);
+        CommandResponse!(Void) resp = succeededResponse(cast(Void)null);
         completionHandler(resp);
     }
 }
