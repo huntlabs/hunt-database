@@ -58,9 +58,9 @@ class PgConnectionImpl : SqlConnectionImpl!(PgConnectionImpl), PgConnection  {
 
     static void connect(PgConnectOptions options, AsyncResultHandler!(PgConnection) handler) {
         PgConnectionFactory client = new PgConnectionFactory(options);
-        trace("connecting ...");
+        version(HUNT_DB_DEBUG) trace("connecting ...");
         client.connectAndInit( (ar) {
-            info("connection result: ", ar.succeeded());
+            version(HUNT_DB_DEBUG) info("connection result: ", ar.succeeded());
             if (ar.succeeded()) {
                 DbConnection conn = ar.result();
                 PgConnectionImpl p = new PgConnectionImpl(client, conn);

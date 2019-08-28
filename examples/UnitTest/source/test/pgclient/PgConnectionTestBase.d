@@ -146,22 +146,6 @@ abstract class PgConnectionTestBase : PgClientTestBase!(SqlConnection) {
                 conn.close();
             });
         });
-
-        // connector((SqlConnection conn) {
-        //      auto stmt = conn.preparedQuery("SELECT * FROM Fortune WHERE id=$1");
-        //      stmt.setPerameter(5454);
-
-        //      conn.query(stmt, (AsyncResult!RowSet ar) {
-        //         if(ar.succeeded()) {
-        //             RowSet result = ar.result();
-        //             assert(1 == result.rowCount());
-        //         } else {
-        //             warning(ar.cause().msg);
-        //         }
-
-        //         conn.close();
-        //     });
-        // });
     }
 
 //     @Test

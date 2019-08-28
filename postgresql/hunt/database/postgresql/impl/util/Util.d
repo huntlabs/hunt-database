@@ -20,13 +20,13 @@ module hunt.database.postgresql.impl.util.Util;
 import hunt.Byte;
 import hunt.net.buffer.ByteBuf;
 import hunt.text.Charset;
+import hunt.util.TypeUtils;
 
-// import java.nio.charset.Charset;
-// import java.util.stream.Collectors;
-// import java.util.stream.Stream;
+import std.algorithm;
+import std.conv;
 
-
-
+/**
+*/
 class Util {
 
     private enum byte ZERO = 0;
@@ -63,12 +63,11 @@ class Util {
         dst.writeByte(0);
     }
 
-    // static string buildInvalidArgsError(Stream!(Object) values, Stream!(Class) types) {
-    //     return "Values [" ~ values.map(string::valueOf).collect(Collectors.joining(", ")) +
-    //         "] cannot be coerced to [" ~ types
-    //         .map(Class::getSimpleName)
-    //         .collect(Collectors.joining(", ")) ~ "]";
-    // }
+    static string buildInvalidArgsError(T)(T[] values, TypeInfo[] types) {
+        return "Values [" ~ values.map!(v => v.to!string()).joiner(", ").to!string() ~
+            "] cannot be coerced to [" ~ types.map!(t => TypeUtils.getSimpleName(t))
+            .joiner(", ").to!string() ~ "]";
+    }
 
     // private enum int FIRST_HALF_BYTE_MASK = 0x0F;
 

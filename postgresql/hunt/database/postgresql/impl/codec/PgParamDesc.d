@@ -27,8 +27,11 @@ import hunt.collection.List;
 import hunt.Exceptions;
 import hunt.logging.ConsoleLogger;
 
+import std.array;
+import std.algorithm;
 import std.conv;
 import std.variant;
+
 
 /**
  * @author <a href="mailto:emad.albloushi@gmail.com">Emad Alblueshi</a>
@@ -54,29 +57,26 @@ class PgParamDesc : ParamDesc {
         for (int i = 0;i < cast(int)_paramDataTypes.length;i++) {
             DataTypeDesc paramDataType = _paramDataTypes[i];
             Variant value = values.get(i);
-            implementationMissing(false);
-            tracef("DataType: %s, value: %s", paramDataType, value);
-            // Object val = DataTypeCodec.prepare(paramDataType, value);
-            // if (val != value) {
-            //     if (val == DataTypeCodec.REFUSED_SENTINEL) {
-            //         return buildReport(values);
-            //     } else {
-            //         values.set(i, val);
-            //     }
-            // }
+            Variant val = DataTypeCodec.prepare(cast(DataType)paramDataType.id, value);
+            version(HUNT_DB_DEBUG) tracef("DataType: %s, value: %s, val: %s", paramDataType, value, val);
+            if (val != value) {
+                if (val == DataTypeCodec.REFUSED_SENTINEL) {
+                    return buildReport(values);
+                } else {
+                    values.set(i, val);
+                }
+            }
         }
         return null;
     }
 
     private string buildReport(List!(Variant) values) {
-        // return Util.buildInvalidArgsError(values.stream(), Stream.of(paramDataTypes).map(type -> type.decodingType));
-        implementationMissing(false);
-        return "";
+        return Util.buildInvalidArgsError(values.toArray(), 
+            paramDataTypes.map!(type => cast(TypeInfo)type.decodingType).array());
     }
 
     override
     string toString() {
-        return "PgParamDesc{" ~
-            "paramDataTypes=" ~ _paramDataTypes.to!string() ~ "}";
+        return "PgParamDesc{paramDataTypes=" ~ _paramDataTypes.to!string() ~ "}";
     }
 }

@@ -623,34 +623,53 @@ class DataTypeCodec {
         }
     }
 
-    // static Object prepare(DataType type, Object value) {
-    //     switch (type) {
-    //         case DataType.JSON:
-    //         case DataType.JSONB:
-    //             if (value is null ||
-    //                     value == Tuple.JSON_NULL ||
-    //                     value instanceof String ||
-    //                     value instanceof Boolean ||
-    //                     value instanceof Number ||
-    //                     value instanceof JsonObject ||
-    //                     value instanceof JsonArray) {
-    //                 return value;
-    //             } else {
-    //                 return REFUSED_SENTINEL;
-    //             }
-    //         case DataType.UNKNOWN:
-    //             if (value instanceof String[]) {
-    //                 return Arrays.stream((String[]) value).collect(Collectors.joining(",", "{", "}"));
-    //             } else if (value is null || value instanceof String) {
-    //                 return value;
-    //             } else {
-    //                 return REFUSED_SENTINEL;
-    //             }
-    //         default:
-    //             Class<?> javaType = type.decodingType;
-    //             return value is null || javaType.isInstance(value) ? value : REFUSED_SENTINEL;
-    //     }
-    // }
+    static bool isNumber(TypeInfo info) {
+        return info == typeid(short) ||
+        info == typeid(ushort) ||
+        info == typeid(int) ||
+        info == typeid(uint) ||
+        info == typeid(long) ||
+        info == typeid(ulong) ||
+        info == typeid(float) ||
+        info == typeid(double) ;
+    }
+
+    static Variant prepare(DataType type, ref Variant value) {
+        TypeInfo valueType = value.type;
+
+        switch (type) {
+            case DataType.JSON:
+            case DataType.JSONB:
+                if (!value.hasValue() || valueType == typeid(null) ||
+                        valueType == typeid(string) ||
+                        valueType == typeid(bool) ||
+                        isNumber(valueType)) {  // value instanceof JsonObject || value instanceof JsonArray
+                    return value;
+                } else {
+                    return REFUSED_SENTINEL.Variant();
+                }
+
+            case DataType.UNKNOWN:
+                if (valueType == typeid(string[])) {
+                    // return Arrays.stream((String[]) value).collect(Collectors.joining(",", "{", "}"));
+                    throw new NotImplementedException();
+                } else if (!value.hasValue() || valueType == typeid(null) || valueType == typeid(string)) {
+                    return value;
+                } else {
+                    return REFUSED_SENTINEL.Variant();
+                }
+
+            default:
+                if (!value.hasValue() || valueType == typeid(null))
+                    return value;
+                else 
+                    return REFUSED_SENTINEL.Variant();
+                // FIXME: Needing refactor or cleanup -@zxp at 8/28/2019, 3:31:47 PM                    
+                // 
+                // Class<?> javaType = type.decodingType;
+                // return !value.hasValue() || valueType == typeid(null) || javaType.isInstance(value) ? value : REFUSED_SENTINEL;
+        }
+    }
 
     private static Variant defaultDecodeText(int index, int len, ByteBuf buff) {
         // decode unknown text values as text or as an array if it begins with `{`
