@@ -23,7 +23,6 @@ import hunt.database.base.impl.CursorImpl;
 import hunt.database.base.impl.RowSetImpl;
 import hunt.database.base.impl.PreparedStatement;
 
-
 import hunt.database.base.impl.command.CloseCursorCommand;
 import hunt.database.base.impl.command.CloseStatementCommand;
 import hunt.database.base.impl.command.ExtendedBatchQueryCommand;
@@ -40,9 +39,8 @@ import hunt.database.base.Tuple;
 
 import hunt.collection.List;
 import hunt.Exceptions;
-// import java.util.concurrent.atomic.AtomicBoolean;
-// import java.util.function.Function;
-// import java.util.stream.Collector;
+
+import std.variant;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -125,7 +123,7 @@ class PreparedQueryImpl : PreparedQuery {
 
     // override
     Cursor cursor(Tuple args) {
-        string msg = ps.prepare(cast(List!(string)) args);
+        string msg = ps.prepare(cast(List!(Variant)) args);
         if (msg !is null) {
             throw new IllegalArgumentException(msg);
         }

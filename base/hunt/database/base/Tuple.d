@@ -28,6 +28,8 @@ import hunt.math.BigDecimal;
 // import java.time.temporal.Temporal;
 // import java.util.UUID;
 
+import std.variant;
+
 /**
  * A general purpose tuple.
  */
@@ -54,9 +56,10 @@ interface Tuple {
      * @param elt1 the first value
      * @return the tuple
      */
-    static Tuple of(string elt1) {
+    static Tuple of(T)(T elt1) {
         ArrayTuple tuple = new ArrayTuple(1);
-        tuple.addValue(elt1);
+        Variant v = Variant(elt1);
+        tuple.addValue(v);
         return tuple;
     }
 
@@ -174,13 +177,13 @@ interface Tuple {
     //  */
     // Boolean getBoolean(int pos);
 
-    // /**
-    //  * Get an object value at {@code pos}.
-    //  *
-    //  * @param pos the position
-    //  * @return the value or {@code null}
-    //  */
-    // Object getValue(int pos);
+    /**
+     * Get an object value at {@code pos}.
+     *
+     * @param pos the position
+     * @return the value or {@code null}
+     */
+    Variant getValue(int pos);
 
     // /**
     //  * Get a short value at {@code pos}.
@@ -428,7 +431,7 @@ interface Tuple {
      * @param value the value
      * @return a reference to this, so the API can be used fluently
      */
-    Tuple addValue(string value);
+    Tuple addValue(ref Variant value);
 
     // /**
     //  * Add a short value at the end of the tuple.

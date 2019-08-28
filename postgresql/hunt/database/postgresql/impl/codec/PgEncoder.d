@@ -65,6 +65,7 @@ alias writeCString = Util.writeCString;
 
 import std.container.dlist;
 import std.range;
+import std.variant;
 
 /**
  * @author <a href="mailto:emad.albloushi@gmail.com">Emad Alblueshi</a>
@@ -126,7 +127,7 @@ final class PgEncoder : EncoderChain {
                 version(HUNT_DB_DEBUG) {
                     warning(th.msg);
                 }
-                handler.exceptionCaught(ctx, cast(Exception)th);
+                handler.exceptionCaught(ctx, th);
             } else {
                 handler.messageReceived(ctx, cast(Object)resp);
             }
@@ -418,7 +419,7 @@ final class PgEncoder : EncoderChain {
      * <p>
      * The response is either {@link BindComplete} or {@link ErrorResponse}.
      */
-    void writeBind(Bind bind, string portal, List!(string) paramValues) {
+    void writeBind(Bind bind, string portal, List!(Variant) paramValues) {
         ensureBuffer();
         int pos = outBuffer.writerIndex();
         outBuffer.writeByte(BIND);
@@ -441,23 +442,29 @@ final class PgEncoder : EncoderChain {
         }
         outBuffer.writeShort(paramLen);
         for (int c = 0;c < paramLen;c++) {
-            string param = paramValues.get(c);
-            if (param.empty()) {
+            Variant param = paramValues.get(c);
+            if (!param.hasValue() || param == null) {
                 // NULL value
                 outBuffer.writeInt(-1);
             } else {
                 DataTypeDesc dataType = bind.paramTypes[c];
-                tracef("dataType: %s, param: %s", dataType, param);
+                version(HUNT_DB_DEBUG) {
+                    tracef("dataType: %s, param: type=%s, value=%s", 
+                        dataType, param.type, param.toString());
+                }
 
                 if (dataType.supportsBinary) {
                     int idx = outBuffer.writerIndex();
-                    outBuffer.writeInt(0);
-                    DataTypeCodec.encodeBinary(cast(DataType)dataType.id, param, outBuffer);
+                    outBuffer.writeInt(0); 
+                    try {
+                        DataTypeCodec.encodeBinary(cast(DataType)dataType.id, param, outBuffer);
+                    } catch(Throwable ex) {
+                        warning(ex);
+                    }
                     outBuffer.setInt(idx, outBuffer.writerIndex() - idx - 4);
                 } else {
                     DataTypeCodec.encodeText(cast(DataType)dataType.id, param, outBuffer);
                 }
-
             }
         }
 

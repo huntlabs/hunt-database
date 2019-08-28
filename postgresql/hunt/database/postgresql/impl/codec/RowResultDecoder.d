@@ -25,18 +25,16 @@ import hunt.database.postgresql.impl.codec.PgColumnDesc;
 // import hunt.database.postgresql.impl.codec.PgColumnDesc;
 
 import hunt.database.base.Row;
+import hunt.database.base.impl.RowDecoder;
 import hunt.database.base.impl.RowSetImpl;
 import hunt.database.postgresql.impl.RowImpl;
-
-import hunt.database.base.impl.RowDecoder;
-
-// import java.util.function.BiConsumer;
-// import java.util.stream.Collector;
 
 import hunt.Exceptions;
 import hunt.Functions;
 import hunt.logging.ConsoleLogger;
 import hunt.net.buffer.ByteBuf;
+
+import std.variant;
 
 /**
 */
@@ -92,7 +90,7 @@ class RowResultDecoder(R) : AbstractRowResultDecoder!R {
         Row row = new RowImpl(desc);
         for (int c = 0; c < len; ++c) {
             int length = buffer.readInt();
-            string decoded = null;
+            Variant decoded = null;
             if (length != -1) {
                 PgColumnDesc columnDesc = desc.columns[c];
 
@@ -100,9 +98,8 @@ class RowResultDecoder(R) : AbstractRowResultDecoder!R {
                     columnDesc.name, columnDesc.dataType, columnDesc.dataFormat);
 
                 if (columnDesc.dataFormat == DataFormat.BINARY) {
-                    implementationMissing(false);
-                    // decoded = DataTypeCodec.decodeBinary(cast(DataType)columnDesc.dataType.id, 
-                    //     buffer.readerIndex(), length, buffer);
+                    decoded = DataTypeCodec.decodeBinary(cast(DataType)columnDesc.dataType.id, 
+                        buffer.readerIndex(), length, buffer);
                 } else {
                     decoded = DataTypeCodec.decodeText(cast(DataType)columnDesc.dataType.id, 
                         buffer.readerIndex(), length, buffer);

@@ -19,10 +19,6 @@ module hunt.database.postgresql.impl.codec.DataTypeCodec;
 
 import hunt.database.postgresql.impl.codec.DataType;
 
-// import com.fasterxml.jackson.databind.JsonNode;
-// import io.netty.buffer.Unpooled;
-// import io.netty.handler.codec.DecoderException;
-// import io.vertx.core.json.Json;
 import hunt.database.base.Tuple;
 import hunt.database.base.data.Numeric;
 // import hunt.database.postgresql.data.*;
@@ -57,9 +53,9 @@ import hunt.net.buffer.ByteBuf;
 import hunt.String;
 import hunt.text.Charset;
 
-import std.conv;
-
 import std.concurrency : initOnce;
+import std.conv;
+import std.variant;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -146,33 +142,35 @@ class DataTypeCodec {
     //     .appendOffset("+HH:mm", "00:00")
     //     .toFormatter();
 
-    static void encodeText(DataType id, string value, ByteBuf buff) {
+    static void encodeText(DataType id, ref Variant value, ByteBuf buff) {
         int index = buff.writerIndex();
         buff.writeInt(0);
         textEncode(id, value, buff);
         buff.setInt(index, buff.writerIndex() - index - 4);
     }
 
-    private static void textEncode(DataType id, string value, ByteBuf buff) {
-        buff.writeCharSequence(value, StandardCharsets.UTF_8);
+    private static void textEncode(DataType id, ref Variant value, ByteBuf buff) {
+        // buff.writeCharSequence(value, StandardCharsets.UTF_8);
 
         // implementationMissing(false);
-        // switch (id) {
-        //     case NUMERIC:
-        //         textEncodeNUMERIC((Number) value, buff);
-        //         break;
-        //     case NUMERIC_ARRAY:
-        //         textEncodeNUMERIC_ARRAY((Number[]) value, buff);
-        //         break;
-        //     case UNKNOWN:
-        //         //default to treating unknown as a string
-        //         buff.writeCharSequence(String.valueOf(value), StandardCharsets.UTF_8);
-        //         break;
-        //     default:
-        //         logger.debug("Data type " ~ id ~ " does not support text encoding");
-        //         buff.writeCharSequence(String.valueOf(value), StandardCharsets.UTF_8);
-        //         break;
-        // }
+        switch (id) {
+            case DataType.NUMERIC:
+                implementationMissing(false);
+                // textEncodeNUMERIC((Number) value, buff);
+                break;
+            case DataType.NUMERIC_ARRAY:
+                implementationMissing(false);
+                // textEncodeNUMERIC_ARRAY((Number[]) value, buff);
+                break;
+            case DataType.UNKNOWN:
+                //default to treating unknown as a string
+                buff.writeCharSequence(value.toString(), StandardCharsets.UTF_8);
+                break;
+            default:
+                warningf("Data type %s(%d) does not support text encoding", id, cast(int)id);
+                buff.writeCharSequence(value.toString(), StandardCharsets.UTF_8);
+                break;
+        }
     }
 
 
@@ -180,176 +178,175 @@ class DataTypeCodec {
     //     binaryEncodeVARCHAR(value, buff);
     // }
 
-    static void encodeBinary(DataType id, string value, ByteBuf buff) {
-        with(DataType)
+    static void encodeBinary(DataType id, ref Variant value, ByteBuf buff) {
         switch (id) {
-    //         case BOOL:
+    //         case DataType.BOOL:
     //             binaryEncodeBOOL((Boolean) value, buff);
     //             break;
-    //         case BOOL_ARRAY:
+    //         case DataType.BOOL_ARRAY:
     //             binaryEncodeArray((Boolean[]) value, DataType.BOOL, buff);
     //             break;
-    //         case INT2:
+    //         case DataType.INT2:
     //             binaryEncodeINT2((Number) value, buff);
     //             break;
-    //         case INT2_ARRAY:
+    //         case DataType.INT2_ARRAY:
     //             binaryEncodeArray((Number[]) value, DataType.INT2, buff);
     //             break;
-            case INT4:
+            case DataType.INT4:
                 // binaryEncodeINT4((Number) value, buff);
                 binaryEncodeINT4(value, buff);
                 break;
-    //         case INT4_ARRAY:
+    //         case DataType.INT4_ARRAY:
     //             binaryEncodeArray((Number[]) value, DataType.INT4, buff);
     //             break;
-    //         case INT8:
+    //         case DataType.INT8:
     //             binaryEncodeINT8((Number) value, buff);
     //             break;
-    //         case INT8_ARRAY:
+    //         case DataType.INT8_ARRAY:
     //             binaryEncodeArray((Number[]) value, DataType.INT8, buff);
     //             break;
-    //         case FLOAT4:
+    //         case DataType.FLOAT4:
     //             binaryEncodeFLOAT4((Number) value, buff);
     //             break;
-    //         case FLOAT4_ARRAY:
+    //         case DataType.FLOAT4_ARRAY:
     //             binaryEncodeArray((Number[]) value, DataType.FLOAT4, buff);
     //             break;
-    //         case FLOAT8:
+    //         case DataType.FLOAT8:
     //             binaryEncodeFLOAT8((Number) value, buff);
     //             break;
-    //         case FLOAT8_ARRAY:
+    //         case DataType.FLOAT8_ARRAY:
     //             binaryEncodeArray((Number[]) value, DataType.FLOAT8, buff);
     //             break;
-    //         case CHAR:
+    //         case DataType.CHAR:
     //             binaryEncodeCHAR((String) value, buff);
     //             break;
-    //         case CHAR_ARRAY:
+    //         case DataType.CHAR_ARRAY:
     //             binaryEncodeArray((String[]) value, DataType.CHAR, buff);
     //             break;
-    //         case VARCHAR:
+    //         case DataType.VARCHAR:
     //             binaryEncodeVARCHAR((String) value, buff);
     //             break;
-    //         case VARCHAR_ARRAY:
+    //         case DataType.VARCHAR_ARRAY:
     //             binaryEncodeArray((String[]) value, DataType.VARCHAR, buff);
     //             break;
-    //         case BPCHAR:
+    //         case DataType.BPCHAR:
     //             binaryEncodeBPCHAR((String) value, buff);
     //             break;
-    //         case BPCHAR_ARRAY:
+    //         case DataType.BPCHAR_ARRAY:
     //             binaryEncodeArray((String[]) value, DataType.BPCHAR, buff);
     //             break;
-    //         case TEXT:
+    //         case DataType.TEXT:
     //             binaryEncodeTEXT((String) value, buff);
     //             break;
-    //         case TEXT_ARRAY:
+    //         case DataType.TEXT_ARRAY:
     //             binaryEncodeArray((String[]) value, DataType.TEXT, buff);
     //             break;
-    //         case NAME:
+    //         case DataType.NAME:
     //             binaryEncodeNAME((String) value, buff);
     //             break;
-    //         case NAME_ARRAY:
+    //         case DataType.NAME_ARRAY:
     //             binaryEncodeArray((String[]) value, DataType.NAME, buff);
     //             break;
-    //         case DATE:
+    //         case DataType.DATE:
     //             binaryEncodeDATE((LocalDate) value, buff);
     //             break;
-    //         case DATE_ARRAY:
+    //         case DataType.DATE_ARRAY:
     //             binaryEncodeArray((LocalDate[]) value, DataType.DATE, buff);
     //             break;
-    //         case TIME:
+    //         case DataType.TIME:
     //             binaryEncodeTIME((LocalTime) value, buff);
     //             break;
-    //         case TIME_ARRAY:
+    //         case DataType.TIME_ARRAY:
     //             binaryEncodeArray((LocalTime[]) value, DataType.TIME, buff);
     //             break;
-    //         case TIMETZ:
+    //         case DataType.TIMETZ:
     //             binaryEncodeTIMETZ((OffsetTime) value, buff);
     //             break;
-    //         case TIMETZ_ARRAY:
+    //         case DataType.TIMETZ_ARRAY:
     //             binaryEncodeArray((OffsetTime[]) value, DataType.TIMETZ, buff);
     //             break;
-    //         case TIMESTAMP:
+    //         case DataType.TIMESTAMP:
     //             binaryEncodeTIMESTAMP((LocalDateTime) value, buff);
     //             break;
-    //         case TIMESTAMP_ARRAY:
+    //         case DataType.TIMESTAMP_ARRAY:
     //             binaryEncodeArray((LocalDateTime[]) value, DataType.TIMESTAMP, buff);
     //             break;
-    //         case TIMESTAMPTZ:
+    //         case DataType.TIMESTAMPTZ:
     //             binaryEncodeTIMESTAMPTZ((OffsetDateTime) value, buff);
     //             break;
-    //         case TIMESTAMPTZ_ARRAY:
+    //         case DataType.TIMESTAMPTZ_ARRAY:
     //             binaryEncodeArray((OffsetDateTime[]) value, DataType.TIMESTAMPTZ, buff);
     //             break;
-    //         case BYTEA:
+    //         case DataType.BYTEA:
     //             binaryEncodeBYTEA((Buffer) value, buff);
     //             break;
-    //         case BYTEA_ARRAY:
+    //         case DataType.BYTEA_ARRAY:
     //             binaryEncodeArray((Buffer[]) value, DataType.BYTEA, buff);
     //             break;
-    //         case UUID:
+    //         case DataType.UUID:
     //             binaryEncodeUUID((UUID) value, buff);
     //             break;
-    //         case UUID_ARRAY:
+    //         case DataType.UUID_ARRAY:
     //             binaryEncodeArray((UUID[]) value, DataType.UUID, buff);
     //             break;
-    //         case JSON:
+    //         case DataType.JSON:
     //             binaryEncodeJSON((Object) value, buff);
     //             break;
-    //         case JSON_ARRAY:
+    //         case DataType.JSON_ARRAY:
     //             binaryEncodeArray((Object[]) value, DataType.JSON, buff);
     //             break;
-    //         case JSONB:
+    //         case DataType.JSONB:
     //             binaryEncodeJSONB((Object) value, buff);
     //             break;
-    //         case JSONB_ARRAY:
+    //         case DataType.JSONB_ARRAY:
     //             binaryEncodeArray((Object[]) value, DataType.JSONB, buff);
     //             break;
-    //         case POINT:
+    //         case DataType.POINT:
     //             binaryEncodePoint((Point) value, buff);
     //             break;
-    //         case POINT_ARRAY:
+    //         case DataType.POINT_ARRAY:
     //             binaryEncodeArray((Point[]) value, DataType.POINT, buff);
     //             break;
-    //         case LINE:
+    //         case DataType.LINE:
     //             binaryEncodeLine((Line) value, buff);
     //             break;
-    //         case LINE_ARRAY:
+    //         case DataType.LINE_ARRAY:
     //             binaryEncodeArray((Line[]) value, DataType.LINE, buff);
     //             break;
-    //         case LSEG:
+    //         case DataType.LSEG:
     //             binaryEncodeLseg((LineSegment) value, buff);
     //             break;
-    //         case LSEG_ARRAY:
+    //         case DataType.LSEG_ARRAY:
     //             binaryEncodeArray((LineSegment[]) value, DataType.LSEG, buff);
     //             break;
-    //         case BOX:
+    //         case DataType.BOX:
     //             binaryEncodeBox((Box) value, buff);
     //             break;
-    //         case BOX_ARRAY:
+    //         case DataType.BOX_ARRAY:
     //             binaryEncodeArray((Box[]) value, DataType.BOX, buff);
     //             break;
-    //         case PATH:
+    //         case DataType.PATH:
     //             binaryEncodePath((Path) value, buff);
     //             break;
-    //         case PATH_ARRAY:
+    //         case DataType.PATH_ARRAY:
     //             binaryEncodeArray((Path[]) value, DataType.PATH, buff);
     //             break;
-    //         case POLYGON:
+    //         case DataType.POLYGON:
     //             binaryEncodePolygon((Polygon) value, buff);
     //             break;
-    //         case POLYGON_ARRAY:
+    //         case DataType.POLYGON_ARRAY:
     //             binaryEncodeArray((Polygon[]) value, DataType.POLYGON, buff);
     //             break;
-    //         case CIRCLE:
+    //         case DataType.CIRCLE:
     //             binaryEncodeCircle((Circle) value, buff);
     //             break;
-    //         case CIRCLE_ARRAY:
+    //         case DataType.CIRCLE_ARRAY:
     //             binaryEncodeArray((Circle[]) value, DataType.CIRCLE, buff);
     //             break;
-    //         case INTERVAL:
+    //         case DataType.INTERVAL:
     //             binaryEncodeINTERVAL((Interval) value, buff);
     //             break;
-    //         case INTERVAL_ARRAY:
+    //         case DataType.INTERVAL_ARRAY:
     //             binaryEncodeArray((Interval[]) value, DataType.INTERVAL, buff);
     //             break;
             default:
@@ -359,275 +356,277 @@ class DataTypeCodec {
         }
     }
 
-    static Object decodeBinary(DataType id, int index, int len, ByteBuf buff) {
-        byte[] buffer = new byte[len];
-        buff.getBytes(index, buffer);
+    // static Variant decodeBinary(DataType id, int index, int len, ByteBuf buff) {
+    //     byte[] buffer = new byte[len];
+    //     buff.getBytes(index, buffer);
         
-        tracef("DataType: %d, data: %(%02X %)", id, buffer);
-        implementationMissing(false);
+    //     tracef("DataType: %d, data: %(%02X %)", id, buffer);
+    //     implementationMissing(false);
 
-        return new Bytes(buffer);
-    }
+    //     return new Bytes(buffer);
+    // }
 
-    // static Object decodeBinary(DataType id, int index, int len, ByteBuf buff) {
-    //     switch (id) {
-    //         case BOOL:
+    static Variant decodeBinary(DataType id, int index, int len, ByteBuf buff) {
+        switch (id) {
+    //         case DataType.BOOL:
     //             return binaryDecodeBOOL(index, len, buff);
-    //         case BOOL_ARRAY:
+    //         case DataType.BOOL_ARRAY:
     //             return binaryDecodeArray(BOOLEAN_ARRAY_FACTORY, DataType.BOOL, index, len, buff);
-    //         case INT2:
+    //         case DataType.INT2:
     //             return binaryDecodeINT2(index, len, buff);
-    //         case INT2_ARRAY:
+    //         case DataType.INT2_ARRAY:
     //             return binaryDecodeArray(SHORT_ARRAY_FACTORY, DataType.INT2, index, len, buff);
-    //         case INT4:
-    //             return binaryDecodeINT4(index, len, buff);
-    //         case INT4_ARRAY:
+            case DataType.INT4:
+                return binaryDecodeINT4(index, len, buff).Variant();
+    //         case DataType.INT4_ARRAY:
     //             return binaryDecodeArray(INTEGER_ARRAY_FACTORY, DataType.INT4, index, len, buff);
-    //         case INT8:
+    //         case DataType.INT8:
     //             return binaryDecodeINT8(index, len, buff);
-    //         case INT8_ARRAY:
+    //         case DataType.INT8_ARRAY:
     //             return binaryDecodeArray(LONG_ARRAY_FACTORY, DataType.INT8, index, len, buff);
-    //         case FLOAT4:
+    //         case DataType.FLOAT4:
     //             return binaryDecodeFLOAT4(index, len, buff);
-    //         case FLOAT4_ARRAY:
+    //         case DataType.FLOAT4_ARRAY:
     //             return binaryDecodeArray(FLOAT_ARRAY_FACTORY, DataType.FLOAT4, index, len, buff);
-    //         case FLOAT8:
+    //         case DataType.FLOAT8:
     //             return binaryDecodeFLOAT8(index, len, buff);
-    //         case FLOAT8_ARRAY:
+    //         case DataType.FLOAT8_ARRAY:
     //             return binaryDecodeArray(DOUBLE_ARRAY_FACTORY, DataType.FLOAT8, index, len, buff);
-    //         case CHAR:
+    //         case DataType.CHAR:
     //             return binaryDecodeCHAR(index, len, buff);
-    //         case CHAR_ARRAY:
+    //         case DataType.CHAR_ARRAY:
     //             return binaryDecodeArray(STRING_ARRAY_FACTORY, DataType.CHAR, index, len, buff);
-    //         case VARCHAR:
-    //             return binaryDecodeVARCHAR(index, len, buff);
-    //         case VARCHAR_ARRAY:
+            case DataType.VARCHAR:
+                return binaryDecodeVARCHAR(index, len, buff).Variant();
+    //         case DataType.VARCHAR_ARRAY:
     //             return binaryDecodeArray(STRING_ARRAY_FACTORY, DataType.VARCHAR, index, len, buff);
-    //         case BPCHAR:
+    //         case DataType.BPCHAR:
     //             return binaryDecodeBPCHAR(index, len, buff);
-    //         case BPCHAR_ARRAY:
+    //         case DataType.BPCHAR_ARRAY:
     //             return binaryDecodeArray(STRING_ARRAY_FACTORY, DataType.BPCHAR, index, len, buff);
-    //         case TEXT:
+    //         case DataType.TEXT:
     //             return binaryDecodeTEXT(index, len, buff);
-    //         case TEXT_ARRAY:
+    //         case DataType.TEXT_ARRAY:
     //             return binaryDecodeArray(STRING_ARRAY_FACTORY, DataType.TEXT, index, len, buff);
-    //         case NAME:
+    //         case DataType.NAME:
     //             return binaryDecodeNAME(index, len, buff);
-    //         case NAME_ARRAY:
+    //         case DataType.NAME_ARRAY:
     //             return binaryDecodeArray(STRING_ARRAY_FACTORY, DataType.NAME, index, len, buff);
-    //         case DATE:
+    //         case DataType.DATE:
     //             return binaryDecodeDATE(index, len, buff);
-    //         case DATE_ARRAY:
+    //         case DataType.DATE_ARRAY:
     //             return binaryDecodeArray(LOCALDATE_ARRAY_FACTORY, DataType.DATE, index, len, buff);
-    //         case TIME:
+    //         case DataType.TIME:
     //             return binaryDecodeTIME(index, len, buff);
-    //         case TIME_ARRAY:
+    //         case DataType.TIME_ARRAY:
     //             return binaryDecodeArray(LOCALTIME_ARRAY_FACTORY, DataType.TIME, index, len, buff);
-    //         case TIMETZ:
+    //         case DataType.TIMETZ:
     //             return binaryDecodeTIMETZ(index, len, buff);
-    //         case TIMETZ_ARRAY:
+    //         case DataType.TIMETZ_ARRAY:
     //             return binaryDecodeArray(OFFSETTIME_ARRAY_FACTORY, DataType.TIMETZ, index, len, buff);
-    //         case TIMESTAMP:
+    //         case DataType.TIMESTAMP:
     //             return binaryDecodeTIMESTAMP(index, len, buff);
-    //         case TIMESTAMP_ARRAY:
+    //         case DataType.TIMESTAMP_ARRAY:
     //             return binaryDecodeArray(LOCALDATETIME_ARRAY_FACTORY, DataType.TIMESTAMP, index, len, buff);
-    //         case TIMESTAMPTZ:
+    //         case DataType.TIMESTAMPTZ:
     //             return binaryDecodeTIMESTAMPTZ(index, len, buff);
-    //         case TIMESTAMPTZ_ARRAY:
+    //         case DataType.TIMESTAMPTZ_ARRAY:
     //             return binaryDecodeArray(OFFSETDATETIME_ARRAY_FACTORY, DataType.TIMESTAMPTZ, index, len, buff);
-    //         case BYTEA:
+    //         case DataType.BYTEA:
     //             return binaryDecodeBYTEA(index, len, buff);
-    //         case BYTEA_ARRAY:
+    //         case DataType.BYTEA_ARRAY:
     //             return binaryDecodeArray(BUFFER_ARRAY_FACTORY, DataType.BYTEA, index, len, buff);
-    //         case UUID:
+    //         case DataType.UUID:
     //             return binaryDecodeUUID(index, len, buff);
-    //         case UUID_ARRAY:
+    //         case DataType.UUID_ARRAY:
     //             return binaryDecodeArray(UUID_ARRAY_FACTORY, DataType.UUID, index, len, buff);
-    //         case JSON:
+    //         case DataType.JSON:
     //             return binaryDecodeJSON(index, len, buff);
-    //         case JSON_ARRAY:
+    //         case DataType.JSON_ARRAY:
     //             return binaryDecodeArray(JSON_ARRAY_FACTORY, DataType.JSON, index, len, buff);
-    //         case JSONB:
+    //         case DataType.JSONB:
     //             return binaryDecodeJSONB(index, len, buff);
-    //         case JSONB_ARRAY:
+    //         case DataType.JSONB_ARRAY:
     //             return binaryDecodeArray(JSON_ARRAY_FACTORY, DataType.JSONB, index, len, buff);
-    //         case POINT:
+    //         case DataType.POINT:
     //             return binaryDecodePoint(index, len, buff);
-    //         case POINT_ARRAY:
+    //         case DataType.POINT_ARRAY:
     //             return binaryDecodeArray(POINT_ARRAY_FACTORY, DataType.POINT, index, len, buff);
-    //         case LINE:
+    //         case DataType.LINE:
     //             return binaryDecodeLine(index, len, buff);
-    //         case LINE_ARRAY:
+    //         case DataType.LINE_ARRAY:
     //             return binaryDecodeArray(LINE_ARRAY_FACTORY, DataType.LINE, index, len, buff);
-    //         case LSEG:
+    //         case DataType.LSEG:
     //             return binaryDecodeLseg(index, len, buff);
-    //         case LSEG_ARRAY:
+    //         case DataType.LSEG_ARRAY:
     //             return binaryDecodeArray(LSEG_ARRAY_FACTORY, DataType.LSEG, index, len, buff);
-    //         case BOX:
+    //         case DataType.BOX:
     //             return binaryDecodeBox(index, len, buff);
-    //         case BOX_ARRAY:
+    //         case DataType.BOX_ARRAY:
     //             return binaryDecodeArray(BOX_ARRAY_FACTORY, DataType.BOX, index, len, buff);
-    //         case PATH:
+    //         case DataType.PATH:
     //             return binaryDecodePath(index, len, buff);
-    //         case PATH_ARRAY:
+    //         case DataType.PATH_ARRAY:
     //             return binaryDecodeArray(PATH_ARRAY_FACTORY, DataType.PATH, index, len, buff);
-    //         case POLYGON:
+    //         case DataType.POLYGON:
     //             return binaryDecodePolygon(index, len, buff);
-    //         case POLYGON_ARRAY:
+    //         case DataType.POLYGON_ARRAY:
     //             return binaryDecodeArray(POLYGON_ARRAY_FACTORY, DataType.POLYGON, index, len, buff);
-    //         case CIRCLE:
+    //         case DataType.CIRCLE:
     //             return binaryDecodeCircle(index, len, buff);
-    //         case CIRCLE_ARRAY:
+    //         case DataType.CIRCLE_ARRAY:
     //             return binaryDecodeArray(CIRCLE_ARRAY_FACTORY, DataType.CIRCLE, index, len, buff);
-    //         case INTERVAL:
+    //         case DataType.INTERVAL:
     //             return binaryDecodeINTERVAL(index, len, buff);
-    //         case INTERVAL_ARRAY:
+    //         case DataType.INTERVAL_ARRAY:
     //             return binaryDecodeArray(INTERVAL_ARRAY_FACTORY, DataType.INTERVAL, index, len, buff);
-    //         default:
-    //             logger.debug("Data type " ~ id ~ " does not support binary decoding");
-    //             return defaultDecodeBinary(index, len, buff);
-    //     }
-    // }
-
-    static string decodeText(DataType id, int index, int len, ByteBuf buff) {
-
-        byte[] buffer = new byte[len];
-        buff.getBytes(index, buffer);
-        
-        tracef("DataType: %s(%d), data: %s", id, id, cast(string)buffer);
-        // FIXME: Needing refactor or cleanup -@zxp at 8/26/2019, 3:21:03 PM
-        // 
-        // return new String(cast(string)buffer);
-        return cast(string)buffer;
+            default:
+                warningf("Data type %s(%d) does not support binary decoding", id, id);
+                return Variant(null);
+                // return defaultDecodeBinary(index, len, buff);
+        }
     }
 
-    // static Object decodeText(DataType id, int index, int len, ByteBuf buff) {
-    //     switch (id) {
-    //         case BOOL:
-    //             return textDecodeBOOL(index, len, buff);
-    //         case BOOL_ARRAY:
-    //             return textDecodeArray(BOOLEAN_ARRAY_FACTORY, DataType.BOOL, index, len, buff);
-    //         case INT2:
-    //             return textDecodeINT2(index, len, buff);
-    //         case INT2_ARRAY:
-    //             return textDecodeArray(SHORT_ARRAY_FACTORY, DataType.INT2, index, len, buff);
-    //         case INT4:
-    //             return textDecodeINT4(index, len, buff);
-    //         case INT4_ARRAY:
-    //             return textDecodeArray(INTEGER_ARRAY_FACTORY, DataType.INT4, index, len, buff);
-    //         case INT8:
-    //             return textDecodeINT8(index, len, buff);
-    //         case INT8_ARRAY:
-    //             return textDecodeArray(LONG_ARRAY_FACTORY, DataType.INT8, index, len, buff);
-    //         case FLOAT4:
-    //             return textDecodeFLOAT4(index, len, buff);
-    //         case FLOAT4_ARRAY:
-    //             return textDecodeArray(FLOAT_ARRAY_FACTORY, DataType.FLOAT4, index, len, buff);
-    //         case FLOAT8:
-    //             return textDecodeFLOAT8(index, len, buff);
-    //         case FLOAT8_ARRAY:
-    //             return textDecodeArray(DOUBLE_ARRAY_FACTORY, DataType.FLOAT8, index, len, buff);
-    //         case CHAR:
-    //             return textDecodeCHAR(index, len, buff);
-    //         // case CHAR_ARRAY:
-    //         //   return textDecodeCHAR_ARRAY(len, buff);
-    //         case VARCHAR:
-    //             return textDecodeVARCHAR(index, len, buff);
-    //         case VARCHAR_ARRAY:
-    //             return textDecodeArray(STRING_ARRAY_FACTORY, DataType.VARCHAR, index, len, buff);
-    //         case BPCHAR:
-    //             return textDecodeBPCHAR(index, len, buff);
-    //         case BPCHAR_ARRAY:
-    //             return textDecodeArray(STRING_ARRAY_FACTORY, DataType.BPCHAR, index, len, buff);
-    //         case TEXT:
-    //             return textdecodeTEXT(index, len, buff);
-    //         case TEXT_ARRAY:
-    //             return textDecodeArray(STRING_ARRAY_FACTORY, DataType.TEXT, index, len, buff);
-    //         case NAME:
-    //             return textDecodeNAME(index, len, buff);
-    //         case NAME_ARRAY:
-    //             return textDecodeArray(STRING_ARRAY_FACTORY, DataType.NAME, index, len, buff);
-    //         case DATE:
-    //             return textDecodeDATE(index, len, buff);
-    //         case DATE_ARRAY:
-    //             return textDecodeArray(LOCALDATE_ARRAY_FACTORY, DataType.DATE, index, len, buff);
-    //         case TIME:
-    //             return textDecodeTIME(index, len, buff);
-    //         case TIME_ARRAY:
-    //             return textDecodeArray(LOCALTIME_ARRAY_FACTORY, DataType.TIME, index, len, buff);
-    //         case TIMETZ:
-    //             return textDecodeTIMETZ(index, len, buff);
-    //         case TIMETZ_ARRAY:
-    //             return textDecodeArray(OFFSETTIME_ARRAY_FACTORY, DataType.TIMETZ, index, len, buff);
-    //         case TIMESTAMP:
-    //             return textDecodeTIMESTAMP(index, len, buff);
-    //         case TIMESTAMP_ARRAY:
-    //             return textDecodeArray(LOCALDATETIME_ARRAY_FACTORY, DataType.TIMESTAMP, index, len, buff);
-    //         case TIMESTAMPTZ:
-    //             return textDecodeTIMESTAMPTZ(index, len, buff);
-    //         case TIMESTAMPTZ_ARRAY:
-    //             return textDecodeArray(OFFSETDATETIME_ARRAY_FACTORY, DataType.TIMESTAMPTZ, index, len, buff);
-    //         case BYTEA:
-    //             return textDecodeBYTEA(index, len, buff);
-    //         case BYTEA_ARRAY:
-    //             return textDecodeArray(BUFFER_ARRAY_FACTORY, DataType.BYTEA, index, len, buff);
-    //         case UUID:
-    //             return textDecodeUUID(index, len, buff);
-    //         case UUID_ARRAY:
-    //             return textDecodeArray(UUID_ARRAY_FACTORY, DataType.UUID, index, len, buff);
-    //         case NUMERIC:
-    //             return textDecodeNUMERIC(index, len, buff);
-    //         case NUMERIC_ARRAY:
-    //             return textDecodeArray(NUMERIC_ARRAY_FACTORY, DataType.NUMERIC, index, len, buff);
-    //         case JSON:
-    //             return textDecodeJSON(index, len, buff);
-    //         case JSON_ARRAY:
-    //             return textDecodeArray(JSON_ARRAY_FACTORY, DataType.JSON, index, len, buff);
-    //         case JSONB:
-    //              return textDecodeJSONB(index, len, buff);
-    //         case JSONB_ARRAY:
-    //             return textDecodeArray(JSON_ARRAY_FACTORY, DataType.JSONB, index, len, buff);
-    //         case POINT:
-    //             return textDecodePOINT(index, len, buff);
-    //         case POINT_ARRAY:
-    //             return textDecodeArray(POINT_ARRAY_FACTORY, DataType.POINT, index, len, buff);
-    //         case LINE:
-    //             return textDecodeLine(index, len, buff);
-    //         case LINE_ARRAY:
-    //             return textDecodeArray(LINE_ARRAY_FACTORY, DataType.LINE, index, len, buff);
-    //         case LSEG:
-    //             return textDecodeLseg(index, len, buff);
-    //         case LSEG_ARRAY:
-    //             return textDecodeArray(LSEG_ARRAY_FACTORY, DataType.LSEG, index, len, buff);
-    //         case BOX:
-    //             return textDecodeBox(index, len, buff);
-    //         case BOX_ARRAY:
-    //             return textDecodeBoxArray(BOX_ARRAY_FACTORY, index, len, buff);
-    //         case PATH:
-    //             return textDecodePath(index, len, buff);
-    //         case PATH_ARRAY:
-    //             return textDecodeArray(PATH_ARRAY_FACTORY, DataType.PATH, index, len, buff);
-    //         case POLYGON:
-    //             return textDecodePolygon(index, len, buff);
-    //         case POLYGON_ARRAY:
-    //             return textDecodeArray(POLYGON_ARRAY_FACTORY, DataType.POLYGON, index, len, buff);
-    //         case CIRCLE:
-    //             return textDecodeCircle(index, len, buff);
-    //         case CIRCLE_ARRAY:
-    //             return textDecodeArray(CIRCLE_ARRAY_FACTORY, DataType.CIRCLE, index, len, buff);
-    //         case INTERVAL:
-    //             return textDecodeINTERVAL(index, len, buff);
-    //         case INTERVAL_ARRAY:
-    //             return textDecodeArray(INTERVAL_ARRAY_FACTORY, DataType.INTERVAL, index, len, buff);
-    //         default:
-    //             return defaultDecodeText(index, len, buff);
-    //     }
+    // static string decodeText(DataType id, int index, int len, ByteBuf buff) {
+
+    //     byte[] buffer = new byte[len];
+    //     buff.getBytes(index, buffer);
+        
+    //     tracef("DataType: %s(%d), data: %s", id, id, cast(string)buffer);
+    //     // FIXME: Needing refactor or cleanup -@zxp at 8/26/2019, 3:21:03 PM
+    //     // 
+    //     // return new String(cast(string)buffer);
+    //     return cast(string)buffer;
     // }
+
+    static Variant decodeText(DataType id, int index, int len, ByteBuf buff) {
+        switch (id) {
+    //         case DataType.BOOL:
+    //             return textDecodeBOOL(index, len, buff);
+    //         case DataType.BOOL_ARRAY:
+    //             return textDecodeArray(BOOLEAN_ARRAY_FACTORY, DataType.BOOL, index, len, buff);
+    //         case DataType.INT2:
+    //             return textDecodeINT2(index, len, buff);
+    //         case DataType.INT2_ARRAY:
+    //             return textDecodeArray(SHORT_ARRAY_FACTORY, DataType.INT2, index, len, buff);
+            case DataType.INT4:
+                return textDecodeINT4(index, len, buff).Variant();
+    //         case DataType.INT4_ARRAY:
+    //             return textDecodeArray(INTEGER_ARRAY_FACTORY, DataType.INT4, index, len, buff);
+    //         case DataType.INT8:
+    //             return textDecodeINT8(index, len, buff);
+    //         case DataType.INT8_ARRAY:
+    //             return textDecodeArray(LONG_ARRAY_FACTORY, DataType.INT8, index, len, buff);
+    //         case DataType.FLOAT4:
+    //             return textDecodeFLOAT4(index, len, buff);
+    //         case DataType.FLOAT4_ARRAY:
+    //             return textDecodeArray(FLOAT_ARRAY_FACTORY, DataType.FLOAT4, index, len, buff);
+    //         case DataType.FLOAT8:
+    //             return textDecodeFLOAT8(index, len, buff);
+    //         case DataType.FLOAT8_ARRAY:
+    //             return textDecodeArray(DOUBLE_ARRAY_FACTORY, DataType.FLOAT8, index, len, buff);
+    //         case DataType.CHAR:
+    //             return textDecodeCHAR(index, len, buff);
+    //         // case DataType.CHAR_ARRAY:
+    //         //   return textDecodeCHAR_ARRAY(len, buff);
+    //         case DataType.VARCHAR:
+    //             return textDecodeVARCHAR(index, len, buff);
+    //         case DataType.VARCHAR_ARRAY:
+    //             return textDecodeArray(STRING_ARRAY_FACTORY, DataType.VARCHAR, index, len, buff);
+    //         case DataType.BPCHAR:
+    //             return textDecodeBPCHAR(index, len, buff);
+    //         case DataType.BPCHAR_ARRAY:
+    //             return textDecodeArray(STRING_ARRAY_FACTORY, DataType.BPCHAR, index, len, buff);
+    //         case DataType.TEXT:
+    //             return textdecodeTEXT(index, len, buff);
+    //         case DataType.TEXT_ARRAY:
+    //             return textDecodeArray(STRING_ARRAY_FACTORY, DataType.TEXT, index, len, buff);
+    //         case DataType.NAME:
+    //             return textDecodeNAME(index, len, buff);
+    //         case DataType.NAME_ARRAY:
+    //             return textDecodeArray(STRING_ARRAY_FACTORY, DataType.NAME, index, len, buff);
+    //         case DataType.DATE:
+    //             return textDecodeDATE(index, len, buff);
+    //         case DataType.DATE_ARRAY:
+    //             return textDecodeArray(LOCALDATE_ARRAY_FACTORY, DataType.DATE, index, len, buff);
+    //         case DataType.TIME:
+    //             return textDecodeTIME(index, len, buff);
+    //         case DataType.TIME_ARRAY:
+    //             return textDecodeArray(LOCALTIME_ARRAY_FACTORY, DataType.TIME, index, len, buff);
+    //         case DataType.TIMETZ:
+    //             return textDecodeTIMETZ(index, len, buff);
+    //         case DataType.TIMETZ_ARRAY:
+    //             return textDecodeArray(OFFSETTIME_ARRAY_FACTORY, DataType.TIMETZ, index, len, buff);
+    //         case DataType.TIMESTAMP:
+    //             return textDecodeTIMESTAMP(index, len, buff);
+    //         case DataType.TIMESTAMP_ARRAY:
+    //             return textDecodeArray(LOCALDATETIME_ARRAY_FACTORY, DataType.TIMESTAMP, index, len, buff);
+    //         case DataType.TIMESTAMPTZ:
+    //             return textDecodeTIMESTAMPTZ(index, len, buff);
+    //         case DataType.TIMESTAMPTZ_ARRAY:
+    //             return textDecodeArray(OFFSETDATETIME_ARRAY_FACTORY, DataType.TIMESTAMPTZ, index, len, buff);
+    //         case DataType.BYTEA:
+    //             return textDecodeBYTEA(index, len, buff);
+    //         case DataType.BYTEA_ARRAY:
+    //             return textDecodeArray(BUFFER_ARRAY_FACTORY, DataType.BYTEA, index, len, buff);
+    //         case DataType.UUID:
+    //             return textDecodeUUID(index, len, buff);
+    //         case DataType.UUID_ARRAY:
+    //             return textDecodeArray(UUID_ARRAY_FACTORY, DataType.UUID, index, len, buff);
+    //         case DataType.NUMERIC:
+    //             return textDecodeNUMERIC(index, len, buff);
+    //         case DataType.NUMERIC_ARRAY:
+    //             return textDecodeArray(NUMERIC_ARRAY_FACTORY, DataType.NUMERIC, index, len, buff);
+    //         case DataType.JSON:
+    //             return textDecodeJSON(index, len, buff);
+    //         case DataType.JSON_ARRAY:
+    //             return textDecodeArray(JSON_ARRAY_FACTORY, DataType.JSON, index, len, buff);
+    //         case DataType.JSONB:
+    //              return textDecodeJSONB(index, len, buff);
+    //         case DataType.JSONB_ARRAY:
+    //             return textDecodeArray(JSON_ARRAY_FACTORY, DataType.JSONB, index, len, buff);
+    //         case DataType.POINT:
+    //             return textDecodePOINT(index, len, buff);
+    //         case DataType.POINT_ARRAY:
+    //             return textDecodeArray(POINT_ARRAY_FACTORY, DataType.POINT, index, len, buff);
+    //         case DataType.LINE:
+    //             return textDecodeLine(index, len, buff);
+    //         case DataType.LINE_ARRAY:
+    //             return textDecodeArray(LINE_ARRAY_FACTORY, DataType.LINE, index, len, buff);
+    //         case DataType.LSEG:
+    //             return textDecodeLseg(index, len, buff);
+    //         case DataType.LSEG_ARRAY:
+    //             return textDecodeArray(LSEG_ARRAY_FACTORY, DataType.LSEG, index, len, buff);
+    //         case DataType.BOX:
+    //             return textDecodeBox(index, len, buff);
+    //         case DataType.BOX_ARRAY:
+    //             return textDecodeBoxArray(BOX_ARRAY_FACTORY, index, len, buff);
+    //         case DataType.PATH:
+    //             return textDecodePath(index, len, buff);
+    //         case DataType.PATH_ARRAY:
+    //             return textDecodeArray(PATH_ARRAY_FACTORY, DataType.PATH, index, len, buff);
+    //         case DataType.POLYGON:
+    //             return textDecodePolygon(index, len, buff);
+    //         case DataType.POLYGON_ARRAY:
+    //             return textDecodeArray(POLYGON_ARRAY_FACTORY, DataType.POLYGON, index, len, buff);
+    //         case DataType.CIRCLE:
+    //             return textDecodeCircle(index, len, buff);
+    //         case DataType.CIRCLE_ARRAY:
+    //             return textDecodeArray(CIRCLE_ARRAY_FACTORY, DataType.CIRCLE, index, len, buff);
+    //         case DataType.INTERVAL:
+    //             return textDecodeINTERVAL(index, len, buff);
+    //         case DataType.INTERVAL_ARRAY:
+    //             return textDecodeArray(INTERVAL_ARRAY_FACTORY, DataType.INTERVAL, index, len, buff);
+            default:
+                warningf("Data type %s(%d) does not support text decoding", id, id);
+                return defaultDecodeText(index, len, buff);
+        }
+    }
 
     // static Object prepare(DataType type, Object value) {
     //     switch (type) {
-    //         case JSON:
-    //         case JSONB:
+    //         case DataType.JSON:
+    //         case DataType.JSONB:
     //             if (value is null ||
     //                     value == Tuple.JSON_NULL ||
     //                     value instanceof String ||
@@ -639,7 +638,7 @@ class DataTypeCodec {
     //             } else {
     //                 return REFUSED_SENTINEL;
     //             }
-    //         case UNKNOWN:
+    //         case DataType.UNKNOWN:
     //             if (value instanceof String[]) {
     //                 return Arrays.stream((String[]) value).collect(Collectors.joining(",", "{", "}"));
     //             } else if (value is null || value instanceof String) {
@@ -653,15 +652,18 @@ class DataTypeCodec {
     //     }
     // }
 
-    // private static Object defaultDecodeText(int index, int len, ByteBuf buff) {
-    //     // decode unknown text values as text or as an array if it begins with `{`
-    //     if (len > 1 && buff.getByte(index) == '{') {
-    //         return textDecodeArray(STRING_ARRAY_FACTORY, DataType.TEXT, index, len, buff);
-    //     }
-    //     return textdecodeTEXT(index, len, buff);
-    // }
+    private static Variant defaultDecodeText(int index, int len, ByteBuf buff) {
+        // decode unknown text values as text or as an array if it begins with `{`
+        // if (len > 1 && buff.getByte(index) == '{') {
+        //     return textDecodeArray(STRING_ARRAY_FACTORY, DataType.TEXT, index, len, buff);
+        // }
+        // FIXME: Needing refactor or cleanup -@zxp at 8/28/2019, 10:34:26 AM
+        // 
+        implementationMissing(false);
+        return textdecodeTEXT(index, len, buff).Variant();
+    }
 
-    private static void defaultEncodeBinary(string value, ByteBuf buff) {
+    private static void defaultEncodeBinary(ref Variant value, ByteBuf buff) {
         // Default to null
         buff.writeInt(-1);
     }
@@ -699,16 +701,17 @@ class DataTypeCodec {
     //     buff.writeShort(value.shortValue());
     // }
 
-    // private static Integer textDecodeINT4(int index, int len, ByteBuf buff) {
-    //     return (int) decodeDecStringToLong(index, len, buff);
-    // }
+    private static int textDecodeINT4(int index, int len, ByteBuf buff) {
+        return cast(int) decodeDecStringToLong(index, len, buff);
+    }
 
-    // private static Integer binaryDecodeINT4(int index, int len, ByteBuf buff) {
-    //     return buff.getInt(index);
-    // }
+    private static int binaryDecodeINT4(int index, int len, ByteBuf buff) {
+        return buff.getInt(index);
+    }
 
-    private static void binaryEncodeINT4(string value, ByteBuf buff) {
-        buff.writeInt(to!int(value));
+    private static void binaryEncodeINT4(ref Variant value, ByteBuf buff) {
+        assert(value.type == typeid(int));
+        buff.writeInt(value.get!(int));
     }
 
     // private static Long textDecodeINT8(int index, int len, ByteBuf buff) {
@@ -973,9 +976,9 @@ class DataTypeCodec {
     //     return buff.getCharSequence(index, len, StandardCharsets.UTF_8).toString();
     // }
 
-    // private static String binaryDecodeVARCHAR(int index, int len, ByteBuf buff) {
-    //     return buff.getCharSequence(index, len, StandardCharsets.UTF_8).toString();
-    // }
+    private static string binaryDecodeVARCHAR(int index, int len, ByteBuf buff) {
+        return buff.getCharSequence(index, len, StandardCharsets.UTF_8);
+    }
 
     // private static String textDecodeBPCHAR(int index, int len, ByteBuf buff) {
     //     return buff.getCharSequence(index, len, StandardCharsets.UTF_8).toString();
@@ -989,9 +992,9 @@ class DataTypeCodec {
     //     return buff.getCharSequence(index, len, StandardCharsets.UTF_8).toString();
     // }
 
-    // private static String textdecodeTEXT(int index, int len, ByteBuf buff) {
-    //     return buff.getCharSequence(index, len, StandardCharsets.UTF_8).toString();
-    // }
+    private static string textdecodeTEXT(int index, int len, ByteBuf buff) {
+        return buff.getCharSequence(index, len, StandardCharsets.UTF_8); // .toString();
+    }
 
     // private static void binaryEncodeTEXT(String value, ByteBuf buff) {
     //     String s = String.valueOf(value);
@@ -1328,35 +1331,37 @@ class DataTypeCodec {
     //     binaryEncodeJSON(value, buff);
     // }
 
-    // /**
-    //  * Decode the specified {@code buff} formatted as a decimal string starting at the readable index
-    //  * with the specified {@code length} to a long.
-    //  *
-    //  * @param index the hex string index
-    //  * @param len the hex string length
-    //  * @param buff the byte buff to read from
-    //  * @return the decoded value as a long
-    //  */
-    // private static long decodeDecStringToLong(int index, int len, ByteBuf buff) {
-    //     long value = 0;
-    //     if (len > 0) {
-    //         int to = index + len;
-    //         boolean neg = false;
-    //         if (buff.getByte(index) == '-') {
-    //             neg = true;
-    //             index++;
-    //         }
-    //         while (index < to) {
-    //             byte ch = buff.getByte(index++);
-    //             byte nibble = (byte)(ch - '0');
-    //             value = value * 10 + nibble;
-    //         }
-    //         if (neg) {
-    //             value = -value;
-    //         }
-    //     }
-    //     return value;
-    // }
+    /**
+     * Decode the specified {@code buff} formatted as a decimal string starting at the readable index
+     * with the specified {@code length} to a long.
+     *
+     * @param index the hex string index
+     * @param len the hex string length
+     * @param buff the byte buff to read from
+     * @return the decoded value as a long
+     */
+    private static long decodeDecStringToLong(int index, int len, ByteBuf buff) {
+        long value = 0;
+        string v = textdecodeTEXT(index, len, buff);
+        return v.to!long();
+        // if (len > 0) {
+        //     int to = index + len;
+        //     bool neg = false;
+        //     if (buff.getByte(index) == '-') {
+        //         neg = true;
+        //         index++;
+        //     }
+        //     while (index < to) {
+        //         byte ch = buff.getByte(index++);
+        //         byte nibble = cast(byte)(ch - '0');
+        //         value = value * 10 + nibble;
+        //     }
+        //     if (neg) {
+        //         value = -value;
+        //     }
+        // }
+        // return value;
+    }
 
     // /**
     //  * Decode the specified {@code buff} formatted as an hex string starting at the buffer readable index

@@ -21,6 +21,7 @@ import hunt.database.base.impl.ParamDesc;
 import hunt.database.base.impl.RowDesc;
 
 import hunt.collection.List;
+import std.variant;
 
 interface PreparedStatement {
 
@@ -30,5 +31,5 @@ interface PreparedStatement {
 
     string sql();
 
-    string prepare(List!(string) values);
+    string prepare(List!(Variant) values);
 }

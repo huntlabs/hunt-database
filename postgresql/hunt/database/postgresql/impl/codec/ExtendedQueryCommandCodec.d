@@ -21,10 +21,11 @@ import hunt.database.postgresql.impl.codec.Parse;
 import hunt.database.postgresql.impl.codec.PgEncoder;
 import hunt.database.postgresql.impl.codec.PgPreparedStatement;
 
-
 import hunt.database.base.impl.command.ExtendedQueryCommand;
 
 import hunt.collection.List;
+import hunt.logging.ConsoleLogger;
+import std.variant;
 
 class ExtendedQueryCommandCodec(R) : ExtendedQueryCommandBaseCodec!(R, ExtendedQueryCommand!(R)) {
 
@@ -38,10 +39,11 @@ class ExtendedQueryCommandCodec(R) : ExtendedQueryCommandBaseCodec!(R, ExtendedQ
             encoder.writeSync();
         } else {
             PgPreparedStatement ps = cast(PgPreparedStatement) cmd.preparedStatement();
+            version(HUNT_DB_DEBUG) tracef("prepared sql: %s", ps.sql());
             if (ps.bind.statement == 0) {
                 encoder.writeParse(new Parse(ps.sql()));
             }
-            encoder.writeBind(ps.bind, cmd.cursorId(), cast(List!(string)) cmd.params());
+            encoder.writeBind(ps.bind, cmd.cursorId(), cast(List!(Variant)) cmd.params());
             encoder.writeExecute(cmd.cursorId(), cmd.fetch());
             encoder.writeSync();
         }

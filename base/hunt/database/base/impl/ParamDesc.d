@@ -18,10 +18,11 @@
 module hunt.database.base.impl.ParamDesc;
 
 import hunt.collection.List;
+import std.variant;
 
 /**
  * @author <a href="mailto:emad.albloushi@gmail.com">Emad Alblueshi</a>
  */
 abstract class ParamDesc {
-    abstract string prepare(List!(string) values);
+    abstract string prepare(List!(Variant) values);
 }

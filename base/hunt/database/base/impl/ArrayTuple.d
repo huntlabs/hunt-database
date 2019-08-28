@@ -31,10 +31,11 @@ import hunt.collection.ArrayList;
 import hunt.collection.Collection;
 
 import std.concurrency : initOnce;
+import std.variant;
 
 /**
 */
-class ArrayTuple : ArrayList!(string), Tuple {
+class ArrayTuple : ArrayList!(Variant), Tuple {
 
     static Tuple EMPTY() {
         __gshared Tuple inst;
@@ -45,7 +46,7 @@ class ArrayTuple : ArrayList!(string), Tuple {
         super(len);
     }
 
-    this(Collection!(string) c) {
+    this(Collection!(Variant) c) {
         super(c);
     }
 
@@ -77,7 +78,7 @@ class ArrayTuple : ArrayList!(string), Tuple {
     //     return null;
     // }
 
-    string getValue(int pos) {
+    Variant getValue(int pos) {
         return get(pos);
     }
 
@@ -375,7 +376,7 @@ class ArrayTuple : ArrayList!(string), Tuple {
     // }
 
     override
-    Tuple addValue(string value) {
+    Tuple addValue(ref Variant value) {
         add(value);
         return this;
     }

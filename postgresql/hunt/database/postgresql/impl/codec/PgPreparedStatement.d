@@ -26,11 +26,11 @@ import hunt.database.postgresql.impl.codec.PgRowDesc;
 import hunt.database.base.impl.PreparedStatement;
 import hunt.database.base.impl.ParamDesc;
 
-// import hunt.collection.Arrays;
 import hunt.collection.List;
 
 import std.algorithm;
 import std.array;
+import std.variant;
 
 class PgPreparedStatement : PreparedStatement {
 
@@ -80,7 +80,7 @@ class PgPreparedStatement : PreparedStatement {
     }
 
     override
-    string prepare(List!(string) values) {
+    string prepare(List!(Variant) values) {
         return paramDesc.prepare(values);
     }
 }

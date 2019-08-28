@@ -28,6 +28,7 @@ import hunt.Exceptions;
 import hunt.logging.ConsoleLogger;
 
 import std.conv;
+import std.variant;
 
 /**
  * @author <a href="mailto:emad.albloushi@gmail.com">Emad Alblueshi</a>
@@ -46,13 +47,13 @@ class PgParamDesc : ParamDesc {
     }
 
     override
-    string prepare(List!(string) values) {
+    string prepare(List!(Variant) values) {
         if (values.size() != cast(int)_paramDataTypes.length) {
             return buildReport(values);
         }
         for (int i = 0;i < cast(int)_paramDataTypes.length;i++) {
             DataTypeDesc paramDataType = _paramDataTypes[i];
-            string value = values.get(i);
+            Variant value = values.get(i);
             implementationMissing(false);
             tracef("DataType: %s, value: %s", paramDataType, value);
             // Object val = DataTypeCodec.prepare(paramDataType, value);
@@ -67,7 +68,7 @@ class PgParamDesc : ParamDesc {
         return null;
     }
 
-    private string buildReport(List!(string) values) {
+    private string buildReport(List!(Variant) values) {
         // return Util.buildInvalidArgsError(values.stream(), Stream.of(paramDataTypes).map(type -> type.decodingType));
         implementationMissing(false);
         return "";

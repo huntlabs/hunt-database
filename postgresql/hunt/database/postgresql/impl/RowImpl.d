@@ -38,6 +38,7 @@ import hunt.math.BigDecimal;
 
 import std.algorithm;
 import std.string;
+import std.variant;
 
 
 class RowImpl : ArrayTuple, RowInternal {
@@ -194,10 +195,10 @@ class RowImpl : ArrayTuple, RowInternal {
     //     return pos == -1 ? null : getBoolean(pos);
     // }
 
-    override
-    string getValue(string name) {
+    // override
+    Variant getValue(string name) {
         int pos = desc.columnIndex(name);
-        return pos == -1 ? null : getValue(pos);
+        return pos == -1 ? Variant() : getValue(pos);
     }
 
     alias getValue = ArrayTuple.getValue;

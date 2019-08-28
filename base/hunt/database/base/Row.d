@@ -23,6 +23,9 @@ import hunt.database.base.Tuple;
 // import java.time.temporal.Temporal;
 // import java.util.UUID;
 
+import std.variant;
+
+
 interface Row : Tuple {
 
     /**
@@ -40,6 +43,14 @@ interface Row : Tuple {
      * @return the column name or {@code -1} if not found
      */
     int getColumnIndex(string name);
+    
+    /**
+     * Get an object value at {@code pos}.
+     *
+     * @param name the column
+     * @return the value or {@code null}
+     */
+    Variant getValue(string name);
 
     // /**
     //  * Get a boolean value at {@code pos}.
@@ -49,13 +60,6 @@ interface Row : Tuple {
     //  */
     // Boolean getBoolean(string name);
 
-    /**
-     * Get an object value at {@code pos}.
-     *
-     * @param name the column
-     * @return the value or {@code null}
-     */
-    string getValue(string name);
 
     // /**
     //  * Get a short value at {@code pos}.

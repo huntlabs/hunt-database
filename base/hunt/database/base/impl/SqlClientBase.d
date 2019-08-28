@@ -43,7 +43,7 @@ import hunt.Functions;
 import hunt.logging.ConsoleLogger;
 import hunt.net.AbstractConnection;
 
-// import java.util.stream.Collector;
+import std.variant;
 
 
 /**
@@ -97,7 +97,7 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
             (CommandResponse!PreparedStatement cr) {
                 if (cr.succeeded()) {
                     PreparedStatement ps = cr.result();
-                    string msg = ps.prepare(cast(List!(string)) arguments);
+                    string msg = ps.prepare(cast(List!(Variant)) arguments);
                     if (msg !is null) {
                         warning(msg);
                         handler(failedResult!(R3)(new Exception(msg)));
