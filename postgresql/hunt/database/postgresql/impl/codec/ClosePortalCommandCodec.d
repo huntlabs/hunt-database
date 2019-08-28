@@ -21,6 +21,7 @@ import hunt.database.postgresql.impl.codec.PgEncoder;
 
 import hunt.database.base.impl.command.CloseCursorCommand;
 
+import hunt.logging.ConsoleLogger;
 import hunt.Object;
 
 class ClosePortalCommandCodec : PgCommandCodec!(Void, CloseCursorCommand) {
@@ -38,5 +39,6 @@ class ClosePortalCommandCodec : PgCommandCodec!(Void, CloseCursorCommand) {
     override
     void handleCloseComplete() {
         // Expected
+        version(HUNT_DB_DEBUG) trace("running here");
     }
 }

@@ -17,12 +17,21 @@
 module hunt.database.postgresql.impl.codec.ExtendedBatchQueryCommandCodec;
 
 import hunt.database.postgresql.impl.codec.ExtendedQueryCommandBaseCodec;
+import hunt.database.postgresql.impl.codec.Parse;
+import hunt.database.postgresql.impl.codec.PgEncoder;
+import hunt.database.postgresql.impl.codec.PgPreparedStatement;
 
 import hunt.database.base.Tuple;
 import hunt.database.base.impl.command.ExtendedBatchQueryCommand;
 
 import hunt.collection.List;
+import hunt.logging.ConsoleLogger;
 
+import std.variant;
+
+
+/**
+*/
 class ExtendedBatchQueryCommandCodec(R) : ExtendedQueryCommandBaseCodec!(R,
         ExtendedBatchQueryCommand!(R)) {
 
@@ -44,7 +53,7 @@ class ExtendedBatchQueryCommandCodec(R) : ExtendedQueryCommandBaseCodec!(R,
                 this.result = false;
             } else {
                 foreach (Tuple param; cmd.params()) {
-                    encoder.writeBind(ps.bind, cmd.cursorId(), cast(List!(Object)) param);
+                    encoder.writeBind(ps.bind, cmd.cursorId(), cast(List!(Variant)) param);
                     encoder.writeExecute(cmd.cursorId(), cmd.fetch());
                 }
             }

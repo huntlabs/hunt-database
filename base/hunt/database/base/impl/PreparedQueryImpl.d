@@ -35,10 +35,10 @@ import hunt.database.base.RowSet;
 import hunt.database.base.RowStream;
 import hunt.database.base.Row;
 import hunt.database.base.Tuple;
-// import io.vertx.core.*;
 
 import hunt.collection.List;
 import hunt.Exceptions;
+import hunt.logging.ConsoleLogger;
 
 import std.variant;
 
@@ -132,6 +132,9 @@ class PreparedQueryImpl : PreparedQuery {
 
     // override
     void close() {
+
+        warning("do nothing");
+        
         // close(ar -> {
         // });
     }

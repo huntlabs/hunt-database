@@ -17,11 +17,16 @@
 module hunt.database.postgresql.impl.codec.PgEncoder;
 
 import hunt.database.postgresql.impl.codec.Bind;
+
+import hunt.database.postgresql.impl.codec.CloseConnectionCommandCodec;
+import hunt.database.postgresql.impl.codec.ClosePortalCommandCodec;
+import hunt.database.postgresql.impl.codec.CloseStatementCommandCodec;
 import hunt.database.postgresql.impl.codec.DataTypeCodec;
 import hunt.database.postgresql.impl.codec.DataFormat;
 import hunt.database.postgresql.impl.codec.DataType;
 import hunt.database.postgresql.impl.codec.DataTypeDesc;
 import hunt.database.postgresql.impl.codec.Describe;
+import hunt.database.postgresql.impl.codec.ExtendedBatchQueryCommandCodec;
 import hunt.database.postgresql.impl.codec.ExtendedQueryCommandCodec;
 import hunt.database.postgresql.impl.codec.InitCommandCodec;
 import hunt.database.postgresql.impl.codec.PgColumnDesc;
@@ -159,17 +164,27 @@ final class PgEncoder : EncoderChain {
             return new ExtendedQueryCommandCodec!RowSet(extendedCommand);
         }
 
-        implementationMissing(false);
+        ExtendedBatchQueryCommand!RowSet batchQueryCommand = cast(ExtendedBatchQueryCommand!RowSet)cmd;
+        if(batchQueryCommand !is null) {
+            return new ExtendedBatchQueryCommandCodec!RowSet(batchQueryCommand);
+        }
 
-        // } else if (cmd instanceof ExtendedBatchQueryCommand<?>) {
-        //     return new ExtendedBatchQueryCommandCodec<>((ExtendedBatchQueryCommand<?>) cmd);
-        // } else if (cmd instanceof CloseConnectionCommand) {
-        //     return CloseConnectionCommandCodec.INSTANCE;
-        // } else if (cmd instanceof CloseCursorCommand) {
-        //     return new ClosePortalCommandCodec((CloseCursorCommand) cmd);
-        // } else if (cmd instanceof CloseStatementCommand) {
-        //     return new CloseStatementCommandCodec((CloseStatementCommand) cmd);
-        // }
+        CloseConnectionCommand connCommand = cast(CloseConnectionCommand)cmd;
+        if(connCommand !is null) {
+            return CloseConnectionCommandCodec.INSTANCE();
+        }
+
+        CloseCursorCommand cursorCommand = cast(CloseCursorCommand)cmd;
+        if(cursorCommand !is null) {
+            return new ClosePortalCommandCodec(cursorCommand);
+        }
+
+        CloseStatementCommand statementCommand = cast(CloseStatementCommand)cmd;
+        if(statementCommand !is null) {
+            return new CloseStatementCommandCodec(statementCommand);
+        }
+
+
         throw new AssertionError();
     }
 
