@@ -44,8 +44,8 @@ struct DataTypeDesc {
 
     int id;
     bool supportsBinary;
-    TypeInfo_Class encodingType; // Not really used for now
-    TypeInfo_Class decodingType;
+    TypeInfo encodingType; // Not really used for now
+    TypeInfo decodingType;
 
     this(int id, bool supportsBinary, TypeInfo_Class type) {
         this.id = id;

@@ -57,7 +57,7 @@ class PgParamDesc : ParamDesc {
         for (int i = 0;i < cast(int)_paramDataTypes.length;i++) {
             DataTypeDesc paramDataType = _paramDataTypes[i];
             Variant value = values.get(i);
-            Variant val = DataTypeCodec.prepare(cast(DataType)paramDataType.id, value);
+            Variant val = DataTypeCodec.prepare(paramDataType, value);
             version(HUNT_DB_DEBUG) tracef("DataType: %s, value: %s, val: %s", paramDataType, value, val);
             if (val != value) {
                 if (val == DataTypeCodec.REFUSED_SENTINEL) {

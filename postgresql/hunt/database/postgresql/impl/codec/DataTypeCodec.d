@@ -18,6 +18,7 @@
 module hunt.database.postgresql.impl.codec.DataTypeCodec;
 
 import hunt.database.postgresql.impl.codec.DataType;
+import hunt.database.postgresql.impl.codec.DataTypeDesc;
 
 import hunt.database.base.Tuple;
 import hunt.database.base.data.Numeric;
@@ -634,10 +635,10 @@ class DataTypeCodec {
         info == typeid(double) ;
     }
 
-    static Variant prepare(DataType type, ref Variant value) {
+    static Variant prepare(DataTypeDesc type, ref Variant value) {
         TypeInfo valueType = value.type;
 
-        switch (type) {
+        switch (cast(DataType)type.id) {
             case DataType.JSON:
             case DataType.JSONB:
                 if (!value.hasValue() || valueType == typeid(null) ||
@@ -660,7 +661,7 @@ class DataTypeCodec {
                 }
 
             default:
-                if (!value.hasValue() || valueType == typeid(null))
+                if (!value.hasValue() || valueType == typeid(null) || type.decodingType is null || type.decodingType == valueType)
                     return value;
                 else 
                     return REFUSED_SENTINEL.Variant();

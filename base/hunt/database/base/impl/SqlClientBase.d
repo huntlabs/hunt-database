@@ -99,7 +99,7 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
                     PreparedStatement ps = cr.result();
                     string msg = ps.prepare(cast(List!(Variant)) arguments);
                     if (msg !is null) {
-                        warning(msg);
+                        version(HUNT_DEBUG) warning(msg);
                         handler(failedResult!(R3)(new Exception(msg)));
                     } else {
                         SqlResultBuilder!(R1, R2, R3) b = new SqlResultBuilder!(R1, R2, R3)(factory, handler);
