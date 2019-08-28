@@ -81,19 +81,19 @@ abstract class SocketConnectionBase : DbConnection {
 
     void initialization() {
 
-        ConnectionEventHandlerAdapter adapter = new ConnectionEventHandlerAdapter();
-        adapter.onClosed(&handleClosed);
-        adapter.onException(&handleException);
-        adapter.onMessageReceived((Connection conn, Object msg) {
-            version(HUNT_DB_DEBUG) tracef("A message received. %s", typeid(msg));
-            try {
-                handleMessage(conn, msg);
-            } catch (Throwable e) {
-                handleException(conn, e);
-            }
-        });
+        // ConnectionEventHandlerAdapter adapter = new ConnectionEventHandlerAdapter();
+        // adapter.onClosed(&handleClosed);
+        // adapter.onException(&handleException);
+        // adapter.onMessageReceived((Connection conn, Object msg) {
+        //     version(HUNT_DB_DEBUG) tracef("A message received. %s", typeid(msg));
+        //     try {
+        //         handleMessage(conn, msg);
+        //     } catch (Throwable e) {
+        //         handleException(conn, e);
+        //     }
+        // });
 
-        _socket.setHandler(adapter);
+        // _socket.setHandler(adapter);
     }
 
     AbstractConnection socket() {
@@ -213,7 +213,7 @@ abstract class SocketConnectionBase : DbConnection {
 
     }
 
-    private void handleMessage(Connection conn, Object msg) {
+    void handleMessage(Connection conn, Object msg) {
         version(HUNT_DB_DEBUG) tracef("handling a message: %s", typeid(msg));
 
         ICommandResponse resp = cast(ICommandResponse) msg;
@@ -247,11 +247,11 @@ abstract class SocketConnectionBase : DbConnection {
         notice.log();
     }
 
-    private void handleClosed(hunt.net.Connection.Connection v) {
-        handleClose(null);
+    void handleClosed(Connection conn) {
+        handleClose(cast(Throwable)null);
     }
 
-    private void handleException(hunt.net.Connection.Connection c, Throwable t) {
+    void handleException(Connection c, Throwable t) {
         DecoderException err = cast(DecoderException) t;
         if (err !is null) {
             t = err.next;

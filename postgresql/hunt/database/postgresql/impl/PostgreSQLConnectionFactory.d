@@ -175,35 +175,44 @@ class PgConnectionFactory {
 
         client.setHandler(new class ConnectionEventHandler {
 
+                PgSocketConnection pgConn;
+
                 override void connectionOpened(Connection connection) {
                     infof("Connection created: %s", connection.getRemoteAddress());
 
-                    PgSocketConnection conn = newSocketConnection(cast(AbstractConnection)connection);
-                    handler(succeededResult(conn));
+                    pgConn = newSocketConnection(cast(AbstractConnection)connection);
+                    handler(succeededResult(pgConn));
                 }
 
                 override void connectionClosed(Connection connection) {
                     infof("Connection closed: %s", connection.getRemoteAddress());
                     // client.close();
+                    pgConn.handleClosed(connection);
                 }
 
                 override void messageReceived(Connection connection, Object message) {
                     tracef("message type: %s", typeid(message).name);
+                    try {
+                        pgConn.handleMessage(connection, message);
+                    } catch(Throwable t) {
+                        exceptionCaught(connection, t);
+                    }
                 }
 
-                override void exceptionCaught(Connection connection, Exception t) {
+                override void exceptionCaught(Connection connection, Throwable t) {
                     warning(t);
+                    pgConn.handleException(connection, t);
                     handler(failedResult!(PgSocketConnection)(t));
                 }
 
-                override void failedOpeningConnection(int connectionId, Exception t) {
+                override void failedOpeningConnection(int connectionId, Throwable t) {
                     warning(t);
 
                     handler(failedResult!(PgSocketConnection)(t));
                     client.close(); 
                 }
 
-                override void failedAcceptingConnection(int connectionId, Exception t) {
+                override void failedAcceptingConnection(int connectionId, Throwable t) {
                     warning(t);
                     handler(failedResult!(PgSocketConnection)(t));
                 }
@@ -211,7 +220,7 @@ class PgConnectionFactory {
 
         try {
             client.connect(host, port);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             // Client is closed
             version(HUNT_DEBUG) {
                 warning(e.message);
