@@ -206,9 +206,9 @@ final class PgEncoder : EncoderChain {
         if (outBuffer !is null) {
             ByteBuf buff = outBuffer;
             outBuffer = null;
-            version(HUNT_DB_DEBUG_MORE) tracef("buffer: %s", buff.toString());
             byte[] avaliableData = buff.getReadableBytes();
-            version(HUNT_DB_DEBUG) {
+            version(HUNT_DB_DEBUG_MORE) {
+                tracef("buffer: %s", buff.toString());
                 tracef("buffer data: %s", cast(string)avaliableData);
             }
             ctx.write(cast(const(ubyte)[])avaliableData);

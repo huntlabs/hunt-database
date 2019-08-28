@@ -30,6 +30,8 @@ import hunt.math.BigDecimal;
 
 import std.variant;
 
+import std.typecons;
+
 /**
  * A general purpose tuple.
  */
@@ -51,123 +53,24 @@ interface Tuple {
     }
 
     /**
-     * Create a tuple of one element.
+     * Create a tuple of an arbitrary number of elements.
      *
-     * @param elt1 the first value
+     * @param elts the elements
      * @return the tuple
      */
-    static Tuple of(T)(T elt1) {
-        ArrayTuple tuple = new ArrayTuple(1);
-        Variant v = Variant(elt1);
-        tuple.addValue(v);
+    static Tuple of(Args...)(Args elts) {
+        ArrayTuple tuple = new ArrayTuple(cast(int)Args.length);
+        foreach (elt; elts) {
+            // tuple.addValue(elt);
+            static if(is(T == Variant)) {
+                tuple.addValue(elt);
+            } else {
+                Variant v = Variant(elt);
+                tuple.addValue(v);
+            }
+        }
         return tuple;
-    }
-
-    // /**
-    //  * Create a tuple of two elements.
-    //  *
-    //  * @param elt1 the first value
-    //  * @param elt2 the second value
-    //  * @return the tuple
-    //  */
-    // static Tuple of(Object elt1, Object elt2) {
-    //     ArrayTuple tuple = new ArrayTuple(2);
-    //     tuple.addValue(elt1);
-    //     tuple.addValue(elt2);
-    //     return tuple;
-    // }
-
-    // /**
-    //  * Create a tuple of three elements.
-    //  *
-    //  * @param elt1 the first value
-    //  * @param elt2 the second value
-    //  * @param elt3 the third value
-    //  * @return the tuple
-    //  */
-    // static Tuple of(Object elt1, Object elt2, Object elt3) {
-    //     ArrayTuple tuple = new ArrayTuple(3);
-    //     tuple.addValue(elt1);
-    //     tuple.addValue(elt2);
-    //     tuple.addValue(elt3);
-    //     return tuple;
-    // }
-
-    // /**
-    //  * Create a tuple of four elements.
-    //  *
-    //  * @param elt1 the first value
-    //  * @param elt2 the second value
-    //  * @param elt3 the third value
-    //  * @param elt4 the fourth value
-    //  * @return the tuple
-    //  */
-    // static Tuple of(Object elt1, Object elt2, Object elt3, Object elt4) {
-    //     ArrayTuple tuple = new ArrayTuple(4);
-    //     tuple.addValue(elt1);
-    //     tuple.addValue(elt2);
-    //     tuple.addValue(elt3);
-    //     tuple.addValue(elt4);
-    //     return tuple;
-    // }
-
-    // /**
-    //  * Create a tuple of five elements.
-    //  *
-    //  * @param elt1 the first value
-    //  * @param elt2 the second value
-    //  * @param elt3 the third value
-    //  * @param elt4 the fourth value
-    //  * @param elt5 the fifth value
-    //  * @return the tuple
-    //  */
-    // static Tuple of(Object elt1, Object elt2, Object elt3, Object elt4, Object elt5) {
-    //     ArrayTuple tuple = new ArrayTuple(5);
-    //     tuple.addValue(elt1);
-    //     tuple.addValue(elt2);
-    //     tuple.addValue(elt3);
-    //     tuple.addValue(elt4);
-    //     tuple.addValue(elt5);
-    //     return tuple;
-    // }
-
-    // /**
-    //  * Create a tuple of six elements.
-    //  *
-    //  * @param elt1 the first value
-    //  * @param elt2 the second valueg
-    //  * @param elt3 the third value
-    //  * @param elt4 the fourth value
-    //  * @param elt5 the fifth value
-    //  * @param elt6 the sixth value
-    //  * @return the tuple
-    //  */
-    // static Tuple of(Object elt1, Object elt2, Object elt3, Object elt4, Object elt5, Object elt6) {
-    //     ArrayTuple tuple = new ArrayTuple(5);
-    //     tuple.addValue(elt1);
-    //     tuple.addValue(elt2);
-    //     tuple.addValue(elt3);
-    //     tuple.addValue(elt4);
-    //     tuple.addValue(elt5);
-    //     tuple.addValue(elt6);
-    //     return tuple;
-    // }
-
-    // /**
-    //  * Create a tuple of an arbitrary number of elements.
-    //  *
-    //  * @param elt1 the first element
-    //  * @param elts the remaining elements
-    //  * @return the tuple
-    //  */
-    // static Tuple of(Object elt1, Object[] elts...) {
-    //     ArrayTuple tuple = new ArrayTuple(1 + cast(int)elts.length);
-    //     tuple.addValue(elt1);
-    //     foreach (Object elt; elts) {
-    //         tuple.addValue(elt);
-    //     }
-    //     return tuple;
-    // }
+    }    
 
     // /**
     //  * Get a boolean value at {@code pos}.

@@ -96,7 +96,6 @@ class PgConnectionFactory {
         this.preparedStatementCacheSqlLimit = options.getPreparedStatementCacheSqlLimit();
         this.isUsingDomainSocket = options.isUsingDomainSocket();
 
-        // this.client = context.owner().createNetClient(netClientOptions);
         this.client = NetUtil.createNetClient(netClientOptions);
     }
 
@@ -186,12 +185,11 @@ class PgConnectionFactory {
 
                 override void connectionClosed(Connection connection) {
                     infof("Connection closed: %s", connection.getRemoteAddress());
-                    // client.close();
                     pgConn.handleClosed(connection);
                 }
 
                 override void messageReceived(Connection connection, Object message) {
-                    tracef("message type: %s", typeid(message).name);
+                    version(HUNT_DB_DEBUG) tracef("message type: %s", typeid(message).name);
                     try {
                         pgConn.handleMessage(connection, message);
                     } catch(Throwable t) {
@@ -200,7 +198,7 @@ class PgConnectionFactory {
                 }
 
                 override void exceptionCaught(Connection connection, Throwable t) {
-                    warning(t);
+                    version(HUNT_DEBUG) warning(t);
                     pgConn.handleException(connection, t);
                     handler(failedResult!(PgSocketConnection)(t));
                 }

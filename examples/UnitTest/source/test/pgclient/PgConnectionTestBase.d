@@ -132,7 +132,8 @@ abstract class PgConnectionTestBase : PgClientTestBase!(SqlConnection) {
     void testSelectForQueryWithParams() {
 
         connector((SqlConnection conn) {
-             conn.preparedQuery("SELECT * FROM Fortune WHERE id=$1", Tuple.of(12), (AsyncResult!RowSet ar) {
+            trace("testing preparedQuery...");
+            conn.preparedQuery("SELECT * FROM Fortune WHERE id=$1", Tuple.of(12), (AsyncResult!RowSet ar) {
                 if(ar.succeeded()) {
                     RowSet result = ar.result();
                     assert(1 == result.rowCount());
