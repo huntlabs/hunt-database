@@ -51,9 +51,13 @@ import hunt.Byte;
 import hunt.Exceptions;
 import hunt.logging.ConsoleLogger;
 import hunt.net.buffer.ByteBuf;
+import hunt.net.buffer.Unpooled;
+import hunt.net.Exceptions;
 import hunt.String;
 import hunt.text.Charset;
 
+import std.array;
+import std.ascii;
 import std.concurrency : initOnce;
 import std.conv;
 import std.variant;
@@ -153,12 +157,10 @@ class DataTypeCodec {
     private static void textEncode(DataType id, ref Variant value, ByteBuf buff) {
         switch (id) {
             case DataType.NUMERIC:
-                implementationMissing(false);
-                // textEncodeNUMERIC((Number) value, buff);
+                textEncodeNUMERIC(value, buff);
                 break;
             case DataType.NUMERIC_ARRAY:
-                implementationMissing(false);
-                // textEncodeNUMERIC_ARRAY((Number[]) value, buff);
+                textEncodeNUMERIC_ARRAY(value, buff);
                 break;
             case DataType.UNKNOWN:
                 //default to treating unknown as a string
@@ -361,118 +363,118 @@ class DataTypeCodec {
 
     static Variant decodeBinary(DataType id, int index, int len, ByteBuf buff) {
         switch (id) {
-    //         case DataType.BOOL:
-    //             return binaryDecodeBOOL(index, len, buff);
-    //         case DataType.BOOL_ARRAY:
-    //             return binaryDecodeArray(BOOLEAN_ARRAY_FACTORY, DataType.BOOL, index, len, buff);
-    //         case DataType.INT2:
-    //             return binaryDecodeINT2(index, len, buff);
-    //         case DataType.INT2_ARRAY:
-    //             return binaryDecodeArray(SHORT_ARRAY_FACTORY, DataType.INT2, index, len, buff);
+            case DataType.BOOL:
+                return binaryDecodeBOOL(index, len, buff).Variant();
+            // case DataType.BOOL_ARRAY:
+            //     return binaryDecodeArray(BOOLEAN_ARRAY_FACTORY, DataType.BOOL, index, len, buff).Variant();
+            case DataType.INT2:
+                return binaryDecodeINT2(index, len, buff).Variant();
+            // case DataType.INT2_ARRAY:
+            //     return binaryDecodeArray(SHORT_ARRAY_FACTORY, DataType.INT2, index, len, buff).Variant();
             case DataType.INT4:
                 return binaryDecodeINT4(index, len, buff).Variant();
     //         case DataType.INT4_ARRAY:
-    //             return binaryDecodeArray(INTEGER_ARRAY_FACTORY, DataType.INT4, index, len, buff);
-    //         case DataType.INT8:
-    //             return binaryDecodeINT8(index, len, buff);
+    //             return binaryDecodeArray(INTEGER_ARRAY_FACTORY, DataType.INT4, index, len, buff).Variant();
+            case DataType.INT8:
+                return binaryDecodeINT8(index, len, buff).Variant();
     //         case DataType.INT8_ARRAY:
-    //             return binaryDecodeArray(LONG_ARRAY_FACTORY, DataType.INT8, index, len, buff);
-    //         case DataType.FLOAT4:
-    //             return binaryDecodeFLOAT4(index, len, buff);
+    //             return binaryDecodeArray(LONG_ARRAY_FACTORY, DataType.INT8, index, len, buff).Variant();
+            case DataType.FLOAT4:
+                return binaryDecodeFLOAT4(index, len, buff).Variant();
     //         case DataType.FLOAT4_ARRAY:
-    //             return binaryDecodeArray(FLOAT_ARRAY_FACTORY, DataType.FLOAT4, index, len, buff);
-    //         case DataType.FLOAT8:
-    //             return binaryDecodeFLOAT8(index, len, buff);
+    //             return binaryDecodeArray(FLOAT_ARRAY_FACTORY, DataType.FLOAT4, index, len, buff).Variant();
+            case DataType.FLOAT8:
+                return binaryDecodeFLOAT8(index, len, buff).Variant();
     //         case DataType.FLOAT8_ARRAY:
-    //             return binaryDecodeArray(DOUBLE_ARRAY_FACTORY, DataType.FLOAT8, index, len, buff);
-    //         case DataType.CHAR:
-    //             return binaryDecodeCHAR(index, len, buff);
+    //             return binaryDecodeArray(DOUBLE_ARRAY_FACTORY, DataType.FLOAT8, index, len, buff).Variant();
+            case DataType.CHAR:
+                return binaryDecodeCHAR(index, len, buff).Variant();
     //         case DataType.CHAR_ARRAY:
-    //             return binaryDecodeArray(STRING_ARRAY_FACTORY, DataType.CHAR, index, len, buff);
+    //             return binaryDecodeArray(STRING_ARRAY_FACTORY, DataType.CHAR, index, len, buff).Variant();
             case DataType.VARCHAR:
                 return binaryDecodeVARCHAR(index, len, buff).Variant();
     //         case DataType.VARCHAR_ARRAY:
-    //             return binaryDecodeArray(STRING_ARRAY_FACTORY, DataType.VARCHAR, index, len, buff);
-    //         case DataType.BPCHAR:
-    //             return binaryDecodeBPCHAR(index, len, buff);
+    //             return binaryDecodeArray(STRING_ARRAY_FACTORY, DataType.VARCHAR, index, len, buff).Variant();
+            case DataType.BPCHAR:
+                return binaryDecodeBPCHAR(index, len, buff).Variant();
     //         case DataType.BPCHAR_ARRAY:
-    //             return binaryDecodeArray(STRING_ARRAY_FACTORY, DataType.BPCHAR, index, len, buff);
-    //         case DataType.TEXT:
-    //             return binaryDecodeTEXT(index, len, buff);
+    //             return binaryDecodeArray(STRING_ARRAY_FACTORY, DataType.BPCHAR, index, len, buff).Variant();
+            case DataType.TEXT:
+                return binaryDecodeTEXT(index, len, buff).Variant();
     //         case DataType.TEXT_ARRAY:
-    //             return binaryDecodeArray(STRING_ARRAY_FACTORY, DataType.TEXT, index, len, buff);
-    //         case DataType.NAME:
-    //             return binaryDecodeNAME(index, len, buff);
+    //             return binaryDecodeArray(STRING_ARRAY_FACTORY, DataType.TEXT, index, len, buff).Variant();
+            case DataType.NAME:
+                return binaryDecodeNAME(index, len, buff).Variant();
     //         case DataType.NAME_ARRAY:
-    //             return binaryDecodeArray(STRING_ARRAY_FACTORY, DataType.NAME, index, len, buff);
+    //             return binaryDecodeArray(STRING_ARRAY_FACTORY, DataType.NAME, index, len, buff).Variant();
     //         case DataType.DATE:
-    //             return binaryDecodeDATE(index, len, buff);
+    //             return binaryDecodeDATE(index, len, buff).Variant();
     //         case DataType.DATE_ARRAY:
-    //             return binaryDecodeArray(LOCALDATE_ARRAY_FACTORY, DataType.DATE, index, len, buff);
+    //             return binaryDecodeArray(LOCALDATE_ARRAY_FACTORY, DataType.DATE, index, len, buff).Variant();
     //         case DataType.TIME:
-    //             return binaryDecodeTIME(index, len, buff);
+    //             return binaryDecodeTIME(index, len, buff).Variant();
     //         case DataType.TIME_ARRAY:
-    //             return binaryDecodeArray(LOCALTIME_ARRAY_FACTORY, DataType.TIME, index, len, buff);
+    //             return binaryDecodeArray(LOCALTIME_ARRAY_FACTORY, DataType.TIME, index, len, buff).Variant();
     //         case DataType.TIMETZ:
-    //             return binaryDecodeTIMETZ(index, len, buff);
+    //             return binaryDecodeTIMETZ(index, len, buff).Variant();
     //         case DataType.TIMETZ_ARRAY:
-    //             return binaryDecodeArray(OFFSETTIME_ARRAY_FACTORY, DataType.TIMETZ, index, len, buff);
+    //             return binaryDecodeArray(OFFSETTIME_ARRAY_FACTORY, DataType.TIMETZ, index, len, buff).Variant();
     //         case DataType.TIMESTAMP:
-    //             return binaryDecodeTIMESTAMP(index, len, buff);
+    //             return binaryDecodeTIMESTAMP(index, len, buff).Variant();
     //         case DataType.TIMESTAMP_ARRAY:
-    //             return binaryDecodeArray(LOCALDATETIME_ARRAY_FACTORY, DataType.TIMESTAMP, index, len, buff);
+    //             return binaryDecodeArray(LOCALDATETIME_ARRAY_FACTORY, DataType.TIMESTAMP, index, len, buff).Variant();
     //         case DataType.TIMESTAMPTZ:
-    //             return binaryDecodeTIMESTAMPTZ(index, len, buff);
+    //             return binaryDecodeTIMESTAMPTZ(index, len, buff).Variant();
     //         case DataType.TIMESTAMPTZ_ARRAY:
-    //             return binaryDecodeArray(OFFSETDATETIME_ARRAY_FACTORY, DataType.TIMESTAMPTZ, index, len, buff);
-    //         case DataType.BYTEA:
-    //             return binaryDecodeBYTEA(index, len, buff);
+    //             return binaryDecodeArray(OFFSETDATETIME_ARRAY_FACTORY, DataType.TIMESTAMPTZ, index, len, buff).Variant();
+            case DataType.BYTEA:
+                return binaryDecodeBYTEA(index, len, buff).Variant();
     //         case DataType.BYTEA_ARRAY:
-    //             return binaryDecodeArray(BUFFER_ARRAY_FACTORY, DataType.BYTEA, index, len, buff);
+    //             return binaryDecodeArray(BUFFER_ARRAY_FACTORY, DataType.BYTEA, index, len, buff).Variant();
     //         case DataType.UUID:
-    //             return binaryDecodeUUID(index, len, buff);
+    //             return binaryDecodeUUID(index, len, buff).Variant();
     //         case DataType.UUID_ARRAY:
-    //             return binaryDecodeArray(UUID_ARRAY_FACTORY, DataType.UUID, index, len, buff);
+    //             return binaryDecodeArray(UUID_ARRAY_FACTORY, DataType.UUID, index, len, buff).Variant();
     //         case DataType.JSON:
-    //             return binaryDecodeJSON(index, len, buff);
+    //             return binaryDecodeJSON(index, len, buff).Variant();
     //         case DataType.JSON_ARRAY:
-    //             return binaryDecodeArray(JSON_ARRAY_FACTORY, DataType.JSON, index, len, buff);
+    //             return binaryDecodeArray(JSON_ARRAY_FACTORY, DataType.JSON, index, len, buff).Variant();
     //         case DataType.JSONB:
-    //             return binaryDecodeJSONB(index, len, buff);
+    //             return binaryDecodeJSONB(index, len, buff).Variant();
     //         case DataType.JSONB_ARRAY:
-    //             return binaryDecodeArray(JSON_ARRAY_FACTORY, DataType.JSONB, index, len, buff);
+    //             return binaryDecodeArray(JSON_ARRAY_FACTORY, DataType.JSONB, index, len, buff).Variant();
     //         case DataType.POINT:
-    //             return binaryDecodePoint(index, len, buff);
+    //             return binaryDecodePoint(index, len, buff).Variant();
     //         case DataType.POINT_ARRAY:
-    //             return binaryDecodeArray(POINT_ARRAY_FACTORY, DataType.POINT, index, len, buff);
+    //             return binaryDecodeArray(POINT_ARRAY_FACTORY, DataType.POINT, index, len, buff).Variant();
     //         case DataType.LINE:
-    //             return binaryDecodeLine(index, len, buff);
+    //             return binaryDecodeLine(index, len, buff).Variant();
     //         case DataType.LINE_ARRAY:
-    //             return binaryDecodeArray(LINE_ARRAY_FACTORY, DataType.LINE, index, len, buff);
+    //             return binaryDecodeArray(LINE_ARRAY_FACTORY, DataType.LINE, index, len, buff).Variant();
     //         case DataType.LSEG:
-    //             return binaryDecodeLseg(index, len, buff);
+    //             return binaryDecodeLseg(index, len, buff).Variant();
     //         case DataType.LSEG_ARRAY:
-    //             return binaryDecodeArray(LSEG_ARRAY_FACTORY, DataType.LSEG, index, len, buff);
+    //             return binaryDecodeArray(LSEG_ARRAY_FACTORY, DataType.LSEG, index, len, buff).Variant();
     //         case DataType.BOX:
-    //             return binaryDecodeBox(index, len, buff);
+    //             return binaryDecodeBox(index, len, buff).Variant();
     //         case DataType.BOX_ARRAY:
-    //             return binaryDecodeArray(BOX_ARRAY_FACTORY, DataType.BOX, index, len, buff);
+    //             return binaryDecodeArray(BOX_ARRAY_FACTORY, DataType.BOX, index, len, buff).Variant();
     //         case DataType.PATH:
-    //             return binaryDecodePath(index, len, buff);
+    //             return binaryDecodePath(index, len, buff).Variant();
     //         case DataType.PATH_ARRAY:
-    //             return binaryDecodeArray(PATH_ARRAY_FACTORY, DataType.PATH, index, len, buff);
+    //             return binaryDecodeArray(PATH_ARRAY_FACTORY, DataType.PATH, index, len, buff).Variant();
     //         case DataType.POLYGON:
-    //             return binaryDecodePolygon(index, len, buff);
+    //             return binaryDecodePolygon(index, len, buff).Variant();
     //         case DataType.POLYGON_ARRAY:
-    //             return binaryDecodeArray(POLYGON_ARRAY_FACTORY, DataType.POLYGON, index, len, buff);
+    //             return binaryDecodeArray(POLYGON_ARRAY_FACTORY, DataType.POLYGON, index, len, buff).Variant();
     //         case DataType.CIRCLE:
-    //             return binaryDecodeCircle(index, len, buff);
+    //             return binaryDecodeCircle(index, len, buff).Variant();
     //         case DataType.CIRCLE_ARRAY:
-    //             return binaryDecodeArray(CIRCLE_ARRAY_FACTORY, DataType.CIRCLE, index, len, buff);
+    //             return binaryDecodeArray(CIRCLE_ARRAY_FACTORY, DataType.CIRCLE, index, len, buff).Variant();
     //         case DataType.INTERVAL:
-    //             return binaryDecodeINTERVAL(index, len, buff);
+    //             return binaryDecodeINTERVAL(index, len, buff).Variant();
     //         case DataType.INTERVAL_ARRAY:
-    //             return binaryDecodeArray(INTERVAL_ARRAY_FACTORY, DataType.INTERVAL, index, len, buff);
+    //             return binaryDecodeArray(INTERVAL_ARRAY_FACTORY, DataType.INTERVAL, index, len, buff).Variant();
             default:
                 warningf("Data type %s(%d) does not support binary decoding", id, id);
                 return Variant(null);
@@ -494,122 +496,122 @@ class DataTypeCodec {
 
     static Variant decodeText(DataType id, int index, int len, ByteBuf buff) {
         switch (id) {
-    //         case DataType.BOOL:
-    //             return textDecodeBOOL(index, len, buff);
+            case DataType.BOOL:
+                return textDecodeBOOL(index, len, buff).Variant();
     //         case DataType.BOOL_ARRAY:
-    //             return textDecodeArray(BOOLEAN_ARRAY_FACTORY, DataType.BOOL, index, len, buff);
-    //         case DataType.INT2:
-    //             return textDecodeINT2(index, len, buff);
+    //             return textDecodeArray(BOOLEAN_ARRAY_FACTORY, DataType.BOOL, index, len, buff).Variant();
+            case DataType.INT2:
+                return textDecodeINT2(index, len, buff).Variant();
     //         case DataType.INT2_ARRAY:
-    //             return textDecodeArray(SHORT_ARRAY_FACTORY, DataType.INT2, index, len, buff);
+    //             return textDecodeArray(SHORT_ARRAY_FACTORY, DataType.INT2, index, len, buff).Variant();
             case DataType.INT4:
                 return textDecodeINT4(index, len, buff).Variant();
     //         case DataType.INT4_ARRAY:
-    //             return textDecodeArray(INTEGER_ARRAY_FACTORY, DataType.INT4, index, len, buff);
-    //         case DataType.INT8:
-    //             return textDecodeINT8(index, len, buff);
+    //             return textDecodeArray(INTEGER_ARRAY_FACTORY, DataType.INT4, index, len, buff).Variant();
+            case DataType.INT8:
+                return textDecodeINT8(index, len, buff).Variant();
     //         case DataType.INT8_ARRAY:
-    //             return textDecodeArray(LONG_ARRAY_FACTORY, DataType.INT8, index, len, buff);
-    //         case DataType.FLOAT4:
-    //             return textDecodeFLOAT4(index, len, buff);
+    //             return textDecodeArray(LONG_ARRAY_FACTORY, DataType.INT8, index, len, buff).Variant();
+            case DataType.FLOAT4:
+                return textDecodeFLOAT4(index, len, buff).Variant();
     //         case DataType.FLOAT4_ARRAY:
-    //             return textDecodeArray(FLOAT_ARRAY_FACTORY, DataType.FLOAT4, index, len, buff);
-    //         case DataType.FLOAT8:
-    //             return textDecodeFLOAT8(index, len, buff);
+    //             return textDecodeArray(FLOAT_ARRAY_FACTORY, DataType.FLOAT4, index, len, buff).Variant();
+            case DataType.FLOAT8:
+                return textDecodeFLOAT8(index, len, buff).Variant();
     //         case DataType.FLOAT8_ARRAY:
-    //             return textDecodeArray(DOUBLE_ARRAY_FACTORY, DataType.FLOAT8, index, len, buff);
-    //         case DataType.CHAR:
-    //             return textDecodeCHAR(index, len, buff);
+    //             return textDecodeArray(DOUBLE_ARRAY_FACTORY, DataType.FLOAT8, index, len, buff).Variant();
+            case DataType.CHAR:
+                return textDecodeCHAR(index, len, buff).Variant();
     //         // case DataType.CHAR_ARRAY:
-    //         //   return textDecodeCHAR_ARRAY(len, buff);
-    //         case DataType.VARCHAR:
-    //             return textDecodeVARCHAR(index, len, buff);
+    //         //   return textDecodeCHAR_ARRAY(len, buff).Variant();
+            case DataType.VARCHAR:
+                return textDecodeVARCHAR(index, len, buff).Variant();
     //         case DataType.VARCHAR_ARRAY:
-    //             return textDecodeArray(STRING_ARRAY_FACTORY, DataType.VARCHAR, index, len, buff);
-    //         case DataType.BPCHAR:
-    //             return textDecodeBPCHAR(index, len, buff);
+    //             return textDecodeArray(STRING_ARRAY_FACTORY, DataType.VARCHAR, index, len, buff).Variant();
+            case DataType.BPCHAR:
+                return textDecodeBPCHAR(index, len, buff).Variant();
     //         case DataType.BPCHAR_ARRAY:
-    //             return textDecodeArray(STRING_ARRAY_FACTORY, DataType.BPCHAR, index, len, buff);
-    //         case DataType.TEXT:
-    //             return textdecodeTEXT(index, len, buff);
+    //             return textDecodeArray(STRING_ARRAY_FACTORY, DataType.BPCHAR, index, len, buff).Variant();
+            case DataType.TEXT:
+                return textdecodeTEXT(index, len, buff).Variant();
     //         case DataType.TEXT_ARRAY:
-    //             return textDecodeArray(STRING_ARRAY_FACTORY, DataType.TEXT, index, len, buff);
-    //         case DataType.NAME:
-    //             return textDecodeNAME(index, len, buff);
+    //             return textDecodeArray(STRING_ARRAY_FACTORY, DataType.TEXT, index, len, buff).Variant();
+            case DataType.NAME:
+                return textDecodeNAME(index, len, buff).Variant();
     //         case DataType.NAME_ARRAY:
-    //             return textDecodeArray(STRING_ARRAY_FACTORY, DataType.NAME, index, len, buff);
+    //             return textDecodeArray(STRING_ARRAY_FACTORY, DataType.NAME, index, len, buff).Variant();
     //         case DataType.DATE:
-    //             return textDecodeDATE(index, len, buff);
+    //             return textDecodeDATE(index, len, buff).Variant();
     //         case DataType.DATE_ARRAY:
-    //             return textDecodeArray(LOCALDATE_ARRAY_FACTORY, DataType.DATE, index, len, buff);
+    //             return textDecodeArray(LOCALDATE_ARRAY_FACTORY, DataType.DATE, index, len, buff).Variant();
     //         case DataType.TIME:
-    //             return textDecodeTIME(index, len, buff);
+    //             return textDecodeTIME(index, len, buff).Variant();
     //         case DataType.TIME_ARRAY:
-    //             return textDecodeArray(LOCALTIME_ARRAY_FACTORY, DataType.TIME, index, len, buff);
+    //             return textDecodeArray(LOCALTIME_ARRAY_FACTORY, DataType.TIME, index, len, buff).Variant();
     //         case DataType.TIMETZ:
-    //             return textDecodeTIMETZ(index, len, buff);
+    //             return textDecodeTIMETZ(index, len, buff).Variant();
     //         case DataType.TIMETZ_ARRAY:
-    //             return textDecodeArray(OFFSETTIME_ARRAY_FACTORY, DataType.TIMETZ, index, len, buff);
+    //             return textDecodeArray(OFFSETTIME_ARRAY_FACTORY, DataType.TIMETZ, index, len, buff).Variant();
     //         case DataType.TIMESTAMP:
-    //             return textDecodeTIMESTAMP(index, len, buff);
+    //             return textDecodeTIMESTAMP(index, len, buff).Variant();
     //         case DataType.TIMESTAMP_ARRAY:
-    //             return textDecodeArray(LOCALDATETIME_ARRAY_FACTORY, DataType.TIMESTAMP, index, len, buff);
+    //             return textDecodeArray(LOCALDATETIME_ARRAY_FACTORY, DataType.TIMESTAMP, index, len, buff).Variant();
     //         case DataType.TIMESTAMPTZ:
-    //             return textDecodeTIMESTAMPTZ(index, len, buff);
+    //             return textDecodeTIMESTAMPTZ(index, len, buff).Variant();
     //         case DataType.TIMESTAMPTZ_ARRAY:
-    //             return textDecodeArray(OFFSETDATETIME_ARRAY_FACTORY, DataType.TIMESTAMPTZ, index, len, buff);
-    //         case DataType.BYTEA:
-    //             return textDecodeBYTEA(index, len, buff);
+    //             return textDecodeArray(OFFSETDATETIME_ARRAY_FACTORY, DataType.TIMESTAMPTZ, index, len, buff).Variant();
+            case DataType.BYTEA:
+                return textDecodeBYTEA(index, len, buff).Variant();
     //         case DataType.BYTEA_ARRAY:
-    //             return textDecodeArray(BUFFER_ARRAY_FACTORY, DataType.BYTEA, index, len, buff);
+    //             return textDecodeArray(BUFFER_ARRAY_FACTORY, DataType.BYTEA, index, len, buff).Variant();
     //         case DataType.UUID:
-    //             return textDecodeUUID(index, len, buff);
+    //             return textDecodeUUID(index, len, buff).Variant();
     //         case DataType.UUID_ARRAY:
-    //             return textDecodeArray(UUID_ARRAY_FACTORY, DataType.UUID, index, len, buff);
+    //             return textDecodeArray(UUID_ARRAY_FACTORY, DataType.UUID, index, len, buff).Variant();
     //         case DataType.NUMERIC:
-    //             return textDecodeNUMERIC(index, len, buff);
+    //             return textDecodeNUMERIC(index, len, buff).Variant();
     //         case DataType.NUMERIC_ARRAY:
-    //             return textDecodeArray(NUMERIC_ARRAY_FACTORY, DataType.NUMERIC, index, len, buff);
+    //             return textDecodeArray(NUMERIC_ARRAY_FACTORY, DataType.NUMERIC, index, len, buff).Variant();
     //         case DataType.JSON:
-    //             return textDecodeJSON(index, len, buff);
+    //             return textDecodeJSON(index, len, buff).Variant();
     //         case DataType.JSON_ARRAY:
-    //             return textDecodeArray(JSON_ARRAY_FACTORY, DataType.JSON, index, len, buff);
+    //             return textDecodeArray(JSON_ARRAY_FACTORY, DataType.JSON, index, len, buff).Variant();
     //         case DataType.JSONB:
-    //              return textDecodeJSONB(index, len, buff);
+    //              return textDecodeJSONB(index, len, buff).Variant();
     //         case DataType.JSONB_ARRAY:
-    //             return textDecodeArray(JSON_ARRAY_FACTORY, DataType.JSONB, index, len, buff);
+    //             return textDecodeArray(JSON_ARRAY_FACTORY, DataType.JSONB, index, len, buff).Variant();
     //         case DataType.POINT:
-    //             return textDecodePOINT(index, len, buff);
+    //             return textDecodePOINT(index, len, buff).Variant();
     //         case DataType.POINT_ARRAY:
-    //             return textDecodeArray(POINT_ARRAY_FACTORY, DataType.POINT, index, len, buff);
+    //             return textDecodeArray(POINT_ARRAY_FACTORY, DataType.POINT, index, len, buff).Variant();
     //         case DataType.LINE:
-    //             return textDecodeLine(index, len, buff);
+    //             return textDecodeLine(index, len, buff).Variant();
     //         case DataType.LINE_ARRAY:
-    //             return textDecodeArray(LINE_ARRAY_FACTORY, DataType.LINE, index, len, buff);
+    //             return textDecodeArray(LINE_ARRAY_FACTORY, DataType.LINE, index, len, buff).Variant();
     //         case DataType.LSEG:
-    //             return textDecodeLseg(index, len, buff);
+    //             return textDecodeLseg(index, len, buff).Variant();
     //         case DataType.LSEG_ARRAY:
-    //             return textDecodeArray(LSEG_ARRAY_FACTORY, DataType.LSEG, index, len, buff);
+    //             return textDecodeArray(LSEG_ARRAY_FACTORY, DataType.LSEG, index, len, buff).Variant();
     //         case DataType.BOX:
-    //             return textDecodeBox(index, len, buff);
+    //             return textDecodeBox(index, len, buff).Variant();
     //         case DataType.BOX_ARRAY:
-    //             return textDecodeBoxArray(BOX_ARRAY_FACTORY, index, len, buff);
+    //             return textDecodeBoxArray(BOX_ARRAY_FACTORY, index, len, buff).Variant();
     //         case DataType.PATH:
-    //             return textDecodePath(index, len, buff);
+    //             return textDecodePath(index, len, buff).Variant();
     //         case DataType.PATH_ARRAY:
-    //             return textDecodeArray(PATH_ARRAY_FACTORY, DataType.PATH, index, len, buff);
+    //             return textDecodeArray(PATH_ARRAY_FACTORY, DataType.PATH, index, len, buff).Variant();
     //         case DataType.POLYGON:
-    //             return textDecodePolygon(index, len, buff);
+    //             return textDecodePolygon(index, len, buff).Variant();
     //         case DataType.POLYGON_ARRAY:
-    //             return textDecodeArray(POLYGON_ARRAY_FACTORY, DataType.POLYGON, index, len, buff);
+    //             return textDecodeArray(POLYGON_ARRAY_FACTORY, DataType.POLYGON, index, len, buff).Variant();
     //         case DataType.CIRCLE:
-    //             return textDecodeCircle(index, len, buff);
+    //             return textDecodeCircle(index, len, buff).Variant();
     //         case DataType.CIRCLE_ARRAY:
-    //             return textDecodeArray(CIRCLE_ARRAY_FACTORY, DataType.CIRCLE, index, len, buff);
+    //             return textDecodeArray(CIRCLE_ARRAY_FACTORY, DataType.CIRCLE, index, len, buff).Variant();
     //         case DataType.INTERVAL:
-    //             return textDecodeINTERVAL(index, len, buff);
+    //             return textDecodeINTERVAL(index, len, buff).Variant();
     //         case DataType.INTERVAL_ARRAY:
-    //             return textDecodeArray(INTERVAL_ARRAY_FACTORY, DataType.INTERVAL, index, len, buff);
+    //             return textDecodeArray(INTERVAL_ARRAY_FACTORY, DataType.INTERVAL, index, len, buff).Variant();
             default:
                 warningf("Data type %s(%d) does not support text decoding", id, id);
                 return defaultDecodeText(index, len, buff);
@@ -690,25 +692,25 @@ class DataTypeCodec {
         buff.writeBoolean(value.get!(bool));
     }
 
-    // private static bool binaryDecodeBOOL(int index, int len, ByteBuf buff) {
-    //     return buff.getBoolean(index);
-    // }
+    private static bool binaryDecodeBOOL(int index, int len, ByteBuf buff) {
+        return buff.getBoolean(index);
+    }
 
-    // private static bool textDecodeBOOL(int index, int len, ByteBuf buff) {
-    //     if(buff.getByte(index) == 't') {
-    //         return bool.TRUE;
-    //     } else {
-    //         return bool.FALSE;
-    //     }
-    // }
+    private static bool textDecodeBOOL(int index, int len, ByteBuf buff) {
+        if(buff.getByte(index) == 't') {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-    // private static Short textDecodeINT2(int index, int len, ByteBuf buff) {
-    //     return (short) DataTypeCodec.decodeDecStringToLong(index, len, buff);
-    // }
+    private static short textDecodeINT2(int index, int len, ByteBuf buff) {
+        return cast(short) DataTypeCodec.decodeDecStringToLong(index, len, buff);
+    }
 
-    // private static Short binaryDecodeINT2(int index, int len, ByteBuf buff) {
-    //     return buff.getShort(index);
-    // }
+    private static short binaryDecodeINT2(int index, int len, ByteBuf buff) {
+        return buff.getShort(index);
+    }
 
     private static void binaryEncodeINT2(ref Variant value, ByteBuf buff) {
         assert(value.type == typeid(short) || value.type == typeid(ushort));
@@ -728,28 +730,27 @@ class DataTypeCodec {
         buff.writeInt(value.get!(int));
     }
 
-    // private static Long textDecodeINT8(int index, int len, ByteBuf buff) {
-    //     return decodeDecStringToLong(index, len, buff);
-    // }
+    private static long textDecodeINT8(int index, int len, ByteBuf buff) {
+        return decodeDecStringToLong(index, len, buff);
+    }
 
-    // private static Long binaryDecodeINT8(int index, int len, ByteBuf buff) {
-    //     return buff.getLong(index);
-    // }
+    private static long binaryDecodeINT8(int index, int len, ByteBuf buff) {
+        return buff.getLong(index);
+    }
 
     private static void binaryEncodeINT8(ref Variant value, ByteBuf buff) {
         assert(value.type == typeid(long) || value.type == typeid(ulong));
         buff.writeLong(value.get!(long));
     }
 
-    // private static Float textDecodeFLOAT4(int index, int len, ByteBuf buff) {
-    //     // Todo optimize that
-    //     CharSequence cs = buff.getCharSequence(index, len, StandardCharsets.UTF_8);
-    //     return Float.parseFloat(cs.toString());
-    // }
+    private static float textDecodeFLOAT4(int index, int len, ByteBuf buff) {
+        CharSequence cs = buff.getCharSequence(index, len, StandardCharsets.UTF_8);
+        return cs.to!float();
+    }
 
-    // private static Float binaryDecodeFLOAT4(int index, int len, ByteBuf buff) {
-    //     return buff.getFloat(index);
-    // }
+    private static float binaryDecodeFLOAT4(int index, int len, ByteBuf buff) {
+        return buff.getFloat(index);
+    }
 
     private static void binaryEncodeFLOAT4(ref Variant value, ByteBuf buff) {
         assert(value.type == typeid(float));
@@ -761,15 +762,14 @@ class DataTypeCodec {
         buff.writeDouble(value.get!(double)());
     }
 
-    // private static Double binaryDecodeFLOAT8(int index, int len, ByteBuf buff) {
-    //     return buff.getDouble(index);
-    // }
+    private static double binaryDecodeFLOAT8(int index, int len, ByteBuf buff) {
+        return buff.getDouble(index);
+    }
 
-    // private static double textDecodeFLOAT8(int index, int len, ByteBuf buff) {
-    //     // Todo optimize that
-    //     CharSequence cs = buff.getCharSequence(index, len, StandardCharsets.UTF_8);
-    //     return Double.parseDouble(cs.toString());
-    // }
+    private static double textDecodeFLOAT8(int index, int len, ByteBuf buff) {
+        CharSequence cs = buff.getCharSequence(index, len, StandardCharsets.UTF_8);
+        return cs.to!double();
+    }
 
     // private static Number textDecodeNUMERIC(int index, int len, ByteBuf buff) {
     //     // Todo optimize that
@@ -958,59 +958,54 @@ class DataTypeCodec {
     //     return new Interval(years, months, days, hours, minutes, seconds, microseconds);
     // }
 
-    // private static void textEncodeNUMERIC(Number value, ByteBuf buff) {
-    //     String s = value.toString();
-    //     buff.writeCharSequence(s, StandardCharsets.UTF_8);
-    // }
+    private static void textEncodeNUMERIC(ref Variant value, ByteBuf buff) {
+        // assert(value.type == typeid(int));
+        string s = value.toString();
+        buff.writeCharSequence(s, StandardCharsets.UTF_8);
+    }
 
-    // private static void textEncodeNUMERIC_ARRAY(Number[] value, ByteBuf buff) {
-    //     textEncodeArray(value, DataType.NUMERIC, buff);
-    // }
+    private static void textEncodeNUMERIC_ARRAY(ref Variant value, ByteBuf buff) {
+        if(value.type == typeid(int[])) {
+            textEncodeArray!(int)(value, DataType.NUMERIC, buff);
+        } if(value.type == typeid(long[])) {
+            textEncodeArray!(long)(value, DataType.NUMERIC, buff);
+        } if(value.type == typeid(float[])) {
+            textEncodeArray!(float)(value, DataType.NUMERIC, buff);
+        } if(value.type == typeid(double[])) {
+            textEncodeArray!(double)(value, DataType.NUMERIC, buff);
+        } else {
+            throw new Exception("Can't handle numeric array: " ~ value.type.toString());
+        }
+    }
 
     private static void binaryEncodeCHAR(ref Variant value, ByteBuf buff) {
         binaryEncodeTEXT(value, buff);
     }
 
-    // private static String textDecodeCHAR(int index, int len, ByteBuf buff) {
-    //     return buff.getCharSequence(index, len, StandardCharsets.UTF_8).toString();
-    // }
-
-    // private static String binaryDecodeCHAR(int index, int len, ByteBuf buff) {
-    //     return binaryDecodeTEXT(index, len, buff);
-    // }
-
     private static void binaryEncodeVARCHAR(ref Variant value, ByteBuf buff) {
-        // String s = String.valueOf(value);
         assert(value.type == typeid(string));
         buff.writeCharSequence(value.get!(string), StandardCharsets.UTF_8);
     }
     alias binaryEncodeNAME = binaryEncodeVARCHAR;
     alias binaryEncodeBPCHAR = binaryEncodeVARCHAR;
 
-    // private static String textDecodeVARCHAR(int index, int len, ByteBuf buff) {
-    //     return buff.getCharSequence(index, len, StandardCharsets.UTF_8).toString();
-    // }
+    private static string textDecodeVARCHAR(int index, int len, ByteBuf buff) {
+        return buff.getCharSequence(index, len, StandardCharsets.UTF_8);
+    }
+    alias textDecodeCHAR = textDecodeVARCHAR;
+    alias textDecodeBPCHAR = textDecodeVARCHAR;
+    alias textdecodeTEXT = textDecodeVARCHAR;
+    alias textDecodeNAME = textDecodeVARCHAR;
+
+    alias binaryDecodeCHAR = textDecodeVARCHAR;
+    alias binaryDecodeNAME = textDecodeVARCHAR;
+    alias binaryDecodeBPCHAR = textDecodeVARCHAR;
+    alias binaryDecodeTEXT = textDecodeVARCHAR;
 
     private static string binaryDecodeVARCHAR(int index, int len, ByteBuf buff) {
         return buff.getCharSequence(index, len, StandardCharsets.UTF_8);
     }
 
-    // private static String textDecodeBPCHAR(int index, int len, ByteBuf buff) {
-    //     return buff.getCharSequence(index, len, StandardCharsets.UTF_8).toString();
-    // }
-
-    // private static void binaryEncodeBPCHAR(ref Variant value, ByteBuf buff) {
-    //     // buff.writeCharSequence(value, StandardCharsets.UTF_8);
-    //     binaryEncodeVARCHAR(value, buff);
-    // }
-
-    // private static String binaryDecodeBPCHAR(int index, int len, ByteBuf buff) {
-    //     return buff.getCharSequence(index, len, StandardCharsets.UTF_8).toString();
-    // }
-
-    private static string textdecodeTEXT(int index, int len, ByteBuf buff) {
-        return buff.getCharSequence(index, len, StandardCharsets.UTF_8); // .toString();
-    }
 
     private static void binaryEncodeTEXT(ref Variant value, ByteBuf buff) {
         assert(value.type == typeid(string));
@@ -1018,22 +1013,6 @@ class DataTypeCodec {
         buff.writeCharSequence(s, StandardCharsets.UTF_8);
     }
 
-    // private static String binaryDecodeTEXT(int index, int len, ByteBuf buff) {
-    //     return buff.getCharSequence(index, len, StandardCharsets.UTF_8).toString();
-    // }
-
-    // private static String textDecodeNAME(int index, int len, ByteBuf buff) {
-    //     return buff.getCharSequence(index, len, StandardCharsets.UTF_8).toString();
-    // }
-
-    // private static void binaryEncodeNAME(String value, ByteBuf buff) {
-    //     String s = String.valueOf(value);
-    //     buff.writeCharSequence(s, StandardCharsets.UTF_8);
-    // }
-
-    // private static String binaryDecodeNAME(int index, int len, ByteBuf buff) {
-    //     return buff.getCharSequence(index, len, StandardCharsets.UTF_8).toString();
-    // }
 
     // private static void binaryEncodeDATE(LocalDate value, ByteBuf buff) {
     //     buff.writeInt((int) -value.until(LOCAL_DATE_EPOCH, ChronoUnit.DAYS));
@@ -1106,26 +1085,26 @@ class DataTypeCodec {
     //     return OffsetDateTime.parse(cs, TIMESTAMPTZ_FORMAT);
     // }
 
-    // private static Buffer textDecodeBYTEA(int index, int len, ByteBuf buff) {
-    //     if (isHexFormat(index, len, buff)) {
-    //         // hex format
-    //         // Shift 2 bytes: skip \x prolog
-    //         return decodeHexStringToBytes(index + 2, len - 2, buff);
-    //     } else {
-    //         // escape format
-    //         return decodeEscapeByteaStringToBuffer(index, len, buff);
-    //     }
-    // }
+    private static byte[] textDecodeBYTEA(int index, int len, ByteBuf buff) {
+        if (isHexFormat(index, len, buff)) {
+            // hex format
+            // Shift 2 bytes: skip \x prolog
+            return decodeHexStringToBytes(index + 2, len - 2, buff);
+        } else {
+            // escape format
+            return decodeEscapeByteaStringToBuffer(index, len, buff);
+        }
+    }
 
     private static void binaryEncodeBYTEA(ref Variant value, ByteBuf buff) {
         assert(value.type == typeid(byte[]) || value.type == typeid(ubyte[]));
-        // ByteBuf byteBuf = value.getByteBuf();
         buff.writeBytes(value.get!(byte[])());
     }
 
-    // private static Buffer binaryDecodeBYTEA(int index, int len, ByteBuf buff) {
-    //     return Buffer.buffer(buff.copy(index, len));
-    // }
+    private static byte[] binaryDecodeBYTEA(int index, int len, ByteBuf buff) {
+        ByteBuf buffer = buff.copy(index, len);
+        return buffer.getReadableBytes();
+    }
 
     // private static void binaryEncodeUUID(UUID uuid, ByteBuf buff) {
     //     buff.writeLong(uuid.getMostSignificantBits());
@@ -1380,66 +1359,72 @@ class DataTypeCodec {
         // return value;
     }
 
-    // /**
-    //  * Decode the specified {@code buff} formatted as an hex string starting at the buffer readable index
-    //  * with the specified {@code length} to a {@link Buffer}.
-    //  *
-    //  * @param len the hex string length
-    //  * @param buff the byte buff to read from
-    //  * @return the decoded value as a Buffer
-    //  */
-    // private static Buffer decodeHexStringToBytes(int index, int len, ByteBuf buff) {
-    //     len = len >> 1;
-    //     Buffer buffer = Buffer.buffer(len);
-    //     for (int i = 0; i < len; i++) {
-    //         byte b0 = decodeHexChar(buff.getByte(index++));
-    //         byte b1 = decodeHexChar(buff.getByte(index++));
-    //         buffer.appendByte((byte) (b0 * 16 + b1));
-    //     }
-    //     return buffer;
-    // }
+    /**
+     * Decode the specified {@code buff} formatted as an hex string starting at the buffer readable index
+     * with the specified {@code length} to a {@link Buffer}.
+     *
+     * @param len the hex string length
+     * @param buff the byte buff to read from
+     * @return the decoded value as a Buffer
+     */
+    private static byte[] decodeHexStringToBytes(int index, int len, ByteBuf buff) {
+        len = len >> 1;
+        byte[] buffer = new byte[len];
+        for (int i = 0; i < len; i++) {
+            byte b0 = decodeHexChar(buff.getByte(index++));
+            byte b1 = decodeHexChar(buff.getByte(index++));
+            // buffer.appendByte((byte) (b0 * 16 + b1));
+            buffer[i] = cast(byte) (b0 * 16 + b1);
+        }
+        return buffer;
+    }
 
-    // private static byte decodeHexChar(byte ch) {
-    //     return (byte)(((ch & 0x1F) + ((ch >> 6) * 0x19) - 0x10) & 0x0F);
-    // }
+    private static byte decodeHexChar(byte ch) {
+        return cast(byte)(((ch & 0x1F) + ((ch >> 6) * 0x19) - 0x10) & 0x0F);
+    }
 
-    // private static bool isHexFormat(int index, int len, ByteBuf buff) {
-    //     return len >= 2 && buff.getByte(index) == '\\' && buff.getByte(index + 1) == 'x';
-    // }
+    private static bool isHexFormat(int index, int len, ByteBuf buff) {
+        return len >= 2 && buff.getByte(index) == '\\' && buff.getByte(index + 1) == 'x';
+    }
 
-    // private static Buffer decodeEscapeByteaStringToBuffer(int index, int len, ByteBuf buff) {
-    //     Buffer buffer = Buffer.buffer();
+    private static byte[] decodeEscapeByteaStringToBuffer(int index, int len, ByteBuf buff) {
+        // Buffer buffer = Buffer.buffer();
+        Appender!(byte[]) buffer;
+        buffer.reserve(len);
 
-    //     int pos = 0;
-    //     while (pos < len) {
-    //         byte current = buff.getByte(pos + index);
+        int pos = 0;
+        while (pos < len) {
+            byte current = buff.getByte(pos + index);
 
-    //         if (current == '\\') {
-    //             if (pos + 2 <= len && buff.getByte(pos + index + 1) == '\\') {
-    //                 // check double backslashes
-    //                 buffer.appendByte((byte) '\\');
-    //                 pos += 2;
-    //             } else if (pos + 4 <= len) {
-    //                 // a preceded backslash with three-digit octal value
-    //                 int high = Character.digit(buff.getByte(pos + index + 1), 8) << 6;
-    //                 int medium = Character.digit(buff.getByte(pos + index + 2), 8) << 3;
-    //                 int low = Character.digit(buff.getByte(pos + index + 3), 8);
-    //                 int escapedValue = high + medium + low;
+            if (current == '\\') {
+                if (pos + 2 <= len && buff.getByte(pos + index + 1) == '\\') {
+                    // check double backslashes
+                    buffer.put(cast(byte) '\\');
+                    pos += 2;
+                } else if (pos + 4 <= len) {
+                    // a preceded backslash with three-digit octal value
+                    // int high = Character.digit(buff.getByte(pos + index + 1), 8) << 6;
+                    // int medium = Character.digit(buff.getByte(pos + index + 2), 8) << 3;
+                    // int low = Character.digit(buff.getByte(pos + index + 3), 8);
+                    // int escapedValue = high + medium + low;
+                    byte[] data = new byte[3];
+                    buff.getBytes(pos + index + 1, data);
+                    short escapedValue = to!short(cast(string)data, 8);
 
-    //                 buffer.appendByte((byte) escapedValue);
-    //                 pos += 4;
-    //             } else {
-    //                 throw new DecoderException("Decoding unexpected BYTEA escape format");
-    //             }
-    //         } else {
-    //             // printable octets
-    //             buffer.appendByte(current);
-    //             pos++;
-    //         }
-    //     }
+                    buffer.put(cast(byte) escapedValue);
+                    pos += 4;
+                } else {
+                    throw new DecoderException("Decoding unexpected BYTEA escape format");
+                }
+            } else {
+                // printable octets
+                buffer.put(current);
+                pos++;
+            }
+        }
 
-    //     return buffer;
-    // }
+        return buffer.data();
+    }
 
     // private static <T> T[] binaryDecodeArray(IntFunction!(T[]) supplier, DataType type, int index, int len, ByteBuf buff) {
     //     if (len == 12) {
@@ -1503,7 +1488,7 @@ class DataTypeCodec {
         }
     }
 
-    // private static <T> T[] textDecodeArray(IntFunction!(T[]) supplier, DataType type, int index, int len, ByteBuf buff) {
+    // private static T[] textDecodeArray(T)(IntFunction!(T[]) supplier, DataType type, int index, int len, ByteBuf buff) {
     //     List!(T) list = new ArrayList<>();
     //     int from = index + 1; // Set index after '{'
     //     int to = index + len - 1; // Set index before '}'
@@ -1527,52 +1512,59 @@ class DataTypeCodec {
     //     return list.toArray(supplier.apply(list.size()));
     // }
 
-    // private static <T> T textDecodeArrayElement(DataType type, int index, int len, ByteBuf buff) {
+    // private static T textDecodeArrayElement(T)(DataType type, int index, int len, ByteBuf buff) {
     //     if (len == 4
-    //         && Character.toUpperCase(buff.getByte(index)) == 'N'
-    //         && Character.toUpperCase(buff.getByte(index + 1)) == 'U'
-    //         && Character.toUpperCase(buff.getByte(index + 2)) == 'L'
-    //         && Character.toUpperCase(buff.getByte(index + 3)) == 'L'
-    //         ) {
+    //         && toUpper(buff.getByte(index)) == 'N'
+    //         && toUpper(buff.getByte(index + 1)) == 'U'
+    //         && toUpper(buff.getByte(index + 2)) == 'L'
+    //         && toUpper(buff.getByte(index + 3)) == 'L' ) {
     //         return null;
     //     } else {
     //         bool escaped = buff.getByte(index) == '"';
     //         if (escaped) {
     //             // Some escaping - improve that later...
-    //             String s = buff.toString(index + 1, len - 2, StandardCharsets.UTF_8);
-    //             StringBuilder sb = new StringBuilder();
-    //             for (int i = 0;i < s.length();i++) {
-    //                 char c = s.charAt(i);
+    //             string s = buff.toString(index + 1, len - 2, StandardCharsets.UTF_8);
+    //             Appender!string sb; // = new StringBuilder();
+    //             sb.reserve(s.length);
+    //             for (int i = 0;i < cast(int)s.length;i++) {
+    //                 char c = s[i];
     //                 if (c == '\\') {
-    //                     c = s.charAt(++i);
+    //                     c = s[++i];
     //                 }
-    //                 sb.append(c);
+    //                 sb.put(c);
     //             }
-    //             buff = Unpooled.copiedBuffer(sb, StandardCharsets.UTF_8);
+    //             buff = Unpooled.copiedBuffer(sb.data, StandardCharsets.UTF_8);
     //             index = 0;
     //             len = buff.readableBytes();
     //         }
-    //         return (T) decodeText(type, index, len, buff);
+    //         return cast(T) decodeText(type, index, len, buff);
     //     }
     // }
 
-    // private static <T> void textEncodeArray(T[] values, DataType type, ByteBuf buff){
-    //     buff.writeByte('{');
-    //     int len = values.length;
-    //     for (int i = 0; i < len; i++) {
-    //         if (i > 0) {
-    //             buff.writeByte(',');
-    //         }
-    //         T value = values[i];
-    //         if (value !is null) {
-    //             textEncode(type, value, buff);
-    //         } else {
-    //             buff.writeByte('N');
-    //             buff.writeByte('U');
-    //             buff.writeByte('L');
-    //             buff.writeByte('L');
-    //         }
-    //     }
-    //     buff.writeByte('}');
-    // }
+    private static void textEncodeArray(T)(ref Variant data, DataType type, ByteBuf buff){
+        assert(data.type == typeid(T[]));
+        T[] values = data.get!(T[])();
+
+        buff.writeByte('{');
+        int len = cast(int)values.length;
+        for (int i = 0; i < len; i++) {
+            if (i > 0) {
+                buff.writeByte(',');
+            }
+            T value = values[i];
+            static if(is(T == class) || is(T == interface)) {
+                if (value is null) {
+                    buff.writeByte('N');
+                    buff.writeByte('U');
+                    buff.writeByte('L');
+                    buff.writeByte('L');
+                    continue;
+                } 
+            }
+            
+            Variant v = value;
+            textEncode(type, v, buff);
+        }
+        buff.writeByte('}');
+    }
 }

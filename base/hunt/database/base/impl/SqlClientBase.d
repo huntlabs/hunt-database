@@ -103,11 +103,12 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
                         handler(failedResult!(R3)(new Exception(msg)));
                     } else {
                         SqlResultBuilder!(R1, R2, R3) b = new SqlResultBuilder!(R1, R2, R3)(factory, handler);
-                        // implementationMissing(false);
 
                         CommandScheduler sc = cr.scheduler;
-                        if(sc !is null) {
-                            trace(typeid(cast(Object)sc));
+                        version(HUNT_DB_DEBUG) {
+                            if(sc !is null) {
+                                trace(typeid(cast(Object)sc));
+                            }
                         }
                         SqlClientBase!(C) client = cast(SqlClientBase!(C))sc;
                         assert(client is this);
