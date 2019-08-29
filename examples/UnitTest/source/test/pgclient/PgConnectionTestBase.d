@@ -97,82 +97,69 @@ abstract class PgConnectionTestBase : PgClientTestBase!(SqlConnection) {
 //         }));
 //     }
 
-    @Test
-    void testTx() {
-        connector((SqlConnection conn) {
-            conn.query("BEGIN", (AsyncResult!RowSet ar) {
-               if(ar.succeeded()) {
-                   RowSet result1 = ar.result();
-                    assert(0 == result1.size());
-                    assert(result1.iterator() !is null);
+    // @Test
+    // void testTx() {
+    //     connector((SqlConnection conn) {
+    //         conn.query("BEGIN", (AsyncResult!RowSet ar) {
+    //            if(ar.succeeded()) {
+    //                RowSet result1 = ar.result();
+    //                 assert(0 == result1.size());
+    //                 assert(result1.iterator() !is null);
              
-                    conn.query("COMMIT", (AsyncResult!RowSet ar) {
-                        if(ar.succeeded()) {
-                            RowSet result2 = ar.result();
-                            assert(0 == result2.size());
-                        } else {
-                            warning(ar.cause().msg);
-                        }
-                        conn.close();
-                    });
+    //                 conn.query("COMMIT", (AsyncResult!RowSet ar) {
+    //                     if(ar.succeeded()) {
+    //                         RowSet result2 = ar.result();
+    //                         assert(0 == result2.size());
+    //                     } else {
+    //                         warning(ar.cause().msg);
+    //                     }
+    //                     conn.close();
+    //                 });
 
+    //             } else {
+    //                 warning(ar.cause().msg);
+    //             }
+    //         });
+    //     });
+    // }
+    
+// /*
+    @Test
+    void testSQLConnection() {
+        connector((SqlConnection conn) {
+             conn.query("SELECT 1", (AsyncResult!RowSet ar) {
+                if(ar.succeeded()) {
+                    RowSet result = ar.result();
+                    assert(1 == result.rowCount());
                 } else {
                     warning(ar.cause().msg);
                 }
+
+                conn.close();
             });
         });
     }
-    
-// /*
-    // @Test
-    // void testSQLConnection() {
-    //     connector((SqlConnection conn) {
-    //          conn.query("SELECT 1", (AsyncResult!RowSet ar) {
-    //             if(ar.succeeded()) {
-    //                 RowSet result = ar.result();
-    //                 assert(1 == result.rowCount());
-    //             } else {
-    //                 warning(ar.cause().msg);
-    //             }
 
-    //             conn.close();
-    //         });
-    //     });
-    // }
+    @Test
+    void testSelectForQueryWithParams() {
 
-    // @Test
-    // void testSelectForQueryWithParams() {
+        connector((SqlConnection conn) {
+            trace("testing preparedQuery...");
+            conn.preparedQuery("SELECT * FROM Fortune WHERE id=$1", Tuple.of(12), (AsyncResult!RowSet ar) {
+                if(ar.succeeded()) {
+                    RowSet result = ar.result();
+                    assert(1 == result.rowCount());
+                    Row r = result.iterator.front();
+                    tracef("id: %d, message: %s", r.getValue("id").get!int(), r.getValue("message"));
+                } else {
+                    warning(ar.cause().msg);
+                }
 
-    //     connector((SqlConnection conn) {
-    //         trace("testing preparedQuery...");
-    //         conn.preparedQuery("SELECT * FROM Fortune WHERE id=$1", Tuple.of(12), (AsyncResult!RowSet ar) {
-    //             if(ar.succeeded()) {
-    //                 RowSet result = ar.result();
-    //                 assert(1 == result.rowCount());
-    //                 Row r = result.iterator.front();
-    //                 tracef("id: %d, message: %s", r.getValue("id").get!int(), r.getValue("message"));
-    //             } else {
-    //                 warning(ar.cause().msg);
-    //             }
+                // conn.close();
+            });
+        });
+    }
 
-    //             conn.close();
-    //         });
-    //     });
-    // }
-
-//     @Test
-//     void testInsertForUpdateWithParams() {
-//         Async async = ctx.async();
-//         PgClientImpl client = (PgClientImpl) PgClient.create(vertx, options);
-//         client.connect(c -> {
-//             SQLConnection conn = c.result();
-//             conn.updateWithParams("INSERT INTO Fortune (id, message) VALUES ($1, $2)", new JsonArray().add(1234).add("Yes!"),
-//                 ctx.asyncAssertSuccess(result -> {
-//                     ctx.assertEquals(1, result.getUpdated());
-//                     async.complete();
-//                 }));
-//         });
-//     }
 
 //     @Test
 //     void testUpdateForUpdateWithParams() {
