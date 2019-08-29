@@ -88,53 +88,53 @@ interface Tuple {
      */
     Variant getValue(int pos);
 
-    // /**
-    //  * Get a short value at {@code pos}.
-    //  *
-    //  * @param pos the position
-    //  * @return the value or {@code null}
-    //  */
-    // Short getShort(int pos);
+    /**
+     * Get a short value at {@code pos}.
+     *
+     * @param pos the position
+     * @return the value or {@code null}
+     */
+    short getShort(int pos);
 
-    // /**
-    //  * Get an integer value at {@code pos}.
-    //  *
-    //  * @param pos the position
-    //  * @return the value or {@code null}
-    //  */
-    // Integer getInteger(int pos);
+    /**
+     * Get an integer value at {@code pos}.
+     *
+     * @param pos the position
+     * @return the value or {@code null}
+     */
+    int getInteger(int pos);
 
-    // /**
-    //  * Get a long value at {@code pos}.
-    //  *
-    //  * @param pos the position
-    //  * @return the value or {@code null}
-    //  */
-    // Long getLong(int pos);
+    /**
+     * Get a long value at {@code pos}.
+     *
+     * @param pos the position
+     * @return the value or {@code null}
+     */
+    long getLong(int pos);
 
-    // /**
-    //  * Get a float value at {@code pos}.
-    //  *
-    //  * @param pos the position
-    //  * @return the value or {@code null}
-    //  */
-    // Float getFloat(int pos);
+    /**
+     * Get a float value at {@code pos}.
+     *
+     * @param pos the position
+     * @return the value or {@code null}
+     */
+    float getFloat(int pos);
 
-    // /**
-    //  * Get a double value at {@code pos}.
-    //  *
-    //  * @param pos the position
-    //  * @return the value or {@code null}
-    //  */
-    // Double getDouble(int pos);
+    /**
+     * Get a double value at {@code pos}.
+     *
+     * @param pos the position
+     * @return the value or {@code null}
+     */
+    double getDouble(int pos);
 
-    // /**
-    //  * Get a string value at {@code pos}.
-    //  *
-    //  * @param pos the position
-    //  * @return the value or {@code null}
-    //  */
-    // String getString(int pos);
+    /**
+     * Get a string value at {@code pos}.
+     *
+     * @param pos the position
+     * @return the value or {@code null}
+     */
+    string getString(int pos);
 
     // /**
     //  * Get a {@link java.time.temporal.Temporal} value at {@code pos}.

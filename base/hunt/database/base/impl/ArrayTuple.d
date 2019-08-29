@@ -82,60 +82,65 @@ class ArrayTuple : ArrayList!(Variant), Tuple {
         return get(pos);
     }
 
-    // override
-    // Short getShort(int pos) {
-    //     Object val = get(pos);
-    //     if (val instanceof Short) {
-    //         return (Short) val;
-    //     } else if (val instanceof Number) {
-    //         return ((Number) val).shortValue();
-    //     }
-    //     return null;
-    // }
+    override
+    short getShort(int pos) {
+        return get(pos).get!short();
+        // Variant val = get(pos);
+        // if (val.type == typeid(short) || val.type == typeid(ushort)) {
+        //     return val.get!short();
+        // // } else if (val instanceof Number) {
+        // //     return ((Number) val).shortValue();
+        // }
+        // return null;
+    }
 
-    // override
-    // Integer getInteger(int pos) {
-    //     Object val = get(pos);
-    //     if (val instanceof Integer) {
-    //         return (Integer) val;
-    //     } else if (val instanceof Number) {
-    //         return ((Number) val).intValue();
-    //     }
-    //     return null;
-    // }
+    override
+    int getInteger(int pos) {
+        return get(pos).get!int();
+        // Object val = get(pos);
+        // if (val instanceof Integer) {
+        //     return (Integer) val;
+        // } else if (val instanceof Number) {
+        //     return ((Number) val).intValue();
+        // }
+        // return null;
+    }
 
-    // override
-    // Long getLong(int pos) {
-    //     Object val = get(pos);
-    //     if (val instanceof Long) {
-    //         return (Long) val;
-    //     } else if (val instanceof Number) {
-    //         return ((Number) val).longValue();
-    //     }
-    //     return null;
-    // }
+    override
+    long getLong(int pos) {
+        return get(pos).get!long();
+        // Object val = get(pos);
+        // if (val instanceof Long) {
+        //     return (Long) val;
+        // } else if (val instanceof Number) {
+        //     return ((Number) val).longValue();
+        // }
+        // return null;
+    }
 
-    // override
-    // Float getFloat(int pos) {
-    //     Object val = get(pos);
-    //     if (val instanceof Float) {
-    //         return (Float) val;
-    //     } else if (val instanceof Number) {
-    //         return ((Number) val).floatValue();
-    //     }
-    //     return null;
-    // }
+    override
+    float getFloat(int pos) {
+        return get(pos).get!float();
+        // Object val = get(pos);
+        // if (val instanceof Float) {
+        //     return (Float) val;
+        // } else if (val instanceof Number) {
+        //     return ((Number) val).floatValue();
+        // }
+        // return null;
+    }
 
-    // override
-    // Double getDouble(int pos) {
-    //     Object val = get(pos);
-    //     if (val instanceof Double) {
-    //         return (Double) val;
-    //     } else if (val instanceof Number) {
-    //         return ((Number) val).doubleValue();
-    //     }
-    //     return null;
-    // }
+    override
+    double getDouble(int pos) {
+        return get(pos).get!double();
+        // Object val = get(pos);
+        // if (val instanceof Double) {
+        //     return (Double) val;
+        // } else if (val instanceof Number) {
+        //     return ((Number) val).doubleValue();
+        // }
+        // return null;
+    }
 
     // override
     // BigDecimal getBigDecimal(int pos) {
@@ -288,14 +293,15 @@ class ArrayTuple : ArrayList!(Variant), Tuple {
     //     }
     // }
 
-    // override
-    // String getString(int pos) {
-    //     Object val = get(pos);
-    //     if (val instanceof String) {
-    //         return (String) val;
-    //     }
-    //     return null;
-    // }
+    override
+    string getString(int pos) {
+        return get(pos).get!string();
+        // Object val = get(pos);
+        // if (val instanceof String) {
+        //     return (String) val;
+        // }
+        // return null;
+    }
 
     // override
     // Buffer getBuffer(int pos) {
