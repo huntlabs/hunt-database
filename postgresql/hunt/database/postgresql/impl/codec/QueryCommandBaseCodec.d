@@ -23,6 +23,7 @@ import hunt.database.postgresql.impl.codec.PgCommandCodec;
 import hunt.database.base.Row;
 import hunt.database.base.impl.RowDecoder;
 import hunt.database.base.impl.RowDesc;
+import hunt.database.base.impl.RowSetImpl;
 import hunt.database.base.impl.command.QueryCommandBase;
 
 import hunt.Exceptions;
@@ -30,7 +31,8 @@ import hunt.net.buffer.ByteBuf;
 
 // import java.util.stream.Collector;
 
-abstract class QueryCommandBaseCodec(T, C) : PgCommandCodec!(bool, C) { // C extends QueryCommandBase!(T)
+abstract class QueryCommandBaseCodec(T, C) : PgCommandCodec!(bool, C) 
+    if(is(C : QueryCommandBase!(T))) { 
 
     // RowResultDecoder<?, T> decoder;
     AbstractRowResultDecoder!T decoder;
@@ -42,7 +44,7 @@ abstract class QueryCommandBaseCodec(T, C) : PgCommandCodec!(bool, C) { // C ext
     override
     void handleCommandComplete(int updated) {
         this.result = false;
-        T r;
+        T r; // RowSet
         int size;
         RowDesc desc;
         if (decoder !is null) {
@@ -51,9 +53,10 @@ abstract class QueryCommandBaseCodec(T, C) : PgCommandCodec!(bool, C) { // C ext
             size = decoder.size();
             decoder.reset();
         } else {
-            
-            implementationMissing(false);
+            // FIXME: Needing refactor or cleanup -@zxp at 8/29/2019, 11:40:37 AM
+            // 
             // r = emptyResult(cmd.collector());
+            r = new RowSetImpl(); 
             size = 0;
             desc = null;
         }

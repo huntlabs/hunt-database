@@ -97,20 +97,32 @@ abstract class PgConnectionTestBase : PgClientTestBase!(SqlConnection) {
 //         }));
 //     }
 
-//     @Test
-//     void testTx() {
-//         Async async = ctx.async();
-//         connector.accept(ctx.asyncAssertSuccess(conn -> {
-//             conn.query("BEGIN", ctx.asyncAssertSuccess(result1 -> {
-//                 ctx.assertEquals(0, result1.size());
-//                 ctx.assertNotNull(result1.iterator());
-//                 conn.query("COMMIT", ctx.asyncAssertSuccess(result2 -> {
-//                     ctx.assertEquals(0, result2.size());
-//                     async.complete();
-//                 }));
-//             }));
-//         }));
-//     }
+    @Test
+    void testTx() {
+        connector((SqlConnection conn) {
+            conn.query("BEGIN", (AsyncResult!RowSet ar) {
+               if(ar.succeeded()) {
+                   RowSet result1 = ar.result();
+                    assert(0 == result1.size());
+                    assert(result1.iterator() !is null);
+             
+                    conn.query("COMMIT", (AsyncResult!RowSet ar) {
+                        if(ar.succeeded()) {
+                            RowSet result2 = ar.result();
+                            assert(0 == result2.size());
+                        } else {
+                            warning(ar.cause().msg);
+                        }
+                        conn.close();
+                    });
+
+                } else {
+                    warning(ar.cause().msg);
+                }
+            });
+        });
+    }
+    
 // /*
     // @Test
     // void testSQLConnection() {
@@ -128,25 +140,25 @@ abstract class PgConnectionTestBase : PgClientTestBase!(SqlConnection) {
     //     });
     // }
 
-    @Test
-    void testSelectForQueryWithParams() {
+    // @Test
+    // void testSelectForQueryWithParams() {
 
-        connector((SqlConnection conn) {
-            trace("testing preparedQuery...");
-            conn.preparedQuery("SELECT * FROM Fortune WHERE id=$1", Tuple.of(12), (AsyncResult!RowSet ar) {
-                if(ar.succeeded()) {
-                    RowSet result = ar.result();
-                    assert(1 == result.rowCount());
-                    Row r = result.iterator.front();
-                    tracef("id: %d, message: %s", r.getValue("id").get!int(), r.getValue("message"));
-                } else {
-                    warning(ar.cause().msg);
-                }
+    //     connector((SqlConnection conn) {
+    //         trace("testing preparedQuery...");
+    //         conn.preparedQuery("SELECT * FROM Fortune WHERE id=$1", Tuple.of(12), (AsyncResult!RowSet ar) {
+    //             if(ar.succeeded()) {
+    //                 RowSet result = ar.result();
+    //                 assert(1 == result.rowCount());
+    //                 Row r = result.iterator.front();
+    //                 tracef("id: %d, message: %s", r.getValue("id").get!int(), r.getValue("message"));
+    //             } else {
+    //                 warning(ar.cause().msg);
+    //             }
 
-                conn.close();
-            });
-        });
-    }
+    //             conn.close();
+    //         });
+    //     });
+    // }
 
 //     @Test
 //     void testInsertForUpdateWithParams() {
