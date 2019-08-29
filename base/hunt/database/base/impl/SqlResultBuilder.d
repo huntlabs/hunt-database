@@ -68,6 +68,7 @@ class SqlResultBuilder(T, R, L) : QueryResultHandler!(T) { // , Handler!(AsyncRe
     // override
     void handle(AsyncResult!(bool) res) {
         suspended = res.succeeded() && res.result();
+        version(HUNT_DB_DEBUG) tracef("suspended: %s", suspended);
         handler(res.map!(L)(first)); // AsyncResult!(RowSetImpl)
     }
 

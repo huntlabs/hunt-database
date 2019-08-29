@@ -26,7 +26,6 @@ import hunt.database.base.Transaction;
 import hunt.database.base.Tuple;
 
 import hunt.collection.List;
-// import java.util.stream.Collector;
 
 /**
  * A connection to database server.

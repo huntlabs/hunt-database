@@ -196,7 +196,7 @@ abstract class SocketConnectionBase : DbConnection {
                 version(HUNT_DB_DEBUG_MORE) {
                     tracef("chekcing %s ... ", typeid(cast(Object)cmd));
                 } else version(HUNT_DB_DEBUG) {
-                    tracef("chekcing %s ... ", typeid(cast(Object)cmd));
+                    trace("chekcing... ");
                 } 
                 _socket.encode(cast(Object)cmd);
             }
@@ -218,7 +218,7 @@ abstract class SocketConnectionBase : DbConnection {
 
         ICommandResponse resp = cast(ICommandResponse) msg;
         if (resp !is null) {
-            // tracef("inflight=%d", inflight);
+            version(HUNT_DB_DEBUG_MORE) tracef("inflight=%d", inflight);
             inflight--;
             checkPending();
             resp.notifyCommandResponse();
@@ -260,15 +260,16 @@ abstract class SocketConnectionBase : DbConnection {
     }
 
     private void handleClose(Throwable t) {
+        version(HUNT_DB_DEBUG) warning("running here");
         if (status != Status.CLOSED) {
             status = Status.CLOSED;
-            // if (t !is null) {
-            //     synchronized (this) {
-            //         if (holder !is null) {
-            //             holder.handleException(t);
-            //         }
-            //     }
-            // }
+            if (t !is null) {
+                synchronized (this) {
+                    if (holder !is null) {
+                        holder.handleException(t);
+                    }
+                }
+            }
             // Throwable cause = t is null ? new VertxException("closed") : t;
             // CommandBase<?> cmd;
             // while ((cmd = pending.poll()) !is null) {

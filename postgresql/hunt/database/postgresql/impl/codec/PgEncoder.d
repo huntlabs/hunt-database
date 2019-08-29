@@ -41,6 +41,7 @@ import hunt.database.postgresql.impl.codec.SimpleQueryCodec;
 import hunt.database.postgresql.impl.codec.StartupMessage;
 import hunt.database.postgresql.impl.util.Util;
 
+import hunt.database.base.AsyncResult;
 import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.ParamDesc;
 import hunt.database.base.impl.RowDesc;
@@ -104,30 +105,29 @@ final class PgEncoder : EncoderChain {
         }
 
         version(HUNT_DB_DEBUG) 
-        infof("encoding a message: %s", typeid(message));
+        tracef("encoding a message: %s", typeid(message));
 
         PgCommandCodecBase cmdCodec = wrap(cmd);
 
-        cmdCodec.completionHandler = (resp) {
-            version(HUNT_DB_DEBUG) infof("message encoding completed");
+        cmdCodec.completionHandler = (IAsyncResult resp) {
+            version(HUNT_DB_DEBUG) {
+                infof("message encoding completed");
+                PgCommandCodecBase c = inflight.front();
+                assert(cmdCodec is c);
+            }
             version(HUNT_DB_DEBUG_MORE)  tracef("%s", typeid(cast(Object)resp));
-            // CommandResponse!DbConnection h = resp;
-
-            PgCommandCodecBase c = inflight.front();
-            assert(cmdCodec is c);
             inflight.removeFront();
 
-            ConnectionEventHandler handler = ctx.getHandler();
 
             if(resp.failed()) {
                 Throwable th = resp.cause();
                 version(HUNT_DB_DEBUG) {
-                    warning(th.msg);
+                    warningf("Response error: %s", th.msg);
                 }
-                handler.exceptionCaught(ctx, th);
-            } else {
-                handler.messageReceived(ctx, cast(Object)resp);
             }
+
+            ConnectionEventHandler handler = ctx.getHandler();
+            handler.messageReceived(ctx, cast(Object)resp);
         };
 
         inflight.insertBack(cmdCodec);

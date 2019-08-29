@@ -34,6 +34,7 @@ import hunt.collection.HashMap;
 import hunt.collection.Map;
 import hunt.Exceptions;
 import hunt.logging.ConsoleLogger;
+import hunt.Object;
 
 import hunt.net.AbstractConnection;
 import hunt.net.Connection;
@@ -102,13 +103,12 @@ class PgConnectionFactory {
     // Called by hook
     private void close(VoidHandler completionHandler) {
         client.close();
-        // completionHandler.handle(Future.succeededFuture());
+        if(completionHandler !is null) {
+            completionHandler(cast(Void)null);
+        }
     }
 
     void close() {
-        // if (registerCloseHook) {
-        //     ctx.removeCloseHook(hook);
-        // }
         client.close();
     }
 
@@ -189,7 +189,7 @@ class PgConnectionFactory {
                 }
 
                 override void messageReceived(Connection connection, Object message) {
-                    version(HUNT_DB_DEBUG) tracef("message type: %s", typeid(message).name);
+                    version(HUNT_DB_DEBUG_MORE) tracef("message type: %s", typeid(message).name);
                     try {
                         pgConn.handleMessage(connection, message);
                     } catch(Throwable t) {
@@ -199,7 +199,9 @@ class PgConnectionFactory {
 
                 override void exceptionCaught(Connection connection, Throwable t) {
                     version(HUNT_DEBUG) warning(t);
-                    pgConn.handleException(connection, t);
+                    if(pgConn !is null) {
+                        pgConn.handleException(connection, t);
+                    }
                     handler(failedResult!(PgSocketConnection)(t));
                 }
 

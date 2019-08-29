@@ -55,11 +55,6 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
         return query!(RowSet, RowSetImpl, RowSet)(sql, false, RowSetImpl.FACTORY, handler); // RowSetImpl.COLLECTOR, 
     }
 
-    // override
-    // <R> C query(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler) {
-    //     return query(sql, true, SqlResultImpl::new, collector, handler);
-    // }
-
     private C query(R1, R2, R3)(
                 string sql,
                 bool singleton,

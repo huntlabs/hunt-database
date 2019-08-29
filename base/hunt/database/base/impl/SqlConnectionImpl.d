@@ -19,6 +19,7 @@ module hunt.database.base.impl.SqlConnectionImpl;
 
 import hunt.database.base.impl.Connection;
 
+import hunt.database.base.AsyncResult;
 import hunt.database.base.Common;
 import hunt.database.base.SqlConnection;
 import hunt.database.base.impl.command.CommandResponse;
@@ -77,7 +78,6 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbCo
     void handleClosed() {
         VoidHandler handler = _closeHandler;
         if (handler !is null) {
-            // context.runOnContext(handler);
             handler(null);
         }
     }
@@ -113,11 +113,7 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbCo
         EventHandler!(Throwable) handler = _exceptionHandler;
         if (handler !is null) {
             handler(err);
-            // context.runOnContext( (v) {
-            //     handler(err);
-            // });
         } else {
-            // err.printStackTrace();
             warning(err);
         }
     }
