@@ -13,11 +13,11 @@ import hunt.Object;
 import hunt.util.TypeUtils;
 
 alias ResponseHandler(R) = EventHandler!(CommandResponse!(R));
-alias CommandHandler = EventHandler!(IAsyncResult);
+// alias CommandHandler = EventHandler!(ICommandResponse);
 // alias VoidResponseHandler = ResponseHandler!(Void);
 
 
-interface ICommandResponse {
+interface ICommandResponse : IAsyncResult {
     TxStatus txStatus();
 
     void notifyCommandResponse();  

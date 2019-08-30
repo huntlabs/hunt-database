@@ -89,7 +89,7 @@ class InitCommandCodec : PgCommandCodec!(DbConnection, InitCommand) {
         version(HUNT_DB_DEBUG) warningf("errorResponse: %s", errorResponse.toString());
         CommandResponse!(DbConnection) resp = failedResponse!DbConnection(errorResponse.toException());
         if(completionHandler !is null) {
-            resp.cmd = cmd;
+            // resp.cmd = cmd;
             completionHandler(resp);
         }
     }
@@ -112,7 +112,7 @@ class InitCommandCodec : PgCommandCodec!(DbConnection, InitCommand) {
             resp = succeededResponse!(DbConnection)(cmd.connection());
         }
         if(completionHandler !is null) {
-            resp.cmd = cmd;
+            // resp.cmd = cmd;
             completionHandler(resp);
         }
     }

@@ -110,28 +110,22 @@ final class PgEncoder : EncoderChain {
 
         PgCommandCodecBase cmdCodec = wrap(cmd);
 
-        cmdCodec.completionHandler = (IAsyncResult resp) {
+        cmdCodec.completionHandler = (ICommandResponse resp) {
             version(HUNT_DB_DEBUG) {
                 infof("message encoding completed");
-                PgCommandCodecBase c = inflight.front();
-                assert(cmdCodec is c);
+                // PgCommandCodecBase c = inflight.front();
+                // assert(cmdCodec is c);
+                if(resp.failed()) {
+                    Throwable th = resp.cause();
+                    warningf("Response error: %s", th.msg);
+                }
             }
             version(HUNT_DB_DEBUG_MORE)  tracef("%s", typeid(cast(Object)resp));
             inflight.removeFront();
 
-
-            if(resp.failed()) {
-                Throwable th = resp.cause();
-                version(HUNT_DB_DEBUG) {
-                    warningf("Response error: %s", th.msg);
-                }
-            }
-
-            ICommandResponse res = cast(ICommandResponse)resp;
-            assert(res !is null);
-            if(!res.isCommandAttatched()) {
-                warningf("No command attatched for %s", typeid(cast(Object)cmdCodec));
-                res.attachCommand(cmdCodec.getCommand());
+            if(!resp.isCommandAttatched()) {
+                // infof("No command attatched for %s", typeid(cast(Object)cmdCodec));
+                resp.attachCommand(cmdCodec.getCommand());
             }
 
             ConnectionEventHandler handler = ctx.getHandler();
@@ -447,7 +441,7 @@ final class PgEncoder : EncoderChain {
                 outBuffer.writeInt(-1);
             } else {
                 DataTypeDesc dataType = bind.paramTypes[c];
-                version(HUNT_DB_DEBUG) {
+                version(HUNT_DB_DEBUG_MORE) {
                     tracef("dataType: %s, param: type=%s, value=%s", 
                         dataType, param.type, param.toString());
                 }
