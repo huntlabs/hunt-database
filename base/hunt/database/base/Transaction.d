@@ -23,7 +23,6 @@ import hunt.database.base.RowSet;
 import hunt.database.base.SqlClient;
 
 import hunt.collection.List;
-// import java.util.stream.Collector;
 
 /**
  * A transaction that allows to control the transaction and receive events.

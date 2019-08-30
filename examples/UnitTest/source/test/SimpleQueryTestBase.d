@@ -16,6 +16,8 @@
  */
 module test.SimpleQueryTestBase;
 
+import test.QueryTestBase;
+
 import hunt.database.base;
 
 import hunt.Assert;
@@ -30,49 +32,8 @@ import std.conv;
 
 alias SqlConnectionHandler = Action1!SqlConnection;
 
-abstract class SimpleQueryTestBase {
+abstract class SimpleQueryTestBase : QueryTestBase {
 
-    Consumer!(SqlConnectionHandler) connector;
-
-    private static void insertIntoTestTable(SqlClient client, int amount, Action completionHandler) {
-        shared int count = 0;
-        for (int i = 0; i < 10; i++) {
-            string sql = "INSERT INTO mutable (id, val) VALUES (" ~ i.to!string() ~ 
-                ", 'Whatever-" ~ i.to!string() ~ "')";
-
-            client.query(sql, 
-            
-                (AsyncResult!RowSet ar) {
-                    if(ar.succeeded()) {
-                        RowSet result = ar.result();
-
-                        assert(1 == result.rowCount());
-                        if (atomicOp!"+="(count, 1) == amount) {
-                            completionHandler();
-                        }
-                    } else {
-                        warning(ar.cause().msg);
-                    }
-                }
-            );
-        }
-    }
-
-    protected abstract void initConnector();
-
-    protected void connect(SqlConnectionHandler handler) {
-        connector(handler);
-    }
-
-    @Before
-    void setUp() {
-        initConnector();
-        cleanTestTable();
-    }
-
-    @After
-    void tearDown() {
-    }
 
     @Test
     void testQuery() {
@@ -167,14 +128,4 @@ abstract class SimpleQueryTestBase {
         });
     }
 
-    private void cleanTestTable() {
-        connect((SqlConnection conn) {
-            conn.query("TRUNCATE TABLE mutable;", (AsyncResult!RowSet ar)  {
-                if(ar.failed()) {
-                    warning(ar.cause().msg);
-                }                
-                conn.close();
-            });
-        });
-    }
 }
