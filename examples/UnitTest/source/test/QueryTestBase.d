@@ -52,7 +52,7 @@ abstract class QueryTestBase {
     @Before
     void setUp() {
         initConnector();
-        cleanTestTable();
+        // cleanTestTable();
     }
 
     @After

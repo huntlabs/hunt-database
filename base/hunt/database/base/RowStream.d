@@ -48,6 +48,6 @@ interface RowStream(T) { // : ReadStream!(T)
      *
      * @param completionHandler the completion handler for this operation
      */
-    void close(VoidHandler completionHandler);
+    void close(AsyncVoidHandler completionHandler);
 
 }

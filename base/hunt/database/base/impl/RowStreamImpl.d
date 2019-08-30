@@ -141,7 +141,7 @@ class RowStreamImpl : RowStream!(Row) { // , RowSetHandler
     }
 
     // override
-    void close(VoidHandler completionHandler) {
+    void close(AsyncVoidHandler completionHandler) {
         Cursor c;
         synchronized (this) {
             if ((c = cursor) is null) {

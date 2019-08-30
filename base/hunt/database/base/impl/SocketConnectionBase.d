@@ -218,10 +218,11 @@ abstract class SocketConnectionBase : DbConnection {
 
         ICommandResponse resp = cast(ICommandResponse) msg;
         if (resp !is null) {
-            version(HUNT_DB_DEBUG_MORE) tracef("inflight=%d", inflight);
+            // version(HUNT_DB_DEBUG_MORE) tracef("inflight=%d", inflight);
             inflight--;
             checkPending();
             resp.notifyCommandResponse();
+            version(HUNT_DB_DEBUG_MORE) tracef("inflight=%d", inflight);
             return;
         } 
 
@@ -235,6 +236,8 @@ abstract class SocketConnectionBase : DbConnection {
         if (notice !is null) {
             handleNotice(notice);
         }
+
+        version(HUNT_DB_DEBUG) warningf("Unhandled message: %s", typeid(msg));
     }
 
     private void handleNotification(Notification response) {

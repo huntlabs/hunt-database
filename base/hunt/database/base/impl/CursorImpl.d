@@ -20,6 +20,7 @@ module hunt.database.base.impl.CursorImpl;
 import hunt.database.base.impl.PreparedQueryImpl;
 import hunt.database.base.impl.RowSetImpl;
 import hunt.database.base.impl.SqlResultBuilder;
+import hunt.database.base.impl.command.CommandResponse;
 
 import hunt.database.base.AsyncResult;
 import hunt.database.base.Common;
@@ -28,7 +29,10 @@ import hunt.database.base.RowSet;
 import hunt.database.base.Tuple;
 
 import hunt.Exceptions;
+import hunt.logging.ConsoleLogger;
+import hunt.Object;
 
+import std.range;
 import std.uuid;
 
 /**
@@ -58,26 +62,30 @@ class CursorImpl : Cursor {
 
     override
     void read(int count, RowSetHandler handler) {
-        if (id is null) {
+        if (id.empty) {
             id = randomUUID().toString();
             result = new SqlResultBuilder!(RowSet, RowSetImpl, RowSet)(RowSetImpl.FACTORY, handler);
-            // ps.execute(params, count, id, false, false, RowSetImpl.COLLECTOR, result, result);
-            implementationMissing(false);
+            ps.execute!(RowSet)(params, count, id, false, false, result, 
+                (CommandResponse!bool r) {  result.handle(r); }
+            );
         } else if (result.isSuspended()) {
             result = new SqlResultBuilder!(RowSet, RowSetImpl, RowSet)(RowSetImpl.FACTORY, handler);
-            // ps.execute(params, count, id, true, false, RowSetImpl.COLLECTOR, result, result);
-            implementationMissing(false);
+            ps.execute!(RowSet)(params, count, id, true, false, result, 
+                (CommandResponse!bool r) {  result.handle(r); }
+            );
         } else {
             throw new IllegalStateException();
         }
     }
 
     override
-    void close(VoidHandler completionHandler) {
+    void close(AsyncVoidHandler completionHandler) {
         if (!closed) {
             closed = true;
-            if (id is null) {
-                completionHandler(cast(Object)null); // Future.succeededFuture()
+            version(HUNT_DB_DEBUG_MORE) infof("id: %s", id);
+            if (id.empty) { 
+                if(completionHandler !is null)
+                    completionHandler(succeededResult!(Object)(null)); // Future.succeededFuture()
             } else {
                 string id = this.id;
                 this.id = null;

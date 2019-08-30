@@ -68,8 +68,8 @@ class Util {
     static string buildInvalidArgsError(Variant[] values, string[] types) {
         import std.format;
         // string str = types.to!string();
-        string str = format("[%-(%s, %)]", types);
-        return "Values [" ~ values.map!(v => v.to!string() ~ "<"~ v.type.toString() ~ ">" ).joiner(", ").to!string() ~
+        string str = format("[%-(%s / %)]", types);
+        return "Values [" ~ values.map!(v => v.to!string() ~ " : "~ v.type.toString() ).joiner(", ").to!string() ~
             "] cannot be coerced to " ~ str;
     }
 

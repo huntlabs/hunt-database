@@ -94,8 +94,10 @@ class RowResultDecoder(R) : AbstractRowResultDecoder!R {
             if (length != -1) {
                 PgColumnDesc columnDesc = desc.columns[c];
 
-                tracef("Column: name=%s, (%s), dataFormat=%s", 
-                    columnDesc.name, columnDesc.dataType, columnDesc.dataFormat);
+                version(HUNT_DB_DEBUG_MORE) {
+                    tracef("Column: name=%s, (%s), dataFormat=%s", 
+                        columnDesc.name, columnDesc.dataType, columnDesc.dataFormat);
+                }
 
                 if (columnDesc.dataFormat == DataFormat.BINARY) {
                     decoded = DataTypeCodec.decodeBinary(cast(DataType)columnDesc.dataType.id, 

@@ -21,6 +21,8 @@ import hunt.database.base.AsyncResult;
 import hunt.database.base.Common;
 import hunt.database.base.RowSet;
 
+import hunt.logging.ConsoleLogger;
+
 
 
 /**
@@ -50,12 +52,14 @@ interface Cursor {
      * It should be called for prepared queries executed with a fetch size.
      */
     final void close() {
-        close((ar) {});
+        close((ar) {
+            warning("do nothing...");
+        });
     }
 
     /**
      * Like {@link #close()} but with a {@code completionHandler} called when the cursor has been released.
      */
-    void close(VoidHandler completionHandler);
+    void close(AsyncVoidHandler completionHandler);
 
 }

@@ -38,7 +38,7 @@ abstract class SimpleQueryTestBase : QueryTestBase {
     @Test
     void testQuery() {
         connect((SqlConnection conn) {
-            conn.query("SELECT id, message from immutable", (AsyncResult!RowSet ar)  {
+            conn.query("SELECT id, message from immutable", (AsyncResult!RowSet ar) {
                 if(ar.succeeded()) {
                     RowSet result = ar.result();
 

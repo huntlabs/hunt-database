@@ -46,7 +46,9 @@ import hunt.collection.List;
 import hunt.Exceptions;
 import hunt.Functions;
 import hunt.logging.ConsoleLogger;
+import hunt.Object;
 
+import core.atomic;
 import std.array;
 import std.variant;
 
@@ -176,21 +178,25 @@ class PreparedQueryImpl : PreparedQuery {
     // }
 
     override
-    void close(VoidHandler completionHandler) {
-        // if (closed.compareAndSet(false, true)) {
-        //     CloseStatementCommand cmd = new CloseStatementCommand(ps);
-        //     cmd.handler = completionHandler;
-        //     conn.schedule(cmd);
-        // } else {
-        //     completionHandler.handle(Future.failedFuture("Already closed"));
-        // }
-        implementationMissing(false);
+    void close(AsyncVoidHandler handler) {
+        version(HUNT_DB_DEBUG) infof("closed: %s", closed);
+        if(cas(&closed, false, true)) {
+            CloseStatementCommand cmd = new CloseStatementCommand(ps);
+            cmd.handler = (h) { 
+                if(handler !is null) {
+                    handler(h); 
+                }
+            };
+            conn.schedule(cmd);
+        } else if(handler !is null) {
+            handler(failedResult!(Void)(new DatabaseException("Already closed")));
+        }
     }
 
-    void closeCursor(string cursorId, VoidHandler handler) {
+    void closeCursor(string cursorId, AsyncVoidHandler handler) {
+        version(HUNT_DB_DEBUG) infof("cursorId: %s", cursorId);
         CloseCursorCommand cmd = new CloseCursorCommand(cursorId, ps);
-        // cmd.handler = handler;
-        implementationMissing(false);
+        cmd.handler = (h) { if(handler !is null) handler(h); };
         conn.schedule(cmd);
     }
 }

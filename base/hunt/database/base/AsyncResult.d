@@ -10,12 +10,12 @@
  */
 module hunt.database.base.AsyncResult;
 
-// import hunt.database.base.Common;
-
 import hunt.Exceptions;
 import hunt.Functions;
+import hunt.Object;
 
 alias AsyncResultHandler(T) = Action1!(AsyncResult!T);
+alias AsyncVoidHandler = AsyncResultHandler!Void;
 
 interface IAsyncResult {
 

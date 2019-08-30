@@ -18,6 +18,7 @@
 module hunt.database.base.impl.command.CommandBase;
 
 import hunt.database.base.impl.command.CommandResponse;
+import hunt.logging.ConsoleLogger;
 
 
 interface ICommand {
@@ -32,7 +33,6 @@ interface ICommand {
 abstract class CommandBase(R) : ICommand {
 
     ResponseHandler!R handler;
-
 
     final bool handlerExist() { return handler !is null; }
 

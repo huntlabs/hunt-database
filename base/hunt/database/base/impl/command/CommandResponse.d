@@ -9,15 +9,22 @@ import hunt.database.base.Exceptions;
 import hunt.database.base.impl.TxStatus;
 
 import hunt.logging.ConsoleLogger;
+import hunt.Object;
+import hunt.util.TypeUtils;
 
 alias ResponseHandler(R) = EventHandler!(CommandResponse!(R));
 alias CommandHandler = EventHandler!(IAsyncResult);
+// alias VoidResponseHandler = ResponseHandler!(Void);
 
 
 interface ICommandResponse {
     TxStatus txStatus();
 
     void notifyCommandResponse();  
+
+    bool isCommandAttatched();
+
+    void attachCommand(ICommand cmd);
 }
 
 abstract class CommandResponse(R) : AsyncResult!(R), ICommandResponse {
@@ -37,8 +44,27 @@ abstract class CommandResponse(R) : AsyncResult!(R), ICommandResponse {
 
     void notifyCommandResponse() {
         if(cmd !is null) {
+            version(HUNT_DB_DEBUG) trace("response command:", typeid(cmd));
             cmd.notifyResponse(this);
+        } else {
+            version(HUNT_DB_DEBUG) warning("No command set.");
         }
+    }
+
+    bool isCommandAttatched() {
+        return cmd !is null;
+    }
+
+    void attachCommand(ICommand cmd) {
+        CommandBase!(R) c = cast(CommandBase!(R))cmd;
+        version(HUNT_DB_DEBUG) {
+            if(c is null) { 
+                warning("Can't cast cmd from %s to %s", 
+                    TypeUtils.getSimpleName(typeid(cast(Object)cmd)),
+                    TypeUtils.getSimpleName(typeid(this.cmd)));
+            }
+        }
+        this.cmd = c;
     }
 
     // void schedule(S)(CommandBase!(S) cmd, ResponseHandler!S handler) {

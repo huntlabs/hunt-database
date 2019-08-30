@@ -41,6 +41,9 @@ class CloseStatementCommandCodec : PgCommandCodec!(Void, CloseStatementCommand) 
         }
         */
         CommandResponse!(Void) resp = succeededResponse(cast(Void)null);
-        completionHandler(resp);
+        if(completionHandler !is null) {
+            // resp.cmd = this.cmd;
+            completionHandler(resp);
+        }
     }
 }

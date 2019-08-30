@@ -108,6 +108,8 @@ abstract class PgCommandCodecBase {
     }
 
     void handleReadyForQuery(TxStatus txStatus);
+
+    ICommand getCommand();
 }
 
 /**
@@ -115,7 +117,6 @@ abstract class PgCommandCodecBase {
 abstract class PgCommandCodec(R, C) : PgCommandCodecBase
         if(is(C : CommandBase!(R))) {
 
-    // ResponseHandler!R completionHandler;
     Throwable _failure;
     R result;
     C cmd;
@@ -150,9 +151,12 @@ abstract class PgCommandCodec(R, C) : PgCommandCodecBase
     }
 
     override void handleNoticeResponse(NoticeResponse noticeResponse) {
-        warning("noticeHandler");
         if(noticeHandler !is null) {
             noticeHandler(noticeResponse);
         }
+    }
+
+    override C getCommand() {
+        return cmd;
     }
 }

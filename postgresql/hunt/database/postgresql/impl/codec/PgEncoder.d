@@ -127,6 +127,13 @@ final class PgEncoder : EncoderChain {
                 }
             }
 
+            ICommandResponse res = cast(ICommandResponse)resp;
+            assert(res !is null);
+            if(!res.isCommandAttatched()) {
+                warningf("No command attatched for %s", typeid(cast(Object)cmdCodec));
+                res.attachCommand(cmdCodec.getCommand());
+            }
+
             ConnectionEventHandler handler = ctx.getHandler();
             handler.messageReceived(ctx, cast(Object)resp);
         };

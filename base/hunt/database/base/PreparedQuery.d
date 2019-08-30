@@ -122,6 +122,6 @@ interface PreparedQuery {
     /**
      * Like {@link #close()} but notifies the {@code completionHandler} when it's closed.
      */
-    void close(VoidHandler completionHandler);
+    void close(AsyncVoidHandler completionHandler);
 
 }

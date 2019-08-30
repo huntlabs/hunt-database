@@ -34,68 +34,97 @@ alias SqlConnectionHandler = Action1!SqlConnection;
 
 abstract class PreparedQueryTestBase : QueryTestBase {
 
-
     protected abstract string statement(string[] parts...);
 
-
-    @Test
-    void testPrepare() {
-        connect((SqlConnection conn) {
-            conn.prepare(statement("SELECT id, message from immutable where id=", ""), (AsyncResult!PreparedQuery ar)  {
-                trace("running here");
-                if(ar.succeeded()) {
-                    conn.close();
-                } else {
-                    warning(ar.cause().msg);
-                }
-            });
-        });
-    }
+    // @Test
+    // void testPrepare() {
+    //     connect((SqlConnection conn) {
+    //         conn.prepare(statement("SELECT id, message from immutable where id=", ""), (AsyncResult!PreparedQuery ar)  {
+                // if(ar.succeeded()) {
+                //     trace("running here");
+                // } else {
+                //     warning(ar.cause().msg);
+                // }
+    //             conn.close();
+    //         });
+    //     });
+    // }
 
     // @Test
     // void testPrepareError() {
-    //     connect(ctx.asyncAssertSuccess(conn -> {
-    //         conn.prepare("SELECT whatever from DOES_NOT_EXIST", ctx.asyncAssertFailure(error -> {
-    //         }));
-    //     }));
+    //     connect((SqlConnection conn) {
+    //         conn.prepare("SELECT whatever from DOES_NOT_EXIST", (AsyncResult!PreparedQuery ar) {
+    //             trace("running here");
+    //             assert(ar.failed());
+    //             warning(ar.cause().msg);
+    //             conn.close();
+    //         });
+    //     });
     // }
 
     // @Test
     // void testPreparedQuery() {
-    //     connect(ctx.asyncAssertSuccess(conn -> {
-    //         conn.preparedQuery(statement("SELECT * FROM immutable WHERE id=", ""), Tuple.of(1), ctx.asyncAssertSuccess(rowSet -> {
-    //             ctx.assertEquals(1, rowSet.size());
-    //             Tuple row = rowSet.iterator().next();
-    //             ctx.assertEquals(1, row.getInteger(0));
-    //             ctx.assertEquals("fortune: No such file or directory", row.getstring(1));
+    //     connect((SqlConnection conn) {
+    //         string sql = statement("SELECT * FROM immutable WHERE id=", "");
+    //         conn.preparedQuery(sql, Tuple.of(1), (AsyncResult!RowSet ar) {
+    //             if(ar.succeeded()) {
+    //                 trace("running here");
+    //                 RowSet rowSet = ar.result();
+    //                 assert(1 == rowSet.size());
+    //                 Tuple row = rowSet.iterator().front();
+    //                 assert(1 == row.getInteger(0));
+    //                 assert("fortune: No such file or directory" == row.getString(1));
+    //             } else {
+    //                 warning(ar.cause().msg);
+    //             }
     //             conn.close();
-    //         }));
-    //     }));
+    //         });
+    //     });
     // }
 
     // @Test
     // void testPreparedQueryParamCoercionTypeError() {
-    //     connect(ctx.asyncAssertSuccess(conn -> {
-    //         conn.prepare(statement("SELECT * FROM immutable WHERE id=", ""), ctx.asyncAssertSuccess(ps -> {
-    //             ps.execute(Tuple.of("1"), ctx.asyncAssertFailure(error -> {
-    //             }));
-    //         }));
-    //     }));
+    //     connect((SqlConnection conn) {
+    //         string sql = statement("SELECT * FROM immutable WHERE id=", "");
+    //         conn.prepare(sql, (AsyncResult!PreparedQuery ar) {
+    //             if(ar.succeeded()) {
+    //                 PreparedQuery ps = ar.result();
+    //                 ps.execute(Tuple.of("1"), (AsyncResult!RowSet ar2) {
+    //                     trace("running here");
+    //                     assert(ar2.failed());
+    //                     warning(ar2.cause().msg);
+    //                     conn.close();
+    //                 });
+    //             } else {
+    //                 warning(ar.cause().msg);
+    //             }
+    //         });
+    //     });
     // }
 
     // @Test
     // void testPreparedQueryParamCoercionQuantityError() {
-    //     connect(ctx.asyncAssertSuccess(conn -> {
-    //         conn.prepare(statement("SELECT * FROM immutable WHERE id=", ""), ctx.asyncAssertSuccess(ps -> {
-    //             ps.execute(Tuple.of(1, 2), ctx.asyncAssertFailure(error -> {
-    //             }));
-    //         }));
-    //     }));
+    //     connect((SqlConnection conn) {
+    //         string sql = statement("SELECT * FROM immutable WHERE id=", "");
+    //         conn.prepare(sql, (AsyncResult!PreparedQuery ar) {
+    //             if(ar.succeeded()) {
+    //                 PreparedQuery ps = ar.result();
+    //                 ps.execute(Tuple.of(1, 2), (AsyncResult!RowSet ar2) {
+    //                     trace("running here");
+    //                     assert(ar2.failed());
+    //                     warning(ar2.cause().msg);
+    //                     conn.close();
+    //                 });
+    //             } else {
+    //                 warning(ar.cause().msg);
+    //             }
+    //         });
+    //     });
     // }
 
     // @Test
     // void testPreparedUpdate() {
-    //     connector.connect(ctx.asyncAssertSuccess(conn -> {
+    //     connect((SqlConnection conn) {
     //         conn.preparedQuery("INSERT INTO mutable (id, val) VALUES (2, 'Whatever')", ctx.asyncAssertSuccess(r1 -> {
     //             ctx.assertEquals(1, r1.rowCount());
     //             conn.preparedQuery("UPDATE mutable SET val = 'Rocks!' WHERE id = 2", ctx.asyncAssertSuccess(res1 -> {
@@ -127,13 +156,18 @@ abstract class PreparedQueryTestBase : QueryTestBase {
 
     // @Test
     // void testPreparedUpdateWithNullParams() {
-    //     connector.connect(ctx.asyncAssertSuccess(conn -> {
+    //     connect((SqlConnection conn) {
     //         conn.preparedQuery(
-    //             statement("INSERT INTO mutable (val, id) VALUES (", ",", ")"), Tuple.of(null, 1),
-    //             ctx.asyncAssertFailure(error -> {
-    //             })
+    //             statement("INSERT INTO mutable (val, id) VALUES (", ",", ")"), 
+    //             Tuple.of(null, 1),
+    //             (AsyncResult!RowSet ar) {
+    //                 trace("running here");
+    //                 assert(ar.failed());
+    //                 warning(ar.cause().msg);
+    //                 conn.close();
+    //             }
     //         );
-    //     }));
+    //     });
     // }
 
     // // Need to test partial query close or abortion ?
@@ -160,31 +194,47 @@ abstract class PreparedQueryTestBase : QueryTestBase {
     //     }));
     // }
 
-    // @Test
-    // void testQueryCloseCursor() {
-    //     Async async = ctx.async();
-    //     connector.connect(ctx.asyncAssertSuccess(conn -> {
-    //         conn.query("BEGIN", ctx.asyncAssertSuccess(begin -> {
-    //             conn.prepare(statement("SELECT * FROM immutable WHERE id="," OR id=", " OR id=", " OR id=", " OR id=", " OR id=",""), ctx.asyncAssertSuccess(ps -> {
-    //                 Cursor query = ps.cursor(Tuple.of(1, 8, 4, 11, 2, 9));
-    //                 query.read(4, ctx.asyncAssertSuccess(results -> {
-    //                     ctx.assertEquals(4, results.size());
-    //                     query.close(ctx.asyncAssertSuccess(v1 -> {
-    //                         ps.close(ctx.asyncAssertSuccess(v2 -> {
-    //                             async.complete();
-    //                         }));
-    //                     }));
-    //                 }));
-    //             }));
-    //         }));
-    //     }));
-    // }
+    static T asyncAssertSuccess(T)(AsyncResult!T ar) {
+        if(ar.succeeded()) {
+            return ar.result();
+        } else {
+            warning(ar.cause().msg);
+            throw new DatabaseException(ar.cause().msg);
+        }
+    }
+
+    @Test
+    void testQueryCloseCursor() {
+        connect((SqlConnection conn) {
+            conn.query("BEGIN", (AsyncResult!RowSet ar) {
+                string sql = statement("SELECT * FROM immutable WHERE id="," OR id=", " OR id=", 
+                    " OR id=", " OR id=", " OR id=","");
+                conn.prepare(sql, (AsyncResult!PreparedQuery ar1) {
+                    trace("running here");
+                    PreparedQuery ps = asyncAssertSuccess(ar1);
+                    Cursor query = ps.cursor(Tuple.of(1, 8, 4, 11, 2, 9));
+                    query.read(4, (AsyncResult!RowSet ar2) {
+                        trace("running here");
+                        RowSet results = asyncAssertSuccess(ar2);
+                        assert(4 == results.size());
+                        query.close((v1) {
+                                trace("running here");
+                            ps.close((v2) {
+                                trace("running here");
+                                conn.close();
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    }
 
     // @Test
     // void testQueryStreamCloseCursor() {
     //     Async async = ctx.async();
     //     connector.connect(ctx.asyncAssertSuccess(conn -> {
-    //         conn.query("BEGIN", ctx.asyncAssertSuccess(begin -> {
+    //         conn.query("BEGIN", (AsyncResult!RowSet ar) {
     //             conn.prepare(statement("SELECT * FROM immutable WHERE id="," OR id=", " OR id=", " OR id=", " OR id=", " OR id=",""), ctx.asyncAssertSuccess(ps -> {
     //                 Cursor stream = ps.cursor(Tuple.of(1, 8, 4, 11, 2, 9));
     //                 stream.read(4, ctx.asyncAssertSuccess(result -> {
@@ -204,7 +254,7 @@ abstract class PreparedQueryTestBase : QueryTestBase {
     // void testStreamQuery() {
     //     Async async = ctx.async();
     //     connector.connect(ctx.asyncAssertSuccess(conn -> {
-    //         conn.query("BEGIN", ctx.asyncAssertSuccess(begin -> {
+    //         conn.query("BEGIN", (AsyncResult!RowSet ar) {
     //             conn.prepare("SELECT * FROM immutable", ctx.asyncAssertSuccess(ps -> {
     //                 RowStream!(Row) stream = ps.createStream(4, Tuple.tuple());
     //                 List!(Tuple) rows = new ArrayList<>();
