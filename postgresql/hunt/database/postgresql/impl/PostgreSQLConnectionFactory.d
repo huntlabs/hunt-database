@@ -49,7 +49,6 @@ import hunt.net.NetUtil;
 class PgConnectionFactory {
 
     private NetClient client;
-    // private Context ctx;
     private bool registerCloseHook;
     private string host;
     private int port;

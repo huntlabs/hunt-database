@@ -20,15 +20,21 @@ module hunt.database.base.impl.PreparedQueryImpl;
 import hunt.database.base.impl.ArrayTuple;
 import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.CursorImpl;
-import hunt.database.base.impl.RowSetImpl;
 import hunt.database.base.impl.PreparedStatement;
+import hunt.database.base.impl.QueryResultHandler;
+import hunt.database.base.impl.RowSetImpl;
+import hunt.database.base.impl.SqlResultBuilder;
 
 import hunt.database.base.impl.command.CloseCursorCommand;
 import hunt.database.base.impl.command.CloseStatementCommand;
+import hunt.database.base.impl.command.CommandResponse;
 import hunt.database.base.impl.command.ExtendedBatchQueryCommand;
 import hunt.database.base.impl.command.ExtendedQueryCommand;
+
+import hunt.database.base.AsyncResult;
 import hunt.database.base.Common;
 import hunt.database.base.Cursor;
+import hunt.database.base.Exceptions;
 import hunt.database.base.PreparedQuery;
 import hunt.database.base.SqlResult;
 import hunt.database.base.RowSet;
@@ -38,8 +44,10 @@ import hunt.database.base.Tuple;
 
 import hunt.collection.List;
 import hunt.Exceptions;
+import hunt.Functions;
 import hunt.logging.ConsoleLogger;
 
+import std.array;
 import std.variant;
 
 /**
@@ -48,74 +56,66 @@ import std.variant;
 class PreparedQueryImpl : PreparedQuery {
 
     private DbConnection conn;
-    // private Context context;
     private PreparedStatement ps;
-    // private AtomicBoolean closed = new AtomicBoolean();
     private shared bool closed = false;
 
-    this(DbConnection conn, PreparedStatement ps) { // Context context, 
+    this(DbConnection conn, PreparedStatement ps) { 
         this.conn = conn;
         // this.context = context;
         this.ps = ps;
     }
 
     PreparedQuery execute(RowSetHandler handler) {
-
-        implementationMissing(false);
-        return null;
+        return execute(ArrayTuple.EMPTY, handler);
     }
 
     override
     PreparedQuery execute(Tuple args, RowSetHandler handler) {
-        // return execute(args, false, RowSetImpl.FACTORY, RowSetImpl.COLLECTOR, handler);
-        implementationMissing(false);
-        return null;
+        return execute!(RowSet, RowSetImpl, RowSet)(args, false, RowSetImpl.FACTORY, handler);
     }
 
-    // PreparedQuery execute(R)(Tuple args, Handler!(AsyncResult!(SqlResult!(R))) handler) { // Collector<Row, ?, R> collector, 
-    //     return execute(args, true, SqlResultImpl::new, collector, handler);
-    // }
+    // <R1, R2 extends SqlResultBase!(R1, R2), R3 extends SqlResult!(R1)> 
+    private PreparedQuery execute(R1, R2, R3)(
+            Tuple args, bool singleton,
+            Function!(R1, R2) factory,
+            // Collector<Row, ?, R1> collector,
+            AsyncResultHandler!(R3) handler) {
 
-    // private <R1, R2 extends SqlResultBase!(R1, R2), R3 extends SqlResult!(R1)> PreparedQuery execute(
-    //     Tuple args,
-    //     boolean singleton,
-    //     Function!(R1, R2) factory,
-    //     Collector<Row, ?, R1> collector,
-    //     Handler!(AsyncResult!(R3)) handler) {
-    //     SqlResultBuilder!(R1, R2, R3) b = new SqlResultBuilder<>(factory, handler);
-    //     return execute(args, 0, null, false, singleton, collector, b, b);
-    // }
+        SqlResultBuilder!(R1, R2, R3) b = new SqlResultBuilder!(R1, R2, R3)(factory, handler);
+        return execute!(R1)(args, 
+            0, "", false, singleton, b, 
+            (CommandResponse!bool r) {  b.handle(r); }
+        );
+    }
 
-    // <A, R> PreparedQuery execute(Tuple args,
-    //                                                          int fetch,
-    //                                                          string cursorId,
-    //                                                          boolean suspended,
-    //                                                          boolean singleton,
-    //                                                          Collector!(Row, A, R) collector,
-    //                                                          QueryResultHandler!(R) resultHandler,
-    //                                                          Handler!(AsyncResult!(Boolean)) handler) {
-    //     if (context == Vertx.currentContext()) {
-    //         string msg = ps.prepare((List!(Object)) args);
-    //         if (msg !is null) {
-    //             handler.handle(Future.failedFuture(msg));
-    //         } else {
-    //             ExtendedQueryCommand cmd = new ExtendedQueryCommand<>(
-    //                 ps,
-    //                 args,
-    //                 fetch,
-    //                 cursorId,
-    //                 suspended,
-    //                 singleton,
-    //                 collector,
-    //                 resultHandler);
-    //             cmd.handler = handler;
-    //             conn.schedule(cmd);
-    //         }
-    //     } else {
-    //         context.runOnContext(v -> execute(args, fetch, cursorId, suspended, singleton, collector, resultHandler, handler));
-    //     }
-    //     return this;
-    // }
+    PreparedQuery execute(R)(Tuple args,
+            int fetch,
+            string cursorId,
+            bool suspended,
+            bool singleton,
+            // Collector!(Row, A, R) collector,
+            QueryResultHandler!(R) resultHandler,
+            ResponseHandler!(bool) handler) {
+
+        string msg = ps.prepare(cast(List!(Variant)) args);
+        if (!msg.empty()) {
+            version(HUNT_DB_DEBUG) warning(msg);
+            handler(failedResponse!(bool)(new DatabaseException(msg)));
+        } else {
+            ExtendedQueryCommand!R cmd = new ExtendedQueryCommand!R(
+                ps,
+                args,
+                fetch,
+                cursorId,
+                suspended,
+                singleton,
+                resultHandler);
+            cmd.handler = handler;
+            conn.schedule(cmd);
+        }
+   
+        return this;
+    }
 
     Cursor cursor() {
         return cursor(ArrayTuple.EMPTY);
@@ -152,7 +152,7 @@ class PreparedQueryImpl : PreparedQuery {
 
     // private <R1, R2 extends SqlResultBase!(R1, R2), R3 extends SqlResult!(R1)> PreparedQuery batch(
     //     List!(Tuple) argsList,
-    //     boolean singleton,
+    //     bool singleton,
     //     Function!(R1, R2) factory,
     //     Collector<Row, ?, R1> collector,
     //     Handler!(AsyncResult!(R3)) handler) {

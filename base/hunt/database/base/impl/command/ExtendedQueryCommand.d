@@ -24,8 +24,6 @@ import hunt.database.base.Tuple;
 import hunt.database.base.impl.PreparedStatement;
 import hunt.database.base.impl.QueryResultHandler;
 
-// import java.util.stream.Collector;
-
 /**
 */
 class ExtendedQueryCommand(T) : ExtendedQueryCommandBase!(T) {
@@ -35,7 +33,6 @@ class ExtendedQueryCommand(T) : ExtendedQueryCommandBase!(T) {
     this(PreparedStatement ps,
             Tuple params,
             bool singleton,
-            // Collector<Row, ?, T> collector,
             QueryResultHandler!(T) resultHandler) {
         this(ps, params, 0, null, false, singleton, resultHandler);
     }
@@ -46,7 +43,6 @@ class ExtendedQueryCommand(T) : ExtendedQueryCommandBase!(T) {
             string cursorId,
             bool suspended,
             bool singleton,
-            // Collector<Row, ?, T> collector,
             QueryResultHandler!(T) resultHandler) {
         super(ps, fetch, cursorId, suspended, singleton, resultHandler);
         this._params = params;

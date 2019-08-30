@@ -31,20 +31,14 @@ import hunt.database.base.impl.QueryResultHandler;
 abstract class QueryCommandBase(T) : CommandBase!(bool) {
 
     private QueryResultHandler!(T) _resultHandler;
-    // private Collector<Row, ?, T> collector;
 
-    this(QueryResultHandler!(T) resultHandler) { // Collector<Row, ?, T> collector, 
+    this(QueryResultHandler!(T) resultHandler) {
         this._resultHandler = resultHandler;
-        // this.collector = collector;
     }
 
     QueryResultHandler!(T) resultHandler() {
         return _resultHandler;
     }
-
-    // Collector<Row, ?, T> collector() {
-    //     return collector;
-    // }
 
     abstract string sql();
 

@@ -41,9 +41,8 @@ abstract class ExtendedQueryCommandBase(R) : QueryCommandBase!(R) {
                 string cursorId,
                 bool suspended,
                 bool singleton,
-            //  Collector<Row, ?, R> collector,
                 QueryResultHandler!(R) resultHandler) {
-        super(resultHandler); // collector, 
+        super(resultHandler); 
         this.ps = ps;
         this._fetch = fetch;
         this._cursorId = cursorId;

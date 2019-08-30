@@ -17,39 +17,45 @@
 
 module hunt.database.base.impl.SqlConnectionBase;
 
-import hunt.database.base.impl.SqlClientBase;
 import hunt.database.base.impl.Connection;
-
-import hunt.database.base.PreparedQuery;
-import hunt.database.base.impl.command.PrepareStatementCommand;
 import hunt.database.base.impl.PreparedQueryImpl;
+import hunt.database.base.impl.PreparedStatement;
+import hunt.database.base.impl.SqlClientBase;
+import hunt.database.base.impl.command.CommandResponse;
+import hunt.database.base.impl.command.PrepareStatementCommand;
+
+import hunt.database.base.AsyncResult;
+import hunt.database.base.PreparedQuery;
 
 import hunt.Exceptions;
+import hunt.logging.ConsoleLogger;
 import hunt.net.AbstractConnection;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-abstract class SqlConnectionBase(C) : SqlClientBase!(C)
-         { // if(is(C : SqlConnectionBase))
+abstract class SqlConnectionBase(C) : SqlClientBase!(C) { 
+    // if(is(C : SqlConnectionBase!(C))) 
 
-    // protected Context context;
     protected DbConnection conn;
 
     protected this(DbConnection conn) {
         this.conn = conn;
     }
-    
 
     C prepare(string sql, PreparedQueryHandler handler) {
-        implementationMissing(false);
-        // schedule(new PrepareStatementCommand(sql), (cr) {
-        //     if (cr.succeeded()) {
-        //         handler.handle(Future.succeededFuture(new PreparedQueryImpl(conn, cr.result())));
-        //     } else {
-        //         handler.handle(Future.failedFuture(cr.cause()));
-        //     }
-        // });
+        version(HUNT_DB_DEBUG) trace(sql);
+        schedule!(PreparedStatement)(new PrepareStatementCommand(sql), 
+            (CommandResponse!PreparedStatement cr) {
+                if(handler !is null) {
+                    if (cr.succeeded()) {
+                        handler(succeededResult!(PreparedQuery)(new PreparedQueryImpl(conn, cr.result())));
+                    } else {
+                        handler(failedResult!(PreparedQuery)(cr.cause()));
+                    }
+                }
+            }
+        );
         return cast(C) this;
     }
 }
