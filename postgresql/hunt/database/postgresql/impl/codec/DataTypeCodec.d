@@ -56,6 +56,7 @@ import hunt.net.Exceptions;
 import hunt.String;
 import hunt.text.Charset;
 
+import std.algorithm;
 import std.array;
 import std.ascii;
 import std.concurrency : initOnce;
@@ -655,7 +656,8 @@ class DataTypeCodec {
                 }
 
             default:
-                if (!value.hasValue() || valueType == typeid(null) || type.decodingType is null || type.decodingType == valueType)
+                if (!value.hasValue() || valueType == typeid(null) || 
+                        type.decodingType.empty() || type.decodingType.canFind(valueType.toString()))
                     return value;
                 else 
                     return REFUSED_SENTINEL.Variant();

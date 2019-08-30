@@ -44,17 +44,17 @@ struct DataTypeDesc {
 
     int id;
     bool supportsBinary;
-    TypeInfo encodingType; // Not really used for now
-    TypeInfo decodingType;
+    string[] encodingType; // Not really used for now
+    string[] decodingType;
 
-    this(int id, bool supportsBinary, TypeInfo_Class type) {
+    this(int id, bool supportsBinary, string[] type) {
         this.id = id;
         this.supportsBinary = supportsBinary;
         this.decodingType = type;
         this.encodingType = type;
     }
 
-    this(int id, bool supportsBinary, TypeInfo_Class encodingType, TypeInfo_Class decodingType) {
+    this(int id, bool supportsBinary, string[] encodingType, string[] decodingType) {
         this.id = id;
         this.supportsBinary = supportsBinary;
         this.encodingType = encodingType;
@@ -88,17 +88,17 @@ struct DataTypeDesc {
     
 struct DataTypes {
 
-    enum DataTypeDesc BOOL = DataTypeDesc(16, true, null); // Boolean.class);
+    enum DataTypeDesc BOOL = DataTypeDesc(16, true, [bool.stringof]); // Boolean.class);
     enum DataTypeDesc BOOL_ARRAY = DataTypeDesc(1000, true, null); // Boolean[].class);
-    enum DataTypeDesc INT2 = DataTypeDesc(21, true, null); // Short.class, Number.class);
+    enum DataTypeDesc INT2 = DataTypeDesc(21, true, [short.stringof, ushort.stringof]); // Short.class, Number.class);
     enum DataTypeDesc INT2_ARRAY = DataTypeDesc(1005, true, null); // Short[].class, Number[].class);
-    enum DataTypeDesc INT4 = DataTypeDesc(23, true, null); // Integer.class, Number.class);
+    enum DataTypeDesc INT4 = DataTypeDesc(23, true, [int.stringof, uint.stringof]); // Integer.class, Number.class);
     enum DataTypeDesc INT4_ARRAY = DataTypeDesc(1007, true, null); // Integer[].class, Number[].class);
-    enum DataTypeDesc INT8 = DataTypeDesc(20, true, null); // Long.class, Number.class);
+    enum DataTypeDesc INT8 = DataTypeDesc(20, true, [long.stringof, ulong.stringof]); // Long.class, Number.class);
     enum DataTypeDesc INT8_ARRAY = DataTypeDesc(1016, true, null); // Long[].class, Number[].class);
-    enum DataTypeDesc FLOAT4 = DataTypeDesc(700, true, null); // Float.class, Number.class);
+    enum DataTypeDesc FLOAT4 = DataTypeDesc(700, true, [float.stringof]); // Float.class, Number.class);
     enum DataTypeDesc FLOAT4_ARRAY = DataTypeDesc(1021, true, null); // Float[].class, Number[].class);
-    enum DataTypeDesc FLOAT8 = DataTypeDesc(701, true, null); // Double.class, Number.class);
+    enum DataTypeDesc FLOAT8 = DataTypeDesc(701, true, [double.stringof, float.stringof]); // Double.class, Number.class);
     enum DataTypeDesc FLOAT8_ARRAY = DataTypeDesc(1022, true, null); // Double[].class, Number[].class);
     enum DataTypeDesc NUMERIC = DataTypeDesc(1700, false, null); // Numeric.class, Number.class);
     enum DataTypeDesc NUMERIC_ARRAY = DataTypeDesc(1231, false, null); // Numeric[].class, Number[].class);

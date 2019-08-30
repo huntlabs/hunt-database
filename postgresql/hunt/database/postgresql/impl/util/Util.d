@@ -24,6 +24,8 @@ import hunt.util.TypeUtils;
 
 import std.algorithm;
 import std.conv;
+import std.variant;
+
 
 /**
 */
@@ -61,6 +63,14 @@ class Util {
     static void writeCString(ByteBuf dst, byte[] bytes) {
         dst.writeBytes(bytes, 0, cast(int)bytes.length);
         dst.writeByte(0);
+    }
+
+    static string buildInvalidArgsError(Variant[] values, string[] types) {
+        import std.format;
+        // string str = types.to!string();
+        string str = format("[%-(%s, %)]", types);
+        return "Values [" ~ values.map!(v => v.to!string() ~ "<"~ v.type.toString() ~ ">" ).joiner(", ").to!string() ~
+            "] cannot be coerced to " ~ str;
     }
 
     static string buildInvalidArgsError(T)(T[] values, TypeInfo[] types) {

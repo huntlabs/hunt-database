@@ -71,8 +71,10 @@ class PgParamDesc : ParamDesc {
     }
 
     private string buildReport(List!(Variant) values) {
-        return Util.buildInvalidArgsError(values.toArray(), 
-            paramDataTypes.map!(type => cast(TypeInfo)type.decodingType).array());
+        string[] types;
+        paramDataTypes.each!((type) { types = types ~ type.decodingType; });
+
+        return Util.buildInvalidArgsError(values.toArray(), types);
     }
 
     override
