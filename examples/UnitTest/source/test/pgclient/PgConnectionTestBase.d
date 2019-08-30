@@ -124,21 +124,21 @@ abstract class PgConnectionTestBase : PgClientTestBase!(SqlConnection) {
     // }
     
 // /*
-    @Test
-    void testSQLConnection() {
-        connector((SqlConnection conn) {
-             conn.query("SELECT 1", (AsyncResult!RowSet ar) {
-                if(ar.succeeded()) {
-                    RowSet result = ar.result();
-                    assert(1 == result.rowCount());
-                } else {
-                    warning(ar.cause().msg);
-                }
+    // @Test
+    // void testSQLConnection() {
+    //     connector((SqlConnection conn) {
+    //          conn.query("SELECT 1", (AsyncResult!RowSet ar) {
+    //             if(ar.succeeded()) {
+    //                 RowSet result = ar.result();
+    //                 assert(1 == result.rowCount());
+    //             } else {
+    //                 warning(ar.cause().msg);
+    //             }
 
-                conn.close();
-            });
-        });
-    }
+    //             conn.close();
+    //         });
+    //     });
+    // }
 
     @Test
     void testSelectForQueryWithParams() {
@@ -160,121 +160,6 @@ abstract class PgConnectionTestBase : PgClientTestBase!(SqlConnection) {
         });
     }
 
-
-//     @Test
-//     void testUpdateForUpdateWithParams() {
-//         Async async = ctx.async();
-//         PgClientImpl client = (PgClientImpl) PgClient.create(vertx, options);
-//         client.connect(c -> {
-//             SQLConnection conn = c.result();
-//             conn.updateWithParams("UPDATE Fortune SET message = $1 WHERE id = $2", new JsonArray().add("Hello").add(1),
-//                 ctx.asyncAssertSuccess(result -> {
-//                     ctx.assertEquals(1, result.getUpdated());
-//                     async.complete();
-//                 }));
-//         });
-//     }
-
-//     @Test
-//     void testDeleteForUpdateWithParams() {
-//         Async async = ctx.async();
-//         PgClientImpl client = (PgClientImpl) PgClient.create(vertx, options);
-//         client.connect(c -> {
-//             SQLConnection conn = c.result();
-//             conn.updateWithParams("DELETE FROM Fortune WHERE id = $1", new JsonArray().add(3),
-//                 ctx.asyncAssertSuccess(result -> {
-//                     ctx.assertEquals(1, result.getUpdated());
-//                     async.complete();
-//                 }));
-//         });
-//     }
-
-//     @Test
-//     void testGetDefaultTx() {
-//         Async async = ctx.async();
-//         PgClientImpl client = (PgClientImpl) PgClient.create(vertx, options);
-//         client.connect(c -> {
-//             SQLConnection conn = c.result();
-//             conn.getTransactionIsolation(ctx.asyncAssertSuccess(result -> {
-//                 ctx.assertEquals(TransactionIsolation.READ_COMMITTED, result);
-//                 async.complete();
-//             }));
-//         });
-//     }
-
-//     @Test
-//     void testSetUnsupportedTx() {
-//         Async async = ctx.async();
-//         PgClientImpl client = (PgClientImpl) PgClient.create(vertx, options);
-//         client.connect(c -> {
-//             SQLConnection conn = c.result();
-//             conn.setTransactionIsolation(TransactionIsolation.NONE, ctx.asyncAssertFailure(result -> {
-//                 ctx.assertEquals("None transaction isolation is not supported", result.getMessage());
-//                 async.complete();
-//             }));
-//         });
-//     }
-
-//     @Test
-//     void testSetAndGetReadUncommittedTx() {
-//         Async async = ctx.async();
-//         PgClientImpl client = (PgClientImpl) PgClient.create(vertx, options);
-//         client.connect(c -> {
-//             SQLConnection conn = c.result();
-//             conn.setTransactionIsolation(TransactionIsolation.READ_UNCOMMITTED, ctx.asyncAssertSuccess(result -> {
-//                 conn.getTransactionIsolation(ctx.asyncAssertSuccess(res -> {
-//                     ctx.assertEquals(TransactionIsolation.READ_UNCOMMITTED, res);
-//                     async.complete();
-//                 }));
-//             }));
-//         });
-//     }
-
-//     @Test
-//     void testSetAndGetReadCommittedTx() {
-//         Async async = ctx.async();
-//         PgClientImpl client = (PgClientImpl) PgClient.create(vertx, options);
-//         client.connect(c -> {
-//             SQLConnection conn = c.result();
-//             conn.setTransactionIsolation(TransactionIsolation.READ_COMMITTED, ctx.asyncAssertSuccess(result -> {
-//                 conn.getTransactionIsolation(ctx.asyncAssertSuccess(res -> {
-//                     ctx.assertEquals(TransactionIsolation.READ_COMMITTED, res);
-//                     async.complete();
-//                 }));
-//             }));
-//         });
-//     }
-
-//     @Test
-//     void testSetAndGetRepeatableReadTx() {
-//         Async async = ctx.async();
-//         PgClientImpl client = (PgClientImpl) PgClient.create(vertx, options);
-//         client.connect(c -> {
-//             SQLConnection conn = c.result();
-//             conn.setTransactionIsolation(TransactionIsolation.REPEATABLE_READ, ctx.asyncAssertSuccess(result -> {
-//                 conn.getTransactionIsolation(ctx.asyncAssertSuccess(res -> {
-//                     ctx.assertEquals(TransactionIsolation.REPEATABLE_READ, res);
-//                     async.complete();
-//                 }));
-//             }));
-//         });
-//     }
-
-//     @Test
-//     void testSetAndGetSerializableTx() {
-//         Async async = ctx.async();
-//         PgClientImpl client = (PgClientImpl) PgClient.create(vertx, options);
-//         client.connect(c -> {
-//             SQLConnection conn = c.result();
-//             conn.setTransactionIsolation(TransactionIsolation.SERIALIZABLE, ctx.asyncAssertSuccess(result -> {
-//                 conn.getTransactionIsolation(ctx.asyncAssertSuccess(res -> {
-//                     ctx.assertEquals(TransactionIsolation.SERIALIZABLE, res);
-//                     async.complete();
-//                 }));
-//             }));
-//         });
-//     }
-// */
 
 //     @Test
 //     void testUpdateError() {

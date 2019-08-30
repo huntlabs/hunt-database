@@ -22,6 +22,7 @@ import hunt.database.postgresql;
 
 import hunt.Assert;
 import hunt.Exceptions;
+import hunt.Functions;
 import hunt.logging.ConsoleLogger;
 import hunt.util.Common;
 import hunt.util.UnitTest;
@@ -51,18 +52,18 @@ abstract class PgTestBase {
         options.setDatabase("postgres");
     }
 
-    static void deleteFromTestTable(SqlClient client, Runnable completionHandler) {
+    static void deleteFromTestTable(SqlClient client, Action completionHandler) {
         client.query(
             "DELETE FROM Test",
             (result) { 
                 trace(typeid(result));
                 assert(result.succeeded());
-                completionHandler.run();
+                if(completionHandler !is null)
+                    completionHandler();
             });
     }
 
-    static void insertIntoTestTable(SqlClient client, int amount, Runnable completionHandler) {
-        // AtomicInteger count = new AtomicInteger();
+    static void insertIntoTestTable(SqlClient client, int amount, Action completionHandler) {
         shared int count;
         for (int i = 0;i < 10;i++) {
             client.query("INSERT INTO Test (id, val) VALUES (" ~ i.to!string()
@@ -79,7 +80,8 @@ abstract class PgTestBase {
                     int c = atomicOp!"+="(count, 1);
                     trace("c=%d, amount=%d", c, amount);
                     if (c == amount) {
-                        completionHandler.run();
+                        if(completionHandler !is null)
+                            completionHandler();
                     }
                 }
             );

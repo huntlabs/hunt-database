@@ -14,15 +14,13 @@
  * limitations under the License.
  *
  */
-module test.pgclient.PgSimpleQueryTest;
+module test.pgclient.PgPreparedQueryTest;
 
 import test.pgclient.Common;
-import test.SimpleQueryTestBase;
+import test.pgclient.PgPreparedQueryTestBase;
 
 
-/**
-*/
-class PgSimpleQueryTest : SimpleQueryTestBase {
+class PgPreparedQueryTest : PgPreparedQueryTestBase {
 
     mixin TestSettingTemplate;
 }
