@@ -30,12 +30,13 @@ import hunt.database.base.impl.command.ExtendedQueryCommand;
 import hunt.database.base.impl.command.PrepareStatementCommand;
 import hunt.database.base.impl.command.SimpleQueryCommand;
 
+import hunt.database.base.AsyncResult;
+import hunt.database.base.Exceptions;
 import hunt.database.base.RowSet;
 import hunt.database.base.Row;
 import hunt.database.base.SqlClient;
 import hunt.database.base.SqlResult;
 import hunt.database.base.Tuple;
-import hunt.database.base.AsyncResult;
 
 import hunt.collection.List;
 import hunt.Exceptions;
@@ -95,7 +96,8 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
                     string msg = ps.prepare(cast(List!(Variant)) arguments);
                     if (msg !is null) {
                         version(HUNT_DEBUG) warning(msg);
-                        handler(failedResult!(R3)(new Exception(msg)));
+                        if(handler !is null)
+                            handler(failedResult!(R3)(new DatabaseException(msg)));
                     } else {
                         SqlResultBuilder!(R1, R2, R3) b = new SqlResultBuilder!(R1, R2, R3)(factory, handler);
 

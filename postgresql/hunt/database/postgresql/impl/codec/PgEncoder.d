@@ -42,6 +42,7 @@ import hunt.database.postgresql.impl.codec.StartupMessage;
 import hunt.database.postgresql.impl.util.Util;
 
 import hunt.database.base.AsyncResult;
+import hunt.database.base.Exceptions;
 import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.ParamDesc;
 import hunt.database.base.impl.RowDesc;
@@ -450,7 +451,9 @@ final class PgEncoder : EncoderChain {
                     try {
                         DataTypeCodec.encodeBinary(cast(DataType)dataType.id, param, outBuffer);
                     } catch(Throwable ex) {
-                        warning(ex);
+                        version(HUNT_DB_DEBUG_MORE) warning(ex);
+                        else warning(ex.msg);
+                        throw new DatabaseException(ex.msg);
                     }
                     outBuffer.setInt(idx, outBuffer.writerIndex() - idx - 4);
                 } else {
