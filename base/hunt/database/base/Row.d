@@ -52,70 +52,71 @@ interface Row : Tuple {
      */
     Variant getValue(string name);
 
-    // /**
-    //  * Get a boolean value at {@code pos}.
-    //  *
-    //  * @param name the column
-    //  * @return the value or {@code null}
-    //  */
-    // Boolean getBoolean(string name);
+    /**
+     * Get a boolean value at {@code pos}.
+     *
+     * @param name the column
+     * @return the value or {@code null}
+     */
+    bool getBoolean(string name);
 
 
-    // /**
-    //  * Get a short value at {@code pos}.
-    //  *
-    //  * @param name the column
-    //  * @return the value or {@code null}
-    //  */
-    // Short getShort(string name);
+    /**
+     * Get a short value at {@code pos}.
+     *
+     * @param name the column
+     * @return the value or {@code null}
+     */
+    short getShort(string name);
 
-    // /**
-    //  * Get an integer value at {@code pos}.
-    //  *
-    //  * @param name the column
-    //  * @return the value or {@code null}
-    //  */
-    // Integer getInteger(string name);
+    /**
+     * Get an integer value at {@code pos}.
+     *
+     * @param name the column
+     * @return the value or {@code null}
+     */
+    int getInteger(string name);
 
-    // /**
-    //  * Get a long value at {@code pos}.
-    //  *
-    //  * @param name the column
-    //  * @return the value or {@code null}
-    //  */
-    // Long getLong(string name);
+    /**
+     * Get a long value at {@code pos}.
+     *
+     * @param name the column
+     * @return the value or {@code null}
+     */
+    long getLong(string name);
 
-    // /**
-    //  * Get a float value at {@code pos}.
-    //  *
-    //  * @param name the column
-    //  * @return the value or {@code null}
-    //  */
-    // Float getFloat(string name);
+    /**
+     * Get a float value at {@code pos}.
+     *
+     * @param name the column
+     * @return the value or {@code null}
+     */
+    float getFloat(string name);
 
-    // /**
-    //  * Get a double value at {@code pos}.
-    //  *
-    //  * @param name the column
-    //  * @return the value or {@code null}
-    //  */
-    // Double getDouble(string name);
+    /**
+     * Get a double value at {@code pos}.
+     *
+     * @param name the column
+     * @return the value or {@code null}
+     */
+    double getDouble(string name);
 
-    // /**
-    //  * Get a string value at {@code pos}.
-    //  *
-    //  * @param name the column
-    //  * @return the value or {@code null}
-    //  */
-    // string getString(string name);
+    /**
+     * Get a string value at {@code pos}.
+     *
+     * @param name the column
+     * @return the value or {@code null}
+     */
+    string getString(string name);
 
-    // /**
-    //  * Get a buffer value at {@code pos}.
-    //  *
-    //  * @param name the column
-    //  * @return the value or {@code null}
-    //  */
+    /**
+     * Get a buffer value at {@code pos}.
+     *
+     * @param name the column
+     * @return the value or {@code null}
+     */
     // Buffer getBuffer(string name);
+    byte[] getBuffer(string name);
 
     // /**
     //  * Get a temporal value at {@code pos}.

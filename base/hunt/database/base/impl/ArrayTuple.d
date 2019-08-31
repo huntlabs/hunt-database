@@ -69,14 +69,15 @@ class ArrayTuple : ArrayList!(Variant), Tuple {
     //     throw new UnsupportedOperationException();
     // }
 
-    // override
-    // Boolean getBoolean(int pos) {
-    //     Object val = get(pos);
-    //     if (val instanceof Boolean) {
-    //         return (Boolean) val;
-    //     }
-    //     return null;
-    // }
+    override
+    bool getBoolean(int pos) {
+        return get(pos).get!bool();
+        // Object val = get(pos);
+        // if (val instanceof Boolean) {
+        //     return (Boolean) val;
+        // }
+        // return null;
+    }
 
     Variant getValue(int pos) {
         return get(pos);
@@ -303,14 +304,15 @@ class ArrayTuple : ArrayList!(Variant), Tuple {
         // return null;
     }
 
-    // override
-    // Buffer getBuffer(int pos) {
-    //     Object val = get(pos);
-    //     if (val instanceof Buffer) {
-    //         return (Buffer) val;
-    //     }
-    //     return null;
-    // }
+    override
+    byte[] getBuffer(int pos) {
+        return get(pos).get!(byte[])();
+        // Object val = get(pos);
+        // if (val instanceof Buffer) {
+        //     return (Buffer) val;
+        // }
+        // return null;
+    }
 
     // override
     // Temporal getTemporal(int pos) {

@@ -72,8 +72,8 @@ class RowImpl : ArrayTuple, RowInternal {
     }
 
     // override
-    // <T> T get(Class!(T) type, int pos) {
-    //     if (type == Boolean.class) {
+    // T get(T)(TypeInfo type, int pos) {
+    //     if (type == typeid(bool)) {
     //         return type.cast(getBoolean(pos));
     //     } else if (type == Short.class) {
     //         return type.cast(getShort(pos));
@@ -189,61 +189,99 @@ class RowImpl : ArrayTuple, RowInternal {
     //     throw new UnsupportedOperationException("Unsupported type " ~ type.getName());
     // }
 
-    // override
-    // Boolean getBoolean(string name) {
-    //     int pos = desc.columnIndex(name);
-    //     return pos == -1 ? null : getBoolean(pos);
-    // }
+    override
+    bool getBoolean(string name) {
+        int pos = desc.columnIndex(name);
+        if(pos == -1)
+            throw new Exception("Not exsited field: " ~ name);
+        else
+            return getBoolean(pos);
+        // return pos == -1 ? null : getBoolean(pos);
+    }
+    alias getBoolean = ArrayTuple.getBoolean;
 
     // override
     Variant getValue(string name) {
         int pos = desc.columnIndex(name);
         return pos == -1 ? Variant() : getValue(pos);
     }
-
     alias getValue = ArrayTuple.getValue;
 
-    // override
-    // Short getShort(string name) {
-    //     int pos = desc.columnIndex(name);
-    //     return pos == -1 ? null : getShort(pos);
-    // }
+    override
+    short getShort(string name) {
+        int pos = desc.columnIndex(name);
+        if(pos == -1)
+            throw new Exception("Not exsited field: " ~ name);
+        else
+            return getShort(pos);
+    }
+    alias getShort = ArrayTuple.getShort;
 
-    // override
-    // Integer getInteger(string name) {
-    //     int pos = desc.columnIndex(name);
-    //     return pos == -1 ? null : getInteger(pos);
-    // }
+    override
+    int getInteger(string name) {
+        int pos = desc.columnIndex(name);
 
-    // override
-    // Long getLong(string name) {
-    //     int pos = desc.columnIndex(name);
-    //     return pos == -1 ? null : getLong(pos);
-    // }
+        if(pos == -1)
+            throw new Exception("Not exsited field: " ~ name);
+        else
+            return getInteger(pos);
+    }
+    alias getInteger = ArrayTuple.getInteger;
 
-    // override
-    // Float getFloat(string name) {
-    //     int pos = desc.columnIndex(name);
-    //     return pos == -1 ? null : getFloat(pos);
-    // }
+    override
+    long getLong(string name) {
+        int pos = desc.columnIndex(name);
+        if(pos == -1)
+            throw new Exception("Not exsited field: " ~ name);
+        else
+            return getLong(pos);
+        // return pos == -1 ? null : getLong(pos);
+    }
+    alias getLong = ArrayTuple.getLong;
 
-    // override
-    // Double getDouble(string name) {
-    //     int pos = desc.columnIndex(name);
-    //     return pos == -1 ? null : getDouble(pos);
-    // }
+    override
+    float getFloat(string name) {
+        int pos = desc.columnIndex(name);
+        if(pos == -1)
+            throw new Exception("Not exsited field: " ~ name);
+        else
+            return getFloat(pos);
+        // return pos == -1 ? null : getFloat(pos);
+    }
+    alias getFloat = ArrayTuple.getFloat;
 
-    // override
-    // string getString(string name) {
-    //     int pos = desc.columnIndex(name);
-    //     return pos == -1 ? null : getString(pos);
-    // }
+    override
+    double getDouble(string name) {
+        int pos = desc.columnIndex(name);
+        if(pos == -1)
+            throw new Exception("Not exsited field: " ~ name);
+        else
+            return getDouble(pos);
+        // return pos == -1 ? null : getDouble(pos);
+    }
+    alias getDouble = ArrayTuple.getDouble;
 
-    // override
-    // Buffer getBuffer(string name) {
-    //     int pos = desc.columnIndex(name);
-    //     return pos == -1 ? null : getBuffer(pos);
-    // }
+    override
+    string getString(string name) {
+        int pos = desc.columnIndex(name);
+        if(pos == -1)
+            throw new Exception("Not exsited field: " ~ name);
+        else
+            return getString(pos);
+        // return pos == -1 ? null : getString(pos);
+    }
+    alias getString = ArrayTuple.getString;
+
+    override
+    byte[] getBuffer(string name) {
+        int pos = desc.columnIndex(name);
+        if(pos == -1)
+            throw new Exception("Not exsited field: " ~ name);
+        else
+            return getBuffer(pos);
+        // return pos == -1 ? null : getBuffer(pos);
+    }
+    alias getBuffer = ArrayTuple.getBuffer;
 
     // override
     // Temporal getTemporal(string name) {

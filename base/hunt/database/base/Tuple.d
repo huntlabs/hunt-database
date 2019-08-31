@@ -72,13 +72,13 @@ interface Tuple {
         return tuple;
     }    
 
-    // /**
-    //  * Get a boolean value at {@code pos}.
-    //  *
-    //  * @param pos the position
-    //  * @return the value or {@code null}
-    //  */
-    // Boolean getBoolean(int pos);
+    /**
+     * Get a boolean value at {@code pos}.
+     *
+     * @param pos the position
+     * @return the value or {@code null}
+     */
+    bool getBoolean(int pos);
 
     /**
      * Get an object value at {@code pos}.
@@ -312,13 +312,13 @@ interface Tuple {
     //  */
     // UUID[] getUUIDArray(int pos);
 
-    // /**
-    //  * Get a buffer value at {@code pos}.
-    //  *
-    //  * @param pos the position
-    //  * @return the value or {@code null}
-    //  */
-    // Buffer getBuffer(int pos);
+    /**
+     * Get a buffer value at {@code pos}.
+     *
+     * @param pos the position
+     * @return the value or {@code null}
+     */
+    byte[] getBuffer(int pos);
 
     // /**
     //  * Add a boolean value at the end of the tuple.
