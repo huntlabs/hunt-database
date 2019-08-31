@@ -56,8 +56,7 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
         return query!(RowSet, RowSetImpl, RowSet)(sql, false, RowSetImpl.FACTORY, handler); // RowSetImpl.COLLECTOR, 
     }
 
-    private C query(R1, R2, R3)(
-                string sql,
+    private C query(R1, R2, R3)(string sql,
                 bool singleton,
                 Function!(R1, R2) factory,
                 AsyncResultHandler!(R3) handler) {
@@ -72,8 +71,6 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
     override
     C preparedQuery(string sql, Tuple arguments, RowSetHandler handler) {
         return preparedQuery!(RowSet, RowSetImpl, RowSet)(sql, arguments, false, RowSetImpl.FACTORY, handler); // RowSetImpl.COLLECTOR, 
-        // implementationMissing(false);
-        // return cast(C) this;
     }
 
     // override

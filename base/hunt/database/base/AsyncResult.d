@@ -16,6 +16,7 @@ import hunt.Object;
 
 alias AsyncResultHandler(T) = Action1!(AsyncResult!T);
 alias AsyncVoidHandler = AsyncResultHandler!Void;
+alias VoidAsyncResult = AsyncResult!Void;
 
 interface IAsyncResult {
 

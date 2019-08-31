@@ -25,6 +25,7 @@ import hunt.database.base.SqlResult;
 import hunt.util.Common;
 
 alias RowSetHandler = AsyncResultHandler!RowSet;
+alias RowSetAsyncResult = AsyncResult!RowSet;
 
 
 /**

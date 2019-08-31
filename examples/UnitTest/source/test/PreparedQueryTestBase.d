@@ -16,6 +16,7 @@
  */
 module test.PreparedQueryTestBase;
 
+import test.Common;
 import test.QueryTestBase;
 
 import hunt.database.base;
@@ -194,14 +195,6 @@ abstract class PreparedQueryTestBase : QueryTestBase {
     //     }));
     // }
 
-    static T asyncAssertSuccess(T)(AsyncResult!T ar) {
-        if(ar.succeeded()) {
-            return ar.result();
-        } else {
-            warning(ar.cause().msg);
-            throw new DatabaseException(ar.cause().msg);
-        }
-    }
 
     @Test
     void testQueryCloseCursor() {
