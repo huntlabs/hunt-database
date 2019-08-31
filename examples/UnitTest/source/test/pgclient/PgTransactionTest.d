@@ -40,6 +40,8 @@ class PgTransactionTest : PgClientTestBase!(Transaction) {
 
     private PgPool pool;
 
+    private Consumer!(Action1!SqlConnection) sqlConnectionConnector;
+
     // this() {
     //     connector = handler -> {
     //         if (pool == null) {
@@ -64,20 +66,33 @@ class PgTransactionTest : PgClientTestBase!(Transaction) {
                 }
             });
         };
+
+        sqlConnectionConnector = (handler) {
+            trace("Initializing connect ...");
+            PgConnectionImpl.connect(options, (AsyncResult!PgConnection ar) {
+                // mapping PgConnection to SqlConnection
+                // handler(ar.map!(SqlConnection)( p => p));
+
+                if(ar.succeeded()) {
+                    handler(ar.result());
+                } else {
+                    warning(ar.cause().msg);
+                }
+            });
+        };
     }    
 
     @Test
     void testReleaseConnectionOnCommit() {
         connector((Transaction conn) {
-            conn.query("UPDATE Fortune SET message = 'Whatever' WHERE id = 9", (AsyncResult!RowSet ar)  {
+            conn.query("UPDATE Fortune SET message = 'Whatever' WHERE id = 9", (AsyncResult!RowSet ar) {
                 trace("running here");
                 RowSet result = asyncAssertSuccess(ar);
                 assert(1 == result.rowCount());
-                conn.commit((VoidAsyncResult ar2)  {
+                conn.commit((VoidAsyncResult ar2) {
                     trace("running here");
                     Void v = asyncAssertSuccess!Void(ar2);
                     trace("running here: ", v is null);
-                    // assert(v !is null);
                     conn.close();
                     // Try acquire a connection
                     // pool.getConnection(ctx.asyncAssertSuccess(v2 -> {
@@ -88,73 +103,117 @@ class PgTransactionTest : PgClientTestBase!(Transaction) {
         });
     }
 
-    // @Test
-    // void testReleaseConnectionOnRollback() {
-    //     Async async = ctx.async();
-    //     connector.accept(ctx.asyncAssertSuccess(conn -> {
-    //         conn.query("UPDATE Fortune SET message = 'Whatever' WHERE id = 9", (AsyncResult!RowSet ar)  {
-    //             assert(1, result.rowCount());
-    //             conn.rollback(ctx.asyncAssertSuccess(v1 -> {
-    //                 // Try acquire a connection
-    //                 pool.getConnection(ctx.asyncAssertSuccess(v2 -> {
-    //                     async.complete();
-    //                 }));
-    //             }));
-    //         }));
-    //     }));
-    // }
+    @Test
+    void testReleaseConnectionOnRollback() {
+        connector((Transaction conn) {
+            conn.query("UPDATE Fortune SET message = 'Whatever' WHERE id = 9", (AsyncResult!RowSet ar) {
+                trace("running here");
+                RowSet result = asyncAssertSuccess(ar);
+                assert(1 == result.rowCount());
+                conn.rollback((VoidAsyncResult ar2)  {
+                    trace("running here");
+                    Void v = asyncAssertSuccess!Void(ar2);
+                    trace("running here: ", v is null);
+                    conn.close();
+                    // Try acquire a connection
+                    // pool.getConnection(ctx.asyncAssertSuccess(v2 -> {
+                    //     async.complete();
+                    // }));
+                });
+            });
+        });
+    }
 
-    // @Test
-    // void testReleaseConnectionOnSetRollback() {
-    //     Async async = ctx.async();
-    //     connector.accept(ctx.asyncAssertSuccess(conn -> {
-    //         conn.abortHandler(v -> {
-    //             // Try acquire the same connection on rollback
-    //             pool.getConnection(ctx.asyncAssertSuccess(v2 -> {
-    //                 async.complete();
-    //             }));
-    //         });
-    //         // Failure will abort
-    //         conn.query("SELECT whatever from DOES_NOT_EXIST", ctx.asyncAssertFailure(result -> { }));
-    //     }));
-    // }
+    @Test
+    void testReleaseConnectionOnSetRollback() {
+        connector((Transaction conn) {
+            conn.abortHandler((VoidAsyncResult ar)  {
+                trace("running here");
+                Void v = asyncAssertSuccess!Void(ar);
+                trace("running here: ", v is null);
+                // Try acquire the same connection on rollback
+                // pool.getConnection(ctx.asyncAssertSuccess(v2 -> {
+                //     async.complete();
+                // }));
+            });
+            // Failure will abort
+            conn.query("SELECT whatever from DOES_NOT_EXIST", (AsyncResult!RowSet ar) {
+                trace("running here");
+                Throwable t = asyncAssertFailure(ar);
+                if(t !is null) {
+                    info(t.msg);
+                }
+                conn.close();
+             });
+        });
+    }
 
-    // @Test
-    // void testCommitWithPreparedQuery() {
-    //     Async async = ctx.async();
-    //     connector.accept(ctx.asyncAssertSuccess(conn -> {
-    //         conn.preparedQuery("INSERT INTO Fortune (id, message) VALUES ($1, $2);", Tuple.of(13, "test message1"), (AsyncResult!RowSet ar)  {
-    //             assert(1, result.rowCount());
-    //             conn.commit(ctx.asyncAssertSuccess(v1 -> {
-    //                 pool.query("SELECT id, message from Fortune where id = 13", ctx.asyncAssertSuccess(rowSet -> {
-    //                     assert(1, rowSet.rowCount());
-    //                     Row row = rowSet.iterator().next();
-    //                     assert(13, row.getInteger("id"));
-    //                     assert("test message1", row.getString("message"));
-    //                     async.complete();
-    //                 }));
-    //             }));
-    //         }));
-    //     }));
-    // }
+    @Test
+    void testCommitWithPreparedQuery() {
+        connector((Transaction conn) {
+            conn.preparedQuery("INSERT INTO Fortune (id, message) VALUES ($1, $2);", 
+                    Tuple.of(13, "test message1"), (RowSetAsyncResult ar) {
+                trace("running here");
+                RowSet result = asyncAssertSuccess(ar);
+                assert(1 == result.rowCount());
+                conn.commit((VoidAsyncResult ar2) {
+                    trace("running here");
+                    try {
+                        Void v = asyncAssertSuccess!Void(ar2);
+                    } catch(Exception ex) {
+                        warning(ex.msg);
+                    }
 
-    // @Test
-    // void testCommitWithQuery() {
-    //     Async async = ctx.async();
-    //     connector.accept(ctx.asyncAssertSuccess(conn -> {
-    //         conn.query("INSERT INTO Fortune (id, message) VALUES (14, 'test message2');", (AsyncResult!RowSet ar)  {
-    //             assert(1, result.rowCount());
-    //             conn.commit(ctx.asyncAssertSuccess(v1 -> {
-    //                 pool.query("SELECT id, message from Fortune where id = 14", ctx.asyncAssertSuccess(rowSet -> {
-    //                     assert(1, rowSet.rowCount());
-    //                     Row row = rowSet.iterator().next();
-    //                     assert(14, row.getInteger("id"));
-    //                     assert("test message2", row.getString("message"));
-    //                     async.complete();
-    //                 }));
-    //             }));
-    //         }));
-    //     }));
-    // }
+                    sqlConnectionConnector((SqlConnection conn2) {
+                        trace("running here");
+                        conn2.query("SELECT id, message from Fortune where id = 13", (RowSetAsyncResult ar) {
+                            trace("running here");
+                            RowSet rowSet = asyncAssertSuccess(ar);
+                            assert(1 == rowSet.rowCount());
+                            Row row = rowSet.iterator().front();
+                            assert(13 == row.getInteger("id"));
+                            assert("test message1" == row.getString("message"));
+                            conn2.close();
+                        });
+                    });
+                    conn.close();
+                });
+            });
+        });
+    }
+
+    @Test
+    void testCommitWithQuery() {
+        connector((Transaction conn) {
+            conn.query("INSERT INTO Fortune (id, message) VALUES (14, 'test message2');", 
+                    (RowSetAsyncResult ar) {
+                trace("running here");
+                RowSet result = asyncAssertSuccess(ar);
+                assert(1 == result.rowCount());
+
+                conn.commit((VoidAsyncResult ar2) {
+                    trace("running here");
+                    // FIXME: Needing refactor or cleanup -@zxp at 8/31/2019, 10:52:36 PM
+                    // using pool
+                    
+                    sqlConnectionConnector((SqlConnection conn2) {
+                        trace("running here");
+                        conn2.query("SELECT id, message from Fortune where id = 14", 
+                                (RowSetAsyncResult ar) {
+                            trace("running here");
+                            RowSet rowSet = asyncAssertSuccess(ar);
+                            assert(1 == rowSet.rowCount());
+                            Row row = rowSet.iterator().front();
+                            assert(14 == row.getInteger("id"));
+                            assert("test message2" == row.getString("message"));
+                            conn2.close();
+                        });
+                    });
+                    
+                    conn.close();
+                });
+            });
+        });
+    }
 
 }

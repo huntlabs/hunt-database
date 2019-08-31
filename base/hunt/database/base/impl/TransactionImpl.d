@@ -30,6 +30,7 @@ import hunt.database.base.impl.command.CommandResponse;
 import hunt.database.base.impl.command.CommandBase;
 import hunt.database.base.impl.command.QueryCommandBase;
 import hunt.database.base.impl.command.SimpleQueryCommand;
+import hunt.database.base.impl.PreparedStatement;
 import hunt.database.base.PreparedQuery;
 import hunt.database.base.RowSet;
 import hunt.database.base.SqlClient;
@@ -164,13 +165,20 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
     }
 
     private void wrap(ICommand cmd) {
-        trace(typeid(cast(Object)cmd));
-        CommandBase!bool rowSetCommand = cast(CommandBase!bool)cmd;
+        auto rowSetCommand = cast(CommandBase!bool)cmd;
         if(rowSetCommand !is null) {
             wrap!(bool)(rowSetCommand);
-        } else {
-            implementationMissing(false);
+            return;
+        } 
+        
+        auto preparedStatementCommand = cast(CommandBase!PreparedStatement)cmd;
+        if(preparedStatementCommand !is null) { 
+            wrap!(PreparedStatement)(preparedStatementCommand);
+            return;
         }
+
+        version(HUNT_DB_DEBUG) trace(typeid(cast(Object)cmd));
+        implementationMissing(false);
     }
 
     private void wrap(T)(CommandBase!T cmd) {
@@ -209,6 +217,7 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
     }
 
     void commit(AsyncVoidHandler handler) {
+        warning("status: %d", status);
         switch (status) {
             case ST_BEGIN:
             case ST_PENDING:
