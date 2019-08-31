@@ -114,7 +114,11 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbCo
         if (handler !is null) {
             handler(err);
         } else {
-            warning(err);
+            version(HUNT_DB_DEBUG_MORE) {
+                warning(err);
+            } else {
+                warning(err.msg);
+            }
         }
     }
 

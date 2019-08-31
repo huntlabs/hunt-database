@@ -29,6 +29,7 @@ import hunt.collection.List;
 
 
 alias PreparedQueryHandler = AsyncResultHandler!(PreparedQuery);
+alias PreparedQueryAsyncResult = AsyncResult!PreparedQuery;
 
 /**
  * A prepared query.

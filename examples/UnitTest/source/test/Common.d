@@ -12,3 +12,12 @@ static T asyncAssertSuccess(T)(AsyncResult!T ar) {
         throw new DatabaseException(ar.cause().msg);
     }
 }
+
+static Throwable asyncAssertFailure(T)(AsyncResult!T ar) {
+    if(ar.failed()) {
+        return ar.cause();
+    } else {
+        warning("Should be failed!");
+        throw new DatabaseException("Should be failed!");
+    }
+}
