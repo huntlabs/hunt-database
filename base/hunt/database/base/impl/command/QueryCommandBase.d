@@ -22,13 +22,15 @@ import hunt.database.base.impl.command.CommandBase;
 import hunt.database.base.Row;
 import hunt.database.base.impl.QueryResultHandler;
 
-// import java.util.stream.Collector;
+interface IQueryCommand {
+    string sql();
+}
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 
-abstract class QueryCommandBase(T) : CommandBase!(bool) {
+abstract class QueryCommandBase(T) : CommandBase!(bool), IQueryCommand {
 
     private QueryResultHandler!(T) _resultHandler;
 
