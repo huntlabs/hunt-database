@@ -18,7 +18,7 @@ module hunt.database.postgresql.impl.codec.InitCommandCodec;
 
 import hunt.database.postgresql.impl.codec.ErrorResponse;
 import hunt.database.postgresql.impl.codec.PasswordMessage;
-import hunt.database.postgresql.impl.codec.PgCommandCodec;
+import hunt.database.postgresql.impl.codec.CommandCodec;
 import hunt.database.postgresql.impl.codec.PgEncoder;
 import hunt.database.postgresql.impl.codec.StartupMessage;
 
@@ -31,7 +31,7 @@ import hunt.database.postgresql.impl.PostgreSQLSocketConnection;
 import hunt.logging.ConsoleLogger;
 import hunt.Exceptions;
 
-class InitCommandCodec : PgCommandCodec!(DbConnection, InitCommand) {
+class InitCommandCodec : CommandCodec!(DbConnection, InitCommand) {
 
     private PgEncoder encoder;
     private string encoding;

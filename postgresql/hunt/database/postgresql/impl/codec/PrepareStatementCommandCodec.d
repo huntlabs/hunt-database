@@ -19,7 +19,7 @@ module hunt.database.postgresql.impl.codec.PrepareStatementCommandCodec;
 import hunt.database.postgresql.impl.codec.Describe;
 import hunt.database.postgresql.impl.codec.ErrorResponse;
 import hunt.database.postgresql.impl.codec.Parse;
-import hunt.database.postgresql.impl.codec.PgCommandCodec;
+import hunt.database.postgresql.impl.codec.CommandCodec;
 import hunt.database.postgresql.impl.codec.PgEncoder;
 import hunt.database.postgresql.impl.codec.PgParamDesc;
 import hunt.database.postgresql.impl.codec.PgPreparedStatement;
@@ -30,7 +30,7 @@ import hunt.database.base.impl.TxStatus;
 import hunt.database.base.impl.command.PrepareStatementCommand;
 import hunt.database.base.impl.PreparedStatement;
 
-class PrepareStatementCommandCodec : PgCommandCodec!(PreparedStatement, PrepareStatementCommand) {
+class PrepareStatementCommandCodec : CommandCodec!(PreparedStatement, PrepareStatementCommand) {
 
     private PgParamDesc parameterDesc;
     private PgRowDesc rowDesc;

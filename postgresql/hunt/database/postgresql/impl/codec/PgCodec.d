@@ -16,18 +16,12 @@
  */
 module hunt.database.postgresql.impl.codec.PgCodec;
 
-import hunt.database.postgresql.impl.codec.PgCommandCodec;
+import hunt.database.postgresql.impl.codec.CommandCodec;
 import hunt.database.postgresql.impl.codec.PgDecoder;
 import hunt.database.postgresql.impl.codec.PgEncoder;
 
-// import io.netty.channel.ChannelHandlerContext;
-// import io.netty.channel.CombinedChannelDuplexHandler;
 import hunt.database.base.impl.command.CommandBase;
 import hunt.database.base.impl.command.CommandResponse;
-// import io.vertx.core.VertxException;
-
-// import java.util.ArrayDeque;
-// import java.util.Iterator;
 
 import hunt.net.codec.Codec;
 import hunt.net.codec.Encoder;
@@ -39,8 +33,8 @@ import std.container.dlist;
 */
 class PgCodec : Codec { // CombinedChannelDuplexHandler!(PgDecoder, PgEncoder)
 
-    // private ArrayDeque<PgCommandCodec<?, ?>> inflight = new ArrayDeque<>();
-    private DList!(PgCommandCodecBase) inflight;
+    // private ArrayDeque<CommandCodec<?, ?>> inflight = new ArrayDeque<>();
+    private DList!(CommandCodecBase) inflight;
     private PgDecoder decoder;
     private PgEncoder encoder;
 
@@ -49,7 +43,6 @@ class PgCodec : Codec { // CombinedChannelDuplexHandler!(PgDecoder, PgEncoder)
         encoder = new PgEncoder(decoder, inflight);
         // init(decoder, encoder);
     }
-
 
     Encoder getEncoder() {
         return encoder;
@@ -66,8 +59,8 @@ class PgCodec : Codec { // CombinedChannelDuplexHandler!(PgDecoder, PgEncoder)
     // }
 
     // private void fail(ChannelHandlerContext ctx, Throwable cause) {
-    //     for  (Iterator<PgCommandCodec<?, ?>> it = inflight.iterator(); it.hasNext();) {
-    //         PgCommandCodec<?, ?> codec = it.next();
+    //     for  (Iterator<CommandCodec<?, ?>> it = inflight.iterator(); it.hasNext();) {
+    //         CommandCodec<?, ?> codec = it.next();
     //         it.remove();
     //         CommandResponse!(Object) failure = CommandResponse.failure(cause);
     //         failure.cmd = (CommandBase) codec.cmd;

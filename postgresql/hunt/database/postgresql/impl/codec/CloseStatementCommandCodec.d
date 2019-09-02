@@ -16,7 +16,7 @@
  */
 module hunt.database.postgresql.impl.codec.CloseStatementCommandCodec;
 
-import hunt.database.postgresql.impl.codec.PgCommandCodec;
+import hunt.database.postgresql.impl.codec.CommandCodec;
 import hunt.database.postgresql.impl.codec.PgEncoder;
 
 import hunt.database.base.impl.command.CloseStatementCommand;
@@ -26,7 +26,7 @@ import hunt.Object;
 
 /**
 */
-class CloseStatementCommandCodec : PgCommandCodec!(Void, CloseStatementCommand) {
+class CloseStatementCommandCodec : CommandCodec!(Void, CloseStatementCommand) {
 
     this(CloseStatementCommand cmd) {
         super(cmd);

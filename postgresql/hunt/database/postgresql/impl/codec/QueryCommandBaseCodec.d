@@ -18,7 +18,7 @@ module hunt.database.postgresql.impl.codec.QueryCommandBaseCodec;
 
 import hunt.database.postgresql.impl.codec.ErrorResponse;
 import hunt.database.postgresql.impl.codec.RowResultDecoder;
-import hunt.database.postgresql.impl.codec.PgCommandCodec;
+import hunt.database.postgresql.impl.codec.CommandCodec;
 
 import hunt.database.base.Row;
 import hunt.database.base.impl.RowDecoder;
@@ -31,7 +31,7 @@ import hunt.net.buffer.ByteBuf;
 
 // import java.util.stream.Collector;
 
-abstract class QueryCommandBaseCodec(T, C) : PgCommandCodec!(bool, C) 
+abstract class QueryCommandBaseCodec(T, C) : CommandCodec!(bool, C) 
     if(is(C : QueryCommandBase!(T))) { 
 
     // RowResultDecoder<?, T> decoder;

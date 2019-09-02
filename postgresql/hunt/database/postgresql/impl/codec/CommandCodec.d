@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-module hunt.database.postgresql.impl.codec.PgCommandCodec;
+module hunt.database.postgresql.impl.codec.CommandCodec;
 
 import hunt.database.postgresql.impl.codec.ErrorResponse;
 import hunt.database.postgresql.impl.codec.NoticeResponse;
@@ -34,7 +34,7 @@ import hunt.net.buffer.ByteBuf;
 
 /**
 */
-abstract class PgCommandCodecBase {
+abstract class CommandCodecBase {
     
     EventHandler!(NoticeResponse) noticeHandler;
     EventHandler!(ICommandResponse) completionHandler;
@@ -114,7 +114,7 @@ abstract class PgCommandCodecBase {
 
 /**
 */
-abstract class PgCommandCodec(R, C) : PgCommandCodecBase
+abstract class CommandCodec(R, C) : CommandCodecBase
         if(is(C : CommandBase!(R))) {
 
     Throwable _failure;

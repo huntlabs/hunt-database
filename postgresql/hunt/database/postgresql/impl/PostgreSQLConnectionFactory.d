@@ -96,10 +96,10 @@ class PgConnectionFactory {
     }
 
     // Called by hook
-    private void close(VoidAsyncResult completionHandler) {
+    private void close(AsyncVoidHandler completionHandler) {
         client.close();
         if(completionHandler !is null) {
-            completionHandler(cast(VoidAsyncResult)null);
+            completionHandler(null);
         }
     }
 

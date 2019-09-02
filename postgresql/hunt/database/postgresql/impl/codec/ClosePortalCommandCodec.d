@@ -16,7 +16,7 @@
  */
 module hunt.database.postgresql.impl.codec.ClosePortalCommandCodec;
 
-import hunt.database.postgresql.impl.codec.PgCommandCodec;
+import hunt.database.postgresql.impl.codec.CommandCodec;
 import hunt.database.postgresql.impl.codec.PgEncoder;
 
 import hunt.database.base.impl.command.CloseCursorCommand;
@@ -24,7 +24,7 @@ import hunt.database.base.impl.command.CloseCursorCommand;
 import hunt.logging.ConsoleLogger;
 import hunt.Object;
 
-class ClosePortalCommandCodec : PgCommandCodec!(Void, CloseCursorCommand) {
+class ClosePortalCommandCodec : CommandCodec!(Void, CloseCursorCommand) {
 
     this(CloseCursorCommand cmd) {
         super(cmd);

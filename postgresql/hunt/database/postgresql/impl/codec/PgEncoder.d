@@ -29,7 +29,7 @@ import hunt.database.postgresql.impl.codec.ExtendedBatchQueryCommandCodec;
 import hunt.database.postgresql.impl.codec.ExtendedQueryCommandCodec;
 import hunt.database.postgresql.impl.codec.InitCommandCodec;
 import hunt.database.postgresql.impl.codec.PgColumnDesc;
-import hunt.database.postgresql.impl.codec.PgCommandCodec;
+import hunt.database.postgresql.impl.codec.CommandCodec;
 import hunt.database.postgresql.impl.codec.PgDecoder;
 import hunt.database.postgresql.impl.codec.PrepareStatementCommandCodec;
 import hunt.database.postgresql.impl.codec.Query;
@@ -86,13 +86,13 @@ final class PgEncoder : EncoderChain {
     private enum byte CLOSE = 'C';
     private enum byte SYNC = 'S';
 
-    // private ArrayDeque<PgCommandCodec<?, ?>> inflight;
-    private DList!(PgCommandCodecBase) *inflight;
+    // private ArrayDeque<CommandCodec<?, ?>> inflight;
+    private DList!(CommandCodecBase) *inflight;
     private Connection ctx;
     private ByteBuf outBuffer;
     private PgDecoder dec;
 
-    this(PgDecoder dec, ref DList!(PgCommandCodecBase) inflight) {
+    this(PgDecoder dec, ref DList!(CommandCodecBase) inflight) {
         this.inflight = &inflight;
         this.dec = dec;
     }
@@ -108,12 +108,12 @@ final class PgEncoder : EncoderChain {
         version(HUNT_DB_DEBUG) 
         tracef("encoding a message: %s", typeid(message));
 
-        PgCommandCodecBase cmdCodec = wrap(cmd);
+        CommandCodecBase cmdCodec = wrap(cmd);
 
         cmdCodec.completionHandler = (ICommandResponse resp) {
             version(HUNT_DB_DEBUG) {
                 infof("message encoding completed");
-                // PgCommandCodecBase c = inflight.front();
+                // CommandCodecBase c = inflight.front();
                 // assert(cmdCodec is c);
                 if(resp.failed()) {
                     Throwable th = resp.cause();
@@ -137,7 +137,7 @@ final class PgEncoder : EncoderChain {
         flush();
 	}
 
-    private PgCommandCodecBase wrap(ICommand cmd) {
+    private CommandCodecBase wrap(ICommand cmd) {
         InitCommand initCommand = cast(InitCommand) cmd;
         if (initCommand !is null) {
             return new InitCommandCodec(initCommand);

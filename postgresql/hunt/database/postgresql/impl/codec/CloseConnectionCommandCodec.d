@@ -16,7 +16,7 @@
  */
 module hunt.database.postgresql.impl.codec.CloseConnectionCommandCodec;
 
-import hunt.database.postgresql.impl.codec.PgCommandCodec;
+import hunt.database.postgresql.impl.codec.CommandCodec;
 import hunt.database.postgresql.impl.codec.PgEncoder;
 import hunt.database.base.impl.command.CloseConnectionCommand;
 
@@ -24,7 +24,7 @@ import hunt.Object;
 
 import std.concurrency : initOnce;
 
-class CloseConnectionCommandCodec : PgCommandCodec!(Void, CloseConnectionCommand) {
+class CloseConnectionCommandCodec : CommandCodec!(Void, CloseConnectionCommand) {
 
     static CloseConnectionCommandCodec INSTANCE() {
         __gshared CloseConnectionCommandCodec inst;

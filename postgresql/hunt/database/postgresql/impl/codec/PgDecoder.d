@@ -26,7 +26,7 @@ import hunt.database.postgresql.impl.codec.ErrorResponse;
 import hunt.database.postgresql.impl.codec.InitCommandCodec;
 import hunt.database.postgresql.impl.codec.NoticeResponse;
 import hunt.database.postgresql.impl.codec.PgColumnDesc;
-import hunt.database.postgresql.impl.codec.PgCommandCodec;
+import hunt.database.postgresql.impl.codec.CommandCodec;
 import hunt.database.postgresql.impl.codec.PgParamDesc;
 import hunt.database.postgresql.impl.codec.PgProtocolConstants;
 import hunt.database.postgresql.impl.codec.PgRowDesc;
@@ -71,11 +71,11 @@ import hunt.logging.ConsoleLogger;
 class PgDecoder : Decoder {
 
     private ByteBufAllocator alloc;
-    private DList!(PgCommandCodecBase) *inflight;
+    private DList!(CommandCodecBase) *inflight;
     private ByteBuf inBuffer;
     private CommandCompleteProcessor processor;
 
-    this(ref DList!(PgCommandCodecBase) inflight) {
+    this(ref DList!(CommandCodecBase) inflight) {
         this.inflight = &inflight;
         processor = new CommandCompleteProcessor();
         alloc = UnpooledByteBufAllocator.DEFAULT();
@@ -227,7 +227,7 @@ class PgDecoder : Decoder {
     }
 
     private void decodeDataRow(ByteBuf inBuffer) {
-        PgCommandCodecBase codec = inflight.front();
+        CommandCodecBase codec = inflight.front();
         version(HUNT_DB_DEBUG_MORE) tracef("decoding data row: %s", typeid(codec));
         int len = inBuffer.readUnsignedShort();
         codec.decodeRow(len, inBuffer);
@@ -379,7 +379,7 @@ class PgDecoder : Decoder {
         int type = inBuffer.readInt();
         version(HUNT_DB_DEBUG_MORE) tracef("type=%d", type);
 
-        PgCommandCodecBase cmdCodec = inflight.front();
+        CommandCodecBase cmdCodec = inflight.front();
 
         switch (type) {
             case PgProtocolConstants.AUTHENTICATION_TYPE_OK: {

@@ -17,12 +17,10 @@
 
 module hunt.database.postgresql.impl.PostgreSQLSocketConnection;
 
-// import io.netty.channel.ChannelPipeline;
-// import io.netty.handler.codec.DecoderException;
+import hunt.database.postgresql.impl.codec.PgCodec;
 
 import hunt.database.base.AsyncResult;
 import hunt.database.base.Common;
-import hunt.database.postgresql.impl.codec.PgCodec;
 import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.SocketConnectionBase;
 import hunt.database.base.impl.command.CommandResponse;
@@ -36,7 +34,6 @@ import hunt.logging.ConsoleLogger;
 import hunt.net.AbstractConnection;
 import hunt.net.Exceptions;
 import hunt.util.Common;
-
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -60,12 +57,15 @@ class PgSocketConnection : SocketConnectionBase {
     override
     void initialization() {
         codec = new PgCodec();
+        version(HUNT_DEBUG) {
+            trace("Setting codec");
+        }
         socket().setCodec(codec);
         super.initialization();
     }
 
     void sendStartupMessage(string username, string password, string database, Map!(string, string) properties,
-        ResponseHandler!(DbConnection) completionHandler) {
+            ResponseHandler!(DbConnection) completionHandler) {
         InitCommand cmd = new InitCommand(this, username, password, database, properties);
         cmd.handler = completionHandler;
         version(HUNT_DEBUG) {
