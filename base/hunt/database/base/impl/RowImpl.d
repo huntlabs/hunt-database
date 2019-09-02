@@ -1,36 +1,9 @@
-/*
- * Copyright (C) 2019, HuntLabs
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- */
+module hunt.database.base.impl.RowImpl;
 
-module hunt.database.postgresql.impl.RowImpl;
-
-
-import hunt.database.postgresql.data.Box;
-import hunt.database.postgresql.data.Circle;
-import hunt.database.postgresql.data.Line;
-import hunt.database.postgresql.data.LineSegment;
-import hunt.database.postgresql.data.Path;
-import hunt.database.postgresql.data.Polygon;
-import hunt.database.postgresql.data.Interval;
-import hunt.database.postgresql.data.Point;
 import hunt.database.base.data.Numeric;
 import hunt.database.base.impl.ArrayTuple;
 import hunt.database.base.impl.RowDesc;
 import hunt.database.base.impl.RowInternal;
-// import io.vertx.core.buffer.Buffer;
 
 import hunt.collection.List;
 import hunt.Exceptions;
@@ -40,12 +13,11 @@ import std.algorithm;
 import std.string;
 import std.variant;
 
-
 class RowImpl : ArrayTuple, RowInternal {
 
     // Linked list
-    private RowInternal next;
-    private RowDesc desc;
+    protected RowInternal next;
+    protected RowDesc desc;
 
     this(RowDesc desc) {
         super(cast(int)desc.columnNames().length);
@@ -60,7 +32,7 @@ class RowImpl : ArrayTuple, RowInternal {
     override
     string getColumnName(int pos) {
         string[] columnNames = desc.columnNames();
-        return pos < 0 || columnNames.length - 1 < pos ? null : columnNames[pos];
+        return pos < 0 || cast(int)columnNames.length < pos + 1 ? null : columnNames[pos];
     }
 
     override

@@ -26,10 +26,6 @@ import hunt.database.base.Common;
 import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.command.CommandResponse;
 
-// import io.vertx.core.*;
-// import io.vertx.core.impl.NetSocketInternal;
-// import io.vertx.core.net.*;
-
 import hunt.collection.HashMap;
 import hunt.collection.Map;
 import hunt.Exceptions;
@@ -100,10 +96,10 @@ class PgConnectionFactory {
     }
 
     // Called by hook
-    private void close(VoidHandler completionHandler) {
+    private void close(VoidAsyncResult completionHandler) {
         client.close();
         if(completionHandler !is null) {
-            completionHandler(cast(Void)null);
+            completionHandler(cast(VoidAsyncResult)null);
         }
     }
 
@@ -176,14 +172,14 @@ class PgConnectionFactory {
                 PgSocketConnection pgConn;
 
                 override void connectionOpened(Connection connection) {
-                    infof("Connection created: %s", connection.getRemoteAddress());
+                    version(HUNT_DEBUG) infof("Connection created: %s", connection.getRemoteAddress());
 
                     pgConn = newSocketConnection(cast(AbstractConnection)connection);
                     handler(succeededResult(pgConn));
                 }
 
                 override void connectionClosed(Connection connection) {
-                    infof("Connection closed: %s", connection.getRemoteAddress());
+                    version(HUNT_DEBUG) infof("Connection closed: %s", connection.getRemoteAddress());
                     pgConn.handleClosed(connection);
                 }
 

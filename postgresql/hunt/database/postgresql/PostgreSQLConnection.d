@@ -20,7 +20,6 @@ module hunt.database.postgresql.PostgreSQLConnection;
 import hunt.database.postgresql.PostgreSQLNotification;
 import hunt.database.postgresql.impl.PostgreSQLConnectionImpl;
 
-
 import hunt.database.base.Common;
 import hunt.database.base.PreparedQuery;
 import hunt.database.base.SqlResult;
@@ -29,9 +28,7 @@ import hunt.database.base.Row;
 import hunt.database.base.SqlConnection;
 import hunt.database.base.Tuple;
 
-
 import hunt.collection.List;
-// import java.util.stream.Collector;
 
 /**
  * A connection to Postgres.
