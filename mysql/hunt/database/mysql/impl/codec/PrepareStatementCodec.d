@@ -21,7 +21,7 @@ import hunt.database.base.impl.PreparedStatement;
 import hunt.database.base.impl.command.CommandResponse;
 import hunt.database.base.impl.command.PrepareStatementCommand;
 
-import java.nio.charset.StandardCharsets;
+
 
 import static hunt.database.mysql.impl.codec.Packets.ERROR_PACKET_HEADER;
 

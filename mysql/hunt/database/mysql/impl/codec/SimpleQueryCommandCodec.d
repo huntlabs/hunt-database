@@ -20,7 +20,7 @@ import io.netty.buffer.ByteBuf;
 import hunt.database.base.impl.command.CommandResponse;
 import hunt.database.base.impl.command.SimpleQueryCommand;
 
-import java.nio.charset.StandardCharsets;
+
 
 import static hunt.database.mysql.impl.codec.Packets.*;
 

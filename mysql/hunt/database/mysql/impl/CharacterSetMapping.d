@@ -1,33 +1,34 @@
 module hunt.database.mysql.impl.CharacterSetMapping;
 
-import io.netty.util.collection.IntObjectHashMap;
-import io.netty.util.collection.IntObjectMap;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
+import hunt.text.Charset;
+import hunt.collection.HashMap;
 import hunt.collection.Map;
 
+import std.string;
+
 final class CharacterSetMapping {
-  private static IntObjectMap!(Charset) byteToCharsetMapping = new IntObjectHashMap<>();
-  private static Map!(String, Integer) stringToByteMapping = new HashMap<>();
+    // private static IntObjectMap!(Charset) byteToCharsetMapping = new IntObjectHashMap<>();
+    // private static Map!(string, Integer) stringToByteMapping = new HashMap<>();
+    private enum Charset[int] byteToCharsetMapping = [33 : StandardCharsets.UTF_8];
+    private enum int[string] stringToByteMapping = ["UTF-8" : 33];
 
-  static {
-    byteToCharsetMapping.put(33, StandardCharsets.UTF_8);
+    // static {
+    //     byteToCharsetMapping.put(33, StandardCharsets.UTF_8);
 
-    // use uppercase representation
-    stringToByteMapping.put("UTF-8",  33);
-  }
+    //     // use uppercase representation
+    //     stringToByteMapping.put("UTF-8",  33);
+    // }
 
-  static Charset getCharset(byte value) {
-    return byteToCharsetMapping.get(value);
-  }
+    static Charset getCharset(byte value) {
+        return byteToCharsetMapping[value];
+    }
 
-  static byte getCharsetByteValue(String charset) {
-    return stringToByteMapping.get(charset.toUpperCase()).byteValue();
-  }
+    static byte getCharsetByteValue(string charset) {
+        return cast(byte)stringToByteMapping[charset.toUpper()];
+    }
 
-  static Charset getCharset(String value) {
-    return getCharset(getCharsetByteValue(value));
-  }
+    static Charset getCharset(string value) {
+        return getCharset(getCharsetByteValue(value));
+    }
 }

@@ -105,20 +105,23 @@ class PgConnectOptions : SqlConnectOptions {
     enum string DEFAULT_PASSWORD = "pass";
     enum int DEFAULT_PIPELINING_LIMIT = 256;
     enum SslMode DEFAULT_SSLMODE = SslMode.DISABLE;
-    static Map!(string, string) DEFAULT_PROPERTIES() {
-        __gshared Map!(string, string) inst;
-        return initOnce!inst(createDefaultProperties());
-    }
+    enum string[string] DEFAULT_PROPERTIES = ["application_name" : "hunt-pg-client",
+            "client_encoding" : "utf8",     "DateStyle" : "ISO", 
+            "intervalStyle" : "postgres",   "extra_float_digits" : "2"];
+    // static Map!(string, string) DEFAULT_PROPERTIES() {
+    //     __gshared Map!(string, string) inst;
+    //     return initOnce!inst(createDefaultProperties());
+    // }
 
-    private static Map!(string, string) createDefaultProperties() {
-        Map!(string, string) defaultProperties = new HashMap!(string, string)();
-        defaultProperties.put("application_name", "vertx-pg-client");
-        defaultProperties.put("client_encoding", "utf8");
-        defaultProperties.put("DateStyle", "ISO");
-        defaultProperties.put("intervalStyle", "postgres");
-        defaultProperties.put("extra_float_digits", "2");
-        return defaultProperties;
-    }
+    // private static Map!(string, string) createDefaultProperties() {
+    //     Map!(string, string) defaultProperties = new HashMap!(string, string)();
+    //     defaultProperties.put("application_name", "vertx-pg-client");
+    //     defaultProperties.put("client_encoding", "utf8");
+    //     defaultProperties.put("DateStyle", "ISO");
+    //     defaultProperties.put("intervalStyle", "postgres");
+    //     defaultProperties.put("extra_float_digits", "2");
+    //     return defaultProperties;
+    // }
 
     private int pipeliningLimit;
     private SslMode sslMode;

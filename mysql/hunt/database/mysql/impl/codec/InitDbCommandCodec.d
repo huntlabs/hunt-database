@@ -3,7 +3,7 @@ module hunt.database.mysql.impl.codec.InitDbCommandCodec;
 import io.netty.buffer.ByteBuf;
 import hunt.database.mysql.impl.command.InitDbCommand;
 
-import java.nio.charset.StandardCharsets;
+
 
 class InitDbCommandCodec : CommandCodec!(Void, InitDbCommand) {
   InitDbCommandCodec(InitDbCommand cmd) {

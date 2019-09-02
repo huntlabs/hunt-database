@@ -8,7 +8,7 @@ import io.vertx.core.net.NetSocket;
 import hunt.database.mysql.MySQLConnectOptions;
 import hunt.database.base.impl.Connection;
 
-import java.util.HashMap;
+import hunt.collection.HashMap;
 import hunt.collection.Map;
 
 class MySQLConnectionFactory {

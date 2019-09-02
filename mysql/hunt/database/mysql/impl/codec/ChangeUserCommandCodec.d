@@ -7,8 +7,8 @@ import hunt.database.mysql.impl.util.BufferUtils;
 import hunt.database.mysql.impl.util.Native41Authenticator;
 import hunt.database.base.impl.command.CommandResponse;
 
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
+import hunt.text.Charset;
+
 import hunt.collection.Map;
 
 import static hunt.database.mysql.impl.codec.CapabilitiesFlag.*;

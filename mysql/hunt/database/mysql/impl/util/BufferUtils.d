@@ -2,7 +2,7 @@ module hunt.database.mysql.impl.util.BufferUtils;
 
 import io.netty.buffer.ByteBuf;
 
-import java.nio.charset.Charset;
+import hunt.text.Charset;
 
 class BufferUtils {
   private static final byte TERMINAL = 0x00;

@@ -1,6 +1,6 @@
 module hunt.database.mysql.impl.util.Native41Authenticator;
 
-import java.nio.charset.Charset;
+import hunt.text.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 

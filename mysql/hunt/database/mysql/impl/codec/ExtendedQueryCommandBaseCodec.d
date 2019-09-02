@@ -6,8 +6,8 @@ import hunt.database.mysql.impl.MySQLCollation;
 import hunt.database.base.Tuple;
 import hunt.database.base.impl.command.ExtendedQueryCommandBase;
 
-import java.nio.charset.StandardCharsets;
-import java.nio.charset.Charset;
+
+import hunt.text.Charset;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

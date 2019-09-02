@@ -1,8 +1,8 @@
 module hunt.database.mysql.impl.codec.HandshakeResponse;
 
-import java.nio.charset.Charset;
+import hunt.text.Charset;
 import hunt.collection.Arrays;
-import java.util.HashMap;
+import hunt.collection.HashMap;
 import hunt.collection.Map;
 
 @Deprecated

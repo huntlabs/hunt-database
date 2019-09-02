@@ -6,7 +6,7 @@ import hunt.database.mysql.impl.MySQLRowImpl;
 import hunt.database.base.Row;
 import hunt.database.base.impl.RowDecoder;
 
-import java.nio.charset.Charset;
+import hunt.text.Charset;
 import java.util.function.BiConsumer;
 import java.util.stream.Collector;
 

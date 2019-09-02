@@ -21,7 +21,7 @@ module hunt.database.postgresql.impl.PostgreSQLConnectionUriParser;
 
 // import java.io.UnsupportedEncodingException;
 // import java.net.URLDecoder;
-// import java.util.HashMap;
+// import hunt.collection.HashMap;
 // hunt.collection.Map;
 // import java.util.regex.Matcher;
 // import java.util.regex.Pattern;

@@ -15,7 +15,5 @@
  *
  */
 
-@ModuleGen(name = "vertx-mysql-client", groupPackage = "io.vertx")
-module hunt.database.mysql.package;
+module hunt.database.mysql;
 
-import io.vertx.codegen.annotations.ModuleGen;

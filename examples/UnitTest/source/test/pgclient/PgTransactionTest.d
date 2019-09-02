@@ -81,6 +81,7 @@ class PgTransactionTest : PgClientTestBase!(Transaction) {
             });
         };
     }    
+    
 
     @Test
     void testReleaseConnectionOnCommit() {

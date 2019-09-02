@@ -1,6 +1,6 @@
 name "mysql"
 description "MySQL client for D Programming Language."
-dependency "hunt-database:base" version="*"
+dependency "base" path="../base"
 targetType "library"
 sourcePaths "."
 importPaths "."

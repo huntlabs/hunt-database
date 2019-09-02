@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import hunt.database.mysql.impl.command.StatisticsCommand;
 import hunt.database.base.impl.command.CommandResponse;
 
-import java.nio.charset.StandardCharsets;
+
 
 class StatisticsCommandCodec : CommandCodec!(String, StatisticsCommand) {
   private static final int PAYLOAD_LENGTH = 1;
