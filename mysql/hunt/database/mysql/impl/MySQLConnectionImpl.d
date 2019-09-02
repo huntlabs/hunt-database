@@ -1,10 +1,6 @@
 module hunt.database.mysql.impl.MySQLConnectionImpl;
 
-import hunt.database.base.AsyncResult;
-import io.vertx.core.Context;
-import io.vertx.core.Future;
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
+import hunt.database.mysql.impl.MySQLConnectionFactory;
 
 import hunt.database.mysql.MySQLConnectOptions;
 import hunt.database.mysql.MySQLConnection;
@@ -17,116 +13,121 @@ import hunt.database.mysql.impl.command.ResetConnectionCommand;
 import hunt.database.mysql.impl.command.SetOptionCommand;
 import hunt.database.mysql.impl.command.StatisticsCommand;
 
+import hunt.database.base.AsyncResult;
 import hunt.database.base.Transaction;
 import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.SqlConnectionImpl;
 
-class MySQLConnectionImpl : SqlConnectionImpl!(MySQLConnectionImpl) implements MySQLConnection {
+import hunt.logging.ConsoleLogger;
 
-  static void connect(Vertx vertx, MySQLConnectOptions options, Handler!(AsyncResult!(MySQLConnection)) handler) {
-    Context ctx = Vertx.currentContext();
-    if (ctx !is null) {
-      MySQLConnectionFactory client = new MySQLConnectionFactory(ctx, false, options);
-      client.connect(ar-> {
-        if (ar.succeeded()) {
-          Connection conn = ar.result();
-          MySQLConnectionImpl p = new MySQLConnectionImpl(client, ctx, conn);
-          conn.init(p);
-          handler.handle(Future.succeededFuture(p));
-        } else {
-          handler.handle(Future.failedFuture(ar.cause()));
+import hunt.collection.List;
+import hunt.Exceptions;
+
+
+class MySQLConnectionImpl : SqlConnectionImpl!(MySQLConnectionImpl), MySQLConnection {
+
+    static void connect(MySQLConnectOptions options, AsyncResultHandler!(MySQLConnection) handler) {
+        MySQLConnectionFactory client = new MySQLConnectionFactory(false, options);
+        version(HUNT_DB_DEBUG) trace("connecting ...");
+        client.connect( (ar) {
+            version(HUNT_DB_DEBUG) info("connection result: ", ar.succeeded());
+            if (ar.succeeded()) {
+                DbConnection conn = ar.result();
+                MySQLConnectionImpl p = new MySQLConnectionImpl(client, conn);
+                conn.init(p);
+                if(handler !is null) {
+                    handler(succeededResult!(MySQLConnection)(p));
+                }
+            } else if(handler !is null) {
+                handler(failedResult!(MySQLConnection)(ar.cause()));
+            }
+        });
+    }
+
+    private MySQLConnectionFactory factory;
+
+    this(MySQLConnectionFactory factory, DbConnection conn) {
+        super(context, conn);
+
+        this.factory = factory;
+    }
+
+    override
+    void handleNotification(int processId, string channel, string payload) {
+        throw new UnsupportedOperationException();
+    }
+
+    override
+    Transaction begin() {
+        throw new UnsupportedOperationException("Transaction is not supported for now");
+    }
+
+    override
+    Transaction begin(boolean closeOnEnd) {
+        throw new UnsupportedOperationException("Transaction is not supported for now");
+    }
+
+    override
+    MySQLConnection ping(VoidHandler handler) {
+        PingCommand cmd = new PingCommand();
+        cmd.handler = handler;
+        schedule(cmd);
+        return this;
+    }
+
+    override
+    MySQLConnection specifySchema(string schemaName, VoidHandler handler) {
+        InitDbCommand cmd = new InitDbCommand(schemaName);
+        cmd.handler = handler;
+        schedule(cmd);
+        return this;
+    }
+
+    override
+    MySQLConnection getInternalStatistics(AsyncResultHandler!(string) handler) {
+        StatisticsCommand cmd = new StatisticsCommand();
+        cmd.handler = handler;
+        schedule(cmd);
+        return this;
+    }
+
+    override
+    MySQLConnection setOption(MySQLSetOption option, VoidHandler handler) {
+        SetOptionCommand cmd = new SetOptionCommand(option);
+        cmd.handler = handler;
+        schedule(cmd);
+        return this;
+    }
+
+    override
+    MySQLConnection resetConnection(VoidHandler handler) {
+        ResetConnectionCommand cmd = new ResetConnectionCommand();
+        cmd.handler = handler;
+        schedule(cmd);
+        return this;
+    }
+
+    override
+    MySQLConnection dumpDebug(VoidHandler handler) {
+        DebugCommand cmd = new DebugCommand();
+        cmd.handler = handler;
+        schedule(cmd);
+        return this;
+    }
+
+    override
+    MySQLConnection changeUser(MySQLConnectOptions options, VoidHandler handler) {
+        MySQLCollation collation;
+        try {
+            collation = MySQLCollation.valueOfName(options.getCollation());
+        } catch (IllegalArgumentException e) {
+            handler.handle(Future.failedFuture(e));
+            return this;
         }
-      });
-    } else {
-      vertx.runOnContext(v -> {
-        connect(vertx, options, handler);
-      });
+        ChangeUserCommand cmd = new ChangeUserCommand(options.getUser(), options.getPassword(), 
+            options.getDatabase(), collation, options.getProperties());
+        cmd.handler = handler;
+        schedule(cmd);
+        return this;
     }
-  }
-
-  private final MySQLConnectionFactory factory;
-
-  MySQLConnectionImpl(MySQLConnectionFactory factory, Context context, Connection conn) {
-    super(context, conn);
-
-    this.factory = factory;
-  }
-
-  override
-  void handleNotification(int processId, String channel, String payload) {
-    throw new UnsupportedOperationException();
-  }
-
-  override
-  Transaction begin() {
-    throw new UnsupportedOperationException("Transaction is not supported for now");
-  }
-
-  override
-  Transaction begin(boolean closeOnEnd) {
-    throw new UnsupportedOperationException("Transaction is not supported for now");
-  }
-
-  override
-  MySQLConnection ping(VoidHandler handler) {
-    PingCommand cmd = new PingCommand();
-    cmd.handler = handler;
-    schedule(cmd);
-    return this;
-  }
-
-  override
-  MySQLConnection specifySchema(String schemaName, VoidHandler handler) {
-    InitDbCommand cmd = new InitDbCommand(schemaName);
-    cmd.handler = handler;
-    schedule(cmd);
-    return this;
-  }
-
-  override
-  MySQLConnection getInternalStatistics(Handler!(AsyncResult!(String)) handler) {
-    StatisticsCommand cmd = new StatisticsCommand();
-    cmd.handler = handler;
-    schedule(cmd);
-    return this;
-  }
-
-  override
-  MySQLConnection setOption(MySQLSetOption option, VoidHandler handler) {
-    SetOptionCommand cmd = new SetOptionCommand(option);
-    cmd.handler = handler;
-    schedule(cmd);
-    return this;
-  }
-
-  override
-  MySQLConnection resetConnection(VoidHandler handler) {
-    ResetConnectionCommand cmd = new ResetConnectionCommand();
-    cmd.handler = handler;
-    schedule(cmd);
-    return this;
-  }
-
-  override
-  MySQLConnection debug(VoidHandler handler) {
-    DebugCommand cmd = new DebugCommand();
-    cmd.handler = handler;
-    schedule(cmd);
-    return this;
-  }
-
-  override
-  MySQLConnection changeUser(MySQLConnectOptions options, VoidHandler handler) {
-    MySQLCollation collation;
-    try {
-      collation = MySQLCollation.valueOfName(options.getCollation());
-    } catch (IllegalArgumentException e) {
-      handler.handle(Future.failedFuture(e));
-      return this;
-    }
-    ChangeUserCommand cmd = new ChangeUserCommand(options.getUser(), options.getPassword(), options.getDatabase(), collation, options.getProperties());
-    cmd.handler = handler;
-    schedule(cmd);
-    return this;
-  }
 }

@@ -1,12 +1,7 @@
 module hunt.database.mysql.MySQLConnection;
 
-import io.vertx.codegen.annotations.Fluent;
-import io.vertx.codegen.annotations.GenIgnore;
-import io.vertx.codegen.annotations.VertxGen;
 import hunt.database.base.AsyncResult;
-import io.vertx.core.Handler;
-import io.vertx.core.Vertx;
-import hunt.database.mysql.impl.MySQLConnectionImpl;
+// import hunt.database.mysql.impl.MySQLConnectionImpl;
 import hunt.database.base.PreparedQuery;
 import hunt.database.base.Row;
 import hunt.database.base.RowSet;
@@ -14,9 +9,7 @@ import hunt.database.base.SqlConnection;
 import hunt.database.base.SqlResult;
 import hunt.database.base.Tuple;
 
-import java.util.stream.Collector;
-
-import static hunt.database.mysql.MySQLConnectOptions.*;
+import hunt.database.mysql.MySQLConnectOptions;
 
 /**
  * A connection to MySQL server.
@@ -29,46 +22,44 @@ interface MySQLConnection : SqlConnection {
      * @param connectOptions the options for the connection
      * @param handler the handler called with the connection or the failure
      */
-    static void connect(Vertx vertx, MySQLConnectOptions connectOptions, Handler!(AsyncResult!(MySQLConnection)) handler) {
-        MySQLConnectionImpl.connect(vertx, connectOptions, handler);
-    }
+    // static void connect(MySQLConnectOptions connectOptions, AsyncResultHandler!(MySQLConnection)) handler) {
+    //     MySQLConnectionImpl.connect(connectOptions, handler);
+    // }
 
     /**
      * Like {@link #connect(Vertx, MySQLConnectOptions, Handler)} with options build from {@code connectionUri}.
      */
-    static void connect(Vertx vertx, String connectionUri, Handler!(AsyncResult!(MySQLConnection)) handler) {
-        connect(vertx, fromUri(connectionUri), handler);
-    }
+    // static void connect(string connectionUri, AsyncResultHandler!(MySQLConnection)) handler) {
+    //     connect(fromUri(connectionUri), handler);
+    // }
 
-    override
-    MySQLConnection prepare(String sql, PreparedQueryHandler handler);
 
-    override
+    MySQLConnection prepare(string sql, PreparedQueryHandler handler);
+
+
     MySQLConnection exceptionHandler(Handler!(Throwable) handler);
 
-    override
+
     MySQLConnection closeHandler(VoidHandler handler);
 
-    override
-    MySQLConnection preparedQuery(String sql, RowSetHandler handler);
 
-    @GenIgnore
-    override
-    <R> MySQLConnection preparedQuery(String sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+    MySQLConnection preparedQuery(string sql, RowSetHandler handler);
 
-    override
-    MySQLConnection query(String sql, RowSetHandler handler);
 
-    @GenIgnore
-    override
-    <R> MySQLConnection query(String sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+    // <R> MySQLConnection preparedQuery(string sql, Collector<Row, ?, R> collector, AsyncResultHandler!(SqlResult!(R))) handler);
 
-    override
-    MySQLConnection preparedQuery(String sql, Tuple arguments, RowSetHandler handler);
 
-    @GenIgnore
-    override
-    <R> MySQLConnection preparedQuery(String sql, Tuple arguments, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+    MySQLConnection query(string sql, RowSetHandler handler);
+
+
+
+    // <R> MySQLConnection query(string sql, Collector<Row, ?, R> collector, AsyncResultHandler!(SqlResult!(R))) handler);
+
+
+    MySQLConnection preparedQuery(string sql, Tuple arguments, RowSetHandler handler);
+
+
+    // <R> MySQLConnection preparedQuery(string sql, Tuple arguments, Collector<Row, ?, R> collector, AsyncResultHandler!(SqlResult!(R))) handler);
 
     /**
      * Send a PING command to check if the server is alive.
@@ -76,7 +67,6 @@ interface MySQLConnection : SqlConnection {
      * @param handler the handler notified when the server responses to client
      * @return a reference to this, so the API can be used fluently
      */
-    @Fluent
     MySQLConnection ping(VoidHandler handler);
 
     /**
@@ -86,8 +76,7 @@ interface MySQLConnection : SqlConnection {
      * @param handler the handler notified with the execution result
      * @return a reference to this, so the API can be used fluently
      */
-    @Fluent
-    MySQLConnection specifySchema(String schemaName, VoidHandler handler);
+    MySQLConnection specifySchema(string schemaName, VoidHandler handler);
 
     /**
      * Send a STATISTICS command to get a human readable string of the server internal status.
@@ -95,8 +84,7 @@ interface MySQLConnection : SqlConnection {
      * @param handler the handler notified with the execution result
      * @return a reference to this, so the API can be used fluently
      */
-    @Fluent
-    MySQLConnection getInternalStatistics(Handler!(AsyncResult!(String)) handler);
+    MySQLConnection getInternalStatistics(AsyncResultHandler!(string) handler);
 
 
     /**
@@ -106,7 +94,6 @@ interface MySQLConnection : SqlConnection {
      * @param handler the handler notified with the execution result
      * @return a reference to this, so the API can be used fluently
      */
-    @Fluent
     MySQLConnection setOption(MySQLSetOption option, VoidHandler handler);
 
     /**
@@ -115,7 +102,6 @@ interface MySQLConnection : SqlConnection {
      * @param handler the handler notified with the execution result
      * @return a reference to this, so the API can be used fluently
      */
-    @Fluent
     MySQLConnection resetConnection(VoidHandler handler);
 
     /**
@@ -124,8 +110,7 @@ interface MySQLConnection : SqlConnection {
      * @param handler the handler notified with the execution result
      * @return a reference to this, so the API can be used fluently
      */
-    @Fluent
-    MySQLConnection debug(VoidHandler handler);
+    MySQLConnection dumpDebug(VoidHandler handler);
 
     /**
      * Send a CHANGE_USER command to change the user of the current connection, this operation will also reset connection state.
@@ -134,6 +119,5 @@ interface MySQLConnection : SqlConnection {
      * @param handler the handler
      * @return a reference to this, so the API can be used fluently
      */
-    @Fluent
     MySQLConnection changeUser(MySQLConnectOptions options, VoidHandler handler);
 }
