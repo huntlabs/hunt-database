@@ -62,7 +62,7 @@ class MySQLConnectionFactory {
     }
 
     // Called by hook
-    private void close(VoidAsyncResult completionHandler) {
+    private void close(AsyncVoidHandler completionHandler) {
         netClient.close();
         if(completionHandler !is null) {
             completionHandler(cast(VoidAsyncResult)null);
@@ -90,7 +90,7 @@ class MySQLConnectionFactory {
         // });
         // netClient.connect(port, host, promise);
 
-        connect(false, (ar) {
+        doConnect(false, (ar) {
             if (ar.succeeded()) {
                 MySQLSocketConnection conn = ar.result();
                 conn.initialization();
@@ -108,7 +108,7 @@ class MySQLConnectionFactory {
 
     private void doConnect(bool ssl, AsyncResultHandler!(MySQLSocketConnection) handler) {
 
-        client.setHandler(new class ConnectionEventHandler {
+        netClient.setHandler(new class ConnectionEventHandler {
 
                 MySQLSocketConnection pgConn;
 
@@ -145,7 +145,7 @@ class MySQLConnectionFactory {
                     warning(t);
 
                     handler(failedResult!(MySQLSocketConnection)(t));
-                    client.close(); 
+                    netClient.close(); 
                 }
 
                 override void failedAcceptingConnection(int connectionId, Throwable t) {
@@ -155,7 +155,7 @@ class MySQLConnectionFactory {
             });        
 
         try {
-            client.connect(host, port);
+            netClient.connect(host, port);
         } catch (Throwable e) {
             // Client is closed
             version(HUNT_DEBUG) {
@@ -171,6 +171,6 @@ class MySQLConnectionFactory {
 
     private MySQLSocketConnection newSocketConnection(AbstractConnection socket) {
         return new MySQLSocketConnection(socket, cachePreparedStatements, preparedStatementCacheSize, 
-                preparedStatementCacheSqlLimit, pipeliningLimit);
+                preparedStatementCacheSqlLimit);
     }    
 }

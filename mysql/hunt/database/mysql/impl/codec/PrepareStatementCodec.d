@@ -16,6 +16,9 @@
  */
 module hunt.database.mysql.impl.codec.PrepareStatementCodec;
 
+import hunt.database.mysql.impl.codec.ColumnDefinition;
+import hunt.database.mysql.impl.codec.CommandCodec;
+import hunt.database.mysql.impl.codec.MySQLEncoder;
 import hunt.database.mysql.impl.codec.Packets;
 
 import hunt.net.buffer.ByteBuf;
@@ -24,7 +27,9 @@ import hunt.database.base.impl.command.CommandResponse;
 import hunt.database.base.impl.command.PrepareStatementCommand;
 
 
-
+/**
+ * 
+ */
 class PrepareStatementCodec : CommandCodec!(PreparedStatement, PrepareStatementCommand) {
 
     private CommandHandlerState commandHandlerState = CommandHandlerState.INIT;
@@ -32,6 +37,7 @@ class PrepareStatementCodec : CommandCodec!(PreparedStatement, PrepareStatementC
     private int processingIndex;
     private ColumnDefinition[] paramDescs;
     private ColumnDefinition[] columnDescs;
+
     this(PrepareStatementCommand cmd) {
         super(cmd);
     }

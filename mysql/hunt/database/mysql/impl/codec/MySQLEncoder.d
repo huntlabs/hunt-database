@@ -199,6 +199,33 @@ class MySQLEncoder : Encoder {
     //     }
     // }
 
+
+    void write(ByteBuf outBuffer) {
+        // FIXME: Needing refactor or cleanup -@zxp at 9/3/2019, 6:19:07 PM
+        // 
+        writeAndFlush(outBuffer);
+    }
+
+    void writeAndFlush(ByteBuf outBuffer) {
+        version(HUNT_DB_DEBUG) trace("writting ...");
+
+        if(ctx is null) {
+            warning("ctx is null");
+            return ;
+        }
+
+        if (outBuffer !is null) {
+            ByteBuf buff = outBuffer;
+            byte[] avaliableData = buff.getReadableBytes();
+            version(HUNT_DB_DEBUG_MORE) {
+                tracef("buffer: %s", buff.toString());
+                tracef("buffer data: %s", cast(string)avaliableData);
+            }
+            ctx.write(cast(const(ubyte)[])avaliableData);
+        }        
+    }
+    
+
     private void initSupportedCapabilitiesFlags() {
         clientCapabilitiesFlag |= CLIENT_PLUGIN_AUTH;
         clientCapabilitiesFlag |= CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA;

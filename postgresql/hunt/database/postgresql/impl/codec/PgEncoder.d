@@ -205,8 +205,6 @@ final class PgEncoder : EncoderChain {
                 tracef("buffer data: %s", cast(string)avaliableData);
             }
             ctx.write(cast(const(ubyte)[])avaliableData);
-        } else {
-            // ctx.flush();
         }
     }
 

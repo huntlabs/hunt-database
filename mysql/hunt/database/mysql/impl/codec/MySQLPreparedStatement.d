@@ -17,12 +17,20 @@
 
 module hunt.database.mysql.impl.codec.MySQLPreparedStatement;
 
+import hunt.database.mysql.impl.codec.MySQLParamDesc;
+import hunt.database.mysql.impl.codec.MySQLRowDesc;
+
 import hunt.database.base.impl.ParamDesc;
 import hunt.database.base.impl.PreparedStatement;
 import hunt.database.base.impl.RowDesc;
 
 import hunt.collection.List;
+import std.variant;
 
+
+/**
+ * 
+ */
 class MySQLPreparedStatement : PreparedStatement {
 
     long statementId;
@@ -55,7 +63,7 @@ class MySQLPreparedStatement : PreparedStatement {
     }
 
     override
-    string prepare(List!(Object) values) {
+    string prepare(List!(Variant) values) {
         return paramDesc.prepare(values);
     }
 }

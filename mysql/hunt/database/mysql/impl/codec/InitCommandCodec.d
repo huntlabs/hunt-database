@@ -17,6 +17,8 @@
 module hunt.database.mysql.impl.codec.InitCommandCodec;
 
 import hunt.database.mysql.impl.codec.CapabilitiesFlag;
+import hunt.database.mysql.impl.codec.CommandCodec;
+import hunt.database.mysql.impl.codec.MySQLEncoder;
 import hunt.database.mysql.impl.codec.Packets;
 
 import hunt.database.mysql.impl.MySQLCollation;
@@ -33,7 +35,7 @@ import hunt.text.Charset;
 import std.algorithm;
 import std.conv;
 
-class InitCommandCodec : CommandCodec!(Connection, InitCommand) {
+class InitCommandCodec : CommandCodec!(DbConnection, InitCommand) {
 
     private enum int SCRAMBLE_LENGTH = 20;
     private enum int AUTH_PLUGIN_DATA_PART1_LENGTH = 8;

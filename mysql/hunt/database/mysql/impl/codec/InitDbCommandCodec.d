@@ -1,11 +1,17 @@
 module hunt.database.mysql.impl.codec.InitDbCommandCodec;
 
+import hunt.database.mysql.impl.codec.MySQLEncoder;
+import hunt.database.mysql.impl.codec.CommandCodec;
+
 import hunt.database.mysql.impl.command.InitDbCommand;
 
 import hunt.net.buffer.ByteBuf;
 import hunt.Object;
 import hunt.text.Charset;
 
+/**
+ * 
+ */
 class InitDbCommandCodec : CommandCodec!(Void, InitDbCommand) {
 
     this(InitDbCommand cmd) {

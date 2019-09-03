@@ -1,6 +1,9 @@
 module hunt.database.mysql.impl.codec.ChangeUserCommandCodec;
 
 import hunt.database.mysql.impl.codec.CapabilitiesFlag;
+import hunt.database.mysql.impl.codec.CommandCodec;
+import hunt.database.mysql.impl.codec.CommandType;
+import hunt.database.mysql.impl.codec.MySQLEncoder;
 import hunt.database.mysql.impl.codec.Packets;
 
 import hunt.database.mysql.impl.MySQLCollation;
@@ -11,11 +14,16 @@ import hunt.database.base.impl.command.CommandResponse;
 
 import hunt.collection.Map;
 import hunt.Exceptions;
+import hunt.logging.ConsoleLogger;
 import hunt.net.buffer;
 import hunt.Object;
 import hunt.text.Charset;
 
+import std.array;
 
+/**
+ * 
+ */
 class ChangeUserCommandCodec : CommandCodec!(Void, ChangeUserCommand) {
     this(ChangeUserCommand cmd) {
         super(cmd);
@@ -29,13 +37,14 @@ class ChangeUserCommandCodec : CommandCodec!(Void, ChangeUserCommand) {
 
     override
     void decodePayload(ByteBuf payload, int payloadLength, int sequenceId) {
-        int header = payload.getUnsignedByte(payload.readerIndex());
+        Packets header = cast(Packets)payload.getUnsignedByte(payload.readerIndex());
         switch (header) {
-            case 0xFE:
-                String pluginName = BufferUtils.readNullTerminatedString(payload, StandardCharsets.UTF_8);
-                if (pluginName.equals("caching_sha2_password")) {
+            case Packets.EOF_PACKET_HEADER: // 0xFE
+                string pluginName = BufferUtils.readNullTerminatedString(payload, StandardCharsets.UTF_8);
+                if (pluginName == "caching_sha2_password") {
                     // TODO support different auth methods later
-                    completionHandler(failedResponse!(Void)(new UnsupportedOperationException("unsupported authentication method: " ~ pluginName)));
+                    completionHandler(failedResponse!(Void)(new 
+                        UnsupportedOperationException("unsupported authentication method: " ~ pluginName)));
                     return;
                 }
                 byte[] scramble = new byte[20];
@@ -43,11 +52,15 @@ class ChangeUserCommandCodec : CommandCodec!(Void, ChangeUserCommand) {
                 byte[] scrambledPassword = Native41Authenticator.encode(cmd.password(), StandardCharsets.UTF_8, scramble);
                 sendAuthSwitchResponse(scrambledPassword);
                 break;
-            case OK_PACKET_HEADER:
+            case Packets.OK_PACKET_HEADER:
                 completionHandler(succeededResponse(cast(Void)null));
                 break;
-            case ERROR_PACKET_HEADER:
+            case Packets.ERROR_PACKET_HEADER:
                 handleErrorPacketPayload(payload);
+                break;
+            
+            default:
+                warningf("Can't handle %d", header);
                 break;
         }
     }
@@ -62,28 +75,28 @@ class ChangeUserCommandCodec : CommandCodec!(Void, ChangeUserCommand) {
         // encode packet payload
         packet.writeByte(CommandType.COM_CHANGE_USER);
         BufferUtils.writeNullTerminatedString(packet, cmd.username(), StandardCharsets.UTF_8);
-        String password = cmd.password();
-        if (password.isEmpty()) {
+        string password = cmd.password();
+        if (password.empty()) {
             packet.writeByte(0);
         } else {
-            packet.writeByte(password.length());
+            packet.writeByte(cast(int)password.length);
             packet.writeCharSequence(password, StandardCharsets.UTF_8);
         }
         BufferUtils.writeNullTerminatedString(packet, cmd.database(), StandardCharsets.UTF_8);
         MySQLCollation collation = cmd.collation();
         int collationId = collation.collationId();
-        encoder.charset = Charset.forName(collation.mappedJavaCharsetName());
+        encoder.charset = collation.mappedJavaCharsetName(); // Charset.forName(collation.mappedJavaCharsetName());
         packet.writeShortLE(collationId);
 
-        if ((encoder.clientCapabilitiesFlag & CLIENT_PLUGIN_AUTH) != 0) {
+        if ((encoder.clientCapabilitiesFlag & CapabilitiesFlag.CLIENT_PLUGIN_AUTH) != 0) {
             BufferUtils.writeNullTerminatedString(packet, "mysql_native_password", StandardCharsets.UTF_8);
         }
-        Map!(String, String) clientConnectionAttributes = cmd.connectionAttributes();
+        Map!(string, string) clientConnectionAttributes = cmd.connectionAttributes();
         if (clientConnectionAttributes !is null && !clientConnectionAttributes.isEmpty()) {
-            encoder.clientCapabilitiesFlag |= CLIENT_CONNECT_ATTRS;
+            encoder.clientCapabilitiesFlag |= CapabilitiesFlag.CLIENT_CONNECT_ATTRS;
         }
-        if ((encoder.clientCapabilitiesFlag & CLIENT_CONNECT_ATTRS) != 0) {
-            ByteBuf kv = encoder.chctx.alloc().ioBuffer();
+        if ((encoder.clientCapabilitiesFlag & CapabilitiesFlag.CLIENT_CONNECT_ATTRS) != 0) {
+            ByteBuf kv = allocateBuffer();
             foreach (string key, string value ; clientConnectionAttributes) {
                 BufferUtils.writeLengthEncodedString(kv, key, StandardCharsets.UTF_8);
                 BufferUtils.writeLengthEncodedString(kv, value, StandardCharsets.UTF_8);
@@ -100,7 +113,7 @@ class ChangeUserCommandCodec : CommandCodec!(Void, ChangeUserCommand) {
     }
 
     private void sendAuthSwitchResponse(byte[] responseData) {
-        int payloadLength = responseData.length;
+        int payloadLength = cast(int)responseData.length;
         ByteBuf packet = allocateBuffer(payloadLength + 4);
         // encode packet header
         packet.writeMediumLE(payloadLength);

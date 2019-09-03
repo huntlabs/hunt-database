@@ -2,6 +2,8 @@ module hunt.database.mysql.impl.codec.DataTypeDesc;
 
 import hunt.database.mysql.impl.codec.DataType;
 
+import hunt.util.ObjectUtils;
+
 struct DataTypeDesc {
     int id;
     string[] binaryType;

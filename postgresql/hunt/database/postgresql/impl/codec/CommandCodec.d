@@ -150,7 +150,6 @@ abstract class CommandCodec(R, C) : CommandCodecBase
             completionHandler(resp);
         }
     }
-
     override void handleNoticeResponse(NoticeResponse noticeResponse) {
         if(noticeHandler !is null) {
             noticeHandler(noticeResponse);

@@ -1,6 +1,7 @@
 module hunt.database.mysql.impl.MySQLConnectionImpl;
 
 import hunt.database.mysql.impl.MySQLConnectionFactory;
+import hunt.database.mysql.impl.MySQLCollation;
 
 import hunt.database.mysql.MySQLConnectOptions;
 import hunt.database.mysql.MySQLConnection;
@@ -35,7 +36,7 @@ class MySQLConnectionImpl : SqlConnectionImpl!(MySQLConnectionImpl), MySQLConnec
             if (ar.succeeded()) {
                 DbConnection conn = ar.result();
                 MySQLConnectionImpl p = new MySQLConnectionImpl(client, conn);
-                conn.init(p);
+                conn.initHolder(p);
                 if(handler !is null) {
                     handler(succeededResult!(MySQLConnection)(p));
                 }
@@ -48,7 +49,7 @@ class MySQLConnectionImpl : SqlConnectionImpl!(MySQLConnectionImpl), MySQLConnec
     private MySQLConnectionFactory factory;
 
     this(MySQLConnectionFactory factory, DbConnection conn) {
-        super(context, conn);
+        super(conn);
 
         this.factory = factory;
     }
@@ -69,17 +70,17 @@ class MySQLConnectionImpl : SqlConnectionImpl!(MySQLConnectionImpl), MySQLConnec
     }
 
     override
-    MySQLConnection ping(VoidHandler handler) {
+    MySQLConnection ping(AsyncVoidHandler handler) {
         PingCommand cmd = new PingCommand();
-        cmd.handler = handler;
+        cmd.handler = (r) { handler(r); };
         schedule(cmd);
         return this;
     }
 
     override
-    MySQLConnection specifySchema(string schemaName, VoidHandler handler) {
+    MySQLConnection specifySchema(string schemaName, AsyncVoidHandler handler) {
         InitDbCommand cmd = new InitDbCommand(schemaName);
-        cmd.handler = handler;
+        cmd.handler = (r) { handler(r); };
         schedule(cmd);
         return this;
     }
@@ -87,47 +88,47 @@ class MySQLConnectionImpl : SqlConnectionImpl!(MySQLConnectionImpl), MySQLConnec
     override
     MySQLConnection getInternalStatistics(AsyncResultHandler!(string) handler) {
         StatisticsCommand cmd = new StatisticsCommand();
-        cmd.handler = handler;
+        cmd.handler = (r) { handler(r); };
         schedule(cmd);
         return this;
     }
 
     override
-    MySQLConnection setOption(MySQLSetOption option, VoidHandler handler) {
+    MySQLConnection setOption(MySQLSetOption option, AsyncVoidHandler handler) {
         SetOptionCommand cmd = new SetOptionCommand(option);
-        cmd.handler = handler;
+        cmd.handler = (r) { handler(r); };
         schedule(cmd);
         return this;
     }
 
     override
-    MySQLConnection resetConnection(VoidHandler handler) {
+    MySQLConnection resetConnection(AsyncVoidHandler handler) {
         ResetConnectionCommand cmd = new ResetConnectionCommand();
-        cmd.handler = handler;
+        cmd.handler = (r) { handler(r); };
         schedule(cmd);
         return this;
     }
 
     override
-    MySQLConnection dumpDebug(VoidHandler handler) {
+    MySQLConnection dumpDebug(AsyncVoidHandler handler) {
         DebugCommand cmd = new DebugCommand();
-        cmd.handler = handler;
+        cmd.handler = (r) { handler(r); };
         schedule(cmd);
         return this;
     }
 
     override
-    MySQLConnection changeUser(MySQLConnectOptions options, VoidHandler handler) {
+    MySQLConnection changeUser(MySQLConnectOptions options, AsyncVoidHandler handler) {
         MySQLCollation collation;
         try {
             collation = MySQLCollation.valueOfName(options.getCollation());
         } catch (IllegalArgumentException e) {
-            handler.handle(Future.failedFuture(e));
+            handler(failedResult!(Object)(e));
             return this;
         }
         ChangeUserCommand cmd = new ChangeUserCommand(options.getUser(), options.getPassword(), 
             options.getDatabase(), collation, options.getProperties());
-        cmd.handler = handler;
+        cmd.handler = (r) { handler(r); };
         schedule(cmd);
         return this;
     }

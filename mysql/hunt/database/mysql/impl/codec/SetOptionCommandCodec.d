@@ -1,9 +1,16 @@
 module hunt.database.mysql.impl.codec.SetOptionCommandCodec;
 
+import hunt.database.mysql.impl.codec.CommandCodec;
+import hunt.database.mysql.impl.codec.MySQLEncoder;
+
 import hunt.database.mysql.impl.command.SetOptionCommand;
 
 import hunt.net.buffer.ByteBuf;
+import hunt.Object;
 
+/**
+ * 
+ */
 class SetOptionCommandCodec : CommandCodec!(Void, SetOptionCommand) {
     private enum int PAYLOAD_LENGTH = 3;
 

@@ -1,26 +1,32 @@
 module hunt.database.mysql.impl.codec.MySQLParamDesc;
 
-import hunt.database.mysql.impl.util.Util;
+import hunt.database.mysql.impl.codec.ColumnDefinition;
+import hunt.database.mysql.impl.codec.DataFormat;
+
 import hunt.database.base.impl.ParamDesc;
 import hunt.database.base.Util;
 
 import hunt.collection.List;
 
+import std.variant;
 
+/**
+ * 
+ */
 class MySQLParamDesc : ParamDesc {
-    private ColumnDefinition[] paramDefinitions;
+    private ColumnDefinition[] _paramDefinitions;
 
     this(ColumnDefinition[] paramDefinitions) {
-        this.paramDefinitions = paramDefinitions;
+        this._paramDefinitions = paramDefinitions;
     }
 
     ColumnDefinition[] paramDefinitions() {
-        return paramDefinitions;
+        return _paramDefinitions;
     }
 
     override
-    string prepare(List!(Object) values) {
-        if (values.size() != paramDefinitions.length) {
+    string prepare(List!(Variant) values) {
+        if (values.size() != _paramDefinitions.length) {
             return buildReport(values);
         }
 //    for (int i = 0;i < paramDefinitions.length;i++) {

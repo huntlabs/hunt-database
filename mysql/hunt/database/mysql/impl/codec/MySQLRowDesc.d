@@ -17,6 +17,7 @@
 module hunt.database.mysql.impl.codec.MySQLRowDesc;
 
 import hunt.database.mysql.impl.codec.ColumnDefinition;
+import hunt.database.mysql.impl.codec.DataFormat;
 
 import hunt.database.base.impl.RowDesc;
 

@@ -40,7 +40,7 @@ interface MySQLConnection : SqlConnection {
 
     // MySQLConnection exceptionHandler(ExceptionHandler handler);
 
-    // MySQLConnection closeHandler(VoidHandler handler);
+    // MySQLConnection closeHandler(AsyncVoidHandler handler);
 
     // MySQLConnection preparedQuery(string sql, RowSetHandler handler);
 
@@ -66,7 +66,7 @@ interface MySQLConnection : SqlConnection {
      * @param handler the handler notified when the server responses to client
      * @return a reference to this, so the API can be used fluently
      */
-    MySQLConnection ping(VoidHandler handler);
+    MySQLConnection ping(AsyncVoidHandler handler);
 
     /**
      * Send a INIT_DB command to change the default schema of the connection.
@@ -75,7 +75,7 @@ interface MySQLConnection : SqlConnection {
      * @param handler the handler notified with the execution result
      * @return a reference to this, so the API can be used fluently
      */
-    MySQLConnection specifySchema(string schemaName, VoidHandler handler);
+    MySQLConnection specifySchema(string schemaName, AsyncVoidHandler handler);
 
     /**
      * Send a STATISTICS command to get a human readable string of the server internal status.
@@ -93,7 +93,7 @@ interface MySQLConnection : SqlConnection {
      * @param handler the handler notified with the execution result
      * @return a reference to this, so the API can be used fluently
      */
-    MySQLConnection setOption(MySQLSetOption option, VoidHandler handler);
+    MySQLConnection setOption(MySQLSetOption option, AsyncVoidHandler handler);
 
     /**
      * Send a RESET_CONNECTION command to reset the session state.
@@ -101,7 +101,7 @@ interface MySQLConnection : SqlConnection {
      * @param handler the handler notified with the execution result
      * @return a reference to this, so the API can be used fluently
      */
-    MySQLConnection resetConnection(VoidHandler handler);
+    MySQLConnection resetConnection(AsyncVoidHandler handler);
 
     /**
      * Send a DEBUG command to dump debug information to the server's stdout.
@@ -109,7 +109,7 @@ interface MySQLConnection : SqlConnection {
      * @param handler the handler notified with the execution result
      * @return a reference to this, so the API can be used fluently
      */
-    MySQLConnection dumpDebug(VoidHandler handler);
+    MySQLConnection dumpDebug(AsyncVoidHandler handler);
 
     /**
      * Send a CHANGE_USER command to change the user of the current connection, this operation will also reset connection state.
@@ -118,5 +118,5 @@ interface MySQLConnection : SqlConnection {
      * @param handler the handler
      * @return a reference to this, so the API can be used fluently
      */
-    MySQLConnection changeUser(MySQLConnectOptions options, VoidHandler handler);
+    MySQLConnection changeUser(MySQLConnectOptions options, AsyncVoidHandler handler);
 }

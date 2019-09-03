@@ -1,9 +1,17 @@
 module hunt.database.mysql.impl.codec.ResetStatementCommandCodec;
 
+import hunt.database.mysql.impl.codec.CommandCodec;
+import hunt.database.mysql.impl.codec.MySQLPreparedStatement;
+
+import hunt.database.mysql.impl.codec.MySQLEncoder;
 import hunt.database.base.impl.command.CloseCursorCommand;
 
 import hunt.net.buffer.ByteBuf;
+import hunt.Object;
 
+/**
+ * 
+ */
 class ResetStatementCommandCodec : CommandCodec!(Void, CloseCursorCommand) {
     private enum int PAYLOAD_LENGTH = 5;
 

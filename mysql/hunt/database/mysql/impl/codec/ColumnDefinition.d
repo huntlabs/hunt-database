@@ -1,22 +1,26 @@
 module hunt.database.mysql.impl.codec.ColumnDefinition;
 
 import hunt.database.mysql.impl.codec.DataType;
+import std.conv;
 
+/**
+ * 
+ * 
+ * See_Also:
+ *      https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_com_query_response_text_resultset_column_definition.html
+ */
 final class ColumnDefinition {
-    /*
-        https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_com_query_response_text_resultset_column_definition.html
-     */
-    private string catalog;
-    private string schema;
-    private string table;
-    private string orgTable;
-    private string name;
-    private string orgName;
-    private int characterSet;
-    private long columnLength;
-    private DataType type;
-    private int flags;
-    private byte decimals;
+    private string _catalog;
+    private string _schema;
+    private string _table;
+    private string _orgTable;
+    private string _name;
+    private string _orgName;
+    private int _characterSet;
+    private long _columnLength;
+    private DataType _type;
+    private int _flags;
+    private byte _decimals;
 
     this(string catalog,
         string schema,
@@ -29,77 +33,77 @@ final class ColumnDefinition {
         DataType type,
         int flags,
         byte decimals) {
-        this.catalog = catalog;
-        this.schema = schema;
-        this.table = table;
-        this.orgTable = orgTable;
-        this.name = name;
-        this.orgName = orgName;
-        this.characterSet = characterSet;
-        this.columnLength = columnLength;
-        this.type = type;
-        this.flags = flags;
-        this.decimals = decimals;
+        this._catalog = catalog;
+        this._schema = schema;
+        this._table = table;
+        this._orgTable = orgTable;
+        this._name = name;
+        this._orgName = orgName;
+        this._characterSet = characterSet;
+        this._columnLength = columnLength;
+        this._type = type;
+        this._flags = flags;
+        this._decimals = decimals;
     }
 
     string catalog() {
-        return catalog;
+        return _catalog;
     }
 
     string schema() {
-        return schema;
+        return _schema;
     }
 
     string table() {
-        return table;
+        return _table;
     }
 
     string orgTable() {
-        return orgTable;
+        return _orgTable;
     }
 
     string name() {
-        return name;
+        return _name;
     }
 
     string orgName() {
-        return orgName;
+        return _orgName;
     }
 
     int characterSet() {
-        return characterSet;
+        return _characterSet;
     }
 
     long columnLength() {
-        return columnLength;
+        return _columnLength;
     }
 
     DataType type() {
-        return type;
+        return _type;
     }
 
     int flags() {
-        return flags;
+        return _flags;
     }
 
     byte decimals() {
-        return decimals;
+        return _decimals;
     }
 
     override
     string toString() {
         return "ColumnDefinition{" ~
-            "catalog='" ~ catalog ~ "\'" ~
-            ", schema='" ~ schema ~ "\'" ~
-            ", table='" ~ table ~ "\'" ~
-            ", orgTable='" ~ orgTable ~ "\'" ~
-            ", name='" ~ name ~ "\'" ~
-            ", orgName='" ~ orgName ~ "\'" ~
-            ", characterSet=" ~ characterSet ~
-            ", columnLength=" ~ columnLength ~
-            ", type=" ~ type ~
-            ", flags=" ~ flags ~
-            ", decimals=" ~ decimals ~
+            "catalog='" ~ _catalog ~ "\'" ~
+            ", schema='" ~ _schema ~ "\'" ~
+            ", table='" ~ _table ~ "\'" ~
+            ", orgTable='" ~ _orgTable ~ "\'" ~
+            ", name='" ~ _name ~ "\'" ~
+            ", orgName='" ~ _orgName ~ "\'" ~
+            ", characterSet=" ~ _characterSet.to!string() ~
+            ", columnLength=" ~ _columnLength.to!string() ~
+            ", type=" ~ _type.to!string() ~
+            ", flags=" ~ _flags.to!string() ~
+            ", decimals=" ~ _decimals.to!string() ~
             '}';
     }
 

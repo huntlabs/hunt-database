@@ -2,7 +2,9 @@ module hunt.database.mysql.impl.MySQLCollation;
 
 import hunt.util.ObjectUtils;
 import hunt.Exceptions;
+
 import std.array;
+import std.conv;
 
 /**
  * MySQL collation which is a set of rules for comparing characters in a character set.

@@ -1,10 +1,16 @@
 module hunt.database.mysql.impl.codec.DebugCommandCodec;
 
 import hunt.database.mysql.impl.codec.CommandCodec;
+import hunt.database.mysql.impl.codec.MySQLEncoder;
 
 import hunt.net.buffer.ByteBuf;
 import hunt.database.mysql.impl.command.DebugCommand;
 
+import hunt.Object;
+
+/**
+ * 
+ */
 class DebugCommandCodec : CommandCodec!(Void, DebugCommand) {
     private enum int PAYLOAD_LENGTH = 1;
 

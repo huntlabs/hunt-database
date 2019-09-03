@@ -1,12 +1,15 @@
 module hunt.database.mysql.impl.codec.StatisticsCommandCodec;
 
+import hunt.database.mysql.impl.codec.CommandCodec;
+import hunt.database.mysql.impl.codec.MySQLEncoder;
+
 import hunt.database.mysql.impl.command.StatisticsCommand;
 import hunt.database.base.impl.command.CommandResponse;
 
 import hunt.net.buffer.ByteBuf;
 
 
-class StatisticsCommandCodec : CommandCodec!(String, StatisticsCommand) {
+class StatisticsCommandCodec : CommandCodec!(string, StatisticsCommand) {
     private enum int PAYLOAD_LENGTH = 1;
 
     this(StatisticsCommand cmd) {

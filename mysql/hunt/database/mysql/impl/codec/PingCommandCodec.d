@@ -1,11 +1,17 @@
 module hunt.database.mysql.impl.codec.PingCommandCodec;
 
-import hunt.database.mysql.impl.command.PingCommand;
+import hunt.database.mysql.impl.codec.CommandCodec;
+import hunt.database.mysql.impl.codec.MySQLEncoder;
 
+import hunt.database.mysql.impl.command.PingCommand;
 import hunt.database.base.impl.command.CommandResponse;
 
 import hunt.net.buffer.ByteBuf;
+import hunt.Object;
 
+/**
+ * 
+ */
 class PingCommandCodec : CommandCodec!(Void, PingCommand) {
     private enum int PAYLOAD_LENGTH = 1;
 

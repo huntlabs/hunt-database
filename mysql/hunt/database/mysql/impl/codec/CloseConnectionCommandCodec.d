@@ -1,6 +1,8 @@
 module hunt.database.mysql.impl.codec.CloseConnectionCommandCodec;
 
 import hunt.database.mysql.impl.codec.CommandCodec;
+import hunt.database.mysql.impl.codec.CommandType;
+import hunt.database.mysql.impl.codec.MySQLEncoder;
 
 import hunt.net.buffer.ByteBuf;
 import hunt.database.base.impl.command.CloseConnectionCommand;

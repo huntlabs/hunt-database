@@ -1,9 +1,19 @@
 module hunt.database.mysql.impl.codec.CloseStatementCommandCodec;
 
+import hunt.database.mysql.impl.codec.CommandCodec;
+import hunt.database.mysql.impl.codec.CommandType;
+import hunt.database.mysql.impl.codec.MySQLEncoder;
+import hunt.database.mysql.impl.codec.MySQLPreparedStatement;
+
 import hunt.net.buffer.ByteBuf;
 import hunt.database.base.impl.command.CloseStatementCommand;
 import hunt.database.base.impl.command.CommandResponse;
 
+import hunt.Object;
+
+/**
+ * 
+ */
 class CloseStatementCommandCodec : CommandCodec!(Void, CloseStatementCommand) {
     private enum int PAYLOAD_LENGTH = 5;
 
@@ -17,7 +27,9 @@ class CloseStatementCommandCodec : CommandCodec!(Void, CloseStatementCommand) {
         MySQLPreparedStatement statement = cast(MySQLPreparedStatement) cmd.statement();
         sendCloseStatementCommand(statement);
 
-        completionHandler.handle(CommandResponse.success(null));
+        if(completionHandler !is null) {
+            completionHandler(succeededResponse(cast(Object)null));
+        }
     }
 
     override

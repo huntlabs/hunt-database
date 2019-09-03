@@ -16,6 +16,9 @@
  */
 module hunt.database.mysql.impl.codec.CommandCodec;
 
+import hunt.database.mysql.impl.codec.CapabilitiesFlag;
+import hunt.database.mysql.impl.codec.ColumnDefinition;
+import hunt.database.mysql.impl.codec.DataType;
 import hunt.database.mysql.impl.codec.MySQLEncoder;
 // import hunt.database.mysql.impl.codec.NoticeResponse;
 import hunt.database.mysql.impl.codec.Packets;
@@ -27,8 +30,9 @@ import hunt.database.base.Common;
 import hunt.database.base.impl.command.CommandBase;
 import hunt.database.base.impl.command.CommandResponse;
 
-import hunt.text.Charset;
 import hunt.net.buffer;
+import hunt.logging.ConsoleLogger;
+import hunt.text.Charset;
 
 /**
  * 
@@ -70,7 +74,7 @@ abstract class CommandCodec(R, C) : CommandCodecBase
     }
 
     void sendPacket(ByteBuf packet, int payloadLength) {
-        if (payloadLength >= PACKET_PAYLOAD_LENGTH_LIMIT) {
+        if (payloadLength >= Packets.PACKET_PAYLOAD_LENGTH_LIMIT) {
             /*
                  The original packet exceeds the limit of packet length, split the packet here.
                  if payload length is exactly 16MBytes-1byte(0xFFFFFF), an empty packet is needed to indicate the termination.
@@ -83,37 +87,44 @@ abstract class CommandCodec(R, C) : CommandCodecBase
 
     private void sendSplitPacket(ByteBuf packet) {
         ByteBuf payload = packet.skipBytes(4);
-        while (payload.readableBytes() >= PACKET_PAYLOAD_LENGTH_LIMIT) {
+        while (payload.readableBytes() >= Packets.PACKET_PAYLOAD_LENGTH_LIMIT) {
             // send a packet with 0xFFFFFF length payload
             ByteBuf packetHeader = allocateBuffer(4);
-            packetHeader.writeMediumLE(PACKET_PAYLOAD_LENGTH_LIMIT);
+            packetHeader.writeMediumLE(Packets.PACKET_PAYLOAD_LENGTH_LIMIT);
             packetHeader.writeByte(sequenceId++);
-            encoder.chctx.write(packetHeader);
-            encoder.chctx.write(payload.readRetainedSlice(PACKET_PAYLOAD_LENGTH_LIMIT));
+            encoder.write(packetHeader);
+            encoder.write(payload.readRetainedSlice(Packets.PACKET_PAYLOAD_LENGTH_LIMIT));
         }
 
         // send a packet with last part of the payload
         ByteBuf packetHeader = allocateBuffer(4);
         packetHeader.writeMediumLE(payload.readableBytes());
         packetHeader.writeByte(sequenceId++);
-        encoder.chctx.write(packetHeader);
-        encoder.chctx.writeAndFlush(payload);
+        encoder.write(packetHeader);
+        encoder.writeAndFlush(payload);
     }
 
     void sendNonSplitPacket(ByteBuf packet) {
         sequenceId++;
-        encoder.chctx.writeAndFlush(packet);
+        encoder.writeAndFlush(packet);
     }
 
     void handleOkPacketOrErrorPacketPayload(ByteBuf payload) {
-        int header = payload.getUnsignedByte(payload.readerIndex());
+        Packets header = cast(Packets)payload.getUnsignedByte(payload.readerIndex());
         switch (header) {
-            case EOF_PACKET_HEADER:
-            case OK_PACKET_HEADER:
-                completionHandler.handle(CommandResponse.success(null));
+            case Packets.EOF_PACKET_HEADER:
+            case Packets.OK_PACKET_HEADER:
+                if(completionHandler !is null) {
+                    completionHandler(succeededResponse(cast(Object)null));
+                }
                 break;
-            case ERROR_PACKET_HEADER:
+
+            case Packets.ERROR_PACKET_HEADER:
                 handleErrorPacketPayload(payload);
+                break;
+            
+            default:
+                warning("Can't handle Packets: %d", header);
                 break;
         }
     }
@@ -121,13 +132,18 @@ abstract class CommandCodec(R, C) : CommandCodecBase
     void handleErrorPacketPayload(ByteBuf payload) {
         payload.skipBytes(1); // skip ERR packet header
         int errorCode = payload.readUnsignedShortLE();
-        String sqlState = null;
+        string sqlState = null;
         if ((encoder.clientCapabilitiesFlag & CapabilitiesFlag.CLIENT_PROTOCOL_41) != 0) {
             payload.skipBytes(1); // SQL state marker will always be #
             sqlState = BufferUtils.readFixedLengthString(payload, 5, StandardCharsets.UTF_8);
         }
-        String errorMessage = readRestOfPacketString(payload, StandardCharsets.UTF_8);
-        completionHandler.handle(CommandResponse.failure(new MySQLException(errorMessage, errorCode, sqlState)));
+        string errorMessage = readRestOfPacketString(payload, StandardCharsets.UTF_8);
+
+        if(completionHandler !is null) {
+            completionHandler(failedResponse!Object(
+                    new MySQLException(errorMessage, errorCode, sqlState)));
+        }
+        
     }
 
     OkPacket decodeOkPacketPayload(ByteBuf payload, Charset charset) {
@@ -142,8 +158,8 @@ abstract class CommandCodec(R, C) : CommandCodecBase
         } else if ((encoder.clientCapabilitiesFlag & CapabilitiesFlag.CLIENT_TRANSACTIONS) != 0) {
             serverStatusFlags = payload.readUnsignedShortLE();
         }
-        String statusInfo;
-        String sessionStateInfo = null;
+        string statusInfo;
+        string sessionStateInfo = null;
         if (payload.readableBytes() == 0) {
             // handle when OK packet does not contain server status info
             statusInfo = null;
@@ -165,24 +181,25 @@ abstract class CommandCodec(R, C) : CommandCodecBase
         return new EofPacket(numberOfWarnings, serverStatusFlags);
     }
 
-    String readRestOfPacketString(ByteBuf payload, Charset charset) {
+    string readRestOfPacketString(ByteBuf payload, Charset charset) {
         return BufferUtils.readFixedLengthString(payload, payload.readableBytes(), charset);
     }
 
     ColumnDefinition decodeColumnDefinitionPacketPayload(ByteBuf payload) {
-        String catalog = BufferUtils.readLengthEncodedString(payload, StandardCharsets.UTF_8);
-        String schema = BufferUtils.readLengthEncodedString(payload, StandardCharsets.UTF_8);
-        String table = BufferUtils.readLengthEncodedString(payload, StandardCharsets.UTF_8);
-        String orgTable = BufferUtils.readLengthEncodedString(payload, StandardCharsets.UTF_8);
-        String name = BufferUtils.readLengthEncodedString(payload, StandardCharsets.UTF_8);
-        String orgName = BufferUtils.readLengthEncodedString(payload, StandardCharsets.UTF_8);
+        string catalog = BufferUtils.readLengthEncodedString(payload, StandardCharsets.UTF_8);
+        string schema = BufferUtils.readLengthEncodedString(payload, StandardCharsets.UTF_8);
+        string table = BufferUtils.readLengthEncodedString(payload, StandardCharsets.UTF_8);
+        string orgTable = BufferUtils.readLengthEncodedString(payload, StandardCharsets.UTF_8);
+        string name = BufferUtils.readLengthEncodedString(payload, StandardCharsets.UTF_8);
+        string orgName = BufferUtils.readLengthEncodedString(payload, StandardCharsets.UTF_8);
         long lengthOfFixedLengthFields = BufferUtils.readLengthEncodedInteger(payload);
         int characterSet = payload.readUnsignedShortLE();
         long columnLength = payload.readUnsignedIntLE();
         DataType type = DataType.valueOf(payload.readUnsignedByte());
         int flags = payload.readUnsignedShortLE();
         byte decimals = payload.readByte();
-        return new ColumnDefinition(catalog, schema, table, orgTable, name, orgName, characterSet, columnLength, type, flags, decimals);
+        return new ColumnDefinition(catalog, schema, table, orgTable, name, orgName, 
+            characterSet, columnLength, type, flags, decimals);
     }
 
     void skipEofPacketIfNeeded(ByteBuf payload) {
@@ -191,7 +208,7 @@ abstract class CommandCodec(R, C) : CommandCodecBase
         }
     }
 
-    boolean isDeprecatingEofFlagEnabled() {
+    bool isDeprecatingEofFlagEnabled() {
         return (encoder.clientCapabilitiesFlag & CapabilitiesFlag.CLIENT_DEPRECATE_EOF) != 0;
     }
 }

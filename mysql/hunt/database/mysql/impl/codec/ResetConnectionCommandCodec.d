@@ -1,5 +1,8 @@
 module hunt.database.mysql.impl.codec.ResetConnectionCommandCodec;
 
+import hunt.database.mysql.impl.codec.CommandCodec;
+import hunt.database.mysql.impl.codec.MySQLEncoder;
+
 import hunt.database.mysql.impl.command.ResetConnectionCommand;
 
 import hunt.net.buffer.ByteBuf;

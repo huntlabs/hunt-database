@@ -37,7 +37,9 @@ import hunt.logging.ConsoleLogger;
 import hunt.collection.List;
 import hunt.Exceptions;
 
-
+/**
+ * 
+ */
 class PgConnectionImpl : SqlConnectionImpl!(PgConnectionImpl), PgConnection  {
 
     override PgConnectionImpl query(string sql, RowSetHandler handler) {
