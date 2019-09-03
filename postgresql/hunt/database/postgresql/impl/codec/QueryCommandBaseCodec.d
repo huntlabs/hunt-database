@@ -35,7 +35,7 @@ abstract class QueryCommandBaseCodec(T, C) : CommandCodec!(bool, C)
     if(is(C : QueryCommandBase!(T))) { 
 
     // RowResultDecoder<?, T> decoder;
-    AbstractRowResultDecoder!T decoder;
+    RowResultDecoder!T decoder;
 
     this(C cmd) {
         super(cmd);
@@ -53,8 +53,6 @@ abstract class QueryCommandBaseCodec(T, C) : CommandCodec!(bool, C)
             size = decoder.size();
             decoder.reset();
         } else {
-            // FIXME: Needing refactor or cleanup -@zxp at 8/29/2019, 11:40:37 AM
-            // 
             // r = emptyResult(cmd.collector());
             r = new RowSetImpl(); 
             size = 0;

@@ -15,7 +15,7 @@
  *
  */
 
-module hunt.database.postgresql.impl.util.Util;
+module hunt.database.base.Util;
 
 import hunt.Byte;
 import hunt.net.buffer.ByteBuf;

@@ -443,7 +443,7 @@ class PgConnectOptions : SqlConnectOptions {
     /**
      * Initialize with the default options.
      */
-    override protected void init() {
+    override protected void initialize() {
         this.setHost(DEFAULT_HOST);
         this.setPort(DEFAULT_PORT);
         this.setUser(DEFAULT_USER);

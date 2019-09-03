@@ -31,7 +31,7 @@ abstract class ExtendedQueryCommandBaseCodec(R, C) : QueryCommandBaseCodec!(R, C
 
     this(C cmd) {
         super(cmd);
-        decoder = new RowResultDecoder!R(cmd.isSingleton(), 
+        decoder = new RowResultDecoder!(R)(cmd.isSingleton(), 
             (cast(PgPreparedStatement)cmd.preparedStatement()).rowDesc());
     }
 

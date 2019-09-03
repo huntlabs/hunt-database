@@ -16,7 +16,7 @@
  */
 module test.pgclient.UtilTest;
 
-import hunt.database.postgresql.impl.util.Util;
+import hunt.database.base.Util;
 
 
 import hunt.Assert;

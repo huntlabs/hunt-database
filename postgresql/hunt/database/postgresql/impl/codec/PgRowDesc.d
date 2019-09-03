@@ -20,11 +20,6 @@ import hunt.database.postgresql.impl.codec.PgColumnDesc;
 
 import hunt.database.base.impl.RowDesc;
 
-// import hunt.collection.Collections;
-// import java.util.stream.Collectors;
-// import java.util.stream.Stream;
-
-
 import std.algorithm;
 import std.range;
 

@@ -39,7 +39,7 @@ import hunt.database.postgresql.impl.codec.PasswordMessage;
 import hunt.database.postgresql.impl.codec.Response;
 import hunt.database.postgresql.impl.codec.SimpleQueryCodec;
 import hunt.database.postgresql.impl.codec.StartupMessage;
-import hunt.database.postgresql.impl.util.Util;
+import hunt.database.base.Util;
 
 import hunt.database.base.AsyncResult;
 import hunt.database.base.Exceptions;

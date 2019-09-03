@@ -23,7 +23,6 @@ import hunt.database.postgresql.impl.codec.DataTypeCodec;
 import hunt.database.postgresql.impl.codec.PgRowDesc;
 import hunt.database.postgresql.impl.codec.PgColumnDesc;
 import hunt.database.postgresql.impl.PostgreSQLRowImpl;
-// import hunt.database.postgresql.impl.codec.PgColumnDesc;
 
 import hunt.database.base.Row;
 import hunt.database.base.impl.RowDecoder;
@@ -37,10 +36,14 @@ import hunt.net.buffer.ByteBuf;
 import std.variant;
 
 /**
-*/
-abstract class AbstractRowResultDecoder(R) : RowDecoder {
+ * 
+ */
+class RowResultDecoder(R) : RowDecoder {
 
-    bool singleton;
+    private int _size;
+    private RowSetImpl container;
+    private Row row;
+    private bool singleton;
     PgRowDesc desc;
 
     this(bool singleton, PgRowDesc desc) {
@@ -48,27 +51,7 @@ abstract class AbstractRowResultDecoder(R) : RowDecoder {
         this.desc = desc;
     }
 
-    R complete();
-
-    int size();
-
-    void reset();
-    
-}
-
-/**
-*/
-class RowResultDecoder(R) : AbstractRowResultDecoder!R {
-
-    private int _size;
-    private RowSetImpl container;
-    private Row row;
-
-    this(bool singleton, PgRowDesc desc) {
-        super(singleton, desc);
-    }
-
-    override int size() {
+    int size() {
         return _size;
     }
 
@@ -77,6 +60,7 @@ class RowResultDecoder(R) : AbstractRowResultDecoder!R {
         if (container is null) {
             container = new RowSetImpl(); 
         }
+
         if (singleton) {
             if (row is null) {
                 row = new PgRowImpl(desc);
@@ -114,14 +98,14 @@ class RowResultDecoder(R) : AbstractRowResultDecoder!R {
         _size++;
     }
 
-    override R complete() {
+    R complete() {
         if (container is null) {
             container = new RowSetImpl(); 
         }
         return container;
     }
 
-    override void reset() {
+    void reset() {
         container = null;
         _size = 0;
     }

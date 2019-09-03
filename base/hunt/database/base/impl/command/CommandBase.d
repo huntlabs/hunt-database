@@ -22,9 +22,12 @@ import hunt.logging.ConsoleLogger;
 
 
 interface ICommand {
-    void fail(Throwable err);
 
     bool handlerExist();
+    
+    void fail(Throwable err);
+
+    void notifyResponse(ICommandResponse response);
 }
 
 /**
@@ -40,9 +43,14 @@ abstract class CommandBase(R) : ICommand {
         handler(failedResponse!R(err));
     }
 
-    void notifyResponse(CommandResponse!(R) response) {
+    void notifyResponse(ICommandResponse response) {
         if(handler !is null) {
-            handler(response);
+            CommandResponse!(R) r = cast(CommandResponse!(R))response;
+            if(r is null) {
+                warningf("Can't cast %s", (cast(Object)response).toString());
+            } else {
+                handler(r);
+            }
         }
     }
 }

@@ -36,6 +36,8 @@ import hunt.net.buffer.ByteBuf;
 */
 abstract class CommandCodecBase {
     
+    Throwable _failure;
+    
     EventHandler!(NoticeResponse) noticeHandler;
     EventHandler!(ICommandResponse) completionHandler;
 
@@ -117,7 +119,6 @@ abstract class CommandCodecBase {
 abstract class CommandCodec(R, C) : CommandCodecBase
         if(is(C : CommandBase!(R))) {
 
-    Throwable _failure;
     R result;
     C cmd;
 

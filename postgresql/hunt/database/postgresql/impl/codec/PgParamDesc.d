@@ -21,7 +21,7 @@ import hunt.database.postgresql.impl.codec.DataTypeCodec;
 import hunt.database.postgresql.impl.codec.DataTypeDesc;
 
 import hunt.database.base.impl.ParamDesc;
-import hunt.database.postgresql.impl.util.Util;
+import hunt.database.base.Util;
 
 import hunt.collection.List;
 import hunt.Exceptions;

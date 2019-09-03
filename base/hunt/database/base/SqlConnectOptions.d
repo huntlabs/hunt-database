@@ -27,12 +27,12 @@ abstract class SqlConnectOptions : NetClientOptions {
 
     this() {
         super();
-        init();
+        initialize();
     }
 
     // this(JsonObject json) {
     //     super(json);
-    //     init();
+    //     initialize();
     //     SqlConnectOptionsConverter.fromJson(json, this);
     // }
 
@@ -260,7 +260,7 @@ abstract class SqlConnectOptions : NetClientOptions {
     /**
      * Initialize with the default options.
      */
-    abstract protected void init();
+    abstract protected void initialize();
 
     // protected void checkParameterNonNull(Object parameter, string message) {
     //     if (parameter is null) {

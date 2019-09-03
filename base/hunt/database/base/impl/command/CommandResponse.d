@@ -31,7 +31,7 @@ abstract class CommandResponse(R) : AsyncResult!(R), ICommandResponse {
 
     // The connection that executed the command
     CommandScheduler scheduler;
-    CommandBase!(R) cmd;
+    ICommand cmd;
     private TxStatus _txStatus;
 
     this(TxStatus txStatus) {
