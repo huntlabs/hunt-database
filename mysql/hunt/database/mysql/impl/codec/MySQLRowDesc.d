@@ -19,27 +19,27 @@ module hunt.database.mysql.impl.codec.MySQLRowDesc;
 import hunt.database.base.impl.RowDesc;
 
 import hunt.collection.Collections;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+// import java.util.stream.Collectors;
+// import java.util.stream.Stream;
 
 class MySQLRowDesc : RowDesc {
 
-  private final ColumnDefinition[] columnDefinitions;
-  private final DataFormat dataFormat;
+    private ColumnDefinition[] _columnDefinitions;
+    private DataFormat _dataFormat;
 
-  MySQLRowDesc(ColumnDefinition[] columnDefinitions, DataFormat dataFormat) {
-    super(Collections.unmodifiableList(Stream.of(columnDefinitions)
-      .map(ColumnDefinition::name)
-      .collect(Collectors.toList())));
-    this.columnDefinitions = columnDefinitions;
-    this.dataFormat = dataFormat;
-  }
+    this(ColumnDefinition[] columnDefinitions, DataFormat dataFormat) {
+        super(Collections.unmodifiableList(Stream.of(columnDefinitions)
+            .map(ColumnDefinition::name)
+            .collect(Collectors.toList())));
+        this._columnDefinitions = columnDefinitions;
+        this._dataFormat = dataFormat;
+    }
 
-  ColumnDefinition[] columnDefinitions() {
-    return columnDefinitions;
-  }
+    ColumnDefinition[] columnDefinitions() {
+        return _columnDefinitions;
+    }
 
-  DataFormat dataFormat() {
-    return dataFormat;
-  }
+    DataFormat dataFormat() {
+        return _dataFormat;
+    }
 }

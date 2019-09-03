@@ -3,92 +3,101 @@ module hunt.database.mysql.impl.codec.Packets;
 /**
  * MySQL Packets.
  */
-final class Packets {
-  static final int OK_PACKET_HEADER = 0x00;
-  static final int EOF_PACKET_HEADER = 0xFE;
-  static final int ERROR_PACKET_HEADER = 0xFF;
-  static final int PACKET_PAYLOAD_LENGTH_LIMIT = 0xFFFFFF;
+enum Packets : int {
+    OK_PACKET_HEADER = 0x00,
+    EOF_PACKET_HEADER = 0xFE,
+    ERROR_PACKET_HEADER = 0xFF,
+    PACKET_PAYLOAD_LENGTH_LIMIT = 0xFFFFFF
+}
 
-  static final class OkPacket {
 
-    private final long affectedRows;
-    private final long lastInsertId;
-    private final int serverStatusFlags;
-    private final int numberOfWarnings;
-    private final String statusInfo;
-    private final String sessionStateInfo;
+/**
+ * 
+ */
+static final class OkPacket {
 
-    OkPacket(long affectedRows, long lastInsertId, int serverStatusFlags, int numberOfWarnings, String statusInfo, String sessionStateInfo) {
-      this.affectedRows = affectedRows;
-      this.lastInsertId = lastInsertId;
-      this.serverStatusFlags = serverStatusFlags;
-      this.numberOfWarnings = numberOfWarnings;
-      this.statusInfo = statusInfo;
-      this.sessionStateInfo = sessionStateInfo;
+    private final long _affectedRows;
+    private final long _lastInsertId;
+    private final int _serverStatusFlags;
+    private final int _numberOfWarnings;
+    private final string _statusInfo;
+    private final string _sessionStateInfo;
+
+    this(long affectedRows, long lastInsertId, int serverStatusFlags, int numberOfWarnings, 
+            string statusInfo, string sessionStateInfo) {
+        this._affectedRows = affectedRows;
+        this._lastInsertId = lastInsertId;
+        this._serverStatusFlags = serverStatusFlags;
+        this._numberOfWarnings = numberOfWarnings;
+        this._statusInfo = statusInfo;
+        this._sessionStateInfo = sessionStateInfo;
     }
 
     long affectedRows() {
-      return affectedRows;
+        return _affectedRows;
     }
 
     long lastInsertId() {
-      return lastInsertId;
+        return _lastInsertId;
     }
 
     int serverStatusFlags() {
-      return serverStatusFlags;
+        return _serverStatusFlags;
     }
 
     int numberOfWarnings() {
-      return numberOfWarnings;
+        return _numberOfWarnings;
     }
 
-    String statusInfo() {
-      return statusInfo;
+    string statusInfo() {
+        return _statusInfo;
     }
 
-    String sessionStateInfo() {
-      return sessionStateInfo;
+    string sessionStateInfo() {
+        return _sessionStateInfo;
     }
-  }
+}
 
-  static final class EofPacket {
 
-    private final int numberOfWarnings;
-    private final int serverStatusFlags;
+/**
+ * 
+ */
+final class EofPacket {
 
-    EofPacket(int numberOfWarnings, int serverStatusFlags) {
-      this.numberOfWarnings = numberOfWarnings;
-      this.serverStatusFlags = serverStatusFlags;
+    private int _numberOfWarnings;
+    private int _serverStatusFlags;
+
+    this(int numberOfWarnings, int serverStatusFlags) {
+        this._numberOfWarnings = numberOfWarnings;
+        this._serverStatusFlags = serverStatusFlags;
     }
 
     int numberOfWarnings() {
-      return numberOfWarnings;
+        return _numberOfWarnings;
     }
 
     int serverStatusFlags() {
-      return serverStatusFlags;
+        return _serverStatusFlags;
     }
-  }
+}
 
-  static final class ServerStatusFlags {
+enum ServerStatusFlags : int {
     /*
-      https://dev.mysql.com/doc/dev/mysql-server/latest/mysql__com_8h.html#a1d854e841086925be1883e4d7b4e8cad
+        https://dev.mysql.com/doc/dev/mysql-server/latest/mysql__com_8h.html#a1d854e841086925be1883e4d7b4e8cad
      */
 
-    static final int SERVER_STATUS_IN_TRANS = 0x0001;
-    static final int SERVER_STATUS_AUTOCOMMIT = 0x0002;
-    static final int SERVER_MORE_RESULTS_EXISTS = 0x0008;
-    static final int SERVER_STATUS_NO_GOOD_INDEX_USED = 0x0010;
-    static final int SERVER_STATUS_NO_INDEX_USED = 0x0020;
-    static final int SERVER_STATUS_CURSOR_EXISTS = 0x0040;
-    static final int SERVER_STATUS_LAST_ROW_SENT = 0x0080;
-    static final int SERVER_STATUS_DB_DROPPED = 0x0100;
-    static final int SERVER_STATUS_NO_BACKSLASH_ESCAPES = 0x0200;
-    static final int SERVER_STATUS_METADATA_CHANGED = 0x0400;
-    static final int SERVER_QUERY_WAS_SLOW = 0x0800;
-    static final int SERVER_PS_OUT_PARAMS = 0x1000;
-    static final int SERVER_STATUS_IN_TRANS_READONLY = 0x2000;
-    static final int SERVER_SESSION_STATE_CHANGED = 0x4000;
-  }
+    SERVER_STATUS_IN_TRANS = 0x0001,
+    SERVER_STATUS_AUTOCOMMIT = 0x0002,
+    SERVER_MORE_RESULTS_EXISTS = 0x0008,
+    SERVER_STATUS_NO_GOOD_INDEX_USED = 0x0010,
+    SERVER_STATUS_NO_INDEX_USED = 0x0020,
+    SERVER_STATUS_CURSOR_EXISTS = 0x0040,
+    SERVER_STATUS_LAST_ROW_SENT = 0x0080,
+    SERVER_STATUS_DB_DROPPED = 0x0100,
+    SERVER_STATUS_NO_BACKSLASH_ESCAPES = 0x0200,
+    SERVER_STATUS_METADATA_CHANGED = 0x0400,
+    SERVER_QUERY_WAS_SLOW = 0x0800,
+    SERVER_PS_OUT_PARAMS = 0x1000,
+    SERVER_STATUS_IN_TRANS_READONLY = 0x2000,
+    SERVER_SESSION_STATE_CHANGED = 0x4000
 }

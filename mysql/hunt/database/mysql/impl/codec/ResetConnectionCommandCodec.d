@@ -1,35 +1,37 @@
 module hunt.database.mysql.impl.codec.ResetConnectionCommandCodec;
 
-import io.netty.buffer.ByteBuf;
 import hunt.database.mysql.impl.command.ResetConnectionCommand;
 
+import hunt.net.buffer.ByteBuf;
+import hunt.Object;
+
 class ResetConnectionCommandCodec : CommandCodec!(Void, ResetConnectionCommand) {
-  private static final int PAYLOAD_LENGTH = 1;
+    private enum int PAYLOAD_LENGTH = 1;
 
-  ResetConnectionCommandCodec(ResetConnectionCommand cmd) {
-    super(cmd);
-  }
+    this(ResetConnectionCommand cmd) {
+        super(cmd);
+    }
 
-  override
-  void encode(MySQLEncoder encoder) {
-    super.encode(encoder);
-    sendResetConnectionCommand();
-  }
+    override
+    void encode(MySQLEncoder encoder) {
+        super.encode(encoder);
+        sendResetConnectionCommand();
+    }
 
-  override
-  void decodePayload(ByteBuf payload, int payloadLength, int sequenceId) {
-    handleOkPacketOrErrorPacketPayload(payload);
-  }
+    override
+    void decodePayload(ByteBuf payload, int payloadLength, int sequenceId) {
+        handleOkPacketOrErrorPacketPayload(payload);
+    }
 
-  private void sendResetConnectionCommand() {
-    ByteBuf packet = allocateBuffer(PAYLOAD_LENGTH + 4);
-    // encode packet header
-    packet.writeMediumLE(PAYLOAD_LENGTH);
-    packet.writeByte(sequenceId);
+    private void sendResetConnectionCommand() {
+        ByteBuf packet = allocateBuffer(PAYLOAD_LENGTH + 4);
+        // encode packet header
+        packet.writeMediumLE(PAYLOAD_LENGTH);
+        packet.writeByte(sequenceId);
 
-    // encode packet payload
-    packet.writeByte(CommandType.COM_RESET_CONNECTION);
+        // encode packet payload
+        packet.writeByte(CommandType.COM_RESET_CONNECTION);
 
-    sendNonSplitPacket(packet);
-  }
+        sendNonSplitPacket(packet);
+    }
 }

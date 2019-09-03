@@ -16,17 +16,40 @@
  */
 module hunt.database.mysql.impl.codec.MySQLCodec;
 
-import io.netty.channel.CombinedChannelDuplexHandler;
+import hunt.database.mysql.impl.codec.CommandCodec;
+import hunt.database.mysql.impl.codec.MySQLDecoder;
+import hunt.database.mysql.impl.codec.MySQLEncoder;
 
-import java.util.ArrayDeque;
+import hunt.database.base.impl.command.CommandBase;
+import hunt.database.base.impl.command.CommandResponse;
 
-class MySQLCodec : CombinedChannelDuplexHandler!(MySQLDecoder, MySQLEncoder) {
+import hunt.net.codec.Codec;
+import hunt.net.codec.Encoder;
+import hunt.net.codec.Decoder;
 
-  private final ArrayDeque<CommandCodec<?, ?>> inflight = new ArrayDeque<>();
+import std.container.dlist;
 
-  MySQLCodec() {
-    MySQLEncoder encoder = new MySQLEncoder(inflight);
-    MySQLDecoder decoder = new MySQLDecoder(inflight, encoder);
-    init(decoder, encoder);
-  }
+/**
+ * 
+ */
+class MySQLCodec : Codec { 
+
+    // private final ArrayDeque<CommandCodec<?, ?>> inflight = new ArrayDeque<>();
+    private DList!(CommandCodecBase) inflight;
+    private MySQLDecoder decoder;
+    private MySQLEncoder encoder;
+
+    this() {
+        encoder = new MySQLEncoder(inflight);
+        decoder = new MySQLDecoder(inflight, encoder);
+        // init(decoder, encoder);
+    }
+
+    Encoder getEncoder() {
+        return encoder;
+    }
+
+    Decoder getDecoder() {
+        return decoder;
+    }
 }

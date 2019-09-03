@@ -16,7 +16,9 @@
  */
 module hunt.database.mysql.impl.codec.InitCommandCodec;
 
-import io.netty.buffer.ByteBuf;
+import hunt.database.mysql.impl.codec.CapabilitiesFlag;
+import hunt.database.mysql.impl.codec.Packets;
+
 import hunt.database.mysql.impl.MySQLCollation;
 import hunt.database.mysql.impl.util.BufferUtils;
 import hunt.database.mysql.impl.util.Native41Authenticator;
@@ -24,214 +26,219 @@ import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.command.CommandResponse;
 import hunt.database.base.impl.command.InitCommand;
 
+import hunt.net.buffer.ByteBuf;
+import hunt.collection.Map;
 import hunt.text.Charset;
 
-import hunt.collection.Map;
-
-import static hunt.database.mysql.impl.codec.CapabilitiesFlag.*;
-import static hunt.database.mysql.impl.codec.Packets.*;
+import std.algorithm;
+import std.conv;
 
 class InitCommandCodec : CommandCodec!(Connection, InitCommand) {
 
-  private static final int SCRAMBLE_LENGTH = 20;
-  private static final int AUTH_PLUGIN_DATA_PART1_LENGTH = 8;
+    private enum int SCRAMBLE_LENGTH = 20;
+    private enum int AUTH_PLUGIN_DATA_PART1_LENGTH = 8;
 
-  private static final int ST_CONNECTING = 0;
-  private static final int ST_AUTHENTICATING = 1;
-  private static final int ST_CONNECTED = 2;
+    private enum int ST_CONNECTING = 0;
+    private enum int ST_AUTHENTICATING = 1;
+    private enum int ST_CONNECTED = 2;
 
-  private int status = 0;
+    private int status = 0;
 
-  InitCommandCodec(InitCommand cmd) {
-    super(cmd);
-  }
-
-  override
-  void decodePayload(ByteBuf payload, int payloadLength, int sequenceId) {
-    switch (status) {
-      case ST_CONNECTING:
-        decodeInit0(encoder, cmd, payload);
-        status = ST_AUTHENTICATING;
-        break;
-      case ST_AUTHENTICATING:
-        decodeInit1(cmd, payload);
-        break;
-    }
-  }
-
-  private void decodeInit0(MySQLEncoder encoder, InitCommand cmd, ByteBuf payload) {
-    short protocolVersion = payload.readUnsignedByte();
-
-    String serverVersion = BufferUtils.readNullTerminatedString(payload, StandardCharsets.US_ASCII);
-    // we assume the server version follows ${major}.${minor}.${release} in https://dev.mysql.com/doc/refman/8.0/en/which-version.html
-    String[] versionNumbers = serverVersion.split("\\.");
-    int majorVersion = Integer.parseInt(versionNumbers[0]);
-    int minorVersion = Integer.parseInt(versionNumbers[1]);
-    // we should truncate the possible suffixes here
-    String releaseVersion = versionNumbers[2];
-    int releaseNumber;
-    int indexOfFirstSeparator = releaseVersion.indexOf("-");
-    if (indexOfFirstSeparator != -1) {
-      // handle unstable release suffixes
-      String releaseNumberString = releaseVersion.substring(0, indexOfFirstSeparator);
-      releaseNumber = Integer.parseInt(releaseNumberString);
-    } else {
-      releaseNumber = Integer.parseInt(versionNumbers[2]);
-    }
-    if (majorVersion == 5 && (minorVersion < 7 || (minorVersion == 7 && releaseNumber < 5))) {
-      // EOF_HEADER is enabled
-    } else {
-      encoder.clientCapabilitiesFlag |= CLIENT_DEPRECATE_EOF;
+    this(InitCommand cmd) {
+        super(cmd);
     }
 
-    long connectionId = payload.readUnsignedIntLE();
-
-    // read first part of scramble
-    byte[] scramble = new byte[SCRAMBLE_LENGTH];
-    payload.readBytes(scramble, 0, AUTH_PLUGIN_DATA_PART1_LENGTH);
-
-    //filler
-    payload.readByte();
-
-    // read lower 2 bytes of Capabilities flags
-    int serverCapabilitiesFlags = payload.readUnsignedShortLE();
-
-    short characterSet = payload.readUnsignedByte();
-
-    int statusFlags = payload.readUnsignedShortLE();
-
-    // read upper 2 bytes of Capabilities flags
-    int capabilityFlagsUpper = payload.readUnsignedShortLE();
-    serverCapabilitiesFlags |= (capabilityFlagsUpper << 16);
-
-    // length of the combined auth_plugin_data (scramble)
-    short lenOfAuthPluginData;
-    boolean isClientPluginAuthSupported = (serverCapabilitiesFlags & CapabilitiesFlag.CLIENT_PLUGIN_AUTH) != 0;
-    if (isClientPluginAuthSupported) {
-      lenOfAuthPluginData = payload.readUnsignedByte();
-    } else {
-      payload.readerIndex(payload.readerIndex() + 1);
-      lenOfAuthPluginData = 0;
+    override
+    void decodePayload(ByteBuf payload, int payloadLength, int sequenceId) {
+        switch (status) {
+            case ST_CONNECTING:
+                decodeInit0(encoder, cmd, payload);
+                status = ST_AUTHENTICATING;
+                break;
+            case ST_AUTHENTICATING:
+                decodeInit1(cmd, payload);
+                break;
+        }
     }
 
-    // 10 bytes reserved
-    payload.readerIndex(payload.readerIndex() + 10);
+    private void decodeInit0(MySQLEncoder encoder, InitCommand cmd, ByteBuf payload) {
+        short protocolVersion = payload.readUnsignedByte();
 
-    // Rest of the plugin provided data
-    payload.readBytes(scramble, AUTH_PLUGIN_DATA_PART1_LENGTH, Math.max(SCRAMBLE_LENGTH - AUTH_PLUGIN_DATA_PART1_LENGTH, lenOfAuthPluginData - 9));
-    payload.readByte(); // reserved byte
+        string serverVersion = BufferUtils.readNullTerminatedString(payload, StandardCharsets.US_ASCII);
+        // we assume the server version follows ${major}.${minor}.${release} in https://dev.mysql.com/doc/refman/8.0/en/which-version.html
+        string[] versionNumbers = serverVersion.split("\\.");
+        int majorVersion = Integer.parseInt(versionNumbers[0]);
+        int minorVersion = Integer.parseInt(versionNumbers[1]);
+        // we should truncate the possible suffixes here
+        string releaseVersion = versionNumbers[2];
+        int releaseNumber;
+        int indexOfFirstSeparator = releaseVersion.indexOf("-");
+        if (indexOfFirstSeparator != -1) {
+            // handle unstable release suffixes
+            string releaseNumberString = releaseVersion.substring(0, indexOfFirstSeparator);
+            releaseNumber = Integer.parseInt(releaseNumberString);
+        } else {
+            releaseNumber = Integer.parseInt(versionNumbers[2]);
+        }
+        if (majorVersion == 5 && (minorVersion < 7 || (minorVersion == 7 && releaseNumber < 5))) {
+            // EOF_HEADER is enabled
+        } else {
+            encoder.clientCapabilitiesFlag |= CLIENT_DEPRECATE_EOF;
+        }
 
-    String authPluginName = null;
-    if (isClientPluginAuthSupported) {
-      authPluginName = BufferUtils.readNullTerminatedString(payload, StandardCharsets.UTF_8);
+        long connectionId = payload.readUnsignedIntLE();
+
+        // read first part of scramble
+        byte[] scramble = new byte[SCRAMBLE_LENGTH];
+        payload.readBytes(scramble, 0, AUTH_PLUGIN_DATA_PART1_LENGTH);
+
+        //filler
+        payload.readByte();
+
+        // read lower 2 bytes of Capabilities flags
+        int serverCapabilitiesFlags = payload.readUnsignedShortLE();
+
+        short characterSet = payload.readUnsignedByte();
+
+        int statusFlags = payload.readUnsignedShortLE();
+
+        // read upper 2 bytes of Capabilities flags
+        int capabilityFlagsUpper = payload.readUnsignedShortLE();
+        serverCapabilitiesFlags |= (capabilityFlagsUpper << 16);
+
+        // length of the combined auth_plugin_data (scramble)
+        short lenOfAuthPluginData;
+        bool isClientPluginAuthSupported = (serverCapabilitiesFlags & CapabilitiesFlag.CLIENT_PLUGIN_AUTH) != 0;
+        if (isClientPluginAuthSupported) {
+            lenOfAuthPluginData = payload.readUnsignedByte();
+        } else {
+            payload.readerIndex(payload.readerIndex() + 1);
+            lenOfAuthPluginData = 0;
+        }
+
+        // 10 bytes reserved
+        payload.readerIndex(payload.readerIndex() + 10);
+
+        // Rest of the plugin provided data
+        payload.readBytes(scramble, AUTH_PLUGIN_DATA_PART1_LENGTH, 
+            max(SCRAMBLE_LENGTH - AUTH_PLUGIN_DATA_PART1_LENGTH, lenOfAuthPluginData - 9));
+        payload.readByte(); // reserved byte
+
+        string authPluginName = null;
+        if (isClientPluginAuthSupported) {
+            authPluginName = BufferUtils.readNullTerminatedString(payload, StandardCharsets.UTF_8);
+        }
+
+        //TODO we may not need an extra object here?(inline)
+        InitialHandshakePacket initialHandshakePacket = new InitialHandshakePacket(serverVersion,
+            connectionId,
+            serverCapabilitiesFlags,
+            characterSet,
+            statusFlags,
+            scramble,
+            authPluginName
+        );
+
+        bool ssl = false;
+        if (ssl) {
+            //TODO ssl
+        } else {
+            if (cmd.database() !is null && !cmd.database().isEmpty()) {
+                encoder.clientCapabilitiesFlag |= CLIENT_CONNECT_WITH_DB;
+            }
+            string authMethodName = initialHandshakePacket.getAuthMethodName();
+            byte[] serverScramble = initialHandshakePacket.getScramble();
+            Map!(string, string) properties = cmd.properties();
+            MySQLCollation collation;
+            try {
+                collation = MySQLCollation.valueOfName(properties.get("collation"));
+            } catch (IllegalArgumentException e) {
+                completionHandler.handle(CommandResponse.failure(e));
+                return;
+            }
+            int collationId = collation.collationId();
+            encoder.charset = Charset.forName(collation.mappedJavaCharsetName());
+            properties.remove("collation");
+            Map!(string, string) clientConnectionAttributes = properties;
+            if (clientConnectionAttributes !is null && !clientConnectionAttributes.isEmpty()) {
+                encoder.clientCapabilitiesFlag |= CLIENT_CONNECT_ATTRS;
+            }
+            encoder.clientCapabilitiesFlag &= initialHandshakePacket.getServerCapabilitiesFlags();
+            sendHandshakeResponseMessage(cmd.username(), cmd.password(), cmd.database(), 
+                    collationId, serverScramble, authMethodName, clientConnectionAttributes);
+        }
     }
 
-    //TODO we may not need an extra object here?(inline)
-    InitialHandshakePacket initialHandshakePacket = new InitialHandshakePacket(serverVersion,
-      connectionId,
-      serverCapabilitiesFlags,
-      characterSet,
-      statusFlags,
-      scramble,
-      authPluginName
-    );
-
-    boolean ssl = false;
-    if (ssl) {
-      //TODO ssl
-    } else {
-      if (cmd.database() !is null && !cmd.database().isEmpty()) {
-        encoder.clientCapabilitiesFlag |= CLIENT_CONNECT_WITH_DB;
-      }
-      String authMethodName = initialHandshakePacket.getAuthMethodName();
-      byte[] serverScramble = initialHandshakePacket.getScramble();
-      Map!(String, String) properties = cmd.properties();
-      MySQLCollation collation;
-      try {
-        collation = MySQLCollation.valueOfName(properties.get("collation"));
-      } catch (IllegalArgumentException e) {
-        completionHandler.handle(CommandResponse.failure(e));
-        return;
-      }
-      int collationId = collation.collationId();
-      encoder.charset = Charset.forName(collation.mappedJavaCharsetName());
-      properties.remove("collation");
-      Map!(String, String) clientConnectionAttributes = properties;
-      if (clientConnectionAttributes !is null && !clientConnectionAttributes.isEmpty()) {
-        encoder.clientCapabilitiesFlag |= CLIENT_CONNECT_ATTRS;
-      }
-      encoder.clientCapabilitiesFlag &= initialHandshakePacket.getServerCapabilitiesFlags();
-      sendHandshakeResponseMessage(cmd.username(), cmd.password(), cmd.database(), collationId, serverScramble, authMethodName, clientConnectionAttributes);
-    }
-  }
-
-  private void decodeInit1(InitCommand cmd, ByteBuf payload) {
-    //TODO auth switch support
-    int header = payload.getUnsignedByte(payload.readerIndex());
-    switch (header) {
-      case OK_PACKET_HEADER:
-        status = ST_CONNECTED;
-        completionHandler.handle(CommandResponse.success(cmd.connection()));
-        break;
-      case ERROR_PACKET_HEADER:
-        handleErrorPacketPayload(payload);
-        break;
-      default:
-        throw new UnsupportedOperationException();
-    }
-  }
-
-  private void sendHandshakeResponseMessage(String username, String password, String database, int collationId, byte[] serverScramble, String authMethodName, Map!(String, String) clientConnectionAttributes) {
-    ByteBuf packet = allocateBuffer();
-    // encode packet header
-    int packetStartIdx = packet.writerIndex();
-    packet.writeMediumLE(0); // will set payload length later by calculation
-    packet.writeByte(sequenceId);
-
-    // encode packet payload
-    int clientCapabilitiesFlags = encoder.clientCapabilitiesFlag;
-    packet.writeIntLE(clientCapabilitiesFlags);
-    packet.writeIntLE(0xFFFFFF);
-    packet.writeByte(collationId);
-    byte[] filler = new byte[23];
-    packet.writeBytes(filler);
-    BufferUtils.writeNullTerminatedString(packet, username, StandardCharsets.UTF_8);
-    if (password is null || password.isEmpty()) {
-      packet.writeByte(0);
-    } else {
-      //TODO support different auth methods here
-
-      byte[] scrambledPassword = Native41Authenticator.encode(password, StandardCharsets.UTF_8, serverScramble);
-      if ((clientCapabilitiesFlags & CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA) != 0) {
-        BufferUtils.writeLengthEncodedInteger(packet, scrambledPassword.length);
-        packet.writeBytes(scrambledPassword);
-      } else if ((clientCapabilitiesFlags & CLIENT_SECURE_CONNECTION) != 0) {
-        packet.writeByte(scrambledPassword.length);
-        packet.writeBytes(scrambledPassword);
-      } else {
-        packet.writeByte(0);
-      }
-    }
-    if ((clientCapabilitiesFlags & CLIENT_CONNECT_WITH_DB) != 0) {
-      BufferUtils.writeNullTerminatedString(packet, database, StandardCharsets.UTF_8);
-    }
-    if ((clientCapabilitiesFlags & CLIENT_PLUGIN_AUTH) != 0) {
-      BufferUtils.writeNullTerminatedString(packet, authMethodName, StandardCharsets.UTF_8);
-    }
-    if ((clientCapabilitiesFlags & CLIENT_CONNECT_ATTRS) != 0) {
-      ByteBuf kv = encoder.chctx.alloc().ioBuffer();
-      for (MapEntry!(String, String) attribute : clientConnectionAttributes.entrySet()) {
-        BufferUtils.writeLengthEncodedString(kv, attribute.getKey(), StandardCharsets.UTF_8);
-        BufferUtils.writeLengthEncodedString(kv, attribute.getValue(), StandardCharsets.UTF_8);
-      }
-      BufferUtils.writeLengthEncodedInteger(packet, kv.readableBytes());
-      packet.writeBytes(kv);
+    private void decodeInit1(InitCommand cmd, ByteBuf payload) {
+        //TODO auth switch support
+        int header = payload.getUnsignedByte(payload.readerIndex());
+        switch (header) {
+            case OK_PACKET_HEADER:
+                status = ST_CONNECTED;
+                completionHandler.handle(CommandResponse.success(cmd.connection()));
+                break;
+            case ERROR_PACKET_HEADER:
+                handleErrorPacketPayload(payload);
+                break;
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
 
-    // set payload length
-    int payloadLength = packet.writerIndex() - packetStartIdx - 4;
-    packet.setMediumLE(packetStartIdx, payloadLength);
+    private void sendHandshakeResponseMessage(string username, string password, string database, 
+            int collationId, byte[] serverScramble, string authMethodName, 
+            Map!(string, string) clientConnectionAttributes) {
 
-    sendPacket(packet, payloadLength);
-  }
+        ByteBuf packet = allocateBuffer();
+        // encode packet header
+        int packetStartIdx = packet.writerIndex();
+        packet.writeMediumLE(0); // will set payload length later by calculation
+        packet.writeByte(sequenceId);
+
+        // encode packet payload
+        int clientCapabilitiesFlags = encoder.clientCapabilitiesFlag;
+        packet.writeIntLE(clientCapabilitiesFlags);
+        packet.writeIntLE(0xFFFFFF);
+        packet.writeByte(collationId);
+        byte[] filler = new byte[23];
+        packet.writeBytes(filler);
+        BufferUtils.writeNullTerminatedString(packet, username, StandardCharsets.UTF_8);
+        if (password is null || password.isEmpty()) {
+            packet.writeByte(0);
+        } else {
+            //TODO support different auth methods here
+
+            byte[] scrambledPassword = Native41Authenticator.encode(password, StandardCharsets.UTF_8, serverScramble);
+            if ((clientCapabilitiesFlags & CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA) != 0) {
+                BufferUtils.writeLengthEncodedInteger(packet, scrambledPassword.length);
+                packet.writeBytes(scrambledPassword);
+            } else if ((clientCapabilitiesFlags & CLIENT_SECURE_CONNECTION) != 0) {
+                packet.writeByte(scrambledPassword.length);
+                packet.writeBytes(scrambledPassword);
+            } else {
+                packet.writeByte(0);
+            }
+        }
+        if ((clientCapabilitiesFlags & CLIENT_CONNECT_WITH_DB) != 0) {
+            BufferUtils.writeNullTerminatedString(packet, database, StandardCharsets.UTF_8);
+        }
+        if ((clientCapabilitiesFlags & CLIENT_PLUGIN_AUTH) != 0) {
+            BufferUtils.writeNullTerminatedString(packet, authMethodName, StandardCharsets.UTF_8);
+        }
+        if ((clientCapabilitiesFlags & CLIENT_CONNECT_ATTRS) != 0) {
+            ByteBuf kv = encoder.chctx.alloc().ioBuffer();
+            foreach (string key, string value; clientConnectionAttributes) {
+                BufferUtils.writeLengthEncodedString(kv, key, StandardCharsets.UTF_8);
+                BufferUtils.writeLengthEncodedString(kv, value, StandardCharsets.UTF_8);
+            }
+            BufferUtils.writeLengthEncodedInteger(packet, kv.readableBytes());
+            packet.writeBytes(kv);
+        }
+
+        // set payload length
+        int payloadLength = packet.writerIndex() - packetStartIdx - 4;
+        packet.setMediumLE(packetStartIdx, payloadLength);
+
+        sendPacket(packet, payloadLength);
+    }
 }

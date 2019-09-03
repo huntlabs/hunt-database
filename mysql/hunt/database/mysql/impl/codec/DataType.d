@@ -1,62 +1,76 @@
 module hunt.database.mysql.impl.codec.DataType;
 
-import io.netty.util.collection.IntObjectHashMap;
-import io.netty.util.collection.IntObjectMap;
-import io.vertx.core.buffer.Buffer;
-import hunt.database.base.data.Numeric;
+// import io.netty.util.collection.IntObjectHashMap;
+// import io.netty.util.collection.IntObjectMap;
+// import io.vertx.core.buffer.Buffer;
+// import hunt.database.base.data.Numeric;
 
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+// import java.time.Duration;
+// import java.time.LocalDate;
+// import java.time.LocalDateTime;
 
-public enum DataType {
-  INT1(ColumnDefinition.ColumnType.MYSQL_TYPE_TINY, Byte.class, Byte.class),
-  INT2(ColumnDefinition.ColumnType.MYSQL_TYPE_SHORT, Short.class, Short.class),
-  INT3(ColumnDefinition.ColumnType.MYSQL_TYPE_INT24, Integer.class, Integer.class),
-  INT4(ColumnDefinition.ColumnType.MYSQL_TYPE_LONG, Integer.class, Integer.class),
-  INT8(ColumnDefinition.ColumnType.MYSQL_TYPE_LONGLONG, Long.class, Long.class),
-  DOUBLE(ColumnDefinition.ColumnType.MYSQL_TYPE_DOUBLE, Double.class, Double.class),
-  FLOAT(ColumnDefinition.ColumnType.MYSQL_TYPE_FLOAT, Float.class, Float.class),
-  NUMERIC(ColumnDefinition.ColumnType.MYSQL_TYPE_NEWDECIMAL, Numeric.class, Numeric.class), // DECIMAL
-  STRING(ColumnDefinition.ColumnType.MYSQL_TYPE_STRING, Buffer.class, String.class), // CHAR, BINARY
-  VARSTRING(ColumnDefinition.ColumnType.MYSQL_TYPE_VAR_STRING, Buffer.class, String.class), //VARCHAR, VARBINARY
-  TINYBLOB(ColumnDefinition.ColumnType.MYSQL_TYPE_TINY_BLOB, Buffer.class, String.class),
-  BLOB(ColumnDefinition.ColumnType.MYSQL_TYPE_BLOB, Buffer.class, String.class),
-  MEDIUMBLOB(ColumnDefinition.ColumnType.MYSQL_TYPE_MEDIUM_BLOB, Buffer.class, String.class),
-  LONGBLOB(ColumnDefinition.ColumnType.MYSQL_TYPE_LONG_BLOB, Buffer.class, String.class),
-  DATE(ColumnDefinition.ColumnType.MYSQL_TYPE_DATE, LocalDate.class, LocalDate.class),
-  TIME(ColumnDefinition.ColumnType.MYSQL_TYPE_TIME, Duration.class, Duration.class),
-  DATETIME(ColumnDefinition.ColumnType.MYSQL_TYPE_DATETIME, LocalDateTime.class, LocalDateTime.class),
-  YEAR(ColumnDefinition.ColumnType.MYSQL_TYPE_YEAR, Short.class, Short.class),
-  TIMESTAMP(ColumnDefinition.ColumnType.MYSQL_TYPE_TIMESTAMP, LocalDateTime.class, LocalDateTime.class),
-  NULL(ColumnDefinition.ColumnType.MYSQL_TYPE_NULL, null, null);
+enum DataType {
+    INT1 = ColumnType.MYSQL_TYPE_TINY,
+    INT2 = ColumnType.MYSQL_TYPE_SHORT,
+    INT3 = ColumnType.MYSQL_TYPE_INT24,
+    INT4 = ColumnType.MYSQL_TYPE_LONG,
+    INT8 = ColumnType.MYSQL_TYPE_LONGLONG,
+    DOUBLE = ColumnType.MYSQL_TYPE_DOUBLE,
+    FLOAT = ColumnType.MYSQL_TYPE_FLOAT,
+    NUMERIC = ColumnType.MYSQL_TYPE_NEWDECIMAL,
+    STRING = ColumnType.MYSQL_TYPE_STRING,
+    VARSTRING = ColumnType.MYSQL_TYPE_VAR_STRING,
+    TINYBLOB = ColumnType.MYSQL_TYPE_TINY_BLOB,
+    BLOB = ColumnType.MYSQL_TYPE_BLOB,
+    MEDIUMBLOB = ColumnType.MYSQL_TYPE_MEDIUM_BLOB,
+    LONGBLOB = ColumnType.MYSQL_TYPE_LONG_BLOB,
+    DATE = ColumnType.MYSQL_TYPE_DATE,
+    TIME = ColumnType.MYSQL_TYPE_TIME,
+    DATETIME = ColumnType.MYSQL_TYPE_DATETIME,
+    YEAR = ColumnType.MYSQL_TYPE_YEAR,
+    TIMESTAMP = ColumnType.MYSQL_TYPE_TIMESTAMP,
+    NULL = ColumnType.MYSQL_TYPE_NULL
+}
 
-  private static IntObjectMap!(DataType) idToDataType = new IntObjectHashMap<>();
 
-  static {
-    for (DataType dataType : values()) {
-      idToDataType.put(dataType.id, dataType);
-    }
-  }
+/*
+    Type of column definition
+    https://dev.mysql.com/doc/dev/mysql-server/latest/binary__log__types_8h.html#aab0df4798e24c673e7686afce436aa85
+ */
+enum ColumnType : int {
+    MYSQL_TYPE_DECIMAL = 0x00,
+    MYSQL_TYPE_TINY = 0x01,
+    MYSQL_TYPE_SHORT = 0x02,
+    MYSQL_TYPE_LONG = 0x03,
+    MYSQL_TYPE_FLOAT = 0x04,
+    MYSQL_TYPE_DOUBLE = 0x05,
+    MYSQL_TYPE_NULL = 0x06,
+    MYSQL_TYPE_TIMESTAMP = 0x07,
+    MYSQL_TYPE_LONGLONG = 0x08,
+    MYSQL_TYPE_INT24 = 0x09,
+    MYSQL_TYPE_DATE = 0x0A,
+    MYSQL_TYPE_TIME = 0x0B,
+    MYSQL_TYPE_DATETIME = 0x0C,
+    MYSQL_TYPE_YEAR = 0x0D,
+    MYSQL_TYPE_VARCHAR = 0x0F,
+    MYSQL_TYPE_BIT = 0x10,
+    MYSQL_TYPE_JSON = 0xF5,
+    MYSQL_TYPE_NEWDECIMAL = 0xF6,
+    MYSQL_TYPE_ENUM = 0xF7,
+    MYSQL_TYPE_SET = 0xF8,
+    MYSQL_TYPE_TINY_BLOB = 0xF9,
+    MYSQL_TYPE_MEDIUM_BLOB = 0xFA,
+    MYSQL_TYPE_LONG_BLOB = 0xFB,
+    MYSQL_TYPE_BLOB = 0xFC,
+    MYSQL_TYPE_VAR_STRING = 0xFD,
+    MYSQL_TYPE_STRING = 0xFE,
+    MYSQL_TYPE_GEOMETRY = 0xFF,
 
-  final int id;
-  final Class<?> binaryType;
-  final Class<?> textType;
-
-  DataType(int id, Class<?> binaryType, Class<?> textType) {
-    this.id = id;
-    this.binaryType = binaryType;
-    this.textType = textType;
-  }
-
-  static DataType valueOf(int value) {
-    DataType dataType = idToDataType.get(value);
-    if (dataType is null) {
-//      logger.warn("MySQL type =" ~ value ~ " not handled - using unknown type instead");
-      //TODO need better handling
-      return null;
-    } else {
-      return dataType;
-    }
-  }
+    /*
+        Internal to MySQL Server
+     */
+    MYSQL_TYPE_NEWDATE = 0x0E,
+    MYSQL_TYPE_TIMESTAMP2 = 0x11,
+    MYSQL_TYPE_DATETIME2 = 0x12,
+    MYSQL_TYPE_TIME2 = 0x13
 }

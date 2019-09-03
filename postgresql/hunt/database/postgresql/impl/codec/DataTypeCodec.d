@@ -69,8 +69,6 @@ import std.variant;
  */
 class DataTypeCodec {
 
-    // private static final Logger logger = LoggerFactory.getLogger(DataTypeCodec.class);
-
     // private static final String[] empty_string_array = new String[0];
     // private static final LocalDate[] empty_local_date_array = new LocalDate[0];
     // private static final LocalTime[] empty_local_time_array = new LocalTime[0];
@@ -173,7 +171,6 @@ class DataTypeCodec {
                 break;
         }
     }
-
 
     static void encodeBinary(DataType id, ref Variant value, ByteBuf buff) {
         switch (id) {

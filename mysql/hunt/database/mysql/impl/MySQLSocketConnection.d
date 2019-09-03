@@ -17,44 +17,55 @@
 
 module hunt.database.mysql.impl.MySQLSocketConnection;
 
-import io.netty.channel.ChannelPipeline;
-import io.vertx.core.Context;
-import io.vertx.core.Handler;
-import io.vertx.core.impl.NetSocketInternal;
 import hunt.database.mysql.impl.codec.MySQLCodec;
+
+import hunt.database.base.AsyncResult;
+import hunt.database.base.Common;
 import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.SocketConnectionBase;
 import hunt.database.base.impl.command.CommandResponse;
 import hunt.database.base.impl.command.InitCommand;
 
+import hunt.collection.ByteBuffer;
+import hunt.collection.BufferUtils;
 import hunt.collection.Map;
+import hunt.Exceptions;
+import hunt.logging.ConsoleLogger;
+import hunt.net.AbstractConnection;
+import hunt.net.Exceptions;
+import hunt.util.Common;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 class MySQLSocketConnection : SocketConnectionBase {
 
-  private MySQLCodec codec;
+    private MySQLCodec codec;
 
-  MySQLSocketConnection(NetSocketInternal socket,
-                               boolean cachePreparedStatements,
-                               int preparedStatementCacheSize,
-                               int preparedStatementCacheSqlLimit,
-                               Context context) {
-    super(socket, cachePreparedStatements, preparedStatementCacheSize, preparedStatementCacheSqlLimit, 1, context);
-  }
+    this(AbstractConnection socket,
+            boolean cachePreparedStatements,
+            int preparedStatementCacheSize,
+            int preparedStatementCacheSqlLimit) {
+        super(socket, cachePreparedStatements, preparedStatementCacheSize, preparedStatementCacheSqlLimit, 1);
+    }
 
-  void sendStartupMessage(String username, String password, String database, Map!(String, String) properties, Handler<? super CommandResponse!(Connection)> completionHandler) {
-    InitCommand cmd = new InitCommand(this, username, password, database, properties);
-    cmd.handler = completionHandler;
-    schedule(cmd);
-  }
+    override
+    void initialization() {
+        codec = new MySQLCodec();
+        version(HUNT_DEBUG) {
+            trace("Setting codec");
+        }
+        socket().setCodec(codec);
+        super.initialization();
+    }
 
-  override
-  void init() {
-    codec = new MySQLCodec();
-    ChannelPipeline pipeline = socket.channelHandlerContext().pipeline();
-    pipeline.addBefore("handler", "codec", codec);
-    super.init();
-  }
+    void sendStartupMessage(string username, string password, string database, Map!(string, string) properties, 
+            ResponseHandler!(DbConnection) completionHandler) {
+        InitCommand cmd = new InitCommand(this, username, password, database, properties);
+        cmd.handler = completionHandler;
+        version(HUNT_DEBUG) {
+            trace("Sending InitCommand");
+        }
+        schedule(cmd);
+    }
 }

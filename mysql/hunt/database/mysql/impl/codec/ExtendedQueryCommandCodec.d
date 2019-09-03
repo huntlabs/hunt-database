@@ -16,102 +16,105 @@
  */
 module hunt.database.mysql.impl.codec.ExtendedQueryCommandCodec;
 
-import io.netty.buffer.ByteBuf;
+import hunt.net.buffer.ByteBuf;
 import hunt.database.base.impl.command.ExtendedQueryCommand;
 
-import static hunt.database.mysql.impl.codec.Packets.*;
+import hunt.database.mysql.impl.codec.Packets;
 
-class ExtendedQueryCommandCodec!(R) extends ExtendedQueryCommandBaseCodec!(R, ExtendedQueryCommand!(R)) {
-  ExtendedQueryCommandCodec(ExtendedQueryCommand!(R) cmd) {
-    super(cmd);
-    if (cmd.fetch() > 0 && statement.isCursorOpen) {
-      // restore the state we need for decoding fetch response
-      columnDefinitions = statement.rowDesc.columnDefinitions();
-    }
-  }
+class ExtendedQueryCommandCodec(R) : ExtendedQueryCommandBaseCodec!(R, ExtendedQueryCommand!(R)) {
 
-  override
-  void encode(MySQLEncoder encoder) {
-    super.encode(encoder);
+	this(ExtendedQueryCommand!(R) cmd) {
+		super(cmd);
+		if (cmd.fetch() > 0 && statement.isCursorOpen) {
+			// restore the state we need for decoding fetch response
+			columnDefinitions = statement.rowDesc.columnDefinitions();
+		}
+	}
 
-    if (statement.isCursorOpen) {
-      decoder = new RowResultDecoder<>(cmd.collector(), false, statement.rowDesc);
-      sendStatementFetchCommand(statement.statementId, cmd.fetch());
-    } else {
-      if (cmd.fetch() > 0) {
-        //TODO Cursor_type is READ_ONLY?
-        sendStatementExecuteCommand(statement.statementId, statement.paramDesc.paramDefinitions(), sendType, cmd.params(), (byte) 0x01);
-      } else {
-        // CURSOR_TYPE_NO_CURSOR
-        sendStatementExecuteCommand(statement.statementId, statement.paramDesc.paramDefinitions(), sendType, cmd.params(), (byte) 0x00);
-      }
-    }
-  }
+	override
+	void encode(MySQLEncoder encoder) {
+		super.encode(encoder);
 
-  override
-  void decodePayload(ByteBuf payload, int payloadLength, int sequenceId) {
-    if (statement.isCursorOpen) {
-      int first = payload.getUnsignedByte(payload.readerIndex());
-      if (first == ERROR_PACKET_HEADER) {
-        handleErrorPacketPayload(payload);
-      } else {
-        // decoding COM_STMT_FETCH response
-        handleRows(payload, payloadLength, super::handleSingleRow);
-      }
-    } else {
-      // decoding COM_STMT_EXECUTE response
-      if (cmd.fetch() > 0) {
-        switch (commandHandlerState) {
-          case INIT:
-            int first = payload.getUnsignedByte(payload.readerIndex());
-            if (first == ERROR_PACKET_HEADER) {
-              handleErrorPacketPayload(payload);
-            } else {
-              handleResultsetColumnCountPacketBody(payload);
-            }
-            break;
-          case HANDLING_COLUMN_DEFINITION:
-            handleResultsetColumnDefinitions(payload);
-            break;
-          case COLUMN_DEFINITIONS_DECODING_COMPLETED:
-            // accept an EOF_Packet when DEPRECATE_EOF is not enabled
-            skipEofPacketIfNeeded(payload);
-          case HANDLING_ROW_DATA_OR_END_PACKET:
-            handleResultsetColumnDefinitionsDecodingCompleted();
-            // need to reset packet number so that we can send a fetch request
-            this.sequenceId = 0;
-            // send fetch after cursor opened
-            decoder = new RowResultDecoder<>(cmd.collector(), false, statement.rowDesc);
+		if (statement.isCursorOpen) {
+			decoder = new RowResultDecoder<>(cmd.collector(), false, statement.rowDesc);
+			sendStatementFetchCommand(statement.statementId, cmd.fetch());
+		} else {
+			if (cmd.fetch() > 0) {
+				//TODO Cursor_type is READ_ONLY?
+				sendStatementExecuteCommand(statement.statementId, statement.paramDesc.paramDefinitions(), 
+					sendType, cmd.params(), cast(byte) 0x01);
+			} else {
+				// CURSOR_TYPE_NO_CURSOR
+				sendStatementExecuteCommand(statement.statementId, statement.paramDesc.paramDefinitions(), 
+					sendType, cmd.params(), cast(byte) 0x00);
+			}
+		}
+	}
 
-            statement.isCursorOpen = true;
+	override
+	void decodePayload(ByteBuf payload, int payloadLength, int sequenceId) {
+		if (statement.isCursorOpen) {
+			int first = payload.getUnsignedByte(payload.readerIndex());
+			if (first == ERROR_PACKET_HEADER) {
+				handleErrorPacketPayload(payload);
+			} else {
+				// decoding COM_STMT_FETCH response
+				handleRows(payload, payloadLength, super::handleSingleRow);
+			}
+		} else {
+			// decoding COM_STMT_EXECUTE response
+			if (cmd.fetch() > 0) {
+				switch (commandHandlerState) {
+					case INIT:
+						int first = payload.getUnsignedByte(payload.readerIndex());
+						if (first == ERROR_PACKET_HEADER) {
+							handleErrorPacketPayload(payload);
+						} else {
+							handleResultsetColumnCountPacketBody(payload);
+						}
+						break;
+					case HANDLING_COLUMN_DEFINITION:
+						handleResultsetColumnDefinitions(payload);
+						break;
+					case COLUMN_DEFINITIONS_DECODING_COMPLETED:
+						// accept an EOF_Packet when DEPRECATE_EOF is not enabled
+						skipEofPacketIfNeeded(payload);
+					case HANDLING_ROW_DATA_OR_END_PACKET:
+						handleResultsetColumnDefinitionsDecodingCompleted();
+						// need to reset packet number so that we can send a fetch request
+						this.sequenceId = 0;
+						// send fetch after cursor opened
+						decoder = new RowResultDecoder<>(false, statement.rowDesc);
 
-            sendStatementFetchCommand(statement.statementId, cmd.fetch());
-            break;
-          default:
-            throw new IllegalStateException("Unexpected state for decoding COM_STMT_EXECUTE response with cursor opening");
-        }
-      } else {
-        super.decodePayload(payload, payloadLength, sequenceId);
-      }
-    }
-  }
+						statement.isCursorOpen = true;
 
-  private void sendStatementFetchCommand(long statementId, int count) {
-    ByteBuf packet = allocateBuffer();
-    // encode packet header
-    int packetStartIdx = packet.writerIndex();
-    packet.writeMediumLE(0); // will set payload length later by calculation
-    packet.writeByte(sequenceId);
+						sendStatementFetchCommand(statement.statementId, cmd.fetch());
+						break;
+					default:
+						throw new IllegalStateException("Unexpected state for decoding COM_STMT_EXECUTE response with cursor opening");
+				}
+			} else {
+				super.decodePayload(payload, payloadLength, sequenceId);
+			}
+		}
+	}
 
-    // encode packet payload
-    packet.writeByte(CommandType.COM_STMT_FETCH);
-    packet.writeIntLE((int) statementId);
-    packet.writeIntLE(count);
+	private void sendStatementFetchCommand(long statementId, int count) {
+		ByteBuf packet = allocateBuffer();
+		// encode packet header
+		int packetStartIdx = packet.writerIndex();
+		packet.writeMediumLE(0); // will set payload length later by calculation
+		packet.writeByte(sequenceId);
 
-    // set payload length
-    int lenOfPayload = packet.writerIndex() - packetStartIdx - 4;
-    packet.setMediumLE(packetStartIdx, lenOfPayload);
+		// encode packet payload
+		packet.writeByte(CommandType.COM_STMT_FETCH);
+		packet.writeIntLE(cast(int) statementId);
+		packet.writeIntLE(count);
 
-    encoder.chctx.writeAndFlush(packet);
-  }
+		// set payload length
+		int lenOfPayload = packet.writerIndex() - packetStartIdx - 4;
+		packet.setMediumLE(packetStartIdx, lenOfPayload);
+
+		encoder.chctx.writeAndFlush(packet);
+	}
 }

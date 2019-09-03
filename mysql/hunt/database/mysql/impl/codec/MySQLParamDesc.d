@@ -4,24 +4,23 @@ import hunt.database.mysql.impl.util.Util;
 import hunt.database.base.impl.ParamDesc;
 
 import hunt.collection.List;
-import java.util.stream.Stream;
 
 class MySQLParamDesc : ParamDesc {
-  private final ColumnDefinition[] paramDefinitions;
+    private ColumnDefinition[] paramDefinitions;
 
-  MySQLParamDesc(ColumnDefinition[] paramDefinitions) {
-    this.paramDefinitions = paramDefinitions;
-  }
-
-  ColumnDefinition[] paramDefinitions() {
-    return paramDefinitions;
-  }
-
-  override
-  String prepare(List!(Object) values) {
-    if (values.size() != paramDefinitions.length) {
-      return buildReport(values);
+    this(ColumnDefinition[] paramDefinitions) {
+        this.paramDefinitions = paramDefinitions;
     }
+
+    ColumnDefinition[] paramDefinitions() {
+        return paramDefinitions;
+    }
+
+    override
+    string prepare(List!(Object) values) {
+        if (values.size() != paramDefinitions.length) {
+            return buildReport(values);
+        }
 //    for (int i = 0;i < paramDefinitions.length;i++) {
 //      DataType paramDataType = paramDefinitions[i].type();
 //      Object value = values.get(i);
@@ -34,12 +33,12 @@ class MySQLParamDesc : ParamDesc {
 //        }
 //      }
 //    }
-    // TODO we can't really achieve type check for params because MySQL prepare response does not provide any useful information for param definitions
-    return null;
-  }
+        // TODO we can't really achieve type check for params because MySQL prepare response does not provide any useful information for param definitions
+        return null;
+    }
 
-  // reuse from pg
-  private String buildReport(List!(Object) values) {
-    return Util.buildInvalidArgsError(values.stream(), Stream.of(paramDefinitions).map(paramDefinition -> paramDefinition.type()).map(dataType -> dataType.binaryType));
-  }
+    // reuse from pg
+    private string buildReport(List!(Object) values) {
+        return Util.buildInvalidArgsError(values.stream(), Stream.of(paramDefinitions).map(paramDefinition -> paramDefinition.type()).map(dataType -> dataType.binaryType));
+    }
 }

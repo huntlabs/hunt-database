@@ -23,39 +23,39 @@ import hunt.database.base.impl.RowDesc;
 
 import hunt.collection.List;
 
-class MySQLPreparedStatement implements PreparedStatement {
+class MySQLPreparedStatement : PreparedStatement {
 
-  final long statementId;
-  final String sql;
-  final MySQLParamDesc paramDesc;
-  final MySQLRowDesc rowDesc;
+    long statementId;
+    string _sql;
+    MySQLParamDesc _paramDesc;
+    MySQLRowDesc _rowDesc;
 
-  boolean isCursorOpen;
+    bool isCursorOpen;
 
-  MySQLPreparedStatement(String sql, long statementId, MySQLParamDesc paramDesc, MySQLRowDesc rowDesc) {
-    this.statementId = statementId;
-    this.paramDesc = paramDesc;
-    this.rowDesc = rowDesc;
-    this.sql = sql;
-  }
+    this(string sql, long statementId, MySQLParamDesc paramDesc, MySQLRowDesc rowDesc) {
+        this.statementId = statementId;
+        this._paramDesc = paramDesc;
+        this._rowDesc = rowDesc;
+        this._sql = sql;
+    }
 
-  override
-  ParamDesc paramDesc() {
-    return paramDesc;
-  }
+    override
+    ParamDesc paramDesc() {
+        return _paramDesc;
+    }
 
-  override
-  RowDesc rowDesc() {
-    return rowDesc;
-  }
+    override
+    RowDesc rowDesc() {
+        return _rowDesc;
+    }
 
-  override
-  String sql() {
-    return sql;
-  }
+    override
+    string sql() {
+        return _sql;
+    }
 
-  override
-  String prepare(List!(Object) values) {
-    return paramDesc.prepare(values);
-  }
+    override
+    string prepare(List!(Object) values) {
+        return paramDesc.prepare(values);
+    }
 }
