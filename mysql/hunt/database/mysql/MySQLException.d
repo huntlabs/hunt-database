@@ -38,8 +38,7 @@ class MySQLException : DatabaseException {
      *
      * @return the error message
      */
-    override
     string getMessage() {
-        return super.getMessage();
+        return cast(string)super.message();
     }
 }

@@ -16,11 +16,12 @@
  */
 module hunt.database.mysql.impl.codec.MySQLRowDesc;
 
+import hunt.database.mysql.impl.codec.ColumnDefinition;
+
 import hunt.database.base.impl.RowDesc;
 
-import hunt.collection.Collections;
-// import java.util.stream.Collectors;
-// import java.util.stream.Stream;
+import std.algorithm;
+import std.range;
 
 class MySQLRowDesc : RowDesc {
 
@@ -28,9 +29,7 @@ class MySQLRowDesc : RowDesc {
     private DataFormat _dataFormat;
 
     this(ColumnDefinition[] columnDefinitions, DataFormat dataFormat) {
-        super(Collections.unmodifiableList(Stream.of(columnDefinitions)
-            .map(ColumnDefinition::name)
-            .collect(Collectors.toList())));
+        super(columns.map!(d => d.name).array);
         this._columnDefinitions = columnDefinitions;
         this._dataFormat = dataFormat;
     }

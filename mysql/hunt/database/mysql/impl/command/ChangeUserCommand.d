@@ -4,39 +4,44 @@ import hunt.database.mysql.impl.MySQLCollation;
 import hunt.database.base.impl.command.CommandBase;
 
 import hunt.collection.Map;
+import hunt.Object;
 
+/**
+ * 
+ */
 class ChangeUserCommand : CommandBase!(Void) {
-  private final String username;
-  private final String password;
-  private final String database;
-  private final MySQLCollation collation;
-  private final Map!(String, String) connectionAttributes;
+    private string _username;
+    private string _password;
+    private string _database;
+    private MySQLCollation _collation;
+    private Map!(string, string) _connectionAttributes;
 
-  ChangeUserCommand(String username, String password, String database, MySQLCollation collation, Map!(String, String) connectionAttributes) {
-    this.username = username;
-    this.password = password;
-    this.database = database;
-    this.collation = collation;
-    this.connectionAttributes = connectionAttributes;
-  }
+    this(string username, string password, string database, MySQLCollation collation, 
+            Map!(string, string) connectionAttributes) {
+        this._username = username;
+        this._password = password;
+        this._database = database;
+        this._collation = collation;
+        this._connectionAttributes = connectionAttributes;
+    }
 
-  String username() {
-    return username;
-  }
+    string username() {
+        return _username;
+    }
 
-  String password() {
-    return password;
-  }
+    string password() {
+        return _password;
+    }
 
-  String database() {
-    return database;
-  }
+    string database() {
+        return _database;
+    }
 
-  MySQLCollation collation() {
-    return collation;
-  }
+    MySQLCollation collation() {
+        return _collation;
+    }
 
-  Map!(String, String) connectionAttributes() {
-    return connectionAttributes;
-  }
+    Map!(string, string) connectionAttributes() {
+        return _connectionAttributes;
+    }
 }

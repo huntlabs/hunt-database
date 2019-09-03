@@ -14,6 +14,7 @@ import hunt.database.mysql.impl.command.SetOptionCommand;
 import hunt.database.mysql.impl.command.StatisticsCommand;
 
 import hunt.database.base.AsyncResult;
+import hunt.database.base.Common;
 import hunt.database.base.Transaction;
 import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.SqlConnectionImpl;
@@ -63,7 +64,7 @@ class MySQLConnectionImpl : SqlConnectionImpl!(MySQLConnectionImpl), MySQLConnec
     }
 
     override
-    Transaction begin(boolean closeOnEnd) {
+    Transaction begin(bool closeOnEnd) {
         throw new UnsupportedOperationException("Transaction is not supported for now");
     }
 

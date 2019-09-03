@@ -1,4 +1,4 @@
-module hunt.database.mysql.impl.codec.CommandType,
+module hunt.database.mysql.impl.codec.CommandType;
 
 enum CommandType : byte {
     /*

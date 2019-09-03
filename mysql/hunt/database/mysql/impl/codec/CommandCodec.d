@@ -16,46 +16,57 @@
  */
 module hunt.database.mysql.impl.codec.CommandCodec;
 
+import hunt.database.mysql.impl.codec.MySQLEncoder;
+// import hunt.database.mysql.impl.codec.NoticeResponse;
 import hunt.database.mysql.impl.codec.Packets;
 
 import hunt.database.mysql.MySQLException;
 import hunt.database.mysql.impl.util.BufferUtils;
+
+import hunt.database.base.Common;
 import hunt.database.base.impl.command.CommandBase;
 import hunt.database.base.impl.command.CommandResponse;
 
 import hunt.text.Charset;
+import hunt.net.buffer;
 
+/**
+ * 
+ */
 abstract class CommandCodecBase {
+
+    int sequenceId;
+    MySQLEncoder encoder;
+    Throwable failure;
+
+    // EventHandler!(NoticeResponse) noticeHandler;
+    EventHandler!(ICommandResponse) completionHandler;
     
+    abstract void decodePayload(ByteBuf payload, int payloadLength, int sequenceId);
 }
 
 abstract class CommandCodec(R, C) : CommandCodecBase
         if(is(C : CommandBase!(R))) {
 
-
-    Handler<? super CommandResponse!(R)> completionHandler;
-    Throwable failure;
     R result;
-    final C cmd;
-    int sequenceId;
-    MySQLEncoder encoder;
+    C cmd;
+    private ByteBufAllocator alloc;
 
     this(C cmd) {
         this.cmd = cmd;
+        alloc = UnpooledByteBufAllocator.DEFAULT();
     }
-
-    abstract void decodePayload(ByteBuf payload, int payloadLength, int sequenceId);
 
     void encode(MySQLEncoder encoder) {
         this.encoder = encoder;
     }
 
     ByteBuf allocateBuffer() {
-        return encoder.chctx.alloc().ioBuffer();
+        return alloc.ioBuffer();
     }
 
     ByteBuf allocateBuffer(int capacity) {
-        return encoder.chctx.alloc().ioBuffer(capacity);
+        return alloc.ioBuffer(capacity);
     }
 
     void sendPacket(ByteBuf packet, int payloadLength) {

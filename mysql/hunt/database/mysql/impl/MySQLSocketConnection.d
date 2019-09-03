@@ -43,10 +43,12 @@ class MySQLSocketConnection : SocketConnectionBase {
     private MySQLCodec codec;
 
     this(AbstractConnection socket,
-            boolean cachePreparedStatements,
+            bool cachePreparedStatements,
             int preparedStatementCacheSize,
             int preparedStatementCacheSqlLimit) {
-        super(socket, cachePreparedStatements, preparedStatementCacheSize, preparedStatementCacheSqlLimit, 1);
+                
+        super(socket, cachePreparedStatements, preparedStatementCacheSize, 
+                preparedStatementCacheSqlLimit, 1);
     }
 
     override

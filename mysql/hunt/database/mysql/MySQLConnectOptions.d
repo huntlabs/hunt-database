@@ -26,7 +26,7 @@ import hunt.net.ProxyOptions;
 import hunt.net.util.HttpURI;
 import hunt.Exceptions;
 
-// import java.util.concurrent.TimeUnit;
+import core.time;
 
 /**
  * Connect options for configuring {@link MySQLConnection} or {@link MySQLPool}.
@@ -191,84 +191,74 @@ class MySQLConnectOptions : SqlConnectOptions {
     }
 
     override
-    MySQLConnectOptions setUsePooledBuffers(bool usePooledBuffers) {
-        return cast(MySQLConnectOptions) super.setUsePooledBuffers(usePooledBuffers);
-    }
-
-    override
-    MySQLConnectOptions setIdleTimeout(int idleTimeout) {
+    MySQLConnectOptions setIdleTimeout(Duration idleTimeout) {
         return cast(MySQLConnectOptions) super.setIdleTimeout(idleTimeout);
     }
 
-    override
-    MySQLConnectOptions setIdleTimeoutUnit(TimeUnit idleTimeoutUnit) {
-        return cast(MySQLConnectOptions) super.setIdleTimeoutUnit(idleTimeoutUnit);
-    }
+    // override
+    // MySQLConnectOptions setKeyCertOptions(KeyCertOptions options) {
+    //     return cast(MySQLConnectOptions) super.setKeyCertOptions(options);
+    // }
 
-    override
-    MySQLConnectOptions setKeyCertOptions(KeyCertOptions options) {
-        return cast(MySQLConnectOptions) super.setKeyCertOptions(options);
-    }
+    // override
+    // MySQLConnectOptions setKeyStoreOptions(JksOptions options) {
+    //     return cast(MySQLConnectOptions) super.setKeyStoreOptions(options);
+    // }
 
-    override
-    MySQLConnectOptions setKeyStoreOptions(JksOptions options) {
-        return cast(MySQLConnectOptions) super.setKeyStoreOptions(options);
-    }
+    // override
+    // MySQLConnectOptions setPfxKeyCertOptions(PfxOptions options) {
+    //     return cast(MySQLConnectOptions) super.setPfxKeyCertOptions(options);
+    // }
 
-    override
-    MySQLConnectOptions setPfxKeyCertOptions(PfxOptions options) {
-        return cast(MySQLConnectOptions) super.setPfxKeyCertOptions(options);
-    }
+    // override
+    // MySQLConnectOptions setPemKeyCertOptions(PemKeyCertOptions options) {
+    //     return cast(MySQLConnectOptions) super.setPemKeyCertOptions(options);
+    // }
 
-    override
-    MySQLConnectOptions setPemKeyCertOptions(PemKeyCertOptions options) {
-        return cast(MySQLConnectOptions) super.setPemKeyCertOptions(options);
-    }
+    // override
+    // MySQLConnectOptions setTrustOptions(TrustOptions options) {
+    //     return cast(MySQLConnectOptions) super.setTrustOptions(options);
+    // }
 
-    override
-    MySQLConnectOptions setTrustOptions(TrustOptions options) {
-        return cast(MySQLConnectOptions) super.setTrustOptions(options);
-    }
+    // override
+    // MySQLConnectOptions setTrustStoreOptions(JksOptions options) {
+    //     return cast(MySQLConnectOptions) super.setTrustStoreOptions(options);
+    // }
 
-    override
-    MySQLConnectOptions setTrustStoreOptions(JksOptions options) {
-        return cast(MySQLConnectOptions) super.setTrustStoreOptions(options);
-    }
+    // override
+    // MySQLConnectOptions setPemTrustOptions(PemTrustOptions options) {
+    //     return cast(MySQLConnectOptions) super.setPemTrustOptions(options);
+    // }
 
-    override
-    MySQLConnectOptions setPemTrustOptions(PemTrustOptions options) {
-        return cast(MySQLConnectOptions) super.setPemTrustOptions(options);
-    }
+    // override
+    // MySQLConnectOptions setPfxTrustOptions(PfxOptions options) {
+    //     return cast(MySQLConnectOptions) super.setPfxTrustOptions(options);
+    // }
 
-    override
-    MySQLConnectOptions setPfxTrustOptions(PfxOptions options) {
-        return cast(MySQLConnectOptions) super.setPfxTrustOptions(options);
-    }
+    // override
+    // MySQLConnectOptions addEnabledCipherSuite(string suite) {
+    //     return cast(MySQLConnectOptions) super.addEnabledCipherSuite(suite);
+    // }
 
-    override
-    MySQLConnectOptions addEnabledCipherSuite(string suite) {
-        return cast(MySQLConnectOptions) super.addEnabledCipherSuite(suite);
-    }
+    // override
+    // MySQLConnectOptions addEnabledSecureTransportProtocol(string protocol) {
+    //     return cast(MySQLConnectOptions) super.addEnabledSecureTransportProtocol(protocol);
+    // }
 
-    override
-    MySQLConnectOptions addEnabledSecureTransportProtocol(string protocol) {
-        return cast(MySQLConnectOptions) super.addEnabledSecureTransportProtocol(protocol);
-    }
-
-    override
-    MySQLConnectOptions removeEnabledSecureTransportProtocol(string protocol) {
-        return cast(MySQLConnectOptions) super.removeEnabledSecureTransportProtocol(protocol);
-    }
+    // override
+    // MySQLConnectOptions removeEnabledSecureTransportProtocol(string protocol) {
+    //     return cast(MySQLConnectOptions) super.removeEnabledSecureTransportProtocol(protocol);
+    // }
 
     override
     MySQLConnectOptions setUseAlpn(bool useAlpn) {
         return cast(MySQLConnectOptions) super.setUseAlpn(useAlpn);
     }
 
-    override
-    MySQLConnectOptions setSslEngineOptions(SSLEngineOptions sslEngineOptions) {
-        return cast(MySQLConnectOptions) super.setSslEngineOptions(sslEngineOptions);
-    }
+    // override
+    // MySQLConnectOptions setSslEngineOptions(SSLEngineOptions sslEngineOptions) {
+    //     return cast(MySQLConnectOptions) super.setSslEngineOptions(sslEngineOptions);
+    // }
 
     // override
     // MySQLConnectOptions setJdkSslEngineOptions(JdkSSLEngineOptions sslEngineOptions) {
@@ -290,20 +280,20 @@ class MySQLConnectOptions : SqlConnectOptions {
         return cast(MySQLConnectOptions) super.setTcpQuickAck(tcpQuickAck);
     }
 
-    override
-    ClientOptionsBase setOpenSslEngineOptions(OpenSSLEngineOptions sslEngineOptions) {
-        return super.setOpenSslEngineOptions(sslEngineOptions);
-    }
+    // override
+    // ClientOptionsBase setOpenSslEngineOptions(OpenSSLEngineOptions sslEngineOptions) {
+    //     return super.setOpenSslEngineOptions(sslEngineOptions);
+    // }
 
-    override
-    MySQLConnectOptions addCrlPath(string crlPath) {
-        return cast(MySQLConnectOptions) super.addCrlPath(crlPath);
-    }
+    // override
+    // MySQLConnectOptions addCrlPath(string crlPath) {
+    //     return cast(MySQLConnectOptions) super.addCrlPath(crlPath);
+    // }
 
-    override
-    MySQLConnectOptions addCrlValue(Buffer crlValue) {
-        return cast(MySQLConnectOptions) super.addCrlValue(crlValue);
-    }
+    // override
+    // MySQLConnectOptions addCrlValue(Buffer crlValue) {
+    //     return cast(MySQLConnectOptions) super.addCrlValue(crlValue);
+    // }
 
     override
     MySQLConnectOptions setTrustAll(bool trustAll) {
@@ -311,7 +301,7 @@ class MySQLConnectOptions : SqlConnectOptions {
     }
 
     override
-    MySQLConnectOptions setConnectTimeout(int connectTimeout) {
+    MySQLConnectOptions setConnectTimeout(Duration connectTimeout) {
         return cast(MySQLConnectOptions) super.setConnectTimeout(connectTimeout);
     }
 
@@ -326,7 +316,7 @@ class MySQLConnectOptions : SqlConnectOptions {
     }
 
     override
-    MySQLConnectOptions setReconnectInterval(long interval) {
+    MySQLConnectOptions setReconnectInterval(Duration interval) {
         return cast(MySQLConnectOptions) super.setReconnectInterval(interval);
     }
 
@@ -350,25 +340,20 @@ class MySQLConnectOptions : SqlConnectOptions {
         return cast(MySQLConnectOptions) super.setLocalAddress(localAddress);
     }
 
-    override
-    MySQLConnectOptions setEnabledSecureTransportProtocols(Set!(string) enabledSecureTransportProtocols) {
-        return cast(MySQLConnectOptions) super.setEnabledSecureTransportProtocols(enabledSecureTransportProtocols);
-    }
+    // override
+    // MySQLConnectOptions setEnabledSecureTransportProtocols(Set!(string) enabledSecureTransportProtocols) {
+    //     return cast(MySQLConnectOptions) super.setEnabledSecureTransportProtocols(enabledSecureTransportProtocols);
+    // }
 
     override
-    MySQLConnectOptions setSslHandshakeTimeout(long sslHandshakeTimeout) {
+    MySQLConnectOptions setSslHandshakeTimeout(Duration sslHandshakeTimeout) {
         return cast(MySQLConnectOptions) super.setSslHandshakeTimeout(sslHandshakeTimeout);
-    }
-
-    override
-    MySQLConnectOptions setSslHandshakeTimeoutUnit(TimeUnit sslHandshakeTimeoutUnit) {
-        return cast(MySQLConnectOptions) super.setSslHandshakeTimeoutUnit(sslHandshakeTimeoutUnit);
     }
 
     /**
      * Initialize with the default options.
      */
-    protected void init() {
+    override protected void initialize() {
         this.setHost(DEFAULT_HOST);
         this.setPort(DEFAULT_PORT);
         this.setUser(DEFAULT_USER);

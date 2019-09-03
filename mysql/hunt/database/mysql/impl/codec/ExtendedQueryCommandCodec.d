@@ -16,6 +16,9 @@
  */
 module hunt.database.mysql.impl.codec.ExtendedQueryCommandCodec;
 
+import hunt.database.mysql.impl.codec.MySQLEncoder;
+import hunt.database.mysql.impl.codec.RowResultDecoder;
+
 import hunt.net.buffer.ByteBuf;
 import hunt.database.base.impl.command.ExtendedQueryCommand;
 
@@ -36,7 +39,7 @@ class ExtendedQueryCommandCodec(R) : ExtendedQueryCommandBaseCodec!(R, ExtendedQ
 		super.encode(encoder);
 
 		if (statement.isCursorOpen) {
-			decoder = new RowResultDecoder<>(cmd.collector(), false, statement.rowDesc);
+			decoder = new RowResultDecoder!(R)(false, statement.rowDesc);
 			sendStatementFetchCommand(statement.statementId, cmd.fetch());
 		} else {
 			if (cmd.fetch() > 0) {
@@ -59,7 +62,7 @@ class ExtendedQueryCommandCodec(R) : ExtendedQueryCommandBaseCodec!(R, ExtendedQ
 				handleErrorPacketPayload(payload);
 			} else {
 				// decoding COM_STMT_FETCH response
-				handleRows(payload, payloadLength, super::handleSingleRow);
+				handleRows(payload, payloadLength, &handleSingleRow);
 			}
 		} else {
 			// decoding COM_STMT_EXECUTE response
@@ -84,7 +87,7 @@ class ExtendedQueryCommandCodec(R) : ExtendedQueryCommandBaseCodec!(R, ExtendedQ
 						// need to reset packet number so that we can send a fetch request
 						this.sequenceId = 0;
 						// send fetch after cursor opened
-						decoder = new RowResultDecoder<>(false, statement.rowDesc);
+						decoder = new RowResultDecoder!(R)(false, statement.rowDesc);
 
 						statement.isCursorOpen = true;
 

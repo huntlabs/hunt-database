@@ -18,9 +18,9 @@ abstract class ExtendedQueryCommandBaseCodec(R, C) : QueryCommandBaseCodec!(R, C
         // C extends ExtendedQueryCommandBase!(R)
     // TODO handle re-bound situations?
     // Flag if parameters must be re-bound
-    protected final byte sendType = 1;
+    protected byte sendType = 1;
 
-    protected final MySQLPreparedStatement statement;
+    protected MySQLPreparedStatement statement;
 
     this(C cmd) {
         super(cmd, DataFormat.BINARY);
@@ -33,7 +33,7 @@ abstract class ExtendedQueryCommandBaseCodec(R, C) : QueryCommandBaseCodec!(R, C
         int firstByte = payload.getUnsignedByte(payload.readerIndex());
         if (firstByte == OK_PACKET_HEADER) {
             OkPacket okPacket = decodeOkPacketPayload(payload, StandardCharsets.UTF_8);
-            handleSingleResultsetDecodingCompleted(okPacket.serverStatusFlags(), (int) okPacket.affectedRows());
+            handleSingleResultsetDecodingCompleted(okPacket.serverStatusFlags(), cast(int) okPacket.affectedRows());
         } else if (firstByte == ERROR_PACKET_HEADER) {
             handleErrorPacketPayload(payload);
         } else {

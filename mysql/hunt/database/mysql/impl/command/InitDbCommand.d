@@ -1,15 +1,16 @@
 module hunt.database.mysql.impl.command.InitDbCommand;
 
 import hunt.database.base.impl.command.CommandBase;
+import hunt.Object;
 
 class InitDbCommand : CommandBase!(Void) {
-  private final String schemaName;
+    private string _schemaName;
 
-  InitDbCommand(String schemaName) {
-    this.schemaName = schemaName;
-  }
+    this(string schemaName) {
+        this._schemaName = schemaName;
+    }
 
-  String schemaName() {
-    return schemaName;
-  }
+    string schemaName() {
+        return _schemaName;
+    }
 }

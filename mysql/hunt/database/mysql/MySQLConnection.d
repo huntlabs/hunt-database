@@ -1,6 +1,10 @@
 module hunt.database.mysql.MySQLConnection;
 
+import hunt.database.mysql.MySQLConnectOptions;
+import hunt.database.mysql.MySQLSetOption;
+
 import hunt.database.base.AsyncResult;
+import hunt.database.base.Common;
 // import hunt.database.mysql.impl.MySQLConnectionImpl;
 import hunt.database.base.PreparedQuery;
 import hunt.database.base.Row;
@@ -8,8 +12,6 @@ import hunt.database.base.RowSet;
 import hunt.database.base.SqlConnection;
 import hunt.database.base.SqlResult;
 import hunt.database.base.Tuple;
-
-import hunt.database.mysql.MySQLConnectOptions;
 
 /**
  * A connection to MySQL server.
@@ -34,16 +36,13 @@ interface MySQLConnection : SqlConnection {
     // }
 
 
-    MySQLConnection prepare(string sql, PreparedQueryHandler handler);
+    // MySQLConnection prepare(string sql, PreparedQueryHandler handler);
 
+    // MySQLConnection exceptionHandler(ExceptionHandler handler);
 
-    MySQLConnection exceptionHandler(Handler!(Throwable) handler);
+    // MySQLConnection closeHandler(VoidHandler handler);
 
-
-    MySQLConnection closeHandler(VoidHandler handler);
-
-
-    MySQLConnection preparedQuery(string sql, RowSetHandler handler);
+    // MySQLConnection preparedQuery(string sql, RowSetHandler handler);
 
 
     // <R> MySQLConnection preparedQuery(string sql, Collector<Row, ?, R> collector, AsyncResultHandler!(SqlResult!(R))) handler);

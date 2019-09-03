@@ -1,43 +1,45 @@
 module hunt.database.mysql.impl.codec.RowResultDecoder;
 
-import hunt.net.buffer.ByteBuf;
 import hunt.database.mysql.impl.MySQLCollation;
 import hunt.database.mysql.impl.MySQLRowImpl;
 import hunt.database.base.Row;
 import hunt.database.base.impl.RowDecoder;
 
-import hunt.text.Charset;
-import java.util.function.BiConsumer;
-import java.util.stream.Collector;
+import hunt.Exceptions;
+import hunt.Functions;
+import hunt.logging.ConsoleLogger;
+import hunt.net.buffer.ByteBuf;
 
-class RowResultDecoder!(C, R) implements RowDecoder {
-    private static final int NULL = 0xFB;
+import std.variant;
 
-    // private final Collector!(Row, C, R) collector;
-    private final boolean singleton;
-    private final BiConsumer!(C, Row) accumulator;
+
+/**
+ * 
+ */
+class RowResultDecoder(R) : RowDecoder {
+    private enum int NULL = 0xFB;
+
+    private int _size;
+    private RowSetImpl container;
+    private Row row;
+    private bool singleton;
     MySQLRowDesc rowDesc;
 
-    private int size;
-    private C container;
-    private Row row;
-
-    this(boolean singleton, MySQLRowDesc rowDesc) {
-        // this.collector = collector;
+    this(bool singleton, MySQLRowDesc rowDesc) {
         this.singleton = singleton;
-        this.accumulator = collector.accumulator();
         this.rowDesc = rowDesc;
     }
 
     int size() {
-        return size;
+        return _size;
     }
 
     override
     void decodeRow(int len, ByteBuf inBuffer) {
         if (container is null) {
-            container = collector.supplier().get();
+            container = new RowSetImpl(); 
         }
+
         if (singleton) {
             if (row is null) {
                 row = new MySQLRowImpl(rowDesc);
@@ -47,6 +49,7 @@ class RowResultDecoder!(C, R) implements RowDecoder {
         } else {
             row = new MySQLRowImpl(rowDesc);
         }
+
         Row row = new MySQLRowImpl(rowDesc);
         if (rowDesc.dataFormat() == DataFormat.BINARY) {
             // BINARY row decoding
@@ -91,20 +94,20 @@ class RowResultDecoder!(C, R) implements RowDecoder {
                 row.addValue(decoded);
             }
         }
-        accumulator.accept(container, row);
-        size++;
+        container.append(row);
+        _size++;
     }
 
     R complete() {
         if (container is null) {
-            container = collector.supplier().get();
+            container = new RowSetImpl(); 
         }
-        return collector.finisher().apply(container);
+        return container;
     }
 
     void reset() {
         container = null;
-        size = 0;
+        _size = 0;
     }
 }
 

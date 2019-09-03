@@ -17,6 +17,7 @@
 module hunt.database.mysql.impl.codec.QueryCommandBaseCodec;
 
 import hunt.database.mysql.impl.codec.Packets;
+import hunt.database.mysql.impl.codec.RowResultDecoder;
 import hunt.database.mysql.impl.util.BufferUtils;
 
 import hunt.database.base.Row;
@@ -28,14 +29,15 @@ import hunt.Functions;
 import hunt.net.buffer.ByteBuf;
 
 
-abstract class QueryCommandBaseCodec(T, C) : CommandCodec!(Boolean, C) {
+abstract class QueryCommandBaseCodec(T, C) : CommandCodec!(bool, C) {
     // C extends QueryCommandBase!(T)
 
-    private final DataFormat format;
+    private DataFormat format;
 
     protected CommandHandlerState commandHandlerState = CommandHandlerState.INIT;
     protected ColumnDefinition[] columnDefinitions;
-    protected RowResultDecoder<?, T> decoder;
+    // protected RowResultDecoder<?, T> decoder;
+    protected AbstractRowResultDecoder!T decoder;
     private int currentColumn;
 
     this(C cmd, DataFormat format) {
@@ -43,9 +45,9 @@ abstract class QueryCommandBaseCodec(T, C) : CommandCodec!(Boolean, C) {
         this.format = format;
     }
 
-    private static <A, T> T emptyResult(Collector!(Row, A, T) collector) {
-        return collector.finisher().apply(collector.supplier().get());
-    }
+    // private static <A, T> T emptyResult(Collector!(Row, A, T) collector) {
+    //     return collector.finisher().apply(collector.supplier().get());
+    // }
 
     override
     void decodePayload(ByteBuf payload, int payloadLength, int sequenceId) {
@@ -61,7 +63,7 @@ abstract class QueryCommandBaseCodec(T, C) : CommandCodec!(Boolean, C) {
                 handleResultsetColumnDefinitionsDecodingCompleted();
                 break;
             case HANDLING_ROW_DATA_OR_END_PACKET:
-                handleRows(payload, payloadLength, this::handleSingleRow);
+                handleRows(payload, payloadLength, &handleSingleRow);
                 break;
         }
     }
@@ -91,7 +93,7 @@ abstract class QueryCommandBaseCodec(T, C) : CommandCodec!(Boolean, C) {
 
     protected void handleResultsetColumnDefinitionsDecodingCompleted() {
         commandHandlerState = CommandHandlerState.HANDLING_ROW_DATA_OR_END_PACKET;
-        decoder = new RowResultDecoder<>(cmd.collector(), false/*cmd.isSingleton()*/, new MySQLRowDesc(columnDefinitions, format));
+        decoder = new RowResultDecoder!(T)(false/*cmd.isSingleton()*/, new MySQLRowDesc(columnDefinitions, format));
     }
 
     protected void handleRows(ByteBuf payload, int payloadLength, Consumer!(ByteBuf) singleRowHandler) {
@@ -112,7 +114,7 @@ abstract class QueryCommandBaseCodec(T, C) : CommandCodec!(Boolean, C) {
             if (isDeprecatingEofFlagEnabled()) {
                 OkPacket okPacket = decodeOkPacketPayload(payload, StandardCharsets.UTF_8);
                 serverStatusFlags = okPacket.serverStatusFlags();
-                affectedRows = (int) okPacket.affectedRows();
+                affectedRows = cast(int) okPacket.affectedRows();
             } else {
                 serverStatusFlags = decodeEofPacketPayload(payload).serverStatusFlags();
             }
@@ -136,7 +138,7 @@ abstract class QueryCommandBaseCodec(T, C) : CommandCodec!(Boolean, C) {
         }
     }
 
-    protected boolean isDecodingCompleted(int serverStatusFlags) {
+    protected bool isDecodingCompleted(int serverStatusFlags) {
         return (serverStatusFlags & ServerStatusFlags.SERVER_MORE_RESULTS_EXISTS) == 0;
     }
 
@@ -159,7 +161,7 @@ abstract class QueryCommandBaseCodec(T, C) : CommandCodec!(Boolean, C) {
     }
 
     private void handleAllResultsetDecodingCompleted() {
-        CommandResponse!(Boolean) response;
+        CommandResponse!(bool) response;
         if (this.failure !is null) {
             response = CommandResponse.failure(this.failure);
         } else {

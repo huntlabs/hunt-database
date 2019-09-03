@@ -2,8 +2,10 @@ module hunt.database.mysql.impl.codec.MySQLParamDesc;
 
 import hunt.database.mysql.impl.util.Util;
 import hunt.database.base.impl.ParamDesc;
+import hunt.database.base.Util;
 
 import hunt.collection.List;
+
 
 class MySQLParamDesc : ParamDesc {
     private ColumnDefinition[] paramDefinitions;
@@ -38,7 +40,10 @@ class MySQLParamDesc : ParamDesc {
     }
 
     // reuse from pg
-    private string buildReport(List!(Object) values) {
-        return Util.buildInvalidArgsError(values.stream(), Stream.of(paramDefinitions).map(paramDefinition -> paramDefinition.type()).map(dataType -> dataType.binaryType));
+    private string buildReport(List!(Variant) values) {
+        string[] types;
+        paramDataTypes.each!((type) { types = types ~ type.decodingType; });
+
+        return Util.buildInvalidArgsError(values.toArray(), types);
     }
 }

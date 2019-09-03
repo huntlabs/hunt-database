@@ -14,7 +14,7 @@ class Native41Authenticator {
      * @param salt     20 byte random challenge from server
      * @return scrambled password
      */
-    static byte[] encode(String password, Charset charset, byte[] salt) {
+    static byte[] encode(string password, Charset charset, byte[] salt) {
         MessageDigest messageDigest;
         try {
             messageDigest = MessageDigest.getInstance("SHA-1");

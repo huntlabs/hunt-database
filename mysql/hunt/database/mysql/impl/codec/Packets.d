@@ -16,12 +16,12 @@ enum Packets : int {
  */
 static final class OkPacket {
 
-    private final long _affectedRows;
-    private final long _lastInsertId;
-    private final int _serverStatusFlags;
-    private final int _numberOfWarnings;
-    private final string _statusInfo;
-    private final string _sessionStateInfo;
+    private long _affectedRows;
+    private long _lastInsertId;
+    private int _serverStatusFlags;
+    private int _numberOfWarnings;
+    private string _statusInfo;
+    private string _sessionStateInfo;
 
     this(long affectedRows, long lastInsertId, int serverStatusFlags, int numberOfWarnings, 
             string statusInfo, string sessionStateInfo) {

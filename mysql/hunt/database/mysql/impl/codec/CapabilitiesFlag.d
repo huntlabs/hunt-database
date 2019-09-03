@@ -1,4 +1,4 @@
-module hunt.database.mysql.impl.codec.CapabilitiesFlag,
+module hunt.database.mysql.impl.codec.CapabilitiesFlag;
 
 /**
  * Values for the capabilities flag bitmask used by Client/Server Protocol.

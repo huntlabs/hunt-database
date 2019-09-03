@@ -1,6 +1,8 @@
 module hunt.database.mysql.impl.MySQLConnectionFactory;
 
+import hunt.database.mysql.impl.MySQLSocketConnection;
 import hunt.database.mysql.MySQLConnectOptions;
+
 
 import hunt.database.base.AsyncResult;
 import hunt.database.base.Common;
