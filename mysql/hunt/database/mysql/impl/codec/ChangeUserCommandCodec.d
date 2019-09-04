@@ -85,7 +85,7 @@ class ChangeUserCommandCodec : CommandCodec!(Void, ChangeUserCommand) {
         BufferUtils.writeNullTerminatedString(packet, cmd.database(), StandardCharsets.UTF_8);
         MySQLCollation collation = cmd.collation();
         int collationId = collation.collationId();
-        encoder.charset = collation.mappedJavaCharsetName(); // Charset.forName(collation.mappedJavaCharsetName());
+        encoder.charset = collation.mappedCharsetName(); // Charset.forName(collation.mappedCharsetName());
         packet.writeShortLE(collationId);
 
         if ((encoder.clientCapabilitiesFlag & CapabilitiesFlag.CLIENT_PLUGIN_AUTH) != 0) {

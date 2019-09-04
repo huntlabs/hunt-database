@@ -91,7 +91,7 @@ abstract class ExtendedQueryCommandBaseCodec(R, C) : QueryCommandBaseCodec!(R, C
                 if (value.hasValue() && value != null) {
                     MySQLCollation collation = MySQLCollation.valueOfId(paramsColumnDefinitions[i].characterSet());
                     DataTypeCodec.encodeBinary(parseDataTypeByEncodingValue(value),
-                        (collation.mappedJavaCharsetName()), value, packet); // Charset.forName
+                        (collation.mappedCharsetName()), value, packet); // Charset.forName
                 } else {
                     nullBitmap[i / 8] |= (1 << (i & 7));
                 }

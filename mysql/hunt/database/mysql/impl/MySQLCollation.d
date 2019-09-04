@@ -283,13 +283,13 @@ struct MySQLCollation {
 
     private string _name;
     private string _mysqlCharsetName;
-    private string _mappedJavaCharsetName;
+    private string _mappedCharsetName;
     private int _collationId;
 
-    this(string name, string mysqlCharsetName, string mappedJavaCharsetName, int collationId) {
+    this(string name, string mysqlCharsetName, string mappedCharsetName, int collationId) {
         this._name = name;
         this._mysqlCharsetName = mysqlCharsetName;
-        this._mappedJavaCharsetName = mappedJavaCharsetName;
+        this._mappedCharsetName = mappedCharsetName;
         this._collationId = collationId;
     }
 
@@ -792,12 +792,12 @@ struct MySQLCollation {
     }
 
     /**
-     * Get the mapped Java charset name which is mapped from the collation.
+     * Get the mapped charset name which is mapped from the collation.
      *
-     * @return the mapped Java charset name
+     * @return the mapped charset name
      */
-    string mappedJavaCharsetName() {
-        return _mappedJavaCharsetName;
+    string mappedCharsetName() {
+        return _mappedCharsetName;
     }
 
     /**
