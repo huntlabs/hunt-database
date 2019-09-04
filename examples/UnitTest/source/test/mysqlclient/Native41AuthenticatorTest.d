@@ -53,8 +53,6 @@ class Native41AuthenticatorTest {
         ];
         
         string s = format("%(%02x%)",Native41Authenticator.encode("password", StandardCharsets.UTF_8, scramble));
-        trace(s);
-
         assertEquals(scrambledPasswordHexStr, s);
     }
 }

@@ -58,7 +58,7 @@ class PgConnectionTest : PgConnectionTestBase {
     //     options.addProperty("search_path", "myschema");
     //     connector((SqlConnection conn) {
     //         trace(typeid(conn));
-    //         conn.query("SHOW search_path;", (AsyncResult!RowSet ar)  {
+    //         conn.query("SHOW search_path;", (AsyncResult!RowSet ar) {
     //             assert(ar !is null);
     //             if(ar.succeeded()) {
     //                 RowSet pgRowSet = ar.result();
@@ -70,7 +70,8 @@ class PgConnectionTest : PgConnectionTestBase {
     //                 // Object value = row.getValue("search_path");
     //                 // trace(typeid(value));
     //                 // string v = value.toString();
-    //                 string v = row.getValue("search_path");
+                    
+    //                 string v = row.getString("search_path");
     //                 assert(v == "myschema");
     //                 info("test done");
     //             } else {
@@ -78,8 +79,8 @@ class PgConnectionTest : PgConnectionTestBase {
     //             }
     //         });
 
-    //     });
-    // }
+        });
+    }
 
 //     @Test
 //     void testBatchUpdate() {
