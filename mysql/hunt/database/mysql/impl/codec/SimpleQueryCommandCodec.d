@@ -16,12 +16,19 @@
  */
 module hunt.database.mysql.impl.codec.SimpleQueryCommandCodec;
 
+import hunt.database.mysql.impl.codec.CommandType;
+import hunt.database.mysql.impl.codec.DataFormat;
+import hunt.database.mysql.impl.codec.MySQLEncoder;
 import hunt.database.mysql.impl.codec.Packets;
+import hunt.database.mysql.impl.codec.QueryCommandBaseCodec;
+
 
 import hunt.database.base.impl.command.CommandResponse;
 import hunt.database.base.impl.command.SimpleQueryCommand;
 
+import hunt.Exceptions;
 import hunt.net.buffer.ByteBuf;
+import hunt.text.Charset;
 
 
 class SimpleQueryCommandCodec(T) : QueryCommandBaseCodec!(T, SimpleQueryCommand!(T)) {
@@ -40,14 +47,17 @@ class SimpleQueryCommandCodec(T) : QueryCommandBaseCodec!(T, SimpleQueryCommand!
     protected void handleInitPacket(ByteBuf payload) {
         // may receive ERR_Packet, OK_Packet, LOCAL INFILE Request, Text Resultset
         int firstByte = payload.getUnsignedByte(payload.readerIndex());
-        if (firstByte == OK_PACKET_HEADER) {
+        if (firstByte == Packets.OK_PACKET_HEADER) {
             OkPacket okPacket = decodeOkPacketPayload(payload, StandardCharsets.UTF_8);
             handleSingleResultsetDecodingCompleted(okPacket.serverStatusFlags(), cast(int) okPacket.affectedRows());
-        } else if (firstByte == ERROR_PACKET_HEADER) {
+        } else if (firstByte == Packets.ERROR_PACKET_HEADER) {
             handleErrorPacketPayload(payload);
         } else if (firstByte == 0xFB) {
             //TODO LOCAL INFILE Request support
-            completionHandler.handle(CommandResponse.failure(new UnsupportedOperationException("LOCAL INFILE is not supported for now")));
+            if(completionHandler !is null) {
+                completionHandler(failedResponse!(ICommandResponse)(
+                        new UnsupportedOperationException("LOCAL INFILE is not supported for now")));
+            }
         } else {
             handleResultsetColumnCountPacketBody(payload);
         }

@@ -1,14 +1,28 @@
 module hunt.database.mysql.impl.codec.RowResultDecoder;
 
+import hunt.database.mysql.impl.codec.CommandCodec;
+import hunt.database.mysql.impl.codec.ColumnDefinition;
+import hunt.database.mysql.impl.codec.CommandType;
+import hunt.database.mysql.impl.codec.DataFormat;
+import hunt.database.mysql.impl.codec.DataType;
+import hunt.database.mysql.impl.codec.DataTypeCodec;
+import hunt.database.mysql.impl.codec.MySQLEncoder;
+import hunt.database.mysql.impl.codec.MySQLRowDesc;
+import hunt.database.mysql.impl.codec.Packets;
+
 import hunt.database.mysql.impl.MySQLCollation;
 import hunt.database.mysql.impl.MySQLRowImpl;
+
 import hunt.database.base.Row;
 import hunt.database.base.impl.RowDecoder;
+import hunt.database.base.impl.RowSetImpl;
+
 
 import hunt.Exceptions;
 import hunt.Functions;
 import hunt.logging.ConsoleLogger;
 import hunt.net.buffer.ByteBuf;
+import hunt.text.Charset;
 
 import std.variant;
 
@@ -66,13 +80,13 @@ class RowResultDecoder(R) : RowDecoder {
                 int bitPos = val & 7;
                 byte mask = cast(byte) (1 << bitPos);
                 byte nullByte = cast(byte) (inBuffer.getByte(nullBitmapIdx + bytePos) & mask);
-                Object decoded = null;
+                Variant decoded = null;
                 if (nullByte == 0) {
                     // non-null
                     ColumnDefinition columnDef = rowDesc.columnDefinitions()[c];
                     DataType dataType = columnDef.type();
                     int collationId = rowDesc.columnDefinitions()[c].characterSet();
-                    Charset charset = Charset.forName(MySQLCollation.valueOfId(collationId).mappedJavaCharsetName());
+                    Charset charset = (MySQLCollation.valueOfId(collationId).mappedJavaCharsetName()); // Charset.forName
                     int columnDefinitionFlags = columnDef.flags();
                     decoded = DataTypeCodec.decodeBinary(dataType, charset, columnDefinitionFlags, inBuffer);
                 }
@@ -81,14 +95,14 @@ class RowResultDecoder(R) : RowDecoder {
         } else {
             // TEXT row decoding
             for (int c = 0; c < len; c++) {
-                Object decoded = null;
+                Variant decoded = null;
                 if (inBuffer.getUnsignedByte(inBuffer.readerIndex()) == NULL) {
                     inBuffer.skipBytes(1);
                 } else {
                     DataType dataType = rowDesc.columnDefinitions()[c].type();
                     int columnDefinitionFlags = rowDesc.columnDefinitions()[c].flags();
                     int collationId = rowDesc.columnDefinitions()[c].characterSet();
-                    Charset charset = Charset.forName(MySQLCollation.valueOfId(collationId).mappedJavaCharsetName());
+                    Charset charset = (MySQLCollation.valueOfId(collationId).mappedJavaCharsetName()); // Charset.forName
                     decoded = DataTypeCodec.decodeText(dataType, charset, columnDefinitionFlags, inBuffer);
                 }
                 row.addValue(decoded);

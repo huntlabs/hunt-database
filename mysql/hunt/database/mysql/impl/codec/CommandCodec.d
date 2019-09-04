@@ -46,7 +46,10 @@ abstract class CommandCodecBase {
     // EventHandler!(NoticeResponse) noticeHandler;
     EventHandler!(ICommandResponse) completionHandler;
     
-    abstract void decodePayload(ByteBuf payload, int payloadLength, int sequenceId);
+    void encode(MySQLEncoder encoder);
+    void decodePayload(ByteBuf payload, int payloadLength, int sequenceId);
+
+    ICommand getCommand();
 }
 
 abstract class CommandCodec(R, C) : CommandCodecBase
@@ -61,7 +64,7 @@ abstract class CommandCodec(R, C) : CommandCodecBase
         alloc = UnpooledByteBufAllocator.DEFAULT();
     }
 
-    void encode(MySQLEncoder encoder) {
+    override void encode(MySQLEncoder encoder) {
         this.encoder = encoder;
     }
 
@@ -195,7 +198,7 @@ abstract class CommandCodec(R, C) : CommandCodecBase
         long lengthOfFixedLengthFields = BufferUtils.readLengthEncodedInteger(payload);
         int characterSet = payload.readUnsignedShortLE();
         long columnLength = payload.readUnsignedIntLE();
-        DataType type = DataType.valueOf(payload.readUnsignedByte());
+        DataType type = cast(DataType)payload.readUnsignedByte();
         int flags = payload.readUnsignedShortLE();
         byte decimals = payload.readByte();
         return new ColumnDefinition(catalog, schema, table, orgTable, name, orgName, 
@@ -210,5 +213,9 @@ abstract class CommandCodec(R, C) : CommandCodecBase
 
     bool isDeprecatingEofFlagEnabled() {
         return (encoder.clientCapabilitiesFlag & CapabilitiesFlag.CLIENT_DEPRECATE_EOF) != 0;
+    }
+    
+    override C getCommand() {
+        return cmd;
     }
 }

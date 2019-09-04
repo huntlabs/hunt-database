@@ -48,12 +48,12 @@ class MySQLPreparedStatement : PreparedStatement {
     }
 
     override
-    ParamDesc paramDesc() {
+    MySQLParamDesc paramDesc() {
         return _paramDesc;
     }
 
     override
-    RowDesc rowDesc() {
+    MySQLRowDesc rowDesc() {
         return _rowDesc;
     }
 

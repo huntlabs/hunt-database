@@ -1,14 +1,18 @@
 module hunt.database.mysql.impl.codec.StatisticsCommandCodec;
 
 import hunt.database.mysql.impl.codec.CommandCodec;
+import hunt.database.mysql.impl.codec.CommandType;
 import hunt.database.mysql.impl.codec.MySQLEncoder;
 
 import hunt.database.mysql.impl.command.StatisticsCommand;
 import hunt.database.base.impl.command.CommandResponse;
 
 import hunt.net.buffer.ByteBuf;
+import hunt.text.Charset;
 
-
+/**
+ * 
+ */
 class StatisticsCommandCodec : CommandCodec!(string, StatisticsCommand) {
     private enum int PAYLOAD_LENGTH = 1;
 
@@ -24,7 +28,9 @@ class StatisticsCommandCodec : CommandCodec!(string, StatisticsCommand) {
 
     override
     void decodePayload(ByteBuf payload, int payloadLength, int sequenceId) {
-        completionHandler.handle(CommandResponse.success(payload.toString(StandardCharsets.UTF_8)));
+        if(completionHandler !is null) {
+            completionHandler(succeededResponse(payload.toString(StandardCharsets.UTF_8)));
+        }
     }
 
     private void sendStatisticsCommand() {

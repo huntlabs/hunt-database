@@ -14,7 +14,7 @@
  * limitations under the License.
  *
  */
-module hunt.database.postgresql.impl.codec.SimpleQueryCodec;
+module hunt.database.postgresql.impl.codec.SimpleQueryCommandCodec;
 
 import hunt.database.postgresql.impl.codec.QueryCommandBaseCodec;
 import hunt.database.postgresql.impl.codec.Query;
@@ -29,7 +29,7 @@ import hunt.logging.ConsoleLogger;
 
 /**
 */
-class SimpleQueryCodec(T) : QueryCommandBaseCodec!(T, SimpleQueryCommand!(T)) {
+class SimpleQueryCommandCodec(T) : QueryCommandBaseCodec!(T, SimpleQueryCommand!(T)) {
 
     this(SimpleQueryCommand!(T) cmd) {
         super(cmd);

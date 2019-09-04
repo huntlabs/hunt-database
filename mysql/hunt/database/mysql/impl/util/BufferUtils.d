@@ -8,13 +8,13 @@ class BufferUtils {
 
     static string readNullTerminatedString(ByteBuf buffer, Charset charset) {
         int len = buffer.bytesBefore(TERMINAL);
-        string s = buffer.readCharSequence(len, charset).toString();
+        string s = buffer.readCharSequence(len, charset);
         buffer.readByte();
         return s;
     }
 
     static string readFixedLengthString(ByteBuf buffer, int length, Charset charset) {
-        return buffer.readCharSequence(length, charset).toString();
+        return buffer.readCharSequence(length, charset);
     }
 
     static void writeNullTerminatedString(ByteBuf buffer, CharSequence charSequence, Charset charset) {
@@ -58,8 +58,8 @@ class BufferUtils {
     }
 
     static void writeLengthEncodedString(ByteBuf buffer, string value, Charset charset) {
-        byte[] bytes = value.getBytes(charset);
-        writeLengthEncodedInteger(buffer, bytes.length);
+        byte[] bytes = cast(byte[])value; // .getBytes(charset);
+        writeLengthEncodedInteger(buffer, cast(int)bytes.length);
         buffer.writeBytes(bytes);
     }
 

@@ -18,7 +18,12 @@ module hunt.database.mysql.impl.codec.PrepareStatementCodec;
 
 import hunt.database.mysql.impl.codec.ColumnDefinition;
 import hunt.database.mysql.impl.codec.CommandCodec;
+import hunt.database.mysql.impl.codec.CommandType;
+import hunt.database.mysql.impl.codec.DataFormat;
 import hunt.database.mysql.impl.codec.MySQLEncoder;
+import hunt.database.mysql.impl.codec.MySQLParamDesc;
+import hunt.database.mysql.impl.codec.MySQLRowDesc;
+import hunt.database.mysql.impl.codec.MySQLPreparedStatement;
 import hunt.database.mysql.impl.codec.Packets;
 
 import hunt.net.buffer.ByteBuf;
@@ -26,6 +31,9 @@ import hunt.database.base.impl.PreparedStatement;
 import hunt.database.base.impl.command.CommandResponse;
 import hunt.database.base.impl.command.PrepareStatementCommand;
 
+import hunt.logging.ConsoleLogger;
+import hunt.Exceptions;
+import hunt.text.Charset;
 
 /**
  * 
@@ -51,9 +59,9 @@ class PrepareStatementCodec : CommandCodec!(PreparedStatement, PrepareStatementC
     override
     void decodePayload(ByteBuf payload, int payloadLength, int sequenceId) {
         switch (commandHandlerState) {
-            case INIT:
+            case CommandHandlerState.INIT:
                 int firstByte = payload.getUnsignedByte(payload.readerIndex());
-                if (firstByte == ERROR_PACKET_HEADER) {
+                if (firstByte == Packets.ERROR_PACKET_HEADER) {
                     handleErrorPacketPayload(payload);
                 } else {
                     // handle COM_STMT_PREPARE response
@@ -81,7 +89,7 @@ class PrepareStatementCodec : CommandCodec!(PreparedStatement, PrepareStatementC
                     }
                 }
                 break;
-            case HANDLING_PARAM_COLUMN_DEFINITION:
+            case CommandHandlerState.HANDLING_PARAM_COLUMN_DEFINITION:
                 paramDescs[processingIndex++] = decodeColumnDefinitionPacketPayload(payload);
                 if (processingIndex == paramDescs.length) {
                     if (isDeprecatingEofFlagEnabled()) {
@@ -93,11 +101,11 @@ class PrepareStatementCodec : CommandCodec!(PreparedStatement, PrepareStatementC
                     }
                 }
                 break;
-            case PARAM_DEFINITIONS_DECODING_COMPLETED:
+            case CommandHandlerState.PARAM_DEFINITIONS_DECODING_COMPLETED:
                 skipEofPacketIfNeeded(payload);
                 handleParamDefinitionsDecodingCompleted();
                 break;
-            case HANDLING_COLUMN_COLUMN_DEFINITION:
+            case CommandHandlerState.HANDLING_COLUMN_COLUMN_DEFINITION:
                 columnDescs[processingIndex++] = decodeColumnDefinitionPacketPayload(payload);
                 if (processingIndex == columnDescs.length) {
                     if (isDeprecatingEofFlagEnabled()) {
@@ -109,8 +117,12 @@ class PrepareStatementCodec : CommandCodec!(PreparedStatement, PrepareStatementC
                     }
                 }
                 break;
-            case COLUMN_DEFINITIONS_DECODING_COMPLETED:
+            case CommandHandlerState.COLUMN_DEFINITIONS_DECODING_COMPLETED:
                 handleColumnDefinitionsDecodingCompleted();
+                break;
+
+            default:
+                warningf("Unhandled state: %d", commandHandlerState);
                 break;
         }
     }
@@ -134,11 +146,13 @@ class PrepareStatementCodec : CommandCodec!(PreparedStatement, PrepareStatementC
     }
 
     private void handleReadyForQuery() {
-        completionHandler.handle(CommandResponse.success(new MySQLPreparedStatement(
-            cmd.sql(),
-            this.statementId,
-            new MySQLParamDesc(paramDescs),
-            new MySQLRowDesc(columnDescs, DataFormat.BINARY))));
+        if(completionHandler !is null) {
+            completionHandler(succeededResponse(new MySQLPreparedStatement(
+                cmd.sql(),
+                this.statementId,
+                new MySQLParamDesc(paramDescs),
+                new MySQLRowDesc(columnDescs, DataFormat.BINARY))));
+        }
     }
 
     private void resetIntermediaryResult() {

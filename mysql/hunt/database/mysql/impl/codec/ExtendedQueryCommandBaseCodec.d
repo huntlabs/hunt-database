@@ -1,6 +1,13 @@
 module hunt.database.mysql.impl.codec.ExtendedQueryCommandBaseCodec;
 
+import hunt.database.mysql.impl.codec.ColumnDefinition;
+import hunt.database.mysql.impl.codec.CommandType;
+import hunt.database.mysql.impl.codec.DataFormat;
+import hunt.database.mysql.impl.codec.DataType;
+import hunt.database.mysql.impl.codec.DataTypeCodec;
+import hunt.database.mysql.impl.codec.MySQLPreparedStatement;
 import hunt.database.mysql.impl.codec.Packets;
+import hunt.database.mysql.impl.codec.QueryCommandBaseCodec;
 
 import hunt.database.mysql.impl.MySQLCollation;
 import hunt.database.base.Tuple;
@@ -13,7 +20,11 @@ import hunt.text.Charset;
 // import java.time.LocalDate;
 // import java.time.LocalDateTime;
 
+import std.variant;
 
+/**
+ * 
+ */
 abstract class ExtendedQueryCommandBaseCodec(R, C) : QueryCommandBaseCodec!(R, C) {
         // C extends ExtendedQueryCommandBase!(R)
     // TODO handle re-bound situations?
@@ -31,10 +42,10 @@ abstract class ExtendedQueryCommandBaseCodec(R, C) : QueryCommandBaseCodec!(R, C
     protected void handleInitPacket(ByteBuf payload) {
         // may receive ERR_Packet, OK_Packet, Binary Protocol Resultset
         int firstByte = payload.getUnsignedByte(payload.readerIndex());
-        if (firstByte == OK_PACKET_HEADER) {
+        if (firstByte == Packets.OK_PACKET_HEADER) {
             OkPacket okPacket = decodeOkPacketPayload(payload, StandardCharsets.UTF_8);
             handleSingleResultsetDecodingCompleted(okPacket.serverStatusFlags(), cast(int) okPacket.affectedRows());
-        } else if (firstByte == ERROR_PACKET_HEADER) {
+        } else if (firstByte == Packets.ERROR_PACKET_HEADER) {
             handleErrorPacketPayload(payload);
         } else {
             handleResultsetColumnCountPacketBody(payload);
@@ -56,7 +67,7 @@ abstract class ExtendedQueryCommandBaseCodec(R, C) : QueryCommandBaseCodec!(R, C
         // iteration count, always 1
         packet.writeIntLE(1);
 
-        int numOfParams = paramsColumnDefinitions.length;
+        int numOfParams = cast(int)paramsColumnDefinitions.length;
         int bitmapLength = (numOfParams + 7) / 8;
         byte[] nullBitmap = new byte[bitmapLength];
 
@@ -68,18 +79,19 @@ abstract class ExtendedQueryCommandBaseCodec(R, C) : QueryCommandBaseCodec!(R, C
             packet.writeByte(sendType);
             if (sendType == 1) {
                 for (int i = 0; i < numOfParams; i++) {
-                    Object value = params.getValue(i);
-                    packet.writeByte(parseDataTypeByEncodingValue(value).id);
+                    Variant value = params.getValue(i);
+                    implementationMissing(false);
+                    // packet.writeByte(parseDataTypeByEncodingValue(value).id);
                     packet.writeByte(0); // parameter flag: signed
                 }
             }
 
             for (int i = 0; i < numOfParams; i++) {
-                Object value = params.getValue(i);
-                if (value !is null) {
+                Variant value = params.getValue(i);
+                if (value.hasValue() && value != null) {
                     MySQLCollation collation = MySQLCollation.valueOfId(paramsColumnDefinitions[i].characterSet());
                     DataTypeCodec.encodeBinary(parseDataTypeByEncodingValue(value),
-                        Charset.forName(collation.mappedJavaCharsetName()), value, packet);
+                        (collation.mappedJavaCharsetName()), value, packet); // Charset.forName
                 } else {
                     nullBitmap[i / 8] |= (1 << (i & 7));
                 }
@@ -96,8 +108,9 @@ abstract class ExtendedQueryCommandBaseCodec(R, C) : QueryCommandBaseCodec!(R, C
         sendPacket(packet, payloadLength);
     }
 
-    private DataType parseDataTypeByEncodingValue(Object value) {
+    private DataType parseDataTypeByEncodingValue(ref Variant value) {
         implementationMissing(false);
+        return DataType.NULL;
         // if (value is null) {
         //     // ProtocolBinary::MYSQL_TYPE_NULL
         //     return DataType.NULL;

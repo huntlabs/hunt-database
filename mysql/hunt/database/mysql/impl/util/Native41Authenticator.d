@@ -1,9 +1,14 @@
 module hunt.database.mysql.impl.util.Native41Authenticator;
 
 import hunt.text.Charset;
-// import java.security.MessageDigest;
-// import java.security.NoSuchAlgorithmException;
 
+import hunt.Exceptions;
+
+import std.digest.sha;
+
+/**
+ * 
+ */
 class Native41Authenticator {
     /**
      * Native authentication method 'mysql_native_password'
@@ -15,30 +20,24 @@ class Native41Authenticator {
      * @return scrambled password
      */
     static byte[] encode(string password, Charset charset, byte[] salt) {
-        MessageDigest messageDigest;
-        try {
-            messageDigest = MessageDigest.getInstance("SHA-1");
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
+        scope SHA1Digest messageDigest = new SHA1Digest();
 
-        byte[] passwordBytes = password.getBytes(charset);
         // SHA1(password)
-        byte[] passwordHash1 = messageDigest.digest(passwordBytes);
+        ubyte[] passwordHash1 = messageDigest.digest(password);
         messageDigest.reset();
         // SHA1(SHA1(password))
-        byte[] passwordHash2 = messageDigest.digest(passwordHash1);
+        ubyte[] passwordHash2 = messageDigest.digest(passwordHash1);
         messageDigest.reset();
 
         // SHA1("20-bytes random data from server" <concat> SHA1(SHA1(password))
-        messageDigest.update(salt);
-        messageDigest.update(passwordHash2);
-        byte[] passwordHash3 = messageDigest.digest();
+        messageDigest.put(cast(ubyte[])salt);
+        messageDigest.put(passwordHash2);
+        ubyte[] passwordHash3 = messageDigest.finish();
 
         // result = passwordHash1 XOR passwordHash3
         for (int i = 0; i < cast(int)passwordHash1.length; i++) {
             passwordHash1[i] = cast(byte) (passwordHash1[i] ^ passwordHash3[i]);
         }
-        return passwordHash1;
+        return cast(byte[])passwordHash1;
     }
 }

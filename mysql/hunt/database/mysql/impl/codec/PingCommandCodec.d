@@ -1,6 +1,7 @@
 module hunt.database.mysql.impl.codec.PingCommandCodec;
 
 import hunt.database.mysql.impl.codec.CommandCodec;
+import hunt.database.mysql.impl.codec.CommandType;
 import hunt.database.mysql.impl.codec.MySQLEncoder;
 
 import hunt.database.mysql.impl.command.PingCommand;
@@ -28,7 +29,9 @@ class PingCommandCodec : CommandCodec!(Void, PingCommand) {
     override
     void decodePayload(ByteBuf payload, int payloadLength, int sequenceId) {
         // we don't care what the response payload is from the server
-        completionHandler.handle(CommandResponse.success(null));
+        if(completionHandler !is null) {
+            completionHandler(succeededResponse(cast(ICommandResponse)null));
+        }
     }
 
     private void sendPingCommand() {

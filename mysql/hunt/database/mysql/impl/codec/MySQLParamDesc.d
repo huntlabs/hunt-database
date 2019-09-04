@@ -7,8 +7,11 @@ import hunt.database.base.impl.ParamDesc;
 import hunt.database.base.Util;
 
 import hunt.collection.List;
+import hunt.logging.ConsoleLogger;
+import hunt.Exceptions;
 
 import std.variant;
+import std.algorithm.iteration;
 
 /**
  * 
@@ -48,7 +51,8 @@ class MySQLParamDesc : ParamDesc {
     // reuse from pg
     private string buildReport(List!(Variant) values) {
         string[] types;
-        paramDataTypes.each!((type) { types = types ~ type.decodingType; });
+        // _paramDefinitions.each!((type) { types = types ~ type.decodingType; });
+        implementationMissing(false)        ;
 
         return Util.buildInvalidArgsError(values.toArray(), types);
     }

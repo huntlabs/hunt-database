@@ -16,14 +16,25 @@
  */
 module hunt.database.mysql.impl.codec.ExtendedQueryCommandCodec;
 
+import hunt.database.mysql.impl.codec.CommandType;
+import hunt.database.mysql.impl.codec.DataFormat;
+import hunt.database.mysql.impl.codec.ExtendedQueryCommandBaseCodec;
 import hunt.database.mysql.impl.codec.MySQLEncoder;
+import hunt.database.mysql.impl.codec.MySQLRowDesc;
+import hunt.database.mysql.impl.codec.Packets;
+import hunt.database.mysql.impl.codec.QueryCommandBaseCodec;
 import hunt.database.mysql.impl.codec.RowResultDecoder;
 
+import hunt.Exceptions;
+import hunt.logging.ConsoleLogger;
 import hunt.net.buffer.ByteBuf;
 import hunt.database.base.impl.command.ExtendedQueryCommand;
 
 import hunt.database.mysql.impl.codec.Packets;
 
+/**
+ * 
+ */
 class ExtendedQueryCommandCodec(R) : ExtendedQueryCommandBaseCodec!(R, ExtendedQueryCommand!(R)) {
 
 	this(ExtendedQueryCommand!(R) cmd) {
@@ -58,7 +69,7 @@ class ExtendedQueryCommandCodec(R) : ExtendedQueryCommandBaseCodec!(R, ExtendedQ
 	void decodePayload(ByteBuf payload, int payloadLength, int sequenceId) {
 		if (statement.isCursorOpen) {
 			int first = payload.getUnsignedByte(payload.readerIndex());
-			if (first == ERROR_PACKET_HEADER) {
+			if (first == Packets.ERROR_PACKET_HEADER) {
 				handleErrorPacketPayload(payload);
 			} else {
 				// decoding COM_STMT_FETCH response
@@ -68,21 +79,24 @@ class ExtendedQueryCommandCodec(R) : ExtendedQueryCommandBaseCodec!(R, ExtendedQ
 			// decoding COM_STMT_EXECUTE response
 			if (cmd.fetch() > 0) {
 				switch (commandHandlerState) {
-					case INIT:
+					case CommandHandlerState.INIT:
 						int first = payload.getUnsignedByte(payload.readerIndex());
-						if (first == ERROR_PACKET_HEADER) {
+						if (first == Packets.ERROR_PACKET_HEADER) {
 							handleErrorPacketPayload(payload);
 						} else {
 							handleResultsetColumnCountPacketBody(payload);
 						}
 						break;
-					case HANDLING_COLUMN_DEFINITION:
+					case CommandHandlerState.HANDLING_COLUMN_DEFINITION:
 						handleResultsetColumnDefinitions(payload);
 						break;
-					case COLUMN_DEFINITIONS_DECODING_COMPLETED:
+					case CommandHandlerState.COLUMN_DEFINITIONS_DECODING_COMPLETED:
 						// accept an EOF_Packet when DEPRECATE_EOF is not enabled
 						skipEofPacketIfNeeded(payload);
-					case HANDLING_ROW_DATA_OR_END_PACKET:
+						warning("no break??");
+						goto case;
+
+					case CommandHandlerState.HANDLING_ROW_DATA_OR_END_PACKET:
 						handleResultsetColumnDefinitionsDecodingCompleted();
 						// need to reset packet number so that we can send a fetch request
 						this.sequenceId = 0;
@@ -118,6 +132,6 @@ class ExtendedQueryCommandCodec(R) : ExtendedQueryCommandBaseCodec!(R, ExtendedQ
 		int lenOfPayload = packet.writerIndex() - packetStartIdx - 4;
 		packet.setMediumLE(packetStartIdx, lenOfPayload);
 
-		encoder.chctx.writeAndFlush(packet);
+		encoder.writeAndFlush(packet);
 	}
 }

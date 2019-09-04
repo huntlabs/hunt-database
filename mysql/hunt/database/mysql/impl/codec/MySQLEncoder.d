@@ -1,7 +1,16 @@
 module hunt.database.mysql.impl.codec.MySQLEncoder;
 
 import hunt.database.mysql.impl.codec.CapabilitiesFlag;
+import hunt.database.mysql.impl.codec.CloseConnectionCommandCodec;
+import hunt.database.mysql.impl.codec.CloseStatementCommandCodec;
 import hunt.database.mysql.impl.codec.CommandCodec;
+import hunt.database.mysql.impl.codec.ExtendedBatchQueryCommandCodec;
+import hunt.database.mysql.impl.codec.ExtendedQueryCommandCodec;
+import hunt.database.mysql.impl.codec.InitCommandCodec;
+import hunt.database.mysql.impl.codec.PrepareStatementCodec;
+import hunt.database.mysql.impl.codec.ResetStatementCommandCodec;
+import hunt.database.mysql.impl.codec.SimpleQueryCommandCodec;
+
 
 import hunt.database.mysql.impl.command.ChangeUserCommand;
 import hunt.database.mysql.impl.command.DebugCommand;
@@ -103,7 +112,7 @@ class MySQLEncoder : Encoder {
 
         inflight.insertBack(cmdCodec);
         cmdCodec.encode(this);
-        flush();
+        // flush();
 	}
 
     // void write(CommandBase<?> cmd) {
@@ -126,12 +135,12 @@ class MySQLEncoder : Encoder {
 
         SimpleQueryCommand!(RowSet) simpleCommand = cast(SimpleQueryCommand!(RowSet))cmd;
         if(simpleCommand !is null) {
-            return new SimpleQueryCodec!RowSet(simpleCommand);
+            return new SimpleQueryCommandCodec!RowSet(simpleCommand);
         }
 
         PrepareStatementCommand prepareCommand = cast(PrepareStatementCommand)cmd;
         if(prepareCommand !is null) {
-            return new PrepareStatementCommandCodec(prepareCommand);
+            return new PrepareStatementCodec(prepareCommand);
         }
 
         ExtendedQueryCommand!RowSet extendedCommand = cast(ExtendedQueryCommand!RowSet)cmd;
@@ -146,12 +155,12 @@ class MySQLEncoder : Encoder {
 
         CloseConnectionCommand connCommand = cast(CloseConnectionCommand)cmd;
         if(connCommand !is null) {
-            return CloseConnectionCommandCodec.INSTANCE();
+            return new CloseConnectionCommandCodec(connCommand);
         }
 
         CloseCursorCommand cursorCommand = cast(CloseCursorCommand)cmd;
         if(cursorCommand !is null) {
-            return new ClosePortalCommandCodec(cursorCommand);
+            return new ResetStatementCommandCodec(cursorCommand);
         }
 
         CloseStatementCommand statementCommand = cast(CloseStatementCommand)cmd;
@@ -227,13 +236,13 @@ class MySQLEncoder : Encoder {
     
 
     private void initSupportedCapabilitiesFlags() {
-        clientCapabilitiesFlag |= CLIENT_PLUGIN_AUTH;
-        clientCapabilitiesFlag |= CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA;
-        clientCapabilitiesFlag |= CLIENT_SECURE_CONNECTION;
-        clientCapabilitiesFlag |= CLIENT_PROTOCOL_41;
-        clientCapabilitiesFlag |= CLIENT_TRANSACTIONS;
-        clientCapabilitiesFlag |= CLIENT_MULTI_STATEMENTS;
-        clientCapabilitiesFlag |= CLIENT_MULTI_RESULTS;
-        clientCapabilitiesFlag |= CLIENT_SESSION_TRACK;
+        clientCapabilitiesFlag |= CapabilitiesFlag.CLIENT_PLUGIN_AUTH;
+        clientCapabilitiesFlag |= CapabilitiesFlag.CLIENT_PLUGIN_AUTH_LENENC_CLIENT_DATA;
+        clientCapabilitiesFlag |= CapabilitiesFlag.CLIENT_SECURE_CONNECTION;
+        clientCapabilitiesFlag |= CapabilitiesFlag.CLIENT_PROTOCOL_41;
+        clientCapabilitiesFlag |= CapabilitiesFlag.CLIENT_TRANSACTIONS;
+        clientCapabilitiesFlag |= CapabilitiesFlag.CLIENT_MULTI_STATEMENTS;
+        clientCapabilitiesFlag |= CapabilitiesFlag.CLIENT_MULTI_RESULTS;
+        clientCapabilitiesFlag |= CapabilitiesFlag.CLIENT_SESSION_TRACK;
     }
 }

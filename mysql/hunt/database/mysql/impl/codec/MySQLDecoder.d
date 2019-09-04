@@ -29,7 +29,7 @@ class MySQLDecoder : Decoder {
     private CompositeByteBuf aggregatedPacketPayload = null;
 
     this(ref DList!(CommandCodecBase) inflight, MySQLEncoder encoder) {
-        this.inflight = inflight;
+        this.inflight = &inflight;
         this.encoder = encoder;
     }
 
@@ -40,8 +40,8 @@ class MySQLDecoder : Decoder {
             int payloadLength = inBuffer.readUnsignedMediumLE();
             int sequenceId = inBuffer.readUnsignedByte();
 
-            if (payloadLength >= PACKET_PAYLOAD_LENGTH_LIMIT && aggregatedPacketPayload is null) {
-                aggregatedPacketPayload = ctx.alloc().compositeBuffer();
+            if (payloadLength >= Packets.PACKET_PAYLOAD_LENGTH_LIMIT && aggregatedPacketPayload is null) {
+                aggregatedPacketPayload = Unpooled.compositeBuffer();
             }
 
             // payload
@@ -51,7 +51,7 @@ class MySQLDecoder : Decoder {
                     aggregatedPacketPayload.addComponent(true, inBuffer.readRetainedSlice(payloadLength));
                     sequenceId++;
 
-                    if (payloadLength < PACKET_PAYLOAD_LENGTH_LIMIT) {
+                    if (payloadLength < Packets.PACKET_PAYLOAD_LENGTH_LIMIT) {
                         // we have just read the last split packet and there will be no more split packet
                         decodePayload(aggregatedPacketPayload, aggregatedPacketPayload.readableBytes(), sequenceId);
                         aggregatedPacketPayload.release();
@@ -68,7 +68,7 @@ class MySQLDecoder : Decoder {
     }
 
     private void decodePayload(ByteBuf payload, int payloadLength, int sequenceId) {
-        CommandCodec ctx = inflight.front();
+        CommandCodecBase ctx = inflight.front();
         ctx.sequenceId = sequenceId + 1;
         ctx.decodePayload(payload, payloadLength, sequenceId);
         payload.clear();

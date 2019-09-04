@@ -1,6 +1,7 @@
 module hunt.database.mysql.impl.codec.SetOptionCommandCodec;
 
 import hunt.database.mysql.impl.codec.CommandCodec;
+import hunt.database.mysql.impl.codec.CommandType;
 import hunt.database.mysql.impl.codec.MySQLEncoder;
 
 import hunt.database.mysql.impl.command.SetOptionCommand;
@@ -37,7 +38,7 @@ class SetOptionCommandCodec : CommandCodec!(Void, SetOptionCommand) {
 
         // encode packet payload
         packet.writeByte(CommandType.COM_SET_OPTION);
-        packet.writeShortLE(cmd.option().ordinal());
+        packet.writeShortLE(cast(int)cmd.option());
 
         sendNonSplitPacket(packet);
     }

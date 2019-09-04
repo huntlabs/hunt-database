@@ -3,7 +3,11 @@ module hunt.database.mysql.impl.codec.DataTypeDesc;
 import hunt.database.mysql.impl.codec.DataType;
 
 import hunt.util.ObjectUtils;
+import std.format;
 
+/**
+ * 
+ */
 struct DataTypeDesc {
     int id;
     string[] binaryType;

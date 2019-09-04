@@ -37,7 +37,7 @@ import hunt.database.postgresql.impl.codec.QueryCommandBaseCodec;
 import hunt.database.postgresql.impl.codec.Parse;
 import hunt.database.postgresql.impl.codec.PasswordMessage;
 import hunt.database.postgresql.impl.codec.Response;
-import hunt.database.postgresql.impl.codec.SimpleQueryCodec;
+import hunt.database.postgresql.impl.codec.SimpleQueryCommandCodec;
 import hunt.database.postgresql.impl.codec.StartupMessage;
 import hunt.database.base.Util;
 
@@ -145,7 +145,7 @@ final class PgEncoder : EncoderChain {
 
         SimpleQueryCommand!(RowSet) simpleCommand = cast(SimpleQueryCommand!(RowSet))cmd;
         if(simpleCommand !is null) {
-            return new SimpleQueryCodec!RowSet(simpleCommand);
+            return new SimpleQueryCommandCodec!RowSet(simpleCommand);
         }
 
         PrepareStatementCommand prepareCommand = cast(PrepareStatementCommand)cmd;

@@ -48,14 +48,14 @@ interface MySQLConnection : SqlConnection {
     // <R> MySQLConnection preparedQuery(string sql, Collector<Row, ?, R> collector, AsyncResultHandler!(SqlResult!(R))) handler);
 
 
-    MySQLConnection query(string sql, RowSetHandler handler);
+    // MySQLConnection query(string sql, RowSetHandler handler);
 
 
 
     // <R> MySQLConnection query(string sql, Collector<Row, ?, R> collector, AsyncResultHandler!(SqlResult!(R))) handler);
 
 
-    MySQLConnection preparedQuery(string sql, Tuple arguments, RowSetHandler handler);
+    // MySQLConnection preparedQuery(string sql, Tuple arguments, RowSetHandler handler);
 
 
     // <R> MySQLConnection preparedQuery(string sql, Tuple arguments, Collector<Row, ?, R> collector, AsyncResultHandler!(SqlResult!(R))) handler);

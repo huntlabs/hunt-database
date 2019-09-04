@@ -2,8 +2,10 @@ module hunt.database.mysql.impl.codec.InitDbCommandCodec;
 
 import hunt.database.mysql.impl.codec.MySQLEncoder;
 import hunt.database.mysql.impl.codec.CommandCodec;
+import hunt.database.mysql.impl.codec.CommandType;
 
 import hunt.database.mysql.impl.command.InitDbCommand;
+
 
 import hunt.net.buffer.ByteBuf;
 import hunt.Object;

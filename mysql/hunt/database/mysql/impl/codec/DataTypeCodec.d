@@ -1,8 +1,11 @@
 module hunt.database.mysql.impl.codec.DataTypeCodec;
 
+import hunt.database.mysql.impl.codec.DataType;
+
 import hunt.database.mysql.impl.util.BufferUtils;
 import hunt.database.base.data.Numeric;
 
+import hunt.Exceptions;
 import hunt.logging.ConsoleLogger;
 import hunt.net.buffer.ByteBuf;
 import hunt.net.Exceptions;
@@ -15,6 +18,12 @@ import hunt.text.Charset;
 // import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 // import java.time.temporal.ChronoField.*;
 
+import std.concurrency : initOnce;
+import std.variant;
+
+/**
+ * 
+ */
 class DataTypeCodec {
     // binary codec protocol: https://dev.mysql.com/doc/dev/mysql-server/latest/page_protocol_binary_resultset.html#sect_protocol_binary_resultset_row_value
 
@@ -36,7 +45,10 @@ class DataTypeCodec {
     //     .appendFraction(MICRO_OF_SECOND, 0, 6, true)
     //     .toFormatter();
 
-    // static Object decodeText(DataType dataType, Charset charset, int columnDefinitionFlags, ByteBuf buffer) {
+    static Variant decodeText(DataType dataType, Charset charset, int columnDefinitionFlags, ByteBuf buffer) {
+
+        implementationMissing(false);
+        return Variant(null);
     //     int length = (int) BufferUtils.readLengthEncodedInteger(buffer);
     //     ByteBuf data = buffer.readSlice(length);
     //     switch (dataType) {
@@ -70,10 +82,11 @@ class DataTypeCodec {
     //         default:
     //             return textDecodeBlobOrText(charset, columnDefinitionFlags, data);
     //     }
-    // }
+    }
 
     // //TODO take care of unsigned numeric values here?
-    // static void encodeBinary(DataType dataType, Charset charset, Object value, ByteBuf buffer) {
+    static void encodeBinary(DataType dataType, Charset charset, ref Variant value, ByteBuf buffer) {
+        implementationMissing(false);
     //     switch (dataType) {
     //         case INT1:
     //             if (value instanceof Boolean) {
@@ -124,9 +137,12 @@ class DataTypeCodec {
     //             binaryEncodeText(charset, String.valueOf(value), buffer);
     //             break;
     //     }
-    // }
+    }
 
-    // static Object decodeBinary(DataType dataType, Charset charset, int columnDefinitionFlags, ByteBuf buffer) {
+    static Variant decodeBinary(DataType dataType, Charset charset, int columnDefinitionFlags, ByteBuf buffer) {
+        implementationMissing(false);
+        return Variant(null);
+        
     //     switch (dataType) {
     //         case INT1:
     //             return binaryDecodeInt1(buffer);
@@ -158,7 +174,7 @@ class DataTypeCodec {
     //         default:
     //             return binaryDecodeBlobOrText(charset, columnDefinitionFlags, buffer);
     //     }
-    // }
+    }
 
     // static Object prepare(DataType type, Object value) {
     //     switch (type) {

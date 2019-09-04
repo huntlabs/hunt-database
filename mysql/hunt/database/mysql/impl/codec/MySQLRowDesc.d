@@ -30,7 +30,7 @@ class MySQLRowDesc : RowDesc {
     private DataFormat _dataFormat;
 
     this(ColumnDefinition[] columnDefinitions, DataFormat dataFormat) {
-        super(columns.map!(d => d.name).array);
+        super(columnDefinitions.map!(d => d.name()).array);
         this._columnDefinitions = columnDefinitions;
         this._dataFormat = dataFormat;
     }

@@ -1,6 +1,7 @@
 module hunt.database.mysql.impl.codec.DebugCommandCodec;
 
 import hunt.database.mysql.impl.codec.CommandCodec;
+import hunt.database.mysql.impl.codec.CommandType;
 import hunt.database.mysql.impl.codec.MySQLEncoder;
 
 import hunt.net.buffer.ByteBuf;
