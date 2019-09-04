@@ -7,6 +7,9 @@
     "license": "Apache-2.0",
     "versions": ["HUNT_DEBUG", "HUNT_IO_DEBUG1", "HUNT_NET_DEBUG", "HUNT_DB_DEBUG"],
 	"dependencies":{
+		"mysql":{
+			"path" :"../../mysql"
+		},
 		"postgresql":{
 			"path" :"../../postgresql"
 		},
