@@ -51,6 +51,7 @@ interface Row : Tuple {
      * @return the value or {@code null}
      */
     Variant getValue(string name);
+    alias getValue = Tuple.getValue;
 
     /**
      * Get a boolean value at {@code pos}.
@@ -59,6 +60,7 @@ interface Row : Tuple {
      * @return the value or {@code null}
      */
     bool getBoolean(string name);
+    alias getBoolean = Tuple.getBoolean;
 
 
     /**
@@ -68,6 +70,7 @@ interface Row : Tuple {
      * @return the value or {@code null}
      */
     short getShort(string name);
+    alias getShort = Tuple.getShort;
 
     /**
      * Get an integer value at {@code pos}.
@@ -76,6 +79,7 @@ interface Row : Tuple {
      * @return the value or {@code null}
      */
     int getInteger(string name);
+    alias getInteger = Tuple.getInteger;
 
     /**
      * Get a long value at {@code pos}.
@@ -84,6 +88,7 @@ interface Row : Tuple {
      * @return the value or {@code null}
      */
     long getLong(string name);
+    alias getLong = Tuple.getLong;
 
     /**
      * Get a float value at {@code pos}.
@@ -92,6 +97,7 @@ interface Row : Tuple {
      * @return the value or {@code null}
      */
     float getFloat(string name);
+    alias getFloat = Tuple.getFloat;
 
     /**
      * Get a double value at {@code pos}.
@@ -100,6 +106,7 @@ interface Row : Tuple {
      * @return the value or {@code null}
      */
     double getDouble(string name);
+    alias getDouble = Tuple.getDouble;
 
     /**
      * Get a string value at {@code pos}.
@@ -108,6 +115,7 @@ interface Row : Tuple {
      * @return the value or {@code null}
      */
     string getString(string name);
+    alias getString = Tuple.getString;
 
     /**
      * Get a buffer value at {@code pos}.
@@ -117,6 +125,7 @@ interface Row : Tuple {
      */
     // Buffer getBuffer(string name);
     byte[] getBuffer(string name);
+    alias getBuffer = Tuple.getBuffer;
 
     // /**
     //  * Get a temporal value at {@code pos}.
