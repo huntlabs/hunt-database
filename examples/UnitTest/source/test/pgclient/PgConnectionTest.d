@@ -53,31 +53,31 @@ class PgConnectionTest : PgConnectionTestBase {
         };
     }
 
-    // @Test
-    // void testSettingSchema() {
-    //     options.addProperty("search_path", "myschema");
-    //     connector((SqlConnection conn) {
-    //         trace(typeid(conn));
-    //         conn.query("SHOW search_path;", (AsyncResult!RowSet ar) {
-    //             assert(ar !is null);
-    //             if(ar.succeeded()) {
-    //                 RowSet pgRowSet = ar.result();
-    //                 trace(typeid(cast(Object)pgRowSet));
+    @Test
+    void testSettingSchema() {
+        options.addProperty("search_path", "myschema");
+        connector((SqlConnection conn) {
+            trace(typeid(conn));
+            conn.query("SHOW search_path;", (AsyncResult!RowSet ar) {
+                assert(ar !is null);
+                if(ar.succeeded()) {
+                    RowSet pgRowSet = ar.result();
+                    trace(typeid(cast(Object)pgRowSet));
 
-    //                 RowIterator iterator = pgRowSet.iterator();
-    //                 assert(!iterator.empty());
-    //                 Row row = iterator.front();
-    //                 // Object value = row.getValue("search_path");
-    //                 // trace(typeid(value));
-    //                 // string v = value.toString();
+                    RowIterator iterator = pgRowSet.iterator();
+                    assert(!iterator.empty());
+                    Row row = iterator.front();
+                    // Object value = row.getValue("search_path");
+                    // trace(typeid(value));
+                    // string v = value.toString();
                     
-    //                 string v = row.getString("search_path");
-    //                 assert(v == "myschema");
-    //                 info("test done");
-    //             } else {
-    //                 warning(ar.cause().msg);
-    //             }
-    //         });
+                    string v = row.getString("search_path");
+                    assert(v == "myschema");
+                    info("test done");
+                } else {
+                    warning(ar.cause().msg);
+                }
+            });
 
         });
     }
