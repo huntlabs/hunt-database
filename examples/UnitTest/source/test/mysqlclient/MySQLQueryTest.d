@@ -21,6 +21,7 @@ import core.atomic;
 import std.ascii;
 import std.conv;
 import std.format;
+import std.uuid;
 import std.variant;
 
 
@@ -46,48 +47,48 @@ class MySQLQueryTest : MySQLTestBase {
     }
 
 
-    @Test
-    void testLastInsertIdWithDefaultValue() {
-        connector((SqlConnection conn) {
-            string sql = "CREATE TEMPORARY TABLE last_insert_id(id INTEGER PRIMARY KEY AUTO_INCREMENT, val VARCHAR(20));";
-            conn.query(sql, (AsyncResult!RowSet ar) {
-                trace("running here");
-                RowSet createTableResult = asyncAssertSuccess(ar);
-                Variant value1 = createTableResult.property(MySQLClient.LAST_INSERTED_ID);
-                if(value1.type != typeid(int)) {
-                    warning("Not expected type: ", value1.type);
-                } else {
-                    int lastInsertId1 = value1.get!int();
-                    assert(0 == lastInsertId1);
-                }
-                conn.query("INSERT INTO last_insert_id(val) VALUES('test')", (AsyncResult!RowSet ar2) {
-                    trace("running here");
-                    RowSet insertResult1 = asyncAssertSuccess(ar2);
+    // @Test
+    // void testLastInsertIdWithDefaultValue() {
+    //     connector((SqlConnection conn) {
+    //         string sql = "CREATE TEMPORARY TABLE last_insert_id(id INTEGER PRIMARY KEY AUTO_INCREMENT, val VARCHAR(20));";
+    //         conn.query(sql, (AsyncResult!RowSet ar) {
+    //             trace("running here");
+    //             RowSet createTableResult = asyncAssertSuccess(ar);
+    //             Variant value1 = createTableResult.property(MySQLClient.LAST_INSERTED_ID);
+    //             if(value1.type != typeid(int)) {
+    //                 warning("Not expected type: ", value1.type);
+    //             } else {
+    //                 int lastInsertId1 = value1.get!int();
+    //                 assert(0 == lastInsertId1);
+    //             }
+    //             conn.query("INSERT INTO last_insert_id(val) VALUES('test')", (AsyncResult!RowSet ar2) {
+    //                 trace("running here");
+    //                 RowSet insertResult1 = asyncAssertSuccess(ar2);
                     
-                    Variant value2 = insertResult1.property(MySQLClient.LAST_INSERTED_ID);
-                    if(value2.type != typeid(int)) {
-                        warning("Not expected type: ", value2.type);
-                    } else {
-                        int lastInsertId2 = value2.get!int();
-                        assert(1 == lastInsertId2);
-                    }
-                    conn.query("INSERT INTO last_insert_id(val) VALUES('test2')", (AsyncResult!RowSet ar3) {
-                        trace("running here");
-                        RowSet insertResult2 = asyncAssertSuccess(ar3);
+    //                 Variant value2 = insertResult1.property(MySQLClient.LAST_INSERTED_ID);
+    //                 if(value2.type != typeid(int)) {
+    //                     warning("Not expected type: ", value2.type);
+    //                 } else {
+    //                     int lastInsertId2 = value2.get!int();
+    //                     assert(1 == lastInsertId2);
+    //                 }
+    //                 conn.query("INSERT INTO last_insert_id(val) VALUES('test2')", (AsyncResult!RowSet ar3) {
+    //                     trace("running here");
+    //                     RowSet insertResult2 = asyncAssertSuccess(ar3);
                         
-                        Variant value3 = insertResult2.property(MySQLClient.LAST_INSERTED_ID);
-                        if(value2.type != typeid(int)) {
-                            warning("Not expected type: ", value3.type);
-                        } else {
-                            int lastInsertId3 = value3.get!int();
-                            assert(2 == lastInsertId3);
-                        }
-                        conn.close();
-                    });
-                });
-            });
-        });
-    }
+    //                     Variant value3 = insertResult2.property(MySQLClient.LAST_INSERTED_ID);
+    //                     if(value2.type != typeid(int)) {
+    //                         warning("Not expected type: ", value3.type);
+    //                     } else {
+    //                         int lastInsertId3 = value3.get!int();
+    //                         assert(2 == lastInsertId3);
+    //                     }
+    //                     conn.close();
+    //                 });
+    //             });
+    //         });
+    //     });
+    // }
 
     // @Test
     // void testLastInsertIdWithSpecifiedValue() {
@@ -112,28 +113,44 @@ class MySQLQueryTest : MySQLTestBase {
     //     }));
     // }
 
-    // @Test
-    // void testCachePreparedStatementWithDifferentSql() {
-    //     // we set the cache size to be the same with max_prepared_stmt_count
-    //     MySQLConnection.connect(options.setCachePreparedStatements(true)
-    //         .setPreparedStatementCacheMaxSize(16382), ctx.asyncAssertSuccess(conn -> {
-    //         conn.query("SHOW VARIABLES LIKE 'max_prepared_stmt_count'", ctx.asyncAssertSuccess(res1 -> {
-    //             Row row = res1.iterator().next();
-    //             int maxPreparedStatementCount = Integer.parseInt(row.getString(1));
-    //             assert("max_prepared_stmt_count", row.getString(0));
-    //             assert(16382, maxPreparedStatementCount);
+    @Test
+    void testCachePreparedStatementWithDifferentSql() {
+        // we set the cache size to be the same with max_prepared_stmt_count
+        options.setCachePreparedStatements(true)
+            .setPreparedStatementCacheMaxSize(16382);
 
-    //             for (int i = 0; i < 10000; i++) {
-    //                 string randomString = UUID.randomUUID().toString();
-    //                 for (int j = 0; j < 2; j++) {
-    //                     conn.preparedQuery("SELECT '" ~ randomString ~ "'", ctx.asyncAssertSuccess(res2 -> {
-    //                         assert(randomString, res2.iterator().next().getString(0));
-    //                     }));
-    //                 }
-    //             }
-    //         }));
-    //     }));
-    // }
+        connector((SqlConnection conn) {
+            string sql = "SHOW VARIABLES LIKE 'max_prepared_stmt_count'";
+            conn.query(sql, (AsyncResult!RowSet ar) {
+                trace("running here");
+                RowSet res1 = asyncAssertSuccess(ar);
+                RowIterator iterator1 = res1.iterator();
+                Row row = iterator1.front();
+                iterator1.popFront();
+                
+                assert("max_prepared_stmt_count" == row.getString(0));
+                string str = row.getString(1);
+                int maxPreparedStatementCount = to!int(str);
+                assert(16382 == maxPreparedStatementCount);
+
+                // FIXME: Needing refactor or cleanup -@zxp at 9/5/2019, 6:15:58 PM
+                // may fail
+                for (int i = 0; i < 3; i++) {
+                    string randomString = randomUUID().toString();
+                    for (int j = 0; j < 2; j++) {
+                        conn.preparedQuery("SELECT '" ~ randomString ~ "'", (AsyncResult!RowSet ar2) {
+                            trace("randomString: " ~ randomString);
+                            RowSet res2 = asyncAssertSuccess(ar2);
+                            RowIterator iterator2 = res2.iterator();
+                            Row row2 = iterator2.front();
+                            iterator2.popFront();
+                            assert(randomString == row2.getString(0));
+                        });
+                    }
+                }
+            });
+        });
+    }
 
     // @Test
     // void testCachePreparedStatementWithSameSql() {
