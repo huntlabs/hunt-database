@@ -21,6 +21,7 @@ import core.atomic;
 import std.ascii;
 import std.conv;
 import std.format;
+import std.variant;
 
 
 /**
@@ -36,6 +37,7 @@ class MySQLQueryTest : MySQLTestBase {
     @Before
     void setup() {
         // options = new MySQLConnectOptions(MySQLTestBase.options);
+        initConnector();
     }
 
     @After
@@ -51,23 +53,35 @@ class MySQLQueryTest : MySQLTestBase {
             conn.query(sql, (AsyncResult!RowSet ar) {
                 trace("running here");
                 RowSet createTableResult = asyncAssertSuccess(ar);
-                RowIterator iterator = createTableResult.iterator();
-                Row row = iterator.front();
-                int lastInsertId1 = row.getInteger(0);
-                // int lastInsertId1 = createTableResult.property(MySQLClient.LAST_INSERTED_ID);
-                assert(0 == lastInsertId1);
+                Variant value1 = createTableResult.property(MySQLClient.LAST_INSERTED_ID);
+                if(value1.type != typeid(int)) {
+                    warning("Not expected type: ", value1.type);
+                } else {
+                    int lastInsertId1 = value1.get!int();
+                    assert(0 == lastInsertId1);
+                }
                 conn.query("INSERT INTO last_insert_id(val) VALUES('test')", (AsyncResult!RowSet ar2) {
                     trace("running here");
                     RowSet insertResult1 = asyncAssertSuccess(ar2);
-                    int lastInsertId2 = insertResult1.iterator().front().getInteger();
-                    // int lastInsertId2 = insertResult2.property(MySQLClient.LAST_INSERTED_ID);
-                    assert(1 == lastInsertId2);
+                    
+                    Variant value2 = insertResult1.property(MySQLClient.LAST_INSERTED_ID);
+                    if(value2.type != typeid(int)) {
+                        warning("Not expected type: ", value2.type);
+                    } else {
+                        int lastInsertId2 = value2.get!int();
+                        assert(1 == lastInsertId2);
+                    }
                     conn.query("INSERT INTO last_insert_id(val) VALUES('test2')", (AsyncResult!RowSet ar3) {
                         trace("running here");
                         RowSet insertResult2 = asyncAssertSuccess(ar3);
-                        int lastInsertId3 = insertResult2.iterator().front().getInteger();
-                        // int lastInsertId3 = insertResult2.property(MySQLClient.LAST_INSERTED_ID);
-                        assert(2 == lastInsertId3);
+                        
+                        Variant value3 = insertResult2.property(MySQLClient.LAST_INSERTED_ID);
+                        if(value2.type != typeid(int)) {
+                            warning("Not expected type: ", value3.type);
+                        } else {
+                            int lastInsertId3 = value3.get!int();
+                            assert(2 == lastInsertId3);
+                        }
                         conn.close();
                     });
                 });
