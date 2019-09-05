@@ -23,7 +23,9 @@ import std.conv;
 
 class MySQLDecoder : Decoder {
 
+    private ByteBufAllocator alloc;
     private DList!(CommandCodecBase) *inflight;
+    private ByteBuf inBuffer;
     private MySQLEncoder encoder;
 
     private CompositeByteBuf aggregatedPacketPayload = null;
@@ -31,6 +33,7 @@ class MySQLDecoder : Decoder {
     this(ref DList!(CommandCodecBase) inflight, MySQLEncoder encoder) {
         this.inflight = &inflight;
         this.encoder = encoder;
+        alloc = UnpooledByteBufAllocator.DEFAULT();
     }
 
     void decode(ByteBuffer payload, Connection connection) {
@@ -43,8 +46,27 @@ class MySQLDecoder : Decoder {
     }
 
     private void doEecode(ByteBuffer payload, Connection connection) {
-        ByteBuf inBuffer = Unpooled.wrappedBuffer(payload);
-        if (inBuffer.readableBytes() > 4) {
+        version(HUNT_DB_DEBUG) tracef("decoding buffer: %s", payload.toString());
+
+        ByteBuf buff = Unpooled.wrappedBuffer(payload);
+        if (inBuffer is null) {
+            inBuffer = buff;
+        } else {
+            CompositeByteBuf composite = cast(CompositeByteBuf) inBuffer;
+            if (composite is null) {
+                composite = alloc.compositeBuffer();
+                composite.addComponent(true, inBuffer);
+                inBuffer = composite;
+            }
+            composite.addComponent(true, buff);
+        }
+
+        while (true) {
+            int available = inBuffer.readableBytes();
+            if (available < 4) {
+                break;
+            }
+
             int packetStartIdx = inBuffer.readerIndex();
             int payloadLength = inBuffer.readUnsignedMediumLE();
             int sequenceId = inBuffer.readUnsignedByte();
@@ -74,10 +96,31 @@ class MySQLDecoder : Decoder {
                 inBuffer.readerIndex(packetStartIdx);
             }
         }
+
+        if (inBuffer !is null) {
+            if(inBuffer.isReadable()) {
+                // copy the remainings in current buffer
+                version(HUNT_DEBUG) warningf("duplicating the remaings: %s", inBuffer.toString());
+                inBuffer = inBuffer.duplicate();
+            } else {
+                // clear up the buffer
+                inBuffer.release();
+                inBuffer = null;
+            }
+        }            
     }
 
     private void decodePayload(ByteBuf payload, int payloadLength, int sequenceId) {
+        version(HUNT_DEBUG) {
+            if(inflight.empty()) {
+                warning("inflight is empty.");
+            }
+        }
         CommandCodecBase ctx = inflight.front();
+        version(HUNT_DB_DEBUG) {
+            tracef("Command codec: %s", typeid(ctx));
+            tracef("lenght: %d, payload: %s", payloadLength, payload.toString());
+        }
         ctx.sequenceId = sequenceId + 1;
         ctx.decodePayload(payload, payloadLength, sequenceId);
         payload.clear();

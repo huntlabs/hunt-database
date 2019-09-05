@@ -79,9 +79,16 @@ class PgDecoder : Decoder {
     //     alloc = ctx.alloc();
     // }
 
-    // void channelRead(ChannelHandlerContext ctx, Object msg) 
+    void decode(ByteBuffer payload, Connection connection) {
+        try {
+            doEecode(payload, connection);
+        } catch(Exception ex) {
+            version(HUNT_DEBUG) warning(ex);
+            else warning(ex.msg);
+        }
+    }
 
-    void decode(ByteBuffer msg, Connection connection) {
+    private void doEecode(ByteBuffer msg, Connection connection) {
         version(HUNT_DB_DEBUG_MORE) tracef("decoding buffer: %s", msg.toString());
 
         ByteBuf buff = Unpooled.wrappedBuffer(msg);
@@ -144,9 +151,17 @@ class PgDecoder : Decoder {
                 inBuffer.setIndex(endIdx, writerIndex);
             }
         }
-        if (inBuffer !is null && !inBuffer.isReadable()) {
-            inBuffer.release();
-            inBuffer = null;
+
+        if (inBuffer !is null) {
+            if(inBuffer.isReadable()) {
+                // copy the remainings in current buffer
+                version(HUNT_DEBUG) warningf("duplicating the remaings: %s", inBuffer.toString());
+                inBuffer = inBuffer.duplicate();
+            } else {
+                // clear up the buffer
+                inBuffer.release();
+                inBuffer = null;
+            }
         }
     }
 
@@ -280,11 +295,8 @@ class PgDecoder : Decoder {
     }
 
     private void decodeErrorOrNotice(Response response, ByteBuf inBuffer) {
-
         byte type;
-
         while ((type = inBuffer.readByte()) != 0) {
-
             switch (type) {
 
                 case PgProtocolConstants.ERROR_OR_NOTICE_SEVERITY:
