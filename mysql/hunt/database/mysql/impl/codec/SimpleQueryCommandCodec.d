@@ -22,15 +22,17 @@ import hunt.database.mysql.impl.codec.MySQLEncoder;
 import hunt.database.mysql.impl.codec.Packets;
 import hunt.database.mysql.impl.codec.QueryCommandBaseCodec;
 
-
 import hunt.database.base.impl.command.CommandResponse;
 import hunt.database.base.impl.command.SimpleQueryCommand;
 
 import hunt.Exceptions;
+import hunt.logging.ConsoleLogger;
 import hunt.net.buffer.ByteBuf;
 import hunt.text.Charset;
 
-
+/**
+ * 
+ */
 class SimpleQueryCommandCodec(T) : QueryCommandBaseCodec!(T, SimpleQueryCommand!(T)) {
 
     this(SimpleQueryCommand!(T) cmd) {
@@ -47,6 +49,7 @@ class SimpleQueryCommandCodec(T) : QueryCommandBaseCodec!(T, SimpleQueryCommand!
     protected void handleInitPacket(ByteBuf payload) {
         // may receive ERR_Packet, OK_Packet, LOCAL INFILE Request, Text Resultset
         int firstByte = payload.getUnsignedByte(payload.readerIndex());
+        tracef("firstByte: %d", firstByte);
         if (firstByte == Packets.OK_PACKET_HEADER) {
             OkPacket okPacket = decodeOkPacketPayload(payload, StandardCharsets.UTF_8);
             handleSingleResultsetDecodingCompleted(okPacket.serverStatusFlags(),
@@ -73,6 +76,9 @@ class SimpleQueryCommandCodec(T) : QueryCommandBaseCodec!(T, SimpleQueryCommand!
 
         // encode packet payload
         packet.writeByte(CommandType.COM_QUERY);
+        version(HUNT_DB_DEBUG) {
+            tracef("sql: %s", cmd.sql());
+        }
         packet.writeCharSequence(cmd.sql(), StandardCharsets.UTF_8);
 
         // set payload length

@@ -115,18 +115,6 @@ class MySQLEncoder : Encoder {
         // flush();
 	}
 
-    // void write(CommandBase<?> cmd) {
-    //     CommandCodec<?, ?> codec = wrap(cmd);
-    //     codec.completionHandler = resp -> {
-    //         CommandCodec c = inflight.poll();
-    //         resp.cmd = (CommandBase) c.cmd;
-    //         chctx.fireChannelRead(resp);
-    //     };
-    //     inflight.add(codec);
-    //     codec.encode(this);
-    // }
-
-
     private CommandCodecBase wrap(ICommand cmd) {
         InitCommand initCommand = cast(InitCommand) cmd;
         if (initCommand !is null) {
