@@ -79,8 +79,12 @@ class InitCommandCodec : CommandCodec!(DbConnection, InitCommand) {
         short protocolVersion = payload.readUnsignedByte();
 
         string serverVersion = BufferUtils.readNullTerminatedString(payload, StandardCharsets.US_ASCII);
+        version(HUNT_DEBUG) {
+            infof("protocolVersion: %d, serverVersion: %s", protocolVersion, serverVersion);
+        }
+
         // we assume the server version follows ${major}.${minor}.${release} in https://dev.mysql.com/doc/refman/8.0/en/which-version.html
-        string[] versionNumbers = serverVersion.split("\\.");
+        string[] versionNumbers = serverVersion.split(".");
         int majorVersion = to!int(versionNumbers[0]);
         int minorVersion = to!int(versionNumbers[1]);
         // we should truncate the possible suffixes here
@@ -156,6 +160,7 @@ class InitCommandCodec : CommandCodec!(DbConnection, InitCommand) {
         bool ssl = false;
         if (ssl) {
             //TODO ssl
+            implementationMissing(false);
         } else {
             if (cmd.database() !is null && !cmd.database().empty()) {
                 encoder.clientCapabilitiesFlag |= CapabilitiesFlag.CLIENT_CONNECT_WITH_DB;
@@ -172,7 +177,7 @@ class InitCommandCodec : CommandCodec!(DbConnection, InitCommand) {
                 return;
             }
             int collationId = collation.collationId();
-            encoder.charset = collation.mappedJavaCharsetName(); // Charset.forName(collation.mappedJavaCharsetName());
+            encoder.charset = collation.mappedCharsetName(); // Charset.forName(collation.mappedCharsetName());
             properties.remove("collation");
             Map!(string, string) clientConnectionAttributes = properties;
             if (clientConnectionAttributes !is null && !clientConnectionAttributes.isEmpty()) {
@@ -191,7 +196,7 @@ class InitCommandCodec : CommandCodec!(DbConnection, InitCommand) {
             case Packets.OK_PACKET_HEADER:
                 status = ST_CONNECTED;
                 if(completionHandler !is null) {
-                    completionHandler(succeededResponse(cmd.connection()));
+                    completionHandler(succeededResponse!(DbConnection)(cmd.connection()));
                 }
                 break;
             case Packets.ERROR_PACKET_HEADER:

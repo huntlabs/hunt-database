@@ -20,7 +20,14 @@ module hunt.database.base.impl.SqlResultBase;
 import hunt.database.base.SqlResult;
 
 import hunt.collection.List;
+import hunt.Exceptions;
 
+import std.array;
+import std.variant;
+
+/**
+ * 
+ */
 abstract class SqlResultBase(T, R) : SqlResult!(T) { //  extends SqlResultBase!(T, R)
 
     int _updated;
@@ -28,6 +35,7 @@ abstract class SqlResultBase(T, R) : SqlResult!(T) { //  extends SqlResultBase!(
     int _size;
     R _next;
 
+    Variant[string] properties;
     // override
     // string[] columnsNames() {
     //     return _columnNames;

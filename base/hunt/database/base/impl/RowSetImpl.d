@@ -26,6 +26,12 @@ import hunt.database.base.Row;
 import hunt.Exceptions;
 import hunt.Functions;
 
+import std.array;
+import std.variant;
+
+/**
+ * 
+ */
 class RowSetImpl : SqlResultBase!(RowSet, RowSetImpl), RowSet {
 
     static void accumulator(RowSetImpl set, Row row) {
@@ -62,6 +68,17 @@ class RowSetImpl : SqlResultBase!(RowSet, RowSetImpl), RowSet {
     override
     int size() {
         return _size;
+    }
+
+    Variant property(string key) {
+        if(key.empty) {
+            throw new IllegalArgumentException("Property can not be null");
+        }
+
+        if(properties is null)
+            return Variant(null);
+        
+        return properties.get(key, Variant(null));
     }
 
     override
@@ -122,7 +139,7 @@ class RowSetImpl : SqlResultBase!(RowSet, RowSetImpl), RowSet {
 
         Row front() {
             if (current is null) {
-                throw new NoSuchElementException();
+                throw new NoSuchElementException("No such element!");
             }
 
             return current;

@@ -33,8 +33,17 @@ class MySQLDecoder : Decoder {
         this.encoder = encoder;
     }
 
-    void decode(ByteBuffer msg, Connection connection) {
-        ByteBuf inBuffer = Unpooled.wrappedBuffer(msg);
+    void decode(ByteBuffer payload, Connection connection) {
+        try {
+            doEecode(payload, connection);
+        } catch(Exception ex) {
+            version(HUNT_DEBUG) warning(ex);
+            else warning(ex.msg);
+        }
+    }
+
+    private void doEecode(ByteBuffer payload, Connection connection) {
+        ByteBuf inBuffer = Unpooled.wrappedBuffer(payload);
         if (inBuffer.readableBytes() > 4) {
             int packetStartIdx = inBuffer.readerIndex();
             int payloadLength = inBuffer.readUnsignedMediumLE();

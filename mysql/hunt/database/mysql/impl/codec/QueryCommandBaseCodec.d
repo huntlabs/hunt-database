@@ -23,6 +23,7 @@ import hunt.database.mysql.impl.codec.MySQLRowDesc;
 import hunt.database.mysql.impl.codec.Packets;
 import hunt.database.mysql.impl.codec.RowResultDecoder;
 
+import hunt.database.mysql.MySQLClient;
 import hunt.database.mysql.impl.util.BufferUtils;
 
 import hunt.database.base.Row;
@@ -36,7 +37,11 @@ import hunt.logging.ConsoleLogger;
 import hunt.net.buffer.ByteBuf;
 import hunt.text.Charset;
 
+import std.variant;
 
+/**
+ * 
+ */
 abstract class QueryCommandBaseCodec(T, C) : CommandCodec!(bool, C) {
     // C extends QueryCommandBase!(T)
 
@@ -121,15 +126,17 @@ abstract class QueryCommandBaseCodec(T, C) : CommandCodec!(bool, C) {
         // we need check this is not a row data by checking packet length < 0xFFFFFF
         else if (first == Packets.EOF_PACKET_HEADER && payloadLength < 0xFFFFFF) {
             int serverStatusFlags;
-            int affectedRows = 0;
+            int affectedRows = -1;
+            int lastInsertId = -1;
             if (isDeprecatingEofFlagEnabled()) {
                 OkPacket okPacket = decodeOkPacketPayload(payload, StandardCharsets.UTF_8);
                 serverStatusFlags = okPacket.serverStatusFlags();
                 affectedRows = cast(int) okPacket.affectedRows();
+                lastInsertId = cast(int) okPacket.lastInsertId();
             } else {
                 serverStatusFlags = decodeEofPacketPayload(payload).serverStatusFlags();
             }
-            handleSingleResultsetDecodingCompleted(serverStatusFlags, affectedRows);
+            handleSingleResultsetDecodingCompleted(serverStatusFlags, affectedRows, lastInsertId);
         } else {
             if(singleRowHandler !is null) {
                 singleRowHandler(payload);
@@ -142,8 +149,9 @@ abstract class QueryCommandBaseCodec(T, C) : CommandCodec!(bool, C) {
         decoder.decodeRow(cast(int)columnDefinitions.length, payload);
     }
 
-    protected void handleSingleResultsetDecodingCompleted(int serverStatusFlags, int affectedRows) {
-        handleSingleResultsetEndPacket(serverStatusFlags, affectedRows);
+    protected void handleSingleResultsetDecodingCompleted(int serverStatusFlags, 
+            int affectedRows, int lastInsertId) {
+        handleSingleResultsetEndPacket(serverStatusFlags, affectedRows, lastInsertId);
         resetIntermediaryResult();
         if (isDecodingCompleted(serverStatusFlags)) {
             // no more sql result
@@ -155,7 +163,7 @@ abstract class QueryCommandBaseCodec(T, C) : CommandCodec!(bool, C) {
         return (serverStatusFlags & ServerStatusFlags.SERVER_MORE_RESULTS_EXISTS) == 0;
     }
 
-    private void handleSingleResultsetEndPacket(int serverStatusFlags, int affectedRows) {
+    private void handleSingleResultsetEndPacket(int serverStatusFlags, int affectedRows, int lastInsertId) {
         this.result = (serverStatusFlags & ServerStatusFlags.SERVER_STATUS_LAST_ROW_SENT) == 0;
         T result;
         int size;
@@ -172,6 +180,8 @@ abstract class QueryCommandBaseCodec(T, C) : CommandCodec!(bool, C) {
             rowDesc = null;
         }
         cmd.resultHandler().handleResult(affectedRows, size, rowDesc, result);
+        Variant v = Variant(lastInsertId);
+        cmd.resultHandler().addProperty(MySQLClient.LAST_INSERTED_ID, v);
     }
 
     private void handleAllResultsetDecodingCompleted() {

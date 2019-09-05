@@ -86,7 +86,7 @@ class RowResultDecoder(R) : RowDecoder {
                     ColumnDefinition columnDef = rowDesc.columnDefinitions()[c];
                     DataType dataType = columnDef.type();
                     int collationId = rowDesc.columnDefinitions()[c].characterSet();
-                    Charset charset = (MySQLCollation.valueOfId(collationId).mappedJavaCharsetName()); // Charset.forName
+                    Charset charset = (MySQLCollation.valueOfId(collationId).mappedCharsetName()); // Charset.forName
                     int columnDefinitionFlags = columnDef.flags();
                     decoded = DataTypeCodec.decodeBinary(dataType, charset, columnDefinitionFlags, inBuffer);
                 }
@@ -102,7 +102,7 @@ class RowResultDecoder(R) : RowDecoder {
                     DataType dataType = rowDesc.columnDefinitions()[c].type();
                     int columnDefinitionFlags = rowDesc.columnDefinitions()[c].flags();
                     int collationId = rowDesc.columnDefinitions()[c].characterSet();
-                    Charset charset = (MySQLCollation.valueOfId(collationId).mappedJavaCharsetName()); // Charset.forName
+                    Charset charset = (MySQLCollation.valueOfId(collationId).mappedCharsetName()); // Charset.forName
                     decoded = DataTypeCodec.decodeText(dataType, charset, columnDefinitionFlags, inBuffer);
                 }
                 row.addValue(decoded);

@@ -19,6 +19,7 @@ module hunt.database.base.SqlResult;
 
 import hunt.collection.List;
 
+import std.variant;
 
 /**
  * Represents the result of an operation on database.
@@ -61,6 +62,14 @@ interface SqlResult(T) {
      * @return the result
      */
     T value();
+
+    /**
+     * Get the property with the specified {@link PropertyKind}.
+     *
+     * @param propertyKind the kind of the property
+     * @return the value of the property
+     */
+    Variant property(string key);
 
     /**
      * Return the next available result or {@code null}, e.g for a simple query that executed multiple queries or for

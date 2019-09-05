@@ -26,6 +26,8 @@ import hunt.database.base.AsyncResult;
 import hunt.logging.ConsoleLogger;
 import hunt.Functions;
 
+import std.variant;
+
 /**
  * A query result handler for building a {@link SqlResult}.
  */
@@ -69,7 +71,20 @@ class SqlResultBuilder(T, R, L) : QueryResultHandler!(T) { // , Handler!(AsyncRe
     void handle(AsyncResult!(bool) res) {
         suspended = res.succeeded() && res.result();
         version(HUNT_DB_DEBUG) tracef("succeeded: %s, result: %s", res.succeeded(), res.result());
-        handler(res.map!(L)(first)); // AsyncResult!(RowSetImpl)
+        if(handler !is null) {
+            handler(res.map!(L)(first)); // AsyncResult!(RowSetImpl)
+        }
+    }
+
+    void addProperty(string name, ref Variant value) {
+        if(first !is null) {
+            R r = first;
+            while (r.next !is null) {
+                r = r.next;
+            }
+
+            r.properties[name] = value;
+        }
     }
 
     bool isSuspended() {

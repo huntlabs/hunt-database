@@ -49,7 +49,8 @@ class SimpleQueryCommandCodec(T) : QueryCommandBaseCodec!(T, SimpleQueryCommand!
         int firstByte = payload.getUnsignedByte(payload.readerIndex());
         if (firstByte == Packets.OK_PACKET_HEADER) {
             OkPacket okPacket = decodeOkPacketPayload(payload, StandardCharsets.UTF_8);
-            handleSingleResultsetDecodingCompleted(okPacket.serverStatusFlags(), cast(int) okPacket.affectedRows());
+            handleSingleResultsetDecodingCompleted(okPacket.serverStatusFlags(),
+                cast(int) okPacket.affectedRows(), cast(int) okPacket.lastInsertId());
         } else if (firstByte == Packets.ERROR_PACKET_HEADER) {
             handleErrorPacketPayload(payload);
         } else if (firstByte == 0xFB) {

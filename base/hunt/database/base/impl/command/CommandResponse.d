@@ -27,6 +27,9 @@ interface ICommandResponse : IAsyncResult {
     void attachCommand(ICommand cmd);
 }
 
+/**
+ * 
+ */
 abstract class CommandResponse(R) : AsyncResult!(R), ICommandResponse {
 
     // The connection that executed the command
@@ -59,9 +62,10 @@ abstract class CommandResponse(R) : AsyncResult!(R), ICommandResponse {
         CommandBase!(R) c = cast(CommandBase!(R))cmd;
         version(HUNT_DB_DEBUG) {
             if(c is null) { 
-                warning("Can't cast cmd from %s to %s", 
+                warningf("Can't cast cmd from %s to %s", 
                     TypeUtils.getSimpleName(typeid(cast(Object)cmd)),
-                    TypeUtils.getSimpleName(typeid(this.cmd)));
+                    typeid(CommandBase!(R)));
+                    // TypeUtils.getSimpleName(typeid(CommandBase!(R))));
             }
         }
         this.cmd = c;

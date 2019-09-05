@@ -98,7 +98,7 @@ class MySQLEncoder : Encoder {
                     warningf("Response error: %s", th.msg);
                 }
             }
-            version(HUNT_DB_DEBUG_MORE) tracef("%s", typeid(cast(Object)resp));
+            version(HUNT_DB_DEBUG) tracef("%s", typeid(cast(Object)resp));
             inflight.removeFront();
 
             if(!resp.isCommandAttatched()) {

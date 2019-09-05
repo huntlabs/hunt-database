@@ -38,8 +38,8 @@ class ExtendedBatchQueryCommandCodec(R) : ExtendedQueryCommandBaseCodec!(R, Exte
     }
 
     override
-    protected void handleSingleResultsetDecodingCompleted(int serverStatusFlags, int affectedRows) {
-        super.handleSingleResultsetDecodingCompleted(serverStatusFlags, affectedRows);
+    protected void handleSingleResultsetDecodingCompleted(int serverStatusFlags, int affectedRows, int lastInsertId) {
+        super.handleSingleResultsetDecodingCompleted(serverStatusFlags, affectedRows, lastInsertId);
         doExecuteBatch();
     }
 

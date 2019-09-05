@@ -17,6 +17,7 @@
 
 module hunt.database.mysql;
 
+public import hunt.database.mysql.MySQLClient;
 public import hunt.database.mysql.MySQLConnection;
 public import hunt.database.mysql.MySQLConnectOptions;
 public import hunt.database.mysql.MySQLException;

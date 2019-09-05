@@ -19,10 +19,14 @@ module hunt.database.base.impl.QueryResultHandler;
 
 import hunt.database.base.impl.RowDesc;
 
+import std.variant;
+
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 interface QueryResultHandler(T) {
+
+    void addProperty(string name, ref Variant value);
 
     void handleResult(int updatedCount, int size, RowDesc desc, T result);
 
