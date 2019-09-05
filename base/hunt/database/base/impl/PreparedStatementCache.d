@@ -12,6 +12,7 @@ import hunt.collection.Map;
 import hunt.Exceptions;
 
 import hunt.concurrency.LinkedBlockingQueue;
+import std.container.dlist;
 
 /**
  * A LRU replacement strategy cache based on {@link java.util.LinkedHashMap} for prepared statements.
@@ -68,10 +69,10 @@ class PreparedStatementCache : LinkedHashMap!(string, CachedPreparedStatement) {
 }
 
 
-
+/**
+ * 
+ */
 class CachedPreparedStatement { // : Handler!(CommandResponse!(PreparedStatement)) 
-    import std.container.dlist;
-    // private Deque!(ResponseHandler!(PreparedStatement)) waiters;
     private DList!(ResponseHandler!(PreparedStatement)) waiters;
     CommandResponse!(PreparedStatement) resp;
 

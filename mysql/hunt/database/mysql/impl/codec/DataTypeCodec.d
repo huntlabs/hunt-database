@@ -1,6 +1,7 @@
 module hunt.database.mysql.impl.codec.DataTypeCodec;
 
 import hunt.database.mysql.impl.codec.DataType;
+import hunt.database.mysql.impl.codec.ColumnDefinition;
 
 import hunt.database.mysql.impl.util.BufferUtils;
 import hunt.database.base.data.Numeric;
@@ -18,6 +19,7 @@ import hunt.text.Charset;
 // import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
 // import java.time.temporal.ChronoField.*;
 
+import std.conv;
 import std.concurrency : initOnce;
 import std.variant;
 
@@ -46,49 +48,73 @@ class DataTypeCodec {
     //     .toFormatter();
 
     static Variant decodeText(DataType dataType, Charset charset, int columnDefinitionFlags, ByteBuf buffer) {
+        int len = cast(int) BufferUtils.readLengthEncodedInteger(buffer);
+        int index = buffer.readerIndex();
 
-        implementationMissing(false);
-        return Variant(null);
-    //     int length = (int) BufferUtils.readLengthEncodedInteger(buffer);
-    //     ByteBuf data = buffer.readSlice(length);
-    //     switch (dataType) {
-    //         case INT1:
-    //             return textDecodeInt1(charset, data);
-    //         case INT2:
-    //         case YEAR:
-    //             return textDecodeInt2(charset, data);
-    //         case INT3:
-    //             return textDecodeInt3(charset, data);
-    //         case INT4:
-    //             return textDecodeInt4(charset, data);
-    //         case INT8:
-    //             return textDecodeInt8(charset, data);
-    //         case FLOAT:
-    //             return textDecodeFloat(charset, data);
-    //         case DOUBLE:
-    //             return textDecodeDouble(charset, data);
-    //         case NUMERIC:
-    //             return textDecodeNUMERIC(charset, data);
-    //         case DATE:
-    //             return textDecodeDate(charset, data);
-    //         case TIME:
-    //             return textDecodeTime(charset, data);
-    //         case DATETIME:
-    //         case TIMESTAMP:
-    //             return textDecodeDateTime(charset, data);
-    //         case STRING:
-    //         case VARSTRING:
-    //         case BLOB:
-    //         default:
-    //             return textDecodeBlobOrText(charset, columnDefinitionFlags, data);
-    //     }
+        scope(exit) {
+            buffer.skipBytes(len);
+        }
+
+        version(HUNT_DB_DEBUG) {
+            tracef("dataType=%s, index=%d, len=%d, columnDefinitionFlags=%d, isBinaryField=%s", 
+                dataType, index, len, columnDefinitionFlags, isBinaryField(columnDefinitionFlags));
+        }
+
+        string value = "";
+        if (isBinaryField(columnDefinitionFlags)) {
+            return textDecodeBlob(index, len, buffer).Variant();
+        } else {
+            value = textDecodeText(charset, index, len, buffer);
+        }        
+        // ByteBuf data = buffer.readSlice(length);
+        switch (dataType) {
+            case DataType.INT1:
+                // return buffer.getByte(index).Variant();
+                return value[0].Variant();
+
+            case DataType.INT2:
+            case DataType.YEAR:
+                return to!short(value).Variant();
+
+            case DataType.INT3:
+            case DataType.INT4:
+                return to!int(value).Variant();
+
+            case DataType.INT8:
+                return to!long(value).Variant();
+
+            case DataType.FLOAT:
+                return to!float(value).Variant();
+
+            case DataType.DOUBLE:
+                return to!double(value).Variant();
+
+    //         case DataType.NUMERIC:
+    //             return textDecodeNUMERIC(charset, data).Variant();
+    //         case DataType.DATE:
+    //             return textDecodeDate(charset, data).Variant();
+    //         case DataType.TIME:
+    //             return textDecodeTime(charset, data).Variant();
+    //         case DataType.DATETIME:
+    //         case DataType.TIMESTAMP:
+    //             return textDecodeDateTime(charset, data).Variant();
+            case DataType.STRING:
+            case DataType.VARSTRING:
+            case DataType.BLOB:
+            default:
+                if (isBinaryField(columnDefinitionFlags)) {
+                    return textDecodeBlob(index, len, buffer).Variant();
+                } else {
+                    return textDecodeText(charset, index, len, buffer).Variant();
+                }
+        }
     }
 
     // //TODO take care of unsigned numeric values here?
     static void encodeBinary(DataType dataType, Charset charset, ref Variant value, ByteBuf buffer) {
         implementationMissing(false);
     //     switch (dataType) {
-    //         case INT1:
+    //         case DataType.INT1:
     //             if (value instanceof Boolean) {
     //                 if ((Boolean) value) {
     //                     value = 1;
@@ -98,82 +124,83 @@ class DataTypeCodec {
     //             }
     //             binaryEncodeInt1((Number) value, buffer);
     //             break;
-    //         case INT2:
+    //         case DataType.INT2:
     //             binaryEncodeInt2((Number) value, buffer);
     //             break;
-    //         case INT3:
+    //         case DataType.INT3:
     //             binaryEncodeInt3((Number) value, buffer);
     //             break;
-    //         case INT4:
+    //         case DataType.INT4:
     //             binaryEncodeInt4((Number) value, buffer);
     //             break;
-    //         case INT8:
+    //         case DataType.INT8:
     //             binaryEncodeInt8((Number) value, buffer);
     //             break;
-    //         case FLOAT:
+    //         case DataType.FLOAT:
     //             binaryEncodeFloat((Number) value, buffer);
     //             break;
-    //         case DOUBLE:
+    //         case DataType.DOUBLE:
     //             binaryEncodeDouble((Number) value, buffer);
     //             break;
-    //         case NUMERIC:
+    //         case DataType.NUMERIC:
     //             binaryEncodeNumeric(charset, (Numeric) value, buffer);
     //             break;
-    //         case BLOB:
+    //         case DataType.BLOB:
     //             binaryEncodeBlob((Buffer) value, buffer);
     //             break;
-    //         case DATE:
+    //         case DataType.DATE:
     //             binaryEncodeDate((LocalDate) value, buffer);
     //             break;
-    //         case TIME:
+    //         case DataType.TIME:
     //             binaryEncodeTime((Duration) value, buffer);
     //             break;
-    //         case DATETIME:
+    //         case DataType.DATETIME:
     //             binaryEncodeDatetime((LocalDateTime) value, buffer);
     //             break;
-    //         case STRING:
-    //         case VARSTRING:
+    //         case DataType.STRING:
+    //         case DataType.VARSTRING:
     //         default:
-    //             binaryEncodeText(charset, String.valueOf(value), buffer);
+    //             binaryEncodeText(charset, string.valueOf(value), buffer);
     //             break;
     //     }
     }
 
     static Variant decodeBinary(DataType dataType, Charset charset, int columnDefinitionFlags, ByteBuf buffer) {
-        implementationMissing(false);
-        return Variant(null);
         
-    //     switch (dataType) {
-    //         case INT1:
-    //             return binaryDecodeInt1(buffer);
-    //         case YEAR:
-    //         case INT2:
-    //             return binaryDecodeInt2(buffer);
-    //         case INT3:
-    //             return binaryDecodeInt3(buffer);
-    //         case INT4:
-    //             return binaryDecodeInt4(buffer);
-    //         case INT8:
-    //             return binaryDecodeInt8(buffer);
-    //         case FLOAT:
-    //             return binaryDecodeFloat(buffer);
-    //         case DOUBLE:
-    //             return binaryDecodeDouble(buffer);
-    //         case NUMERIC:
-    //             return binaryDecodeNumeric(charset, buffer);
-    //         case DATE:
-    //             return binaryDecodeDate(buffer);
-    //         case TIME:
-    //             return binaryDecodeTime(buffer);
-    //         case DATETIME:
-    //         case TIMESTAMP:
-    //             return binaryDecodeDatetime(buffer);
-    //         case STRING:
-    //         case VARSTRING:
-    //         case BLOB:
-    //         default:
-    //             return binaryDecodeBlobOrText(charset, columnDefinitionFlags, buffer);
-    //     }
+        switch (dataType) {
+            case DataType.INT1:
+                return buffer.readByte().Variant();
+            case DataType.YEAR:
+            case DataType.INT2:
+                return buffer.readShortLE().Variant();
+            case DataType.INT3:
+            case DataType.INT4:
+                return buffer.readIntLE().Variant();
+            case DataType.INT8:
+                return buffer.readLongLE().Variant();
+            case DataType.FLOAT:
+                return buffer.readFloatLE().Variant();
+            case DataType.DOUBLE:
+                return buffer.readDoubleLE().Variant();
+    //         case DataType.NUMERIC:
+    //             return binaryDecodeNumeric(charset, buffer).Variant();
+    //         case DataType.DATE:
+    //             return binaryDecodeDate(buffer).Variant();
+    //         case DataType.TIME:
+    //             return binaryDecodeTime(buffer).Variant();
+    //         case DataType.DATETIME:
+    //         case DataType.TIMESTAMP:
+    //             return binaryDecodeDatetime(buffer).Variant();
+            case DataType.STRING:
+            case DataType.VARSTRING:
+            case DataType.BLOB:
+            default:
+                if (isBinaryField(columnDefinitionFlags)) {
+                    return binaryDecodeBlob(buffer).Variant();
+                } else {
+                    return BufferUtils.readLengthEncodedString(buffer, charset).Variant();
+                }
+        }
     }
 
     // static Object prepare(DataType type, Object value) {
@@ -217,7 +244,7 @@ class DataTypeCodec {
     //     BufferUtils.writeLengthEncodedString(buffer, value.toString(), charset);
     // }
 
-    // private static void binaryEncodeText(Charset charset, String value, ByteBuf buffer) {
+    // private static void binaryEncodeText(Charset charset, string value, ByteBuf buffer) {
     //     BufferUtils.writeLengthEncodedString(buffer, value, charset);
     // }
 
@@ -354,14 +381,14 @@ class DataTypeCodec {
     //     }
     // }
 
-    // private static Buffer binaryDecodeBlob(ByteBuf buffer) {
-    //     int len = (int) BufferUtils.readLengthEncodedInteger(buffer);
-    //     ByteBuf copy = buffer.copy(buffer.readerIndex(), len);
-    //     buffer.skipBytes(len);
-    //     return Buffer.buffer(copy);
-    // }
+    private static byte[] binaryDecodeBlob(ByteBuf buffer) {
+        int len = cast(int) BufferUtils.readLengthEncodedInteger(buffer);
+        ByteBuf buff = buffer.copy(buffer.readerIndex(), len);
+        buffer.skipBytes(len);
+        return buff.getReadableBytes();
+    }
 
-    // private static String binaryDecodeText(Charset charset, ByteBuf buffer) {
+    // private static string binaryDecodeText(Charset charset, ByteBuf buffer) {
     //     return BufferUtils.readLengthEncodedString(buffer, charset);
     // }
 
@@ -402,7 +429,7 @@ class DataTypeCodec {
     //     if (length == 0) {
     //         return Duration.ZERO;
     //     } else {
-    //         boolean isNegative = (buffer.readByte() == 1);
+    //         bool isNegative = (buffer.readByte() == 1);
     //         int days = buffer.readIntLE();
     //         int hour = buffer.readByte();
     //         int minute = buffer.readByte();
@@ -460,7 +487,8 @@ class DataTypeCodec {
     //     return Numeric.parse(buff.toString(charset));
     // }
 
-    // private static Object textDecodeBlobOrText(Charset charset, int columnDefinitionFlags, ByteBuf buffer) {
+    // private static Object textDecodeBlobOrText(Charset charset, int columnDefinitionFlags, 
+    //         int index, int len, ByteBuf buffer) {
     //     if (isBinaryField(columnDefinitionFlags)) {
     //         return textDecodeBlob(buffer);
     //     } else {
@@ -468,13 +496,14 @@ class DataTypeCodec {
     //     }
     // }
 
-    // private static Buffer textDecodeBlob(ByteBuf buffer) {
-    //     return Buffer.buffer(buffer.copy());
-    // }
+    private static byte[] textDecodeBlob(int index, int len, ByteBuf buffer) {
+        ByteBuf buff = buffer.copy(index, len);
+        return buff.getReadableBytes();
+    }
 
-    // private static String textDecodeText(Charset charset, ByteBuf buffer) {
-    //     return buffer.toString(charset);
-    // }
+    private static string textDecodeText(Charset charset, int index, int len, ByteBuf buffer) {
+        return buffer.getCharSequence(index, len, charset);
+    }
 
     // private static LocalDate textDecodeDate(Charset charset, ByteBuf buffer) {
     //     CharSequence cs = buffer.toString(charset);
@@ -483,13 +512,13 @@ class DataTypeCodec {
 
     // private static Duration textDecodeTime(Charset charset, ByteBuf buffer) {
     //     // HH:mm:ss or HHH:mm:ss
-    //     String timeString = buffer.toString(charset);
-    //     boolean isNegative = timeString.charAt(0) == '-';
+    //     string timeString = buffer.toString(charset);
+    //     bool isNegative = timeString.charAt(0) == '-';
     //     if (isNegative) {
     //         timeString = timeString.substring(1);
     //     }
 
-    //     String[] timeElements = timeString.split(":");
+    //     string[] timeElements = timeString.split(":");
     //     if (timeElements.length != 3) {
     //         throw new DecoderException("Invalid time format");
     //     }
@@ -518,7 +547,7 @@ class DataTypeCodec {
     //     return LocalDateTime.parse(cs, DATETIME_FORMAT);
     // }
 
-    // private static boolean isBinaryField(int columnDefinitionFlags) {
-    //     return (columnDefinitionFlags & ColumnDefinition.ColumnDefinitionFlags.BINARY_FLAG) != 0;
-    // }
+    private static bool isBinaryField(int columnDefinitionFlags) {
+        return (columnDefinitionFlags & ColumnDefinitionFlags.BINARY_FLAG) != 0;
+    }
 }

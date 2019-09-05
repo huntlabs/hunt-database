@@ -480,18 +480,6 @@ class DataTypeCodec {
         }
     }
 
-    // static string decodeText(DataType id, int index, int len, ByteBuf buff) {
-
-    //     byte[] buffer = new byte[len];
-    //     buff.getBytes(index, buffer);
-        
-    //     tracef("DataType: %s(%d), data: %s", id, id, cast(string)buffer);
-    //     // FIXME: Needing refactor or cleanup -@zxp at 8/26/2019, 3:21:03 PM
-    //     // 
-    //     // return new String(cast(string)buffer);
-    //     return cast(string)buffer;
-    // }
-
     static Variant decodeText(DataType id, int index, int len, ByteBuf buff) {
         switch (id) {
             case DataType.BOOL:

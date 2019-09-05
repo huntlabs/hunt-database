@@ -147,7 +147,7 @@ class PrepareStatementCodec : CommandCodec!(PreparedStatement, PrepareStatementC
 
     private void handleReadyForQuery() {
         if(completionHandler !is null) {
-            completionHandler(succeededResponse(new MySQLPreparedStatement(
+            completionHandler(succeededResponse!(PreparedStatement)(new MySQLPreparedStatement(
                 cmd.sql(),
                 this.statementId,
                 new MySQLParamDesc(paramDescs),

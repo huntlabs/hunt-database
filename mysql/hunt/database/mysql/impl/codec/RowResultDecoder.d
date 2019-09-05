@@ -64,6 +64,7 @@ class RowResultDecoder(R) : RowDecoder {
             row = new MySQLRowImpl(rowDesc);
         }
 
+        version(HUNT_DB_DEBUG) infof("row: %d", _size);
         Row row = new MySQLRowImpl(rowDesc);
         if (rowDesc.dataFormat() == DataFormat.BINARY) {
             // BINARY row decoding
@@ -83,12 +84,22 @@ class RowResultDecoder(R) : RowDecoder {
                 Variant decoded = null;
                 if (nullByte == 0) {
                     // non-null
-                    ColumnDefinition columnDef = rowDesc.columnDefinitions()[c];
-                    DataType dataType = columnDef.type();
+                    ColumnDefinition columnDesc = rowDesc.columnDefinitions()[c];
+                    DataType dataType = columnDesc.type();
                     int collationId = rowDesc.columnDefinitions()[c].characterSet();
                     Charset charset = (MySQLCollation.valueOfId(collationId).mappedCharsetName()); // Charset.forName
-                    int columnDefinitionFlags = columnDef.flags();
+                    int columnDefinitionFlags = columnDesc.flags();
+
+                    version(HUNT_DB_DEBUG) {
+                        tracef("    column[%d]: name=%s, type=%s, flags=%d, charset=%s", 
+                            c, columnDesc.name(), dataType, columnDefinitionFlags, charset);
+                    }
+
                     decoded = DataTypeCodec.decodeBinary(dataType, charset, columnDefinitionFlags, inBuffer);
+                    
+                    version(HUNT_DB_DEBUG) {
+                        tracef("    colum[%d]: value=%s", c, decoded.toString());
+                    }
                 }
                 row.addValue(decoded);
             }
@@ -99,11 +110,23 @@ class RowResultDecoder(R) : RowDecoder {
                 if (inBuffer.getUnsignedByte(inBuffer.readerIndex()) == NULL) {
                     inBuffer.skipBytes(1);
                 } else {
-                    DataType dataType = rowDesc.columnDefinitions()[c].type();
-                    int columnDefinitionFlags = rowDesc.columnDefinitions()[c].flags();
-                    int collationId = rowDesc.columnDefinitions()[c].characterSet();
+                    ColumnDefinition columnDesc = rowDesc.columnDefinitions()[c];
+                    
+                    DataType dataType = columnDesc.type();
+                    int columnDefinitionFlags = columnDesc.flags();
+                    int collationId = columnDesc.characterSet();
                     Charset charset = (MySQLCollation.valueOfId(collationId).mappedCharsetName()); // Charset.forName
+
+                    version(HUNT_DB_DEBUG) {
+                        tracef("    column[%d]: name=%s, type=%s, flags=%d, charset=%s", 
+                            c, columnDesc.name(), dataType, columnDefinitionFlags, charset);
+                    }
+
                     decoded = DataTypeCodec.decodeText(dataType, charset, columnDefinitionFlags, inBuffer);
+
+                    version(HUNT_DB_DEBUG) {
+                        tracef("    colum[%d]: value=%s", c, decoded.toString());
+                    }
                 }
                 row.addValue(decoded);
             }

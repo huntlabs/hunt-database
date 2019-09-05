@@ -33,6 +33,7 @@ import hunt.net.AbstractConnection;
 import hunt.net.Connection;
 import hunt.net.Exceptions;
 import hunt.Object;
+import hunt.util.TypeUtils;
 
 import std.container.dlist;
 import std.conv;
@@ -139,11 +140,10 @@ abstract class SocketConnectionBase : DbConnection {
 
     void schedule(ICommand cmd) {
         if (!cmd.handlerExist()) {
-            throw new IllegalArgumentException();
+            version(HUNT_DEBUG) warningf(typeid(cast(Object)cmd).toString());
+            throw new IllegalArgumentException("No handler exists in command." ~ 
+                TypeUtils.getSimpleName(typeid(cast(Object)cmd)));
         }
-        // if (Vertx.currentContext() != context) {
-        //     throw new IllegalStateException();
-        // }
 
         // Special handling for cache
         PreparedStatementCache psCache = this.psCache;
@@ -159,20 +159,18 @@ abstract class SocketConnectionBase : DbConnection {
                 ResponseHandler!(PreparedStatement) handler = psCmd.handler;
                 cached.get(handler);
                 return;
+            }
+
+            if (psCache.size() >= psCache.getCapacity() && !psCache.isReady()) {
+                // only if the prepared statement is ready then it can be evicted
+                version(HUNT_DB_DEBUG) info("do nothing");
             } else {
-                if (psCache.size() >= psCache.getCapacity() && !psCache.isReady()) {
-                    // only if the prepared statement is ready then it can be evicted
-                } else {
-                    psCmd._statement = psSeq.next();
-                    psCmd.cached = cached = new CachedPreparedStatement();
-                    psCache.put(psCmd.sql(), cached);
-                    ResponseHandler!(PreparedStatement) a = psCmd.handler;
-                    (cast(CachedPreparedStatement) psCmd.cached).get(a);
-                    implementationMissing(false);
-// FIXME: Needing refactor or cleanup -@zxp at 8/14/2019, 10:54:17 AM                    
-// to check
-                    // psCmd.handler = cast(ResponseHandler!(PreparedStatement)) psCmd.cached;
-                }
+                psCmd._statement = psSeq.next();
+                psCmd.cached = cached = new CachedPreparedStatement();
+                psCache.put(psCmd.sql(), cached);
+                ResponseHandler!(PreparedStatement) a = psCmd.handler;
+                (cast(CachedPreparedStatement) cached).get(a);
+                psCmd.handler = (CommandResponse!(PreparedStatement) r) { cached.handle(r); };
             }
         }
 

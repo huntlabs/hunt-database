@@ -65,18 +65,16 @@ abstract class CommandResponse(R) : AsyncResult!(R), ICommandResponse {
                 warningf("Can't cast cmd from %s to %s", 
                     TypeUtils.getSimpleName(typeid(cast(Object)cmd)),
                     typeid(CommandBase!(R)));
-                    // TypeUtils.getSimpleName(typeid(CommandBase!(R))));
             }
         }
         this.cmd = c;
     }
 
-    // void schedule(S)(CommandBase!(S) cmd, ResponseHandler!S handler) {
-
-    //     trace(typeid(cast(Object)scheduler));
-    // }
 }
 
+/**
+ * 
+ */
 template failedResponse(R) {
     CommandResponse!(R) failedResponse(string msg) {
         return failedResponse!R(new NoStackTraceThrowable(msg), TxStatus.FAILED);
@@ -120,7 +118,8 @@ template failedResponse(R) {
 }
 
 /**
-*/
+ * 
+ */
 template succeededResponse(R) {
 
     CommandResponse!(R) succeededResponse(R result) {

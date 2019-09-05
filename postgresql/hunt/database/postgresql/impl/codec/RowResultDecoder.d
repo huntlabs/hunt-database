@@ -71,6 +71,7 @@ class RowResultDecoder(R) : RowDecoder {
             row = new PgRowImpl(desc);
         }
 
+        version(HUNT_DB_DEBUG_MORE) infof("row: %d", _size);
         Row row = new PgRowImpl(desc);
         for (int c = 0; c < len; ++c) {
             int length = buffer.readInt();
@@ -79,8 +80,8 @@ class RowResultDecoder(R) : RowDecoder {
                 PgColumnDesc columnDesc = desc.columns[c];
 
                 version(HUNT_DB_DEBUG_MORE) {
-                    tracef("Column: name=%s, (%s), dataFormat=%s", 
-                        columnDesc.name, columnDesc.dataType, columnDesc.dataFormat);
+                    tracef("    column[%d]: name=%s, dataType=%s, dataFormat=%s", 
+                       c, columnDesc.name, columnDesc.dataType, columnDesc.dataFormat);
                 }
 
                 if (columnDesc.dataFormat == DataFormat.BINARY) {
@@ -90,6 +91,11 @@ class RowResultDecoder(R) : RowDecoder {
                     decoded = DataTypeCodec.decodeText(cast(DataType)columnDesc.dataType.id, 
                         buffer.readerIndex(), length, buffer);
                 }
+
+                version(HUNT_DB_DEBUG_MORE) {
+                    tracef("    colum[%d]: value=%s", c,  decoded.toString());
+                }
+
                 buffer.skipBytes(length);
             }
             row.addValue(decoded);
