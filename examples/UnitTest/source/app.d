@@ -3,6 +3,7 @@ import std.stdio;
 import hunt.util.UnitTest;
 
 import test.mysqlclient.MySQLQueryTest;
+import test.mysqlclient.MySQLSimpleQueryTest;
 import test.mysqlclient.Native41AuthenticatorTest;
 
 import test.pgclient.PgConnectionTest;
@@ -16,7 +17,8 @@ void main()
 {
 
 /* ------------------------------- MySQL Tests ------------------------------ */
-	testUnits!(MySQLQueryTest);
+	// testUnits!(MySQLQueryTest);
+	testUnits!(MySQLSimpleQueryTest);
 	// testUnits!(Native41AuthenticatorTest);
 
 /* ---------------------------- PostgreSQL tests ---------------------------- */

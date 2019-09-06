@@ -62,7 +62,7 @@ abstract class QueryTestBase {
 
     private void cleanTestTable() {
         connect((SqlConnection conn) {
-            conn.query("TRUNCATE TABLE mutable;", (AsyncResult!RowSet ar)  {
+            conn.query("TRUNCATE TABLE mutable;", (RowSetAsyncResult ar)  {
                 if(ar.failed()) {
                     warning(ar.cause().msg);
                 }                
