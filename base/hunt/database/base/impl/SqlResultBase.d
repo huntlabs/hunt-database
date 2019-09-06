@@ -50,9 +50,9 @@ abstract class SqlResultBase(T, R) : SqlResult!(T) { //  extends SqlResultBase!(
     //     return _updated;
     // }
 
-    void rowCount(int v) {
-        this._updated = v;
-    }
+    // void rowCount(int v) {
+    //     this._updated = v;
+    // }
 
     // override
     // int size() {

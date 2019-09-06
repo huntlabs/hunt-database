@@ -175,11 +175,15 @@ abstract class QueryCommandBaseCodec(T, C) : CommandCodec!(bool, C) {
             size = decoder.size();
             decoder.reset();
         } else {
-            // result = emptyResult(cmd.collector());
             result = new RowSetImpl(); 
             size = 0;
             rowDesc = null;
         }
+        version(HUNT_DB_DEBUG) infof("size=%d, affectedRows=%d", size, affectedRows);
+
+        // MySQL returns affected rows as 0 for SELECT query but Postgres returns queried amount
+        affectedRows = size;
+        
         cmd.resultHandler().handleResult(affectedRows, size, rowDesc, result);
         Variant v = Variant(lastInsertId);
         cmd.resultHandler().addProperty(MySQLClient.LAST_INSERTED_ID, v);
@@ -192,6 +196,7 @@ abstract class QueryCommandBaseCodec(T, C) : CommandCodec!(bool, C) {
         } else {
             response = succeededResponse(this.result);
         }
+
         if(completionHandler !is null) {
             completionHandler(response);
         }

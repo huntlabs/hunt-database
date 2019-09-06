@@ -64,6 +64,10 @@ class RowSetImpl : SqlResultBase!(RowSet, RowSetImpl), RowSet {
     int rowCount() {
         return _updated;
     }
+    
+    void rowCount(int v) {
+        this._updated = v;
+    }
 
     override
     int size() {
