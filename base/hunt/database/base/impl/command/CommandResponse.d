@@ -63,7 +63,7 @@ abstract class CommandResponse(R) : AsyncResult!(R), ICommandResponse {
         version(HUNT_DB_DEBUG) {
             if(c is null) { 
                 warningf("Can't cast cmd from %s to %s", 
-                    TypeUtils.getSimpleName(typeid(cast(Object)cmd)),
+                    (typeid(cast(Object)cmd)), // TypeUtils.getSimpleName
                     typeid(CommandBase!(R)));
             }
         }

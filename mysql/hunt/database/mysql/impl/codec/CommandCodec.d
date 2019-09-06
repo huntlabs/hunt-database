@@ -143,7 +143,7 @@ abstract class CommandCodec(R, C) : CommandCodecBase
         string errorMessage = readRestOfPacketString(payload, StandardCharsets.UTF_8);
 
         if(completionHandler !is null) {
-            completionHandler(failedResponse!Object(
+            completionHandler(failedResponse!R(
                     new MySQLException(errorMessage, errorCode, sqlState)));
         }
         
