@@ -8,5 +8,6 @@ abstract class MySQLTestBase {
 
     Consumer!(Action1!SqlConnection) connector;
 
-    protected void initConnector();    
+    protected void initConnector();   
+    protected void closeConnector(); 
 }

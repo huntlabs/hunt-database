@@ -261,7 +261,7 @@ abstract class SocketConnectionBase : DbConnection {
     }
 
     private void handleClose(Throwable t) {
-        version(HUNT_DB_DEBUG) info("running here");
+        version(HUNT_DB_DEBUG) info("Connection closed.");
         if (status != Status.CLOSED) {
             status = Status.CLOSED;
             if (t !is null) {

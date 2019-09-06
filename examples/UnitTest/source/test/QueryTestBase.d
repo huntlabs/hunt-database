@@ -44,6 +44,7 @@ abstract class QueryTestBase {
     }
 
     protected abstract void initConnector();
+    protected abstract void closeConnector();
 
     protected void connect(SqlConnectionHandler handler) {
         connector(handler);
@@ -52,11 +53,12 @@ abstract class QueryTestBase {
     @Before
     void setUp() {
         initConnector();
-        // cleanTestTable();
+        cleanTestTable();
     }
 
     @After
     void tearDown() {
+        closeConnector();
     }    
 
 
@@ -66,7 +68,7 @@ abstract class QueryTestBase {
                 if(ar.failed()) {
                     warning(ar.cause().msg);
                 }                
-                conn.close();
+                // conn.close();
             });
         });
     }    

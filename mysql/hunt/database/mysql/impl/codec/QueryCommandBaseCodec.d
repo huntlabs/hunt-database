@@ -182,7 +182,8 @@ abstract class QueryCommandBaseCodec(T, C) : CommandCodec!(bool, C) {
         version(HUNT_DB_DEBUG) infof("size=%d, affectedRows=%d", size, affectedRows);
 
         // MySQL returns affected rows as 0 for SELECT query but Postgres returns queried amount
-        affectedRows = size;
+        if(affectedRows == -1)
+            affectedRows = size;
         
         cmd.resultHandler().handleResult(affectedRows, size, rowDesc, result);
         Variant v = Variant(lastInsertId);

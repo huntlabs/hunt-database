@@ -7,8 +7,10 @@ mixin template TestSettingTemplate() {
     import hunt.database.mysql;
     import hunt.database.mysql.impl;
     import hunt.logging.ConsoleLogger;
+    import core.thread;
 
     MySQLConnectOptions options;
+    SqlConnection currentConnection;
 
     this() {
         MySQLCollation collation = MySQLCollation.utf8_general_ci;
@@ -24,18 +26,32 @@ mixin template TestSettingTemplate() {
     }
 
     override protected void initConnector() {
-        connector = (handler) {
+        if(currentConnection is null) {
             trace("Initializing connect ...");
             MySQLConnectionImpl.connect(options, (AsyncResult!MySQLConnection ar) {
                 // mapping MySQLConnection to SqlConnection
                 // handler(ar.map!(SqlConnection)( p => p));
 
                 if(ar.succeeded()) {
-                    handler(ar.result());
+                    currentConnection = ar.result();
                 } else {
                     warning(ar.cause().msg);
                 }
             });
+
+        } 
+
+        while(currentConnection is null) {
+            Thread.yield();
+        }
+
+        connector = (handler) {
+            handler(currentConnection);
         };
+    }
+
+    override protected void closeConnector() {
+        currentConnection.close();
+        currentConnection = null;
     }
 }

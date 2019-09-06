@@ -7,8 +7,11 @@ mixin template TestSettingTemplate() {
     import hunt.database.postgresql;
     import hunt.database.postgresql.impl;
     import hunt.logging.ConsoleLogger;
+    import core.thread;
+
 
     PgConnectOptions options;
+    SqlConnection currentConnection;
 
     this() {
         
@@ -22,18 +25,33 @@ mixin template TestSettingTemplate() {
     }
 
     override protected void initConnector() {
-        connector = (handler) {
+        if(currentConnection is null) {
             trace("Initializing connect ...");
             PgConnectionImpl.connect(options, (AsyncResult!PgConnection ar) {
-                // mapping PgConnection to SqlConnection
+                // mapping MySQLConnection to SqlConnection
                 // handler(ar.map!(SqlConnection)( p => p));
 
                 if(ar.succeeded()) {
-                    handler(ar.result());
+                    currentConnection = ar.result();
                 } else {
                     warning(ar.cause().msg);
                 }
             });
+
+        } 
+
+        while(currentConnection is null) {
+            Thread.yield();
+        }
+
+        connector = (handler) {
+            handler(currentConnection);
         };
     }
+
+    override protected void closeConnector() {
+        currentConnection.close();
+        currentConnection = null;
+    }
+
 }
