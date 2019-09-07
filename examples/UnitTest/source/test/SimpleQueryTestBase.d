@@ -57,7 +57,7 @@ abstract class SimpleQueryTestBase : QueryTestBase {
                     warning(ar.cause().msg);
                 }
 
-                // conn.close();
+                conn.close();
             });
         });
     }
@@ -68,7 +68,7 @@ abstract class SimpleQueryTestBase : QueryTestBase {
             conn.query("SELECT whatever from DOES_NOT_EXIST", (AsyncResult!RowSet ar)  {
                 assert(ar.failed);
                 warning(ar.cause().msg);
-                // conn.close();
+                conn.close();
             });
         });
     }
@@ -85,7 +85,7 @@ abstract class SimpleQueryTestBase : QueryTestBase {
                     } else {
                         warning(ar.cause().msg);
                     }
-                    // conn.close();
+                    conn.close();
                 }
             );
         });
@@ -108,12 +108,12 @@ abstract class SimpleQueryTestBase : QueryTestBase {
                         } else {
                             warning(ar2.cause().msg);
                         }
-                        // conn.close();
+                        conn.close();
                     });
                     
                 } else {
                     warning(ar1.cause().msg);
-                    // conn.close();
+                    conn.close();
                 }
             });
         });
@@ -131,7 +131,7 @@ abstract class SimpleQueryTestBase : QueryTestBase {
                     } else {
                         warning(ar.cause().msg);
                     }
-                    // conn.close();
+                    conn.close();
                 });
             });
         });

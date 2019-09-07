@@ -58,7 +58,7 @@ abstract class QueryTestBase {
 
     @After
     void tearDown() {
-        closeConnector();
+        // closeConnector();
     }    
 
 

@@ -5,6 +5,7 @@ import hunt.util.UnitTest;
 import test.mysqlclient.MySQLQueryTest;
 import test.mysqlclient.MySQLSimpleQueryTest;
 import test.mysqlclient.Native41AuthenticatorTest;
+import test.mysqlclient.MySQLPreparedQueryTest;
 
 import test.pgclient.PgConnectionTest;
 import test.pgclient.PgSimpleQueryTest;
@@ -18,7 +19,8 @@ void main()
 
 /* ------------------------------- MySQL Tests ------------------------------ */
 	// testUnits!(MySQLQueryTest);
-	testUnits!(MySQLSimpleQueryTest);
+	// testUnits!(MySQLSimpleQueryTest);
+	testUnits!(MySQLPreparedQueryTest);
 	// testUnits!(Native41AuthenticatorTest);
 
 /* ---------------------------- PostgreSQL tests ---------------------------- */

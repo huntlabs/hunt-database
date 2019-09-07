@@ -2,6 +2,7 @@ module hunt.database.mysql.impl.codec.MySQLParamDesc;
 
 import hunt.database.mysql.impl.codec.ColumnDefinition;
 import hunt.database.mysql.impl.codec.DataFormat;
+import hunt.database.mysql.impl.codec.DataTypeDesc;
 
 import hunt.database.base.impl.ParamDesc;
 import hunt.database.base.Util;
@@ -51,8 +52,10 @@ class MySQLParamDesc : ParamDesc {
     // reuse from pg
     private string buildReport(List!(Variant) values) {
         string[] types;
-        // _paramDefinitions.each!((type) { types = types ~ type.decodingType; });
-        implementationMissing(false)        ;
+        _paramDefinitions.each!((ColumnDefinition column) { 
+            DataTypeDesc desc = DataTypes.valueOf(cast(int)column.type);
+            types = types ~ desc.binaryType; 
+        });
 
         return Util.buildInvalidArgsError(values.toArray(), types);
     }

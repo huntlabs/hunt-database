@@ -98,7 +98,7 @@ class RowResultDecoder(R) : RowDecoder {
                     decoded = DataTypeCodec.decodeBinary(dataType, charset, columnDefinitionFlags, inBuffer);
                     
                     version(HUNT_DB_DEBUG) {
-                        tracef("    colum[%d]: value=%s", c, decoded.toString());
+                        tracef("    column[%d]: value=%s", c, decoded.toString());
                     }
                 }
                 row.addValue(decoded);

@@ -93,7 +93,6 @@ class ExtendedQueryCommandCodec(R) : ExtendedQueryCommandBaseCodec!(R, ExtendedQ
 					case CommandHandlerState.COLUMN_DEFINITIONS_DECODING_COMPLETED:
 						// accept an EOF_Packet when DEPRECATE_EOF is not enabled
 						skipEofPacketIfNeeded(payload);
-						warning("no break??");
 						goto case;
 
 					case CommandHandlerState.HANDLING_ROW_DATA_OR_END_PACKET:

@@ -1,6 +1,7 @@
 module hunt.database.mysql.impl.codec.ColumnDefinition;
 
 import hunt.database.mysql.impl.codec.DataType;
+import hunt.database.mysql.impl.codec.DataTypeDesc;
 import std.conv;
 
 /**

@@ -112,42 +112,60 @@ class DataTypeCodec {
 
     // //TODO take care of unsigned numeric values here?
     static void encodeBinary(DataType dataType, Charset charset, ref Variant value, ByteBuf buffer) {
-        implementationMissing(false);
-    //     switch (dataType) {
-    //         case DataType.INT1:
-    //             if (value instanceof Boolean) {
-    //                 if ((Boolean) value) {
-    //                     value = 1;
-    //                 } else {
-    //                     value = 0;
-    //                 }
-    //             }
-    //             binaryEncodeInt1((Number) value, buffer);
-    //             break;
-    //         case DataType.INT2:
-    //             binaryEncodeInt2((Number) value, buffer);
-    //             break;
-    //         case DataType.INT3:
-    //             binaryEncodeInt3((Number) value, buffer);
-    //             break;
-    //         case DataType.INT4:
-    //             binaryEncodeInt4((Number) value, buffer);
-    //             break;
-    //         case DataType.INT8:
-    //             binaryEncodeInt8((Number) value, buffer);
-    //             break;
-    //         case DataType.FLOAT:
-    //             binaryEncodeFloat((Number) value, buffer);
-    //             break;
-    //         case DataType.DOUBLE:
-    //             binaryEncodeDouble((Number) value, buffer);
-    //             break;
+        switch (dataType) {
+            case DataType.INT1:
+                byte b = 0;
+                if (value.type == typeid(bool)) {
+                    if (value.get!bool()) {
+                        b = 1;
+                    } else {
+                        b = 0;
+                    }
+                } else {
+                    assert(value.type == typeid(byte) || value.type == typeid(ubyte));
+                    b = value.get!byte();
+                }
+                buffer.writeByte(b);
+                break;
+
+            case DataType.INT2:
+                assert(value.type == typeid(short) || value.type == typeid(short));
+                buffer.writeShortLE(value.get!short());
+                break;
+
+            case DataType.INT3:
+                assert(value.type == typeid(int) || value.type == typeid(uint));
+                buffer.writeMediumLE(value.get!int());
+                break;
+
+            case DataType.INT4:
+                assert(value.type == typeid(int) || value.type == typeid(uint));
+                buffer.writeIntLE(value.get!int());
+                break;
+
+            case DataType.INT8:
+                assert(value.type == typeid(long) || value.type == typeid(ulong));
+                buffer.writeLongLE(value.get!int());
+                break;
+
+            case DataType.FLOAT:
+                assert(value.type == typeid(float));
+                buffer.writeFloatLE(value.get!float());
+                break;
+
+            case DataType.DOUBLE:
+                assert(value.type == typeid(int) || value.type == typeid(int));
+                buffer.writeDoubleLE(value.get!double());
+                break;
     //         case DataType.NUMERIC:
     //             binaryEncodeNumeric(charset, (Numeric) value, buffer);
     //             break;
-    //         case DataType.BLOB:
-    //             binaryEncodeBlob((Buffer) value, buffer);
-    //             break;
+            case DataType.BLOB:
+                assert(value.type == typeid(byte[]) || value.type == typeid(ubyte[]));
+                byte[] data = value.get!(byte[])();
+                BufferUtils.writeLengthEncodedInteger(buffer, cast(int)data.length);
+                buffer.writeBytes(data);
+                break;
     //         case DataType.DATE:
     //             binaryEncodeDate((LocalDate) value, buffer);
     //             break;
@@ -157,12 +175,15 @@ class DataTypeCodec {
     //         case DataType.DATETIME:
     //             binaryEncodeDatetime((LocalDateTime) value, buffer);
     //             break;
-    //         case DataType.STRING:
-    //         case DataType.VARSTRING:
-    //         default:
-    //             binaryEncodeText(charset, string.valueOf(value), buffer);
-    //             break;
-    //     }
+            case DataType.STRING:
+            case DataType.VARSTRING:
+            default:
+                // binaryEncodeText(charset, string.valueOf(value), buffer);
+                assert(value.type == typeid(string) || value.type == typeid(const(char)[])
+                    || value.type == typeid(immutable(char)[]));
+                BufferUtils.writeLengthEncodedString(buffer, value.get!string(), charset);
+                break;
+        }
     }
 
     static Variant decodeBinary(DataType dataType, Charset charset, int columnDefinitionFlags, ByteBuf buffer) {

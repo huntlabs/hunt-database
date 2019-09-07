@@ -40,12 +40,12 @@ abstract class PreparedQueryTestBase : QueryTestBase {
     // @Test
     // void testPrepare() {
     //     connect((SqlConnection conn) {
-    //         conn.prepare(statement("SELECT id, message from immutable where id=", ""), (AsyncResult!PreparedQuery ar)  {
-                // if(ar.succeeded()) {
-                //     trace("running here");
-                // } else {
-                //     warning(ar.cause().msg);
-                // }
+    //         conn.prepare(statement("SELECT id, message from immutable where id=", ""), (PreparedQueryAsyncResult ar)  {
+    //             if(ar.succeeded()) {
+    //                 trace("running here");
+    //             } else {
+    //                 warning(ar.cause().msg);
+    //             }
     //             conn.close();
     //         });
     //     });
@@ -54,7 +54,7 @@ abstract class PreparedQueryTestBase : QueryTestBase {
     // @Test
     // void testPrepareError() {
     //     connect((SqlConnection conn) {
-    //         conn.prepare("SELECT whatever from DOES_NOT_EXIST", (AsyncResult!PreparedQuery ar) {
+    //         conn.prepare("SELECT whatever from DOES_NOT_EXIST", (PreparedQueryAsyncResult ar) {
     //             trace("running here");
     //             assert(ar.failed());
     //             warning(ar.cause().msg);
@@ -98,6 +98,7 @@ abstract class PreparedQueryTestBase : QueryTestBase {
     //                 });
     //             } else {
     //                 warning(ar.cause().msg);
+    //                 conn.close();
     //             }
     //         });
     //     });

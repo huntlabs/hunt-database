@@ -5,6 +5,7 @@ import hunt.database.mysql.impl.codec.CommandType;
 import hunt.database.mysql.impl.codec.DataFormat;
 import hunt.database.mysql.impl.codec.DataType;
 import hunt.database.mysql.impl.codec.DataTypeCodec;
+import hunt.database.mysql.impl.codec.DataTypeDesc;
 import hunt.database.mysql.impl.codec.MySQLPreparedStatement;
 import hunt.database.mysql.impl.codec.Packets;
 import hunt.database.mysql.impl.codec.QueryCommandBaseCodec;
@@ -81,8 +82,7 @@ abstract class ExtendedQueryCommandBaseCodec(R, C) : QueryCommandBaseCodec!(R, C
             if (sendType == 1) {
                 for (int i = 0; i < numOfParams; i++) {
                     Variant value = params.getValue(i);
-                    implementationMissing(false);
-                    // packet.writeByte(parseDataTypeByEncodingValue(value).id);
+                    packet.writeByte(parseDataTypeByEncodingValue(value).id);
                     packet.writeByte(0); // parameter flag: signed
                 }
             }
@@ -91,7 +91,7 @@ abstract class ExtendedQueryCommandBaseCodec(R, C) : QueryCommandBaseCodec!(R, C
                 Variant value = params.getValue(i);
                 if (value.hasValue() && value != null) {
                     MySQLCollation collation = MySQLCollation.valueOfId(paramsColumnDefinitions[i].characterSet());
-                    DataTypeCodec.encodeBinary(parseDataTypeByEncodingValue(value),
+                    DataTypeCodec.encodeBinary(cast(DataType)parseDataTypeByEncodingValue(value).id,
                         (collation.mappedCharsetName()), value, packet); // Charset.forName
                 } else {
                     nullBitmap[i / 8] |= (1 << (i & 7));
@@ -109,52 +109,52 @@ abstract class ExtendedQueryCommandBaseCodec(R, C) : QueryCommandBaseCodec!(R, C
         sendPacket(packet, payloadLength);
     }
 
-    private DataType parseDataTypeByEncodingValue(ref Variant value) {
-        implementationMissing(false);
-        return DataType.NULL;
-        // if (value is null) {
-        //     // ProtocolBinary::MYSQL_TYPE_NULL
-        //     return DataType.NULL;
-        // } else if (value instanceof Byte) {
-        //     // ProtocolBinary::MYSQL_TYPE_TINY
-        //     return DataType.INT1;
-        // } else if (value instanceof Boolean) {
-        //     // ProtocolBinary::MYSQL_TYPE_TINY
-        //     return DataType.INT1;
-        // } else if (value instanceof Short) {
-        //     // ProtocolBinary::MYSQL_TYPE_SHORT, ProtocolBinary::MYSQL_TYPE_YEAR
-        //     return DataType.INT2;
-        // } else if (value instanceof Integer) {
-        //     // ProtocolBinary::MYSQL_TYPE_LONG, ProtocolBinary::MYSQL_TYPE_INT24
-        //     return DataType.INT4;
-        // } else if (value instanceof Long) {
-        //     // ProtocolBinary::MYSQL_TYPE_LONGLONG
-        //     return DataType.INT8;
-        // } else if (value instanceof Double) {
-        //     // ProtocolBinary::MYSQL_TYPE_DOUBLE
-        //     return DataType.DOUBLE;
-        // } else if (value instanceof Float) {
-        //     // ProtocolBinary::MYSQL_TYPE_FLOAT
-        //     return DataType.FLOAT;
+    private DataTypeDesc parseDataTypeByEncodingValue(ref Variant value) {
+        // FIXME: Needing refactor or cleanup -@zxp at 9/7/2019, 9:54:11 AM
+        // 
+        if (value == null) {
+            // ProtocolBinary::MYSQL_TYPE_NULL
+            return DataTypes.NULL;
+        } else if (value.type == typeid(byte) || value.type == typeid(ubyte)) {
+            // ProtocolBinary::MYSQL_TYPE_TINY
+            return DataTypes.INT1;
+        } else if (value.type == typeid(bool)) {
+            // ProtocolBinary::MYSQL_TYPE_TINY
+            return DataTypes.INT1;
+        } else if (value.type == typeid(short) || value.type == typeid(ushort)) {
+            // ProtocolBinary::MYSQL_TYPE_SHORT, ProtocolBinary::MYSQL_TYPE_YEAR
+            return DataTypes.INT2;
+        } else if (value.type == typeid(int) || value.type == typeid(uint)) {
+            // ProtocolBinary::MYSQL_TYPE_LONG, ProtocolBinary::MYSQL_TYPE_INT24
+            return DataTypes.INT4;
+        } else if (value.type == typeid(long) || value.type == typeid(ulong)) {
+            // ProtocolBinary::MYSQL_TYPE_LONGLONG
+            return DataTypes.INT8;
+        } else if (value.type == typeid(double)) {
+            // ProtocolBinary::MYSQL_TYPE_DOUBLE
+            return DataTypes.DOUBLE;
+        } else if (value.type == typeid(float)) {
+            // ProtocolBinary::MYSQL_TYPE_FLOAT
+            return DataTypes.FLOAT;
         // } else if (value instanceof LocalDate) {
         //     // ProtocolBinary::MYSQL_TYPE_DATE
-        //     return DataType.DATE;
+        //     return DataTypes.DATE;
         // } else if (value instanceof Duration) {
         //     // ProtocolBinary::MYSQL_TYPE_TIME
-        //     return DataType.TIME;
-        // } else if (value instanceof Buffer) {
-        //     // ProtocolBinary::MYSQL_TYPE_LONG_BLOB, ProtocolBinary::MYSQL_TYPE_MEDIUM_BLOB, ProtocolBinary::MYSQL_TYPE_BLOB, ProtocolBinary::MYSQL_TYPE_TINY_BLOB
-        //     return DataType.BLOB;
+        //     return DataTypes.TIME;
+        } else if (value.type == typeid(byte[]) || value.type == typeid(ubyte[])) {
+            // ProtocolBinary::MYSQL_TYPE_LONG_BLOB, ProtocolBinary::MYSQL_TYPE_MEDIUM_BLOB, ProtocolBinary::MYSQL_TYPE_BLOB, ProtocolBinary::MYSQL_TYPE_TINY_BLOB
+            return DataTypes.BLOB;
         // } else if (value instanceof LocalDateTime) {
         //     // ProtocolBinary::MYSQL_TYPE_DATETIME, ProtocolBinary::MYSQL_TYPE_TIMESTAMP
-        //     return DataType.DATETIME;
-        // } else {
-        //     /*
-        //         ProtocolBinary::MYSQL_TYPE_STRING, ProtocolBinary::MYSQL_TYPE_VARCHAR, ProtocolBinary::MYSQL_TYPE_VAR_STRING,
-        //         ProtocolBinary::MYSQL_TYPE_ENUM, ProtocolBinary::MYSQL_TYPE_SET, ProtocolBinary::MYSQL_TYPE_GEOMETRY,
-        //         ProtocolBinary::MYSQL_TYPE_BIT, ProtocolBinary::MYSQL_TYPE_DECIMAL, ProtocolBinary::MYSQL_TYPE_NEWDECIMAL
-        //      */
-        //     return DataType.STRING;
-        // }
+        //     return DataTypes.DATETIME;
+        } else {
+            /*
+                ProtocolBinary::MYSQL_TYPE_STRING, ProtocolBinary::MYSQL_TYPE_VARCHAR, ProtocolBinary::MYSQL_TYPE_VAR_STRING,
+                ProtocolBinary::MYSQL_TYPE_ENUM, ProtocolBinary::MYSQL_TYPE_SET, ProtocolBinary::MYSQL_TYPE_GEOMETRY,
+                ProtocolBinary::MYSQL_TYPE_BIT, ProtocolBinary::MYSQL_TYPE_DECIMAL, ProtocolBinary::MYSQL_TYPE_NEWDECIMAL
+             */
+            return DataTypes.STRING;
+        }
     }
 }
