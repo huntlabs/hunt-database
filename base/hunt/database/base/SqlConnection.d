@@ -27,6 +27,10 @@ import hunt.database.base.Tuple;
 
 import hunt.collection.List;
 
+
+alias AsyncSqlConnectionHandler = AsyncResultHandler!SqlConnection;
+
+
 /**
  * A connection to database server.
  *

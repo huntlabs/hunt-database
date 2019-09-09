@@ -17,6 +17,9 @@
 
 module hunt.database.base.impl.PoolBase;
 
+import hunt.database.base.impl.Connection;
+import hunt.database.base.impl.ConnectionPool;
+
 import hunt.database.base.PoolOptions;
 import hunt.database.base.Pool;
 import hunt.database.base.SqlConnection;
@@ -25,11 +28,8 @@ import hunt.database.base.impl.command.CommandBase;
 import hunt.database.base.impl.command.CommandResponse;
 import hunt.database.base.impl.command.CommandScheduler;
 import hunt.database.base.AsyncResult;
-// import io.vertx.core.Context;
-// import io.vertx.core.Future;
-// import io.vertx.core.Handler;
-// import io.vertx.core.Vertx;
-// import io.vertx.core.VertxException;
+
+import hunt.Exceptions;
 
 /**
  * Todo :
@@ -40,33 +40,34 @@ import hunt.database.base.AsyncResult;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  * @author <a href="mailto:emad.albloushi@gmail.com">Emad Alblueshi</a>
  */
-// abstract class PoolBase(P extends PoolBase!(P)) extends SqlClientBase!(P) implements Pool {
+abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
 
 //     private final Context context;
-//     private final ConnectionPool pool;
+    private ConnectionPool pool;
 //     private final boolean closeVertx;
 
-//     PoolBase(Context context, boolean closeVertx, PoolOptions options) {
-//         int maxSize = options.getMaxSize();
-//         if (maxSize < 1) {
-//             throw new IllegalArgumentException("Pool max size must be > 0");
-//         }
-//         this.context = context;
-//         this.pool = new ConnectionPool(this::connect, maxSize, options.getMaxWaitQueueSize());
-//         this.closeVertx = closeVertx;
-//     }
+    this(PoolOptions options) {
+        int maxSize = options.getMaxSize();
+        if (maxSize < 1) {
+            throw new IllegalArgumentException("Pool max size must be > 0");
+        }
+        // this.context = context;
+        this.pool = new ConnectionPool(&this.connect, maxSize, options.getMaxWaitQueueSize());
+        // this.closeVertx = closeVertx;
+    }
 
-//     abstract void connect(Handler!(AsyncResult!(Connection)) completionHandler);
+    abstract void connect(AsyncDbConnectionHandler completionHandler);
 
-//     override
-//     void getConnection(Handler!(AsyncResult!(SqlConnection)) handler) {
-//         Context current = Vertx.currentContext();
-//         if (current == context) {
-//             pool.acquire(new ConnectionWaiter(handler));
-//         } else {
-//             context.runOnContext(v -> getConnection(handler));
-//         }
-//     }
+    override
+    void getConnection(Handler!(AsyncResult!(SqlConnection)) handler) {
+        implementationMissing(false);
+        // Context current = Vertx.currentContext();
+        // if (current == context) {
+        //     pool.acquire(new ConnectionWaiter(handler));
+        // } else {
+        //     context.runOnContext(v -> getConnection(handler));
+        // }
+    }
 
 //     override
 //     void begin(Handler!(AsyncResult!(Transaction)) handler) {
@@ -169,20 +170,20 @@ import hunt.database.base.AsyncResult;
 //         }
 //     }
 
-//     protected void doClose() {
-//         pool.close();
-//         if (closeVertx) {
-//             context.owner().close();
-//         }
-//     }
+    protected void doClose() {
+        pool.close();
+        if (closeVertx) {
+            context.owner().close();
+        }
+    }
 
-//     override
-//     void close() {
-//         Context current = Vertx.currentContext();
-//         if (current == context) {
-//             doClose();
-//         } else {
-//             context.runOnContext(v -> doClose());
-//         }
-//     }
-// }
+    override
+    void close() {
+        Context current = Vertx.currentContext();
+        if (current == context) {
+            doClose();
+        } else {
+            context.runOnContext(v -> doClose());
+        }
+    }
+}

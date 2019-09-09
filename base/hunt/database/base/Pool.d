@@ -54,12 +54,12 @@ interface Pool : SqlClient {
 //     override
 //     <R> Pool preparedBatch(string sql, List!(Tuple) batch, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
-//     /**
-//      * Get a connection from the pool.
-//      *
-//      * @param handler the handler that will get the connection result
-//      */
-//     void getConnection(Handler!(AsyncResult!(SqlConnection)) handler);
+    /**
+     * Get a connection from the pool.
+     *
+     * @param handler the handler that will get the connection result
+     */
+    void getConnection(AsyncSqlConnectionHandler handler);
 
 //     /**
 //      * Borrow a connection from the pool and begin a transaction, the underlying connection will be returned

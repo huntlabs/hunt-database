@@ -17,10 +17,17 @@
 
 module hunt.database.base.impl.Connection;
 
+import hunt.database.base.AsyncResult;
 import hunt.database.base.impl.command.CommandBase;
 
 // alias DbConnection = Connection;
 
+alias AsyncDbConnectionHandler = AsyncResultHandler!DbConnection; 
+alias DbConnectionAsyncResult = AsyncResult!DbConnection;
+
+/**
+ * 
+ */
 interface DbConnection {
 
     void initHolder(Holder holder);
