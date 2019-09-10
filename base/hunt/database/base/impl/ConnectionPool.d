@@ -68,6 +68,7 @@ class ConnectionPool {
         this.maxSize = maxSize;
         this.maxWaitQueueSize = maxWaitQueueSize;
         this.connector = connector;
+        _all = new ArrayList!PooledConnection();
     }
 
 

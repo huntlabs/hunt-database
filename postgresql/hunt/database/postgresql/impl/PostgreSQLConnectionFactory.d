@@ -194,6 +194,7 @@ class PgConnectionFactory {
 
                 override void exceptionCaught(Connection connection, Throwable t) {
                     version(HUNT_DEBUG) warning(t.msg);
+                    version(HUNT_DB_DEBUG) warning(t);
                     if(pgConn !is null) {
                         pgConn.handleException(connection, t);
                     }
