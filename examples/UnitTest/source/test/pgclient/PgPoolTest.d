@@ -17,14 +17,6 @@
 
 module test.pgclient.PgPoolTest;
 
-// import io.vertx.sqlclient.PoolOptions;
-// import io.vertx.sqlclient.Tuple;
-// import io.vertx.ext.unit.Async;
-// import io.vertx.ext.unit.TestContext;
-// import org.junit.Test;
-
-// import java.util.concurrent.atomic.AtomicReference;
-
 import test.pgclient.PgPoolTestBase;
 
 import hunt.database.base;

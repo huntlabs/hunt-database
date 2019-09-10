@@ -33,16 +33,6 @@ import hunt.util.UnitTest;
 import core.atomic;
 import std.conv;
 
-// import io.vertx.sqlclient.SqlResult;
-// import io.vertx.sqlclient.Tuple;
-// import io.vertx.core.Vertx;
-// import io.vertx.ext.unit.Async;
-// import io.vertx.ext.unit.TestContext;
-// import org.junit.After;
-// import org.junit.Before;
-// import org.junit.Test;
-
-// import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -62,15 +52,17 @@ abstract class PgPoolTestBase : PgTestBase {
 
     @Test
     void testPool() {
-        int num = 1000;
-        // Async async = ctx.async(num);
+        int num = 10;
         PgPool pool = createPool(options, 4);
         for (int i = 0;i < num;i++) {
             pool.getConnection((SqlConnectionAsyncResult ar1) {
+                trace("running here");
                 SqlConnection conn = asyncAssertSuccess(ar1);
                 conn.query("SELECT id, randomnumber from WORLD", (AsyncResult!RowSet ar) {
+                    trace("running here");
                     if (ar.succeeded()) {
                         RowSet result = ar.result();
+                        tracef("index: %d, size: %d", i, result.size());
                         assert(10000 == result.size());
                     } else {
                         assert("closed" == ar.cause().message());
