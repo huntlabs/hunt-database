@@ -29,6 +29,7 @@ import hunt.collection.List;
 
 
 alias AsyncSqlConnectionHandler = AsyncResultHandler!SqlConnection;
+alias SqlConnectionAsyncResult = AsyncResult!SqlConnection;
 
 
 /**

@@ -19,6 +19,9 @@ module hunt.database.base.impl.PoolBase;
 
 import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.ConnectionPool;
+import hunt.database.base.impl.SqlClientBase;
+import hunt.database.base.impl.SqlConnectionImpl;
+
 
 import hunt.database.base.PoolOptions;
 import hunt.database.base.Pool;
@@ -59,11 +62,19 @@ abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
     abstract void connect(AsyncDbConnectionHandler completionHandler);
 
     override
-    void getConnection(Handler!(AsyncResult!(SqlConnection)) handler) {
-        implementationMissing(false);
+    void getConnection(AsyncSqlConnectionHandler handler) {
         // Context current = Vertx.currentContext();
         // if (current == context) {
-        //     pool.acquire(new ConnectionWaiter(handler));
+            pool.acquire((DbConnectionAsyncResult ar) {
+                if (ar.succeeded()) {
+                    DbConnection conn = ar.result();
+                    SqlConnection holder = wrap(conn);
+                    conn.initHolder(cast(DbConnection.Holder)holder);
+                    handler(succeededResult!SqlConnection(holder));
+                } else {
+                    handler(failedResult!SqlConnection(ar.cause()));
+                }
+            });
         // } else {
         //     context.runOnContext(v -> getConnection(handler));
         // }
@@ -147,43 +158,38 @@ abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
 //         }
 //     }
 
-//     protected abstract SqlConnectionImpl wrap(Context context, Connection conn);
+    protected abstract SqlConnection wrap(DbConnection conn);
 
-//     private class ConnectionWaiter implements Handler!(AsyncResult!(Connection)) {
+    // private class ConnectionWaiter  { // Handler!(AsyncResult!(Connection))
 
-//         private final Handler!(AsyncResult!(SqlConnection)) handler;
+    //     private AsyncSqlConnectionHandler handler;
 
-//         private ConnectionWaiter(Handler!(AsyncResult!(SqlConnection)) handler) {
-//             this.handler = handler;
-//         }
+    //     private ConnectionWaiter(Handler!(AsyncResult!(SqlConnection)) handler) {
+    //         this.handler = handler;
+    //     }
 
-//         override
-//         void handle(AsyncResult!(Connection) ar) {
-//             if (ar.succeeded()) {
-//                 Connection conn = ar.result();
-//                 SqlConnectionImpl holder = wrap(context, conn);
-//                 conn.init(holder);
-//                 handler.handle(Future.succeededFuture(holder));
-//             } else {
-//                 handler.handle(Future.failedFuture(ar.cause()));
-//             }
-//         }
-//     }
+    //     override
+    //     void handle(AsyncResult!(Connection) ar) {
+    //         if (ar.succeeded()) {
+    //             Connection conn = ar.result();
+    //             SqlConnectionImpl holder = wrap(context, conn);
+    //             conn.init(holder);
+    //             handler.handle(Future.succeededFuture(holder));
+    //         } else {
+    //             handler.handle(Future.failedFuture(ar.cause()));
+    //         }
+    //     }
+    // }
 
     protected void doClose() {
         pool.close();
-        if (closeVertx) {
-            context.owner().close();
-        }
+        // if (closeVertx) {
+        //     context.owner().close();
+        // }
     }
 
     override
     void close() {
-        Context current = Vertx.currentContext();
-        if (current == context) {
-            doClose();
-        } else {
-            context.runOnContext(v -> doClose());
-        }
+        doClose();
     }
 }

@@ -18,6 +18,7 @@
 module test.pgclient.PgPoolTestBase;
 
 import test.pgclient.PgTestBase;
+import test.Common;
 
 import hunt.database.base;
 import hunt.database.postgresql;
@@ -48,42 +49,40 @@ import std.conv;
  */
 abstract class PgPoolTestBase : PgTestBase {
 
-
     @Before
-    void setup() {
+    override void setup() {
         super.setup();
     }
 
     @After
-    void teardown(TestContext ctx) {
-        // vertx.close(ctx.asyncAssertSuccess());
+    void teardown() {
     }
 
     protected abstract PgPool createPool(PgConnectOptions options, int size);
 
     @Test
-    void testPool(TestContext ctx) {
+    void testPool() {
         int num = 1000;
-        Async async = ctx.async(num);
+        // Async async = ctx.async(num);
         PgPool pool = createPool(options, 4);
         for (int i = 0;i < num;i++) {
-            pool.getConnection(ctx.asyncAssertSuccess(conn -> {
-                conn.query("SELECT id, randomnumber from WORLD", ar -> {
+            pool.getConnection((SqlConnectionAsyncResult ar1) {
+                SqlConnection conn = asyncAssertSuccess(ar1);
+                conn.query("SELECT id, randomnumber from WORLD", (AsyncResult!RowSet ar) {
                     if (ar.succeeded()) {
-                        SqlResult result = ar.result();
-                        ctx.assertEquals(10000, result.size());
+                        RowSet result = ar.result();
+                        assert(10000 == result.size());
                     } else {
-                        ctx.assertEquals("closed", ar.cause().getMessage());
+                        assert("closed" == ar.cause().message());
                     }
                     conn.close();
-                    async.countDown();
                 });
-            }));
+            });
         }
     }
 
     // @Test
-    // void testQuery(TestContext ctx) {
+    // void testQuery() {
     //     int num = 1000;
     //     Async async = ctx.async(num);
     //     PgPool pool = createPool(options, 4);
@@ -91,9 +90,9 @@ abstract class PgPoolTestBase : PgTestBase {
     //         pool.query("SELECT id, randomnumber from WORLD", ar -> {
     //             if (ar.succeeded()) {
     //                 SqlResult result = ar.result();
-    //                 ctx.assertEquals(10000, result.size());
+    //                 assert(10000, result.size());
     //             } else {
-    //                 ctx.assertEquals("closed", ar.cause().getMessage());
+    //                 assert("closed", ar.cause().getMessage());
     //             }
     //             async.countDown();
     //         });
@@ -101,7 +100,7 @@ abstract class PgPoolTestBase : PgTestBase {
     // }
 
     // @Test
-    // void testQueryWithParams(TestContext ctx) {
+    // void testQueryWithParams() {
     //     int num = 1000;
     //     Async async = ctx.async(num);
     //     PgPool pool = createPool(options, 4);
@@ -109,10 +108,10 @@ abstract class PgPoolTestBase : PgTestBase {
     //         pool.preparedQuery("SELECT id, randomnumber from WORLD where id=$1", Tuple.of(i + 1), ar -> {
     //             if (ar.succeeded()) {
     //                 SqlResult result = ar.result();
-    //                 ctx.assertEquals(1, result.size());
+    //                 assert(1, result.size());
     //             } else {
     //                 ar.cause().printStackTrace();
-    //                 ctx.assertEquals("closed", ar.cause().getMessage());
+    //                 assert("closed", ar.cause().getMessage());
     //             }
     //             async.countDown();
     //         });
@@ -120,7 +119,7 @@ abstract class PgPoolTestBase : PgTestBase {
     // }
 
     // @Test
-    // void testUpdate(TestContext ctx) {
+    // void testUpdate() {
     //     int num = 1000;
     //     Async async = ctx.async(num);
     //     PgPool pool = createPool(options, 4);
@@ -128,9 +127,9 @@ abstract class PgPoolTestBase : PgTestBase {
     //         pool.query("UPDATE Fortune SET message = 'Whatever' WHERE id = 9", ar -> {
     //             if (ar.succeeded()) {
     //                 SqlResult result = ar.result();
-    //                 ctx.assertEquals(1, result.rowCount());
+    //                 assert(1, result.rowCount());
     //             } else {
-    //                 ctx.assertEquals("closed", ar.cause().getMessage());
+    //                 assert("closed", ar.cause().getMessage());
     //             }
     //             async.countDown();
     //         });
@@ -138,7 +137,7 @@ abstract class PgPoolTestBase : PgTestBase {
     // }
 
     // @Test
-    // void testUpdateWithParams(TestContext ctx) {
+    // void testUpdateWithParams() {
     //     int num = 1000;
     //     Async async = ctx.async(num);
     //     PgPool pool = createPool(options, 4);
@@ -146,9 +145,9 @@ abstract class PgPoolTestBase : PgTestBase {
     //         pool.preparedQuery("UPDATE Fortune SET message = 'Whatever' WHERE id = $1", Tuple.of(9), ar -> {
     //             if (ar.succeeded()) {
     //                 SqlResult result = ar.result();
-    //                 ctx.assertEquals(1, result.rowCount());
+    //                 assert(1, result.rowCount());
     //             } else {
-    //                 ctx.assertEquals("closed", ar.cause().getMessage());
+    //                 assert("closed", ar.cause().getMessage());
     //             }
     //             async.countDown();
     //         });
@@ -156,7 +155,7 @@ abstract class PgPoolTestBase : PgTestBase {
     // }
 
     // @Test
-    // void testReconnect(TestContext ctx) {
+    // void testReconnect() {
     //     Async async = ctx.async();
     //     ProxyServer proxy = ProxyServer.create(vertx, options.getPort(), options.getHost());
     //     AtomicReference<ProxyServer.Connection> proxyConn = new AtomicReference<>();
@@ -182,12 +181,12 @@ abstract class PgPoolTestBase : PgTestBase {
     // }
 
     // @Test
-    // void testCancelRequest(TestContext ctx) {
+    // void testCancelRequest() {
     //     Async async = ctx.async();
     //     PgPool pool = createPool(options, 4);
     //     pool.getConnection(ctx.asyncAssertSuccess(conn -> {
     //         conn.query("SELECT pg_sleep(10)", ctx.asyncAssertFailure(error -> {
-    //             ctx.assertEquals("canceling statement due to user request", error.getMessage());
+    //             assert("canceling statement due to user request", error.getMessage());
     //             conn.close();
     //             async.complete();
     //         }));

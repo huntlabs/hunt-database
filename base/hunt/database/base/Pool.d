@@ -19,6 +19,7 @@ module hunt.database.base.Pool;
 
 import hunt.database.base.AsyncResult;
 import hunt.database.base.SqlClient;
+import hunt.database.base.SqlConnection;
 
 import hunt.collection.List;
 // import java.util.stream.Collector;

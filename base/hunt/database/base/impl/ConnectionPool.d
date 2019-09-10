@@ -20,23 +20,18 @@ module hunt.database.base.impl.ConnectionPool;
 import hunt.database.base.impl.Connection;
 
 import hunt.database.base.AsyncResult;
+import hunt.database.base.Exceptions;
 import hunt.database.base.PoolOptions;
 import hunt.database.base.impl.command.CommandBase;
-// import io.vertx.core.*;
-// import io.vertx.core.impl.NoStackTraceThrowable;
 
-// import java.util.ArrayDeque;
-// import java.util.ArrayList;
-// import java.util.HashSet;
-// import java.util.Set;
-// import java.util.function.Consumer;
 
+import hunt.collection.ArrayList;
 import hunt.concurrency.CompletableFuture;
-
 import hunt.Exceptions;
 import hunt.logging.ConsoleLogger;
 import hunt.Functions;
 
+import std.algorithm;
 import std.container;
 import std.range;
 
@@ -54,22 +49,22 @@ class ConnectionPool {
     // private Set!(PooledConnection) all = new HashSet<>();
     // private ArrayDeque!(PooledConnection) available = new ArrayDeque<>();
     private DList!(DbConnectionPromise) waiters;
-    private Array!PooledConnection _all;
+    private ArrayList!PooledConnection _all;
     private DList!PooledConnection _available;
     private int _size;
     private int maxWaitQueueSize;
     private bool checkInProgress;
     private bool closed;
 
-    this(AsyncDbConnectionHandler connector) {
+    this(Consumer!(AsyncDbConnectionHandler) connector) {
         this(connector, PoolOptions.DEFAULT_MAX_SIZE, PoolOptions.DEFAULT_MAX_WAIT_QUEUE_SIZE);
     }
 
-    this(AsyncDbConnectionHandler connector, int maxSize) {
+    this(Consumer!(AsyncDbConnectionHandler) connector, int maxSize) {
         this(connector, maxSize, PoolOptions.DEFAULT_MAX_WAIT_QUEUE_SIZE);
     }
 
-    this(AsyncDbConnectionHandler connector, int maxSize, int maxWaitQueueSize) {
+    this(Consumer!(AsyncDbConnectionHandler) connector, int maxSize, int maxWaitQueueSize) {
         this.maxSize = maxSize;
         this.maxWaitQueueSize = maxWaitQueueSize;
         this.connector = connector;
@@ -77,11 +72,11 @@ class ConnectionPool {
 
 
     private int waitersSize() {
-        return waiters[].walkLength();
+        return cast(int)waiters[].walkLength();
     }
 
     int available() {
-        return _available[].walkLength();
+        return cast(int)_available[].walkLength();
     }
 
     int size() {
@@ -133,10 +128,10 @@ class ConnectionPool {
             return conn.isSsl();
         }
 
-        // override
-        // void schedule(CommandBase<?> cmd) {
-        //     conn.schedule(cmd);
-        // }
+        override
+        void schedule(ICommand cmd) {
+            conn.schedule(cmd);
+        }
 
         /**
          * Close the underlying connection
@@ -146,7 +141,7 @@ class ConnectionPool {
         }
 
         override
-        void init(Holder holder) {
+        void initHolder(Holder holder) {
             if (this.holder !is null) {
                 throw new IllegalStateException();
             }
@@ -164,7 +159,7 @@ class ConnectionPool {
 
         override
         void handleClosed() {
-            if (_all.remove(this)) {
+            if (_all.remove(cast(PooledConnection)this)) {
                 _size--;
                 if (holder is null) {
                     _available.linearRemoveElement(this);
@@ -176,6 +171,7 @@ class ConnectionPool {
                 throw new IllegalStateException();
             }
         }
+
 
         override
         void handleNotification(int processId, string channel, string payload) {
@@ -203,7 +199,7 @@ class ConnectionPool {
     }
 
     private void release(PooledConnection proxy) {
-        if (_all[].canFind(proxy)) {
+        if (_all.contains(proxy)) {
             _available.insertBack(proxy);
             check();
         }
@@ -220,28 +216,28 @@ class ConnectionPool {
                     if (available() > 0) {
                         PooledConnection proxy = _available.front(); _available.removeFront();
                         DbConnectionPromise waiter = waiters.front(); waiters.removeFront();
-                        waiter.complete(proxy);
+                        waiter.complete(succeededResult!(DbConnection)(proxy));
                     } else {
                         if (size < maxSize) {
                             DbConnectionPromise waiter = waiters.front(); waiters.removeFront();
-                            size++;
+                            _size++;
                             connector( (DbConnectionAsyncResult ar) {
                                 if (ar.succeeded()) {
                                     DbConnection conn = ar.result();
                                     PooledConnection proxy = new PooledConnection(conn);
-                                    _all.insertBack(proxy);
-                                    conn.init(proxy);
-                                    waiter.complete(proxy);
+                                    _all.add(proxy);
+                                    conn.initHolder(proxy);
+                                    waiter.complete(succeededResult!(DbConnection)(proxy));
                                 } else {
-                                    size--;
+                                    _size--;
                                     waiter.completeExceptionally(ar.cause());
                                     check();
                                 }
                             });
                         } else {
                             if (maxWaitQueueSize >= 0) {
-                                int numInProgress = _size - cast(int)_all.length();
-                                int numToFail = waiters[].walkLength() - (maxWaitQueueSize + numInProgress);
+                                int numInProgress = _size - _all.size();
+                                int numToFail = cast(int)waiters[].walkLength() - (maxWaitQueueSize + numInProgress);
                                 while (numToFail-- > 0) {
                                     DbConnectionPromise waiter = waiters.back(); waiters.removeBack();
                                     waiter.completeExceptionally(new NoStackTraceThrowable("Max waiter size reached"));

@@ -17,12 +17,17 @@
 
 module hunt.database.postgresql.impl.PostgreSQLPoolImpl;
 
-// import hunt.database.postgresql.*;
-import hunt.database.base.PoolOptions;
+import hunt.database.postgresql.impl.PostgreSQLConnectionFactory;
+import hunt.database.postgresql.impl.PostgreSQLConnectionImpl;
+
+import hunt.database.postgresql.PostgreSQLConnectOptions;
+import hunt.database.postgresql.PostgreSQLPool;
+
 import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.PoolBase;
 import hunt.database.base.impl.SqlConnectionImpl;
-// import io.vertx.core.*;
+import hunt.database.base.PoolOptions;
+import hunt.database.base.SqlConnection;
 
 /**
  * Todo :
@@ -33,28 +38,28 @@ import hunt.database.base.impl.SqlConnectionImpl;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  * @author <a href="mailto:emad.albloushi@gmail.com">Emad Alblueshi</a>
  */
-// class PgPoolImpl : PoolBase!(PgPoolImpl), PgPool {
+class PgPoolImpl : PoolBase!(PgPoolImpl), PgPool {
 
-//     private PgConnectionFactory factory;
+    private PgConnectionFactory factory;
 
-//     this(Context context, boolean closeVertx, PgConnectOptions connectOptions, PoolOptions poolOptions) {
-//         super(context, closeVertx, poolOptions);
-//         this.factory = new PgConnectionFactory(context, Vertx.currentContext() !is null, connectOptions);
-//     }
+    this(PgConnectOptions connectOptions, PoolOptions poolOptions) {
+        super(poolOptions);
+        this.factory = new PgConnectionFactory(connectOptions);
+    }
 
-//     override
-//     void connect(Handler!(AsyncResult!(Connection)) completionHandler) {
-//         factory.connectAndInit(completionHandler);
-//     }
+    override
+    void connect(AsyncDbConnectionHandler completionHandler) {
+        factory.connectAndInit(completionHandler);
+    }
 
-//     override
-//     protected SqlConnectionImpl wrap(Context context, Connection conn) {
-//         return new PgConnectionImpl(factory, context, conn);
-//     }
+    override
+    protected SqlConnection wrap(DbConnection conn) {
+        return new PgConnectionImpl(factory, conn);
+    }
 
-//     override
-//     protected void doClose() {
-//         factory.close();
-//         super.doClose();
-//     }
-// }
+    override
+    protected void doClose() {
+        factory.close();
+        super.doClose();
+    }
+}

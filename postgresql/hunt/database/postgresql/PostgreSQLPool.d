@@ -20,7 +20,6 @@ module hunt.database.postgresql.PostgreSQLPool;
 import hunt.database.postgresql.PostgreSQLConnectOptions;
 import hunt.database.postgresql.impl.PostgreSQLPoolImpl;
 
-
 import hunt.database.base.PoolOptions;
 import hunt.database.base.SqlResult;
 import hunt.database.base.RowSet;
@@ -29,12 +28,6 @@ import hunt.database.base.Pool;
 import hunt.database.base.Tuple;
 import hunt.database.base.AsyncResult;
 
-// import io.vertx.core.Handler;
-// import io.vertx.core.Vertx;
-// import io.vertx.core.VertxOptions;
-
-// import hunt.collection.List;
-// import java.util.stream.Collector;
 
 /**
  * A pool of PostgreSQL connections.
@@ -91,17 +84,16 @@ interface PgPool : Pool {
      * @param poolOptions the options for creating the pool
      * @return the connection pool
      */
-    // static PgPool pool(PgConnectOptions connectOptions, PoolOptions poolOptions) {
-    //     if (Vertx.currentContext() !is null) {
-    //         throw new IllegalStateException("Running in a Vertx context => use PgPool#pool(Vertx, PgConnectOptions, PoolOptions) instead");
-    //     }
-    //     VertxOptions vertxOptions = new VertxOptions();
-    //     if (connectOptions.isUsingDomainSocket()) {
-    //         vertxOptions.setPreferNativeTransport(true);
-    //     }
-    //     Vertx vertx = Vertx.vertx(vertxOptions);
-    //     return new PgPoolImpl(vertx.getOrCreateContext(), true, connectOptions, poolOptions);
-    // }
+    static PgPool pool(PgConnectOptions connectOptions, PoolOptions poolOptions) {
+        // if (Vertx.currentContext() !is null) {
+        //     throw new IllegalStateException("Running in a Vertx context => use PgPool#pool(Vertx, PgConnectOptions, PoolOptions) instead");
+        // }
+        // VertxOptions vertxOptions = new VertxOptions();
+        // if (connectOptions.isUsingDomainSocket()) {
+        //     vertxOptions.setPreferNativeTransport(true);
+        // }
+        return new PgPoolImpl(connectOptions, poolOptions);
+    }
 
     /**
      * Like {@link #pool(PgConnectOptions, PoolOptions)} with a specific {@link Vertx} instance.
@@ -110,7 +102,7 @@ interface PgPool : Pool {
     //     return new PgPoolImpl(vertx.getOrCreateContext(), false, connectOptions, poolOptions);
     // }
 
-    PgPool preparedQuery(string sql, RowSetHandler handler);
+    // PgPool preparedQuery(string sql, RowSetHandler handler);
 
 
     // <R> PgPool preparedQuery(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
