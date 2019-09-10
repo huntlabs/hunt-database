@@ -155,8 +155,8 @@ class PgDecoder : Decoder {
         if (inBuffer !is null) {
             if(inBuffer.isReadable()) {
                 // copy the remainings in current buffer
-                version(HUNT_DEBUG) warningf("duplicating the remaings: %s", inBuffer.toString());
-                inBuffer = inBuffer.duplicate();
+                version(HUNT_DB_DEBUG) infof("copying the remaings: %s", inBuffer.toString());
+                inBuffer = inBuffer.copy();
             } else {
                 // clear up the buffer
                 inBuffer.release();
