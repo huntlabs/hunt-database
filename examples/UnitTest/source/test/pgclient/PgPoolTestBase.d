@@ -53,17 +53,18 @@ abstract class PgPoolTestBase : PgTestBase {
     @Test
     void testPool() {
         int num = 10;
+        shared int count = 0;
         PgPool pool = createPool(options, 4);
         for (int i = 0;i < num;i++) {
             pool.getConnection((SqlConnectionAsyncResult ar1) {
-                trace("running here");
+                warning("running here");
                 SqlConnection conn = asyncAssertSuccess(ar1);
                 conn.query("SELECT id, randomnumber from WORLD", (AsyncResult!RowSet ar) {
-                    trace("running here");
+                    atomicOp!"+="(count, 1);
+                    tracef("%d ===> Done.", count);
                     if (ar.succeeded()) {
                         RowSet result = ar.result();
-                        tracef("index: %d, size: %d", i, result.size());
-                        assert(10000 == result.size());
+                        assert(10000 == result.size(), result.size().to!string());
                     } else {
                         assert("closed" == ar.cause().message());
                     }
@@ -75,18 +76,17 @@ abstract class PgPoolTestBase : PgTestBase {
 
     // @Test
     // void testQuery() {
-    //     int num = 1000;
-    //     Async async = ctx.async(num);
+    //     int num = 1;
     //     PgPool pool = createPool(options, 4);
     //     for (int i = 0;i < num;i++) {
-    //         pool.query("SELECT id, randomnumber from WORLD", ar -> {
+    //         pool.query("SELECT id, randomnumber from WORLD", (AsyncResult!RowSet ar) {
     //             if (ar.succeeded()) {
-    //                 SqlResult result = ar.result();
-    //                 assert(10000, result.size());
+    //                 RowSet result = ar.result();
+    //                 tracef("index: %d, size: %d", i, result.size());
+    //                 assert(10000 == result.size());
     //             } else {
-    //                 assert("closed", ar.cause().getMessage());
+    //                 assert("closed" == ar.cause().message());
     //             }
-    //             async.countDown();
     //         });
     //     }
     // }

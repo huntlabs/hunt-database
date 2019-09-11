@@ -72,7 +72,6 @@ class ConnectionPool {
         _all = new ArrayList!PooledConnection();
     }
 
-
     private int waitersSize() {
         return cast(int)_waiters[].walkLength();
     }
@@ -89,7 +88,10 @@ class ConnectionPool {
         if (_closed) {
             throw new IllegalStateException("Connection pool closed");
         }
-        version(HUNT_DB_DEBUG) trace("Try to acquire a DB connection...");
+        version(HUNT_DB_DEBUG) {
+            tracef("Try to acquire a DB connection... size: %d, available: %d, waiters: %d",
+                _size, available, waitersSize);
+        }
 
         // Promise!(Connection) promise = Promise.promise();
         // promise.future().setHandler(holder);
@@ -212,10 +214,13 @@ class ConnectionPool {
     private void release(PooledConnection proxy) {
         version(HUNT_DB_DEBUG) trace("try to release a DB connection");
         if (_all.contains(proxy)) {
-            version(HUNT_DB_DEBUG) trace("Return a DB connection to the pool.");
 
             synchronized (this) {
                 _available.insertBack(proxy);
+                version(HUNT_DB_DEBUG) {
+                    tracef("Return a DB connection to the pool. size: %d, available: %d, waiters: %d",
+                        _size, available, waitersSize);
+                }
             }
             
             check();
@@ -233,7 +238,7 @@ class ConnectionPool {
 
         scope(exit) {
             _checkInProgress = false;
-            version(HUNT_DB_DEBUG) tracef("pool size=%d", _size);
+            version(HUNT_DB_DEBUG_MORE) tracef("pool size=%d", _size);
         }
 
         try {

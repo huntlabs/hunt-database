@@ -17,7 +17,6 @@ mixin template TestSettingTemplate() {
         
         options = new PgConnectOptions();
         options.setHost("10.1.11.44");
-        // options.setHost("10.1.222.120");
         options.setPort(5432);
         options.setUser("postgres");
         options.setPassword("123456");
