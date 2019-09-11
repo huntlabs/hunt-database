@@ -30,6 +30,8 @@ import hunt.Exceptions;
 import hunt.logging.ConsoleLogger;
 import hunt.Functions;
 
+import core.atomic;
+
 import std.algorithm;
 import std.container;
 import std.range;
@@ -44,16 +46,16 @@ class ConnectionPool {
     private Consumer!(AsyncDbConnectionHandler) connector;
     // private Consumer!(Handler!(AsyncResult!(Connection))) connector;
     private int maxSize;
-    // private ArrayDeque!(Promise!(Connection)) waiters = new ArrayDeque<>();
+    // private ArrayDeque!(Promise!(Connection)) _waiters = new ArrayDeque<>();
     // private Set!(PooledConnection) all = new HashSet<>();
     // private ArrayDeque!(PooledConnection) available = new ArrayDeque<>();
-    private DList!(DbConnectionPromise) waiters;
+    private DList!(CompletableFuture!(DbConnectionAsyncResult)) _waiters;
     private ArrayList!PooledConnection _all;
     private DList!PooledConnection _available;
     private int _size;
-    private int maxWaitQueueSize;
-    private bool checkInProgress;
-    private bool closed;
+    private int _maxWaitQueueSize;
+    private shared bool _checkInProgress;
+    private shared bool _closed;
 
     this(Consumer!(AsyncDbConnectionHandler) connector) {
         this(connector, PoolOptions.DEFAULT_MAX_SIZE, PoolOptions.DEFAULT_MAX_WAIT_QUEUE_SIZE);
@@ -63,16 +65,16 @@ class ConnectionPool {
         this(connector, maxSize, PoolOptions.DEFAULT_MAX_WAIT_QUEUE_SIZE);
     }
 
-    this(Consumer!(AsyncDbConnectionHandler) connector, int maxSize, int maxWaitQueueSize) {
+    this(Consumer!(AsyncDbConnectionHandler) connector, int maxSize, int _maxWaitQueueSize) {
         this.maxSize = maxSize;
-        this.maxWaitQueueSize = maxWaitQueueSize;
+        this._maxWaitQueueSize = _maxWaitQueueSize;
         this.connector = connector;
         _all = new ArrayList!PooledConnection();
     }
 
 
     private int waitersSize() {
-        return cast(int)waiters[].walkLength();
+        return cast(int)_waiters[].walkLength();
     }
 
     int available() {
@@ -84,29 +86,37 @@ class ConnectionPool {
     }
 
     void acquire(AsyncDbConnectionHandler holder) {
-        if (closed) {
+        if (_closed) {
             throw new IllegalStateException("Connection pool closed");
         }
+        version(HUNT_DB_DEBUG) trace("Try to acquire a DB connection...");
+
         // Promise!(Connection) promise = Promise.promise();
         // promise.future().setHandler(holder);
-        // waiters.add(promise);
-        DbConnectionPromise promise = new DbConnectionPromise();
-        promise.thenAccept((r) { if(holder !is null) holder(r);});
-        waiters.insertBack(promise);
+        // _waiters.add(promise);
+        auto promise = new CompletableFuture!(DbConnectionAsyncResult)();
+        promise.thenAccept((r) { 
+            version(HUNT_DB_DEBUG) trace("Acquired a DB connection.");
+            if(holder !is null) holder(r);
+        });
+        synchronized (this) {
+            _waiters.insertBack(promise);
+        }
         check();
     }
 
     void close() {
-        info("Closing...", closed);
-        if (closed) {
+        version(HUNT_DB_DEBUG) info("Closing...", _closed);
+        if (!cas(&_closed, false, true)) {
             throw new IllegalStateException("Connection pool already closed");
         }
-        closed = true;
+
         foreach (PooledConnection pooled ;_all) {
             pooled.close();
         }
+
         DbConnectionAsyncResult failure = failedResult!(DbConnection)(new Exception("Connection pool closed"));
-        foreach (DbConnectionPromise pending ; waiters) {
+        foreach (CompletableFuture!(DbConnectionAsyncResult) pending ; _waiters) {
             try {
                 pending.complete(failure);
             } catch (Exception ignore) {
@@ -200,28 +210,41 @@ class ConnectionPool {
     }
 
     private void release(PooledConnection proxy) {
+        version(HUNT_DB_DEBUG) trace("try to release a DB connection");
         if (_all.contains(proxy)) {
-            _available.insertBack(proxy);
+            version(HUNT_DB_DEBUG) trace("Return a DB connection to the pool.");
+
+            synchronized (this) {
+                _available.insertBack(proxy);
+            }
+            
             check();
         }
     }
 
     private void check() {
-        version(HUNT_DB_DEBUG_MORE) tracef("_size=%d", _size);
-        if (closed || checkInProgress) {
+        if (_closed || _checkInProgress) {
             return;
         }
 
-        checkInProgress = true;
+        if(!cas(&_checkInProgress, false, true)) {
+            version(HUNT_DB_DEBUG) trace("check in progress...");
+        }
+
+        scope(exit) {
+            _checkInProgress = false;
+            version(HUNT_DB_DEBUG) tracef("pool size=%d", _size);
+        }
+
         try {
             while (waitersSize() > 0) {
                 if (available() > 0) {
                     PooledConnection proxy = _available.front(); _available.removeFront();
-                    DbConnectionPromise waiter = waiters.front(); waiters.removeFront();
+                    CompletableFuture!(DbConnectionAsyncResult) waiter = _waiters.front(); _waiters.removeFront();
                     waiter.complete(succeededResult!(DbConnection)(proxy));
                 } else {
                     if (size < maxSize) {
-                        DbConnectionPromise waiter = waiters.front(); waiters.removeFront();
+                        CompletableFuture!(DbConnectionAsyncResult) waiter = _waiters.front(); _waiters.removeFront();
                         _size++;
                         connector( (DbConnectionAsyncResult ar) {
                             if (ar.succeeded()) {
@@ -239,11 +262,11 @@ class ConnectionPool {
                             }
                         });
                     } else {
-                        if (maxWaitQueueSize >= 0) {
+                        if (_maxWaitQueueSize >= 0) {
                             int numInProgress = _size - _all.size();
-                            int numToFail = cast(int)waiters[].walkLength() - (maxWaitQueueSize + numInProgress);
+                            int numToFail = cast(int)_waiters[].walkLength() - (_maxWaitQueueSize + numInProgress);
                             while (numToFail-- > 0) {
-                                DbConnectionPromise waiter = waiters.back(); waiters.removeBack();
+                                CompletableFuture!(DbConnectionAsyncResult) waiter = _waiters.back(); _waiters.removeBack();
                                 waiter.completeExceptionally(new NoStackTraceThrowable("Max waiter size reached"));
                             }
                         }
@@ -253,8 +276,6 @@ class ConnectionPool {
             }
         } catch(Exception ex) {
             warning(ex);
-        } finally {
-            checkInProgress = false;
         }
     }
 }

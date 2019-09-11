@@ -216,7 +216,6 @@ abstract class SocketConnectionBase : DbConnection {
 
         ICommandResponse resp = cast(ICommandResponse) msg;
         if (resp !is null) {
-            // version(HUNT_DB_DEBUG_MORE) tracef("inflight=%d", inflight);
             inflight--;
             checkPending();
             resp.notifyCommandResponse();
