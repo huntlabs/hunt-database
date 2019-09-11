@@ -47,7 +47,7 @@ abstract class CommandResponse(R) : AsyncResult!(R), ICommandResponse {
 
     void notifyCommandResponse() {
         if(cmd !is null) {
-            version(HUNT_DB_DEBUG) trace("response command:", typeid(cast(Object)cmd));
+            version(HUNT_DB_DEBUG_MORE) trace("response command:", typeid(cast(Object)cmd));
             cmd.notifyResponse(this);
         } else {
             version(HUNT_DB_DEBUG) warning("No command set.");

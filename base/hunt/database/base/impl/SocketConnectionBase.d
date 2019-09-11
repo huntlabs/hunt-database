@@ -194,7 +194,7 @@ abstract class SocketConnectionBase : DbConnection {
                 version(HUNT_DB_DEBUG_MORE) {
                     tracef("chekcing %s ... ", typeid(cast(Object)cmd));
                 } else version(HUNT_DB_DEBUG) {
-                    trace("chekcing... ");
+                    // trace("chekcing... ");
                 } 
                 _socket.encode(cast(Object)cmd);
             }
@@ -212,7 +212,7 @@ abstract class SocketConnectionBase : DbConnection {
     }
 
     void handleMessage(Connection conn, Object msg) {
-        version(HUNT_DB_DEBUG) tracef("handling a message: %s", typeid(msg));
+        version(HUNT_DB_DEBUG_MORE) tracef("handling a message: %s", typeid(msg));
 
         ICommandResponse resp = cast(ICommandResponse) msg;
         if (resp !is null) {

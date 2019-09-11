@@ -80,8 +80,9 @@ class InitCommandCodec : CommandCodec!(DbConnection, InitCommand) {
     override
     void handleBackendKeyData(int processId, int secretKey) {
         version(HUNT_DB_DEBUG) tracef("processId: %d, secretKey: %d", processId, secretKey);
-        (cast(PgSocketConnection)cmd.connection()).processId = processId;
-        (cast(PgSocketConnection)cmd.connection()).secretKey = secretKey;
+        PgSocketConnection conn = cast(PgSocketConnection)cmd.connection();
+        conn.processId = processId;
+        conn.secretKey = secretKey;
     }
 
     override

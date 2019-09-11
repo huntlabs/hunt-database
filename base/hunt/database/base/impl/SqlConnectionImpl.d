@@ -153,16 +153,12 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbCo
 
     override
     void close() {
-        version(HUNT_DB_DEBUG) trace("Closing SqlConnection...");
-        // if (context == Vertx.currentContext()) {
-            if (tx !is null) {
-                tx.rollback( (ar) { conn.close(this); });
-                tx = null;
-            } else {
-                conn.close(this);
-            }
-        // } else {
-        //     context.runOnContext(v -> close());
-        // }
+        version(HUNT_DB_DEBUG) trace("Closing a SQL connection...");
+        if (tx !is null) {
+            tx.rollback( (ar) { conn.close(this); });
+            tx = null;
+        } else {
+            conn.close(this);
+        }
     }
 }

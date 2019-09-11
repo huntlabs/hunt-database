@@ -189,7 +189,7 @@ final class PgEncoder : EncoderChain {
     // }
 
     void flush() {
-        version(HUNT_DB_DEBUG) trace("flushing ...");
+        version(HUNT_DB_DEBUG_MORE) trace("flushing ...");
 
         if(ctx is null) {
             warning("ctx is null");

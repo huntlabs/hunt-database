@@ -26,6 +26,7 @@ import hunt.database.base.Common;
 import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.command.CommandResponse;
 
+import hunt.collection.ArrayList;
 import hunt.collection.HashMap;
 import hunt.collection.Map;
 import hunt.Exceptions;
@@ -44,7 +45,8 @@ import hunt.net.NetUtil;
  */
 class PgConnectionFactory {
 
-    private NetClient client;
+    private ArrayList!NetClient clients;
+    private NetClientOptions _netClientOptions;
     private bool registerCloseHook;
     private string host;
     private int port;
@@ -71,14 +73,15 @@ class PgConnectionFactory {
         // if (registerCloseHook) {
         //     ctx.addCloseHook(hook);
         // }
+        clients = new ArrayList!NetClient(50);
 
-        NetClientOptions netClientOptions = new NetClientOptions(options);
+        _netClientOptions = new NetClientOptions(options);
 
         // Make sure ssl=false as we will use STARTLS
-        netClientOptions.setSsl(false);
+        _netClientOptions.setSsl(false);
 
         this.sslMode = options.getSslMode();
-        this.hostnameVerificationAlgorithm = netClientOptions.getHostnameVerificationAlgorithm();
+        this.hostnameVerificationAlgorithm = _netClientOptions.getHostnameVerificationAlgorithm();
         // this.trustOptions = netClientOptions.getTrustOptions();
         this.host = options.getHost();
         this.port = options.getPort();
@@ -91,20 +94,19 @@ class PgConnectionFactory {
         this.preparedStatementCacheSize = options.getPreparedStatementCacheMaxSize();
         this.preparedStatementCacheSqlLimit = options.getPreparedStatementCacheSqlLimit();
         this.isUsingDomainSocket = options.isUsingDomainSocket();
-
-        this.client = NetUtil.createNetClient(netClientOptions);
     }
 
     // Called by hook
     private void close(AsyncVoidHandler completionHandler) {
-        client.close();
+        close();
         if(completionHandler !is null) {
             completionHandler(null);
         }
     }
 
     void close() {
-        client.close();
+        foreach(client; clients)
+            client.close();
     }
 
     void connectAndInit(AsyncResultHandler!(DbConnection) completionHandler) {
@@ -167,6 +169,8 @@ class PgConnectionFactory {
 
     private void doConnect(bool ssl, AsyncResultHandler!(PgSocketConnection) handler) {
 
+        auto client = NetUtil.createNetClient(_netClientOptions);
+
         client.setHandler(new class ConnectionEventHandler {
 
                 PgSocketConnection pgConn;
@@ -216,6 +220,7 @@ class PgConnectionFactory {
 
         try {
             client.connect(host, port);
+            clients.add(client);
         } catch (Throwable e) {
             // Client is closed
             version(HUNT_DEBUG) {
