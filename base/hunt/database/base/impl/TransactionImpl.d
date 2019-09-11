@@ -43,7 +43,9 @@ import hunt.Object;
 import std.string;
 import std.container.dlist;
 
-
+/**
+ * 
+ */
 class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
 
     private enum int ST_BEGIN = 0;

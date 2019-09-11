@@ -105,7 +105,7 @@ final class PgEncoder : EncoderChain {
             warningf("The message is not a ICommand: %s", typeid(message));
         }
 
-        version(HUNT_DB_DEBUG) 
+        version(HUNT_DB_DEBUG_MORE) 
         tracef("encoding a message: %s", typeid(message));
 
         CommandCodecBase cmdCodec = wrap(cmd);

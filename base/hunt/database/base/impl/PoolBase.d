@@ -54,9 +54,7 @@ abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
         if (maxSize < 1) {
             throw new IllegalArgumentException("Pool max size must be > 0");
         }
-        // this.context = context;
         this.pool = new ConnectionPool(&this.connect, maxSize, options.getMaxWaitQueueSize());
-        // this.closeVertx = closeVertx;
     }
 
     abstract void connect(AsyncDbConnectionHandler completionHandler);
