@@ -63,21 +63,16 @@ abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
 
     override
     void getConnection(AsyncSqlConnectionHandler handler) {
-        // Context current = Vertx.currentContext();
-        // if (current == context) {
-            pool.acquire((DbConnectionAsyncResult ar) {
-                if (ar.succeeded()) {
-                    DbConnection conn = ar.result();
-                    SqlConnection holder = wrap(conn);
-                    conn.initHolder(cast(DbConnection.Holder)holder);
-                    handler(succeededResult!SqlConnection(holder));
-                } else {
-                    handler(failedResult!SqlConnection(ar.cause()));
-                }
-            });
-        // } else {
-        //     context.runOnContext(v -> getConnection(handler));
-        // }
+        pool.acquire((DbConnectionAsyncResult ar) {
+            if (ar.succeeded()) {
+                DbConnection conn = ar.result();
+                SqlConnection holder = wrap(conn);
+                conn.initHolder(cast(DbConnection.Holder)holder);
+                handler(succeededResult!SqlConnection(holder));
+            } else {
+                handler(failedResult!SqlConnection(ar.cause()));
+            }
+        });
     }
 
 //     override

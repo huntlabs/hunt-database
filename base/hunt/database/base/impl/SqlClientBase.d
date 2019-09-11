@@ -73,10 +73,6 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
         return preparedQuery!(RowSet, RowSetImpl, RowSet)(sql, arguments, false, RowSetImpl.FACTORY, handler); // RowSetImpl.COLLECTOR, 
     }
 
-    // override
-    // C preparedQuery(R)(string sql, Tuple arguments, Handler!(AsyncResult!(SqlResult!(R))) handler) {
-    //     return preparedQuery(sql, arguments, true, SqlResultImpl::new, collector, handler);
-    // }
 
     // <R1, R2 extends SqlResultBase!(R1, R2), R3 extends SqlResult!(R1)> 
     private C preparedQuery(R1, R2, R3)(
@@ -176,7 +172,7 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
     //     return (C) this;
     // }
 
-    void schedule(R)(CommandBase!(R) cmd, ResponseHandler!R handler) {
+    protected void schedule(R)(CommandBase!(R) cmd, ResponseHandler!R handler) {
         cmd.handler = (cr) {
             // Tx might be gone ???
             cr.scheduler = this;
@@ -185,7 +181,7 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
         schedule(cmd);
     }
 
-    protected void schedule(ICommand cmd) {
+    void schedule(ICommand cmd) {
         throw new NotImplementedException();
     }
 }

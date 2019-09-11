@@ -157,7 +157,7 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
     //     schedule(cmd);
     // }
 
-    override protected void schedule(ICommand cmd) {
+    override void schedule(ICommand cmd) {
         synchronized (this) {
             pending.insertBack(cmd);
         }

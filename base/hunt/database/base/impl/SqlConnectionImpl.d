@@ -93,19 +93,11 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbCo
     // }
 
     override protected void schedule(ICommand cmd) {
-        // if (context == Vertx.currentContext()) {
-            if (tx !is null) {
-                // tx.schedule(cmd);
-                implementationMissing(false);
-            } else {
-                conn.schedule(cmd);
-            }
-        // } else {
-        //     context.runOnContext( (v) {
-        //         schedule(cmd);
-        //     });
-        // }
-
+        if (tx !is null) {
+            tx.schedule(cmd);
+        } else {
+            conn.schedule(cmd);
+        }
     }
 
     // override
