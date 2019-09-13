@@ -17,7 +17,6 @@ mixin template TestSettingTemplate() {
 
         options = new MySQLConnectOptions();
         options.setHost("10.1.11.31");
-        // options.setHost("10.1.222.120");
         options.setPort(3306);
         options.setUser("dev");
         options.setPassword("111111");

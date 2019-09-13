@@ -15,12 +15,12 @@
  *
  */
 
-module test.pgclient.PgPoolTest;
+module test.mysqlclient.MySQLPoolTest;
 
-import test.pgclient.PgPoolTestBase;
+import test.mysqlclient.MySQLPoolTestBase;
 
 import hunt.database.base;
-import hunt.database.postgresql;
+import hunt.database.mysql;
 
 import hunt.Assert;
 import hunt.Exceptions;
@@ -35,11 +35,11 @@ import std.conv;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-class PgPoolTest : PgPoolTestBase {
+class MySQLPoolTest : MySQLPoolTestBase {
 
     override
-    protected PgPool createPool(PgConnectOptions options, int size) {
-        return PgPool.pool(options, new PoolOptions().setMaxSize(size));
+    protected MySQLPool createPool(MySQLConnectOptions options, int size) {
+        return MySQLPool.pool(options, new PoolOptions().setMaxSize(size));
     }
 
     // @Test
@@ -52,7 +52,7 @@ class PgPoolTest : PgPoolTestBase {
     //         conn.connect();
     //     });
     //     proxy.listen(8080, "localhost", ctx.asyncAssertSuccess(v1 -> {
-    //         PgPool pool = createPool(new PgConnectOptions(options).setPort(8080).setHost("localhost"), 1);
+    //         MySQLPool pool = createPool(new MySQLConnectOptions(options).setPort(8080).setHost("localhost"), 1);
     //         pool.getConnection(ctx.asyncAssertSuccess(conn -> {
     //             proxyConn.get().close();
     //         }));
@@ -67,7 +67,7 @@ class PgPoolTest : PgPoolTestBase {
     // @Test
     // void testAuthFailure() {
     //     Async async = ctx.async();
-    //     PgPool pool = createPool(new PgConnectOptions(options).setPassword("wrong"), 1);
+    //     MySQLPool pool = createPool(new MySQLConnectOptions(options).setPassword("wrong"), 1);
     //     pool.query("SELECT id, randomnumber from WORLD", ctx.asyncAssertFailure(v2 -> {
     //         async.complete();
     //     }));
@@ -82,7 +82,7 @@ class PgPoolTest : PgPoolTestBase {
     //         proxyConn.set(conn);
     //         conn.connect();
     //     });
-    //     PgPool pool = PgPool.pool(vertx, new PgConnectOptions(options).setPort(8080).setHost("localhost"),
+    //     MySQLPool pool = MySQLPool.pool(vertx, new MySQLConnectOptions(options).setPort(8080).setHost("localhost"),
     //         new PoolOptions()
     //             .setMaxSize(1)
     //             .setMaxWaitQueueSize(0)
@@ -101,7 +101,7 @@ class PgPoolTest : PgPoolTestBase {
     //     Async async = ctx.async();
     //     vertx.runOnContext(v -> {
     //         try {
-    //             PgPool.pool(new PoolOptions());
+    //             MySQLPool.pool(new PoolOptions());
     //             ctx.fail();
     //         } catch (IllegalStateException ignore) {
     //             async.complete();
@@ -112,7 +112,7 @@ class PgPoolTest : PgPoolTestBase {
     // @Test
     // void testRunStandalone() {
     //     Async async = ctx.async();
-    //     PgPool pool = PgPool.pool(options, new PoolOptions());
+    //     MySQLPool pool = MySQLPool.pool(options, new PoolOptions());
     //     try {
     //         pool.query("SELECT id, randomnumber from WORLD", ctx.asyncAssertSuccess(v -> {
     //             async.complete();
@@ -126,7 +126,7 @@ class PgPoolTest : PgPoolTestBase {
     // @Test
     // void testMaxWaitQueueSize() {
     //     Async async = ctx.async();
-    //     PgPool pool = PgPool.pool(options, new PoolOptions().setMaxSize(1).setMaxWaitQueueSize(0));
+    //     MySQLPool pool = MySQLPool.pool(options, new PoolOptions().setMaxSize(1).setMaxWaitQueueSize(0));
     //     try {
     //         pool.getConnection(ctx.asyncAssertSuccess(v -> {
     //             pool.getConnection(ctx.asyncAssertFailure(err -> {
@@ -144,7 +144,7 @@ class PgPoolTest : PgPoolTestBase {
     // @Test
     // void testConcurrentMultipleConnection() {
     //     PoolOptions poolOptions = new PoolOptions().setMaxSize(2);
-    //     PgPool pool = PgPool.pool(vertx, new PgConnectOptions(this.options).setCachePreparedStatements(true), poolOptions);
+    //     MySQLPool pool = MySQLPool.pool(vertx, new MySQLConnectOptions(this.options).setCachePreparedStatements(true), poolOptions);
     //     int numRequests = 2;
     //     Async async = ctx.async(numRequests);
     //     for (int i = 0;i < numRequests;i++) {

@@ -117,7 +117,7 @@ class RowResultDecoder(R) : RowDecoder {
                     int collationId = columnDesc.characterSet();
                     Charset charset = (MySQLCollation.valueOfId(collationId).mappedCharsetName()); // Charset.forName
 
-                    version(HUNT_DB_DEBUG) {
+                    version(HUNT_DB_DEBUG_MORE) {
                         tracef("    column[%d]: name=%s, type=%s, flags=%d, charset=%s", 
                             c, columnDesc.name(), dataType, columnDefinitionFlags, charset);
                     }

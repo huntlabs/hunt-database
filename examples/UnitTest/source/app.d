@@ -6,6 +6,7 @@ import test.mysqlclient.MySQLQueryTest;
 import test.mysqlclient.MySQLSimpleQueryTest;
 import test.mysqlclient.Native41AuthenticatorTest;
 import test.mysqlclient.MySQLPreparedQueryTest;
+import test.mysqlclient.MySQLPoolTest;
 
 import test.pgclient.PgConnectionTest;
 import test.pgclient.PgSimpleQueryTest;
@@ -23,12 +24,13 @@ void main()
 	// testUnits!(MySQLSimpleQueryTest);
 	// testUnits!(MySQLPreparedQueryTest);
 	// testUnits!(Native41AuthenticatorTest);
+	testUnits!(MySQLPoolTest);
 
 /* ---------------------------- PostgreSQL tests ---------------------------- */
 
 	// testUnits!(PgConnectionTest);
 	// testUnits!(PgPreparedQueryTest);
-	testUnits!(PgPoolTest);
+	// testUnits!(PgPoolTest);
 	// testUnits!(PgSimpleQueryTest);
 	// testUnits!(PgTransactionTest);
 	// testUnits!(UtilTest);

@@ -45,9 +45,7 @@ import hunt.Exceptions;
  */
 abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
 
-//     private final Context context;
     private ConnectionPool pool;
-//     private final boolean closeVertx;
 
     this(PoolOptions options) {
         int maxSize = options.getMaxSize();

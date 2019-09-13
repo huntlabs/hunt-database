@@ -29,7 +29,7 @@ import hunt.Exceptions;
 class MySQLConnectionImpl : SqlConnectionImpl!(MySQLConnectionImpl), MySQLConnection {
 
     static void connect(MySQLConnectOptions options, AsyncResultHandler!(MySQLConnection) handler) {
-        MySQLConnectionFactory client = new MySQLConnectionFactory(false, options);
+        MySQLConnectionFactory client = new MySQLConnectionFactory(options);
         version(HUNT_DB_DEBUG) trace("connecting ...");
         client.connect( (ar) {
             version(HUNT_DB_DEBUG) info("connection result: ", ar.succeeded());

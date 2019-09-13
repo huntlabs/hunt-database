@@ -64,7 +64,7 @@ abstract class QueryCommandBaseCodec(T, C) : CommandCodec!(bool, C) {
 
     override
     void decodePayload(ByteBuf payload, int payloadLength, int sequenceId) {
-        version(HUNT_DB_DEBUG) infof("commandHandlerState: %s", commandHandlerState);
+        version(HUNT_DB_DEBUG_MORE) infof("commandHandlerState: %s", commandHandlerState);
         switch (commandHandlerState) {
             case CommandHandlerState.INIT:
                 handleInitPacket(payload);

@@ -1,43 +1,44 @@
 module hunt.database.mysql.impl.MySQLPoolImpl;
 
-// import hunt.database.base.AsyncResult;
-// import io.vertx.core.Context;
-// import io.vertx.core.Handler;
-// import io.vertx.core.Vertx;
-// import hunt.database.mysql.MySQLConnectOptions;
-// import hunt.database.mysql.MySQLPool;
-// import hunt.database.base.PoolOptions;
-// import hunt.database.base.Transaction;
-// import hunt.database.base.impl.Connection;
-// import hunt.database.base.impl.PoolBase;
-// import hunt.database.base.impl.SqlConnectionImpl;
+import hunt.database.mysql.impl.MySQLConnectionFactory;
+import hunt.database.mysql.impl.MySQLConnectionImpl;
 
-// class MySQLPoolImpl : PoolBase!(MySQLPoolImpl) implements MySQLPool {
-//   private final MySQLConnectionFactory factory;
+import hunt.database.mysql.MySQLConnectOptions;
+import hunt.database.mysql.MySQLPool;
 
-//   MySQLPoolImpl(Context context, boolean closeVertx, MySQLConnectOptions connectOptions, PoolOptions poolOptions) {
-//     super(context, closeVertx, poolOptions);
-//     this.factory = new MySQLConnectionFactory(context, Vertx.currentContext() !is null, connectOptions);
-//   }
+import hunt.database.base.AsyncResult;
+import hunt.database.base.impl.Connection;
+import hunt.database.base.impl.PoolBase;
+import hunt.database.base.impl.SqlConnectionImpl;
+import hunt.database.base.PoolOptions;
+import hunt.database.base.Transaction;
+import hunt.database.base.SqlConnection;
 
-//   override
-//   void connect(Handler!(AsyncResult!(Connection)) completionHandler) {
-//     factory.connect(completionHandler);
-//   }
+/**
+ * 
+ */
+class MySQLPoolImpl : PoolBase!(MySQLPoolImpl), MySQLPool {
+    private MySQLConnectionFactory factory;
 
-//   override
-//   protected SqlConnectionImpl wrap(Context context, Connection conn) {
-//     return new MySQLConnectionImpl(factory, context, conn);
-//   }
+    this(MySQLConnectOptions connectOptions, PoolOptions poolOptions) {
+        super(poolOptions);
+        this.factory = new MySQLConnectionFactory(connectOptions);
+    }
 
-//   override
-//   void begin(Handler!(AsyncResult!(Transaction)) handler) {
-//     throw new UnsupportedOperationException("Transaction is not supported for now");
-//   }
+    override void connect(AsyncDbConnectionHandler completionHandler) {
+        factory.connect(completionHandler);
+    }
 
-//   override
-//   protected void doClose() {
-//     factory.close();
-//     super.doClose();
-//   }
-// }
+    override protected SqlConnection wrap(DbConnection conn) {
+        return new MySQLConnectionImpl(factory, conn);
+    }
+
+    // override void begin(Handler!(AsyncResult!(Transaction)) handler) {
+    //     throw new UnsupportedOperationException("Transaction is not supported for now");
+    // }
+
+    override protected void doClose() {
+        factory.close();
+        super.doClose();
+    }
+}

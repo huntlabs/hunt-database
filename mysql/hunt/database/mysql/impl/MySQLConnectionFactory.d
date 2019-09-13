@@ -3,12 +3,12 @@ module hunt.database.mysql.impl.MySQLConnectionFactory;
 import hunt.database.mysql.impl.MySQLSocketConnection;
 import hunt.database.mysql.MySQLConnectOptions;
 
-
 import hunt.database.base.AsyncResult;
 import hunt.database.base.Common;
 import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.command.CommandResponse;
 
+import hunt.collection.ArrayList;
 import hunt.collection.HashMap;
 import hunt.collection.Map;
 import hunt.Exceptions;
@@ -21,10 +21,12 @@ import hunt.net.NetClient;
 import hunt.net.NetClientOptions;
 import hunt.net.NetUtil;
 
+/**
+ * 
+ */
 class MySQLConnectionFactory {
-    private NetClient netClient;
-    // private Context context;
-    private bool registerCloseHook;
+    private ArrayList!NetClient clients;
+    private NetClientOptions _netClientOptions;
     private string host;
     private int port;
     private string username;
@@ -37,15 +39,10 @@ class MySQLConnectionFactory {
     private int preparedStatementCacheSqlLimit;
     // private Closeable hook;
 
-    this(bool registerCloseHook, MySQLConnectOptions options) {
-        NetClientOptions netClientOptions = new NetClientOptions(options);
+    this(MySQLConnectOptions options) {
+        clients = new ArrayList!NetClient(50);
 
-        // this.context = context;
-        this.registerCloseHook = registerCloseHook;
-        // this.hook = this::close;
-        // if (registerCloseHook) {
-        //     context.addCloseHook(hook);
-        // }
+        _netClientOptions = new NetClientOptions(options);
 
         this.host = options.getHost();
         this.port = options.getPort();
@@ -57,23 +54,19 @@ class MySQLConnectionFactory {
         this.cachePreparedStatements = options.getCachePreparedStatements();
         this.preparedStatementCacheSize = options.getPreparedStatementCacheMaxSize();
         this.preparedStatementCacheSqlLimit = options.getPreparedStatementCacheSqlLimit();
-
-        this.netClient = NetUtil.createNetClient(netClientOptions);
     }
 
     // Called by hook
     private void close(AsyncVoidHandler completionHandler) {
-        netClient.close();
+        close();
         if(completionHandler !is null) {
             completionHandler(cast(VoidAsyncResult)null);
         }
     }
 
     void close() {
-        // if (registerCloseHook) {
-        //     context.removeCloseHook(hook);
-        // }
-        netClient.close();
+        foreach(client; clients)
+            client.close();
     }
 
     void connect(AsyncResultHandler!(DbConnection) completionHandler) {
@@ -108,6 +101,7 @@ class MySQLConnectionFactory {
 
     private void doConnect(bool ssl, AsyncResultHandler!(MySQLSocketConnection) handler) {
 
+        auto netClient = NetUtil.createNetClient(_netClientOptions);
         netClient.setHandler(new class ConnectionEventHandler {
 
                 MySQLSocketConnection pgConn;
@@ -157,6 +151,7 @@ class MySQLConnectionFactory {
 
         try {
             netClient.connect(host, port);
+            clients.add(netClient);
         } catch (Throwable e) {
             // Client is closed
             version(HUNT_DEBUG) {

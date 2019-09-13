@@ -55,7 +55,7 @@ class DataTypeCodec {
             buffer.skipBytes(len);
         }
 
-        version(HUNT_DB_DEBUG) {
+        version(HUNT_DB_DEBUG_MORE) {
             tracef("dataType=%s, index=%d, len=%d, columnDefinitionFlags=%d, isBinaryField=%s", 
                 dataType, index, len, columnDefinitionFlags, isBinaryField(columnDefinitionFlags));
         }

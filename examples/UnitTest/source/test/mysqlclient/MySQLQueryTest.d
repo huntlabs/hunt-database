@@ -31,13 +31,11 @@ import std.variant;
  */
 class MySQLQueryTest : MySQLTestBase {
 
-    // MySQLConnectOptions options;
     
     mixin TestSettingTemplate;
 
     @Before
     void setup() {
-        // options = new MySQLConnectOptions(MySQLTestBase.options);
         initConnector();
     }
 

@@ -117,7 +117,7 @@ class MySQLDecoder : Decoder {
             }
         }
         CommandCodecBase ctx = inflight.front();
-        version(HUNT_DB_DEBUG) {
+        version(HUNT_DB_DEBUG_MORE) {
             tracef("Command codec: %s", typeid(ctx));
             tracef("lenght: %d, payload: %s", payloadLength, payload.toString());
         }

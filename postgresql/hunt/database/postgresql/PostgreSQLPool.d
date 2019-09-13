@@ -85,13 +85,6 @@ interface PgPool : Pool {
      * @return the connection pool
      */
     static PgPool pool(PgConnectOptions connectOptions, PoolOptions poolOptions) {
-        // if (Vertx.currentContext() !is null) {
-        //     throw new IllegalStateException("Running in a Vertx context => use PgPool#pool(Vertx, PgConnectOptions, PoolOptions) instead");
-        // }
-        // VertxOptions vertxOptions = new VertxOptions();
-        // if (connectOptions.isUsingDomainSocket()) {
-        //     vertxOptions.setPreferNativeTransport(true);
-        // }
         return new PgPoolImpl(connectOptions, poolOptions);
     }
 

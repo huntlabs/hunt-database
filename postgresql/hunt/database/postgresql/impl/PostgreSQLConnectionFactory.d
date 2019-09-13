@@ -65,14 +65,6 @@ class PgConnectionFactory {
     // private Closeable hook;
 
     this(PgConnectOptions options) {
-
-        // hook = this::close;
-        // this.registerCloseHook = registerCloseHook;
-
-        // ctx = context;
-        // if (registerCloseHook) {
-        //     ctx.addCloseHook(hook);
-        // }
         clients = new ArrayList!NetClient(50);
 
         _netClientOptions = new NetClientOptions(options);
