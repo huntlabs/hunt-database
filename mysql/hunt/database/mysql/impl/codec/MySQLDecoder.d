@@ -46,7 +46,7 @@ class MySQLDecoder : Decoder {
     }
 
     private void doEecode(ByteBuffer payload, Connection connection) {
-        version(HUNT_DB_DEBUG) tracef("decoding buffer: %s", payload.toString());
+        version(HUNT_DB_DEBUG_MORE) tracef("decoding buffer: %s", payload.toString());
 
         ByteBuf buff = Unpooled.wrappedBuffer(payload);
         if (inBuffer is null) {

@@ -63,7 +63,7 @@ class RowResultDecoder(R) : RowDecoder {
             row = new MySQLRowImpl(rowDesc);
         }
 
-        version(HUNT_DB_DEBUG) infof("row: %d", _size+1);
+        version(HUNT_DB_DEBUG_MORE) infof("row: %d", _size+1);
         Row row = new MySQLRowImpl(rowDesc);
         if (rowDesc.dataFormat() == DataFormat.BINARY) {
             // BINARY row decoding
