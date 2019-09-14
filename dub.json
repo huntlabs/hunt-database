@@ -1,0 +1,21 @@
+{
+    "name": "hunt-database",
+    "license": "Apache-2.0",
+    "copyright": "Copyright (C) 2018-2019, HuntLabs",
+    "homepage": "https://www.huntlabs.net",
+    "description": "Database abstraction layer for D programing language, support PostgreSQL / MySQL.",
+    "dependencies": {
+        "hunt-net": {"path": "../hunt-net"}
+    },
+    "configurations": [
+        {
+            "name": "default"
+        },
+        {
+            "name": "ssl",
+            "subConfigurations": {
+                "hunt-net" : "ssl"
+            }
+        }
+    ]
+}

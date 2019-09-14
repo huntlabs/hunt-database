@@ -1,9 +1,9 @@
 module test.mysqlclient.Native41AuthenticatorTest;
 
-import hunt.database.mysql.impl.util.Native41Authenticator;
+import hunt.database.driver.mysql.impl.util.Native41Authenticator;
 
 import hunt.database.base;
-import hunt.database.mysql;
+import hunt.database.driver.mysql;
 
 import hunt.Assert;
 import hunt.Exceptions;

@@ -22,7 +22,7 @@ import test.mysqlclient.Common;
 import test.Common;
 
 import hunt.database.base;
-import hunt.database.mysql;
+import hunt.database.driver.mysql;
 
 import hunt.Assert;
 import hunt.Exceptions;

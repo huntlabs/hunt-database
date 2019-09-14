@@ -4,8 +4,8 @@ module test.mysqlclient.Common;
 mixin template TestSettingTemplate() {
 
     import hunt.database.base;
-    import hunt.database.mysql;
-    import hunt.database.mysql.impl;
+    import hunt.database.driver.mysql;
+    import hunt.database.driver.mysql.impl;
     import hunt.logging.ConsoleLogger;
     import core.thread;
 

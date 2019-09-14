@@ -20,9 +20,9 @@ module test.pgclient.PgConnectionTest;
 import test.pgclient.PgConnectionTestBase;
 
 import hunt.database.base;
-import hunt.database.postgresql;
+import hunt.database.driver.postgresql;
 
-import hunt.database.postgresql.impl;
+import hunt.database.driver.postgresql.impl;
 
 import hunt.Assert;
 import hunt.Exceptions;

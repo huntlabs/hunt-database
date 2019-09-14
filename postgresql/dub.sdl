@@ -1,6 +1,0 @@
-name "postgresql"
-description "PostgreSQL client for D Programming Language."
-dependency "base" path="../base"
-targetType "library"
-sourcePaths "."
-importPaths "."

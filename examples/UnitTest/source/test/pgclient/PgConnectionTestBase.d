@@ -20,7 +20,7 @@ module test.pgclient.PgConnectionTestBase;
 import test.pgclient.PgClientTestBase;
 
 import hunt.database.base;
-import hunt.database.postgresql;
+import hunt.database.driver.postgresql;
 
 // import java.util.ArrayList;
 // import java.util.List;

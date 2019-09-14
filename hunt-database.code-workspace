@@ -4,15 +4,6 @@
 			"path": "."
 		},
 		{
-			"path": "base"
-		},
-		{
-			"path": "mysql"
-		},
-		{
-			"path": "postgresql"
-		},
-		{
 			"path": "examples/UnitTest"
 		}
 	],

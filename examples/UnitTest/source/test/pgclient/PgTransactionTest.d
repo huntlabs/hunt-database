@@ -21,8 +21,8 @@ import test.pgclient.PgClientTestBase;
 
 import hunt.database.base;
 import hunt.database.base.impl;
-import hunt.database.postgresql;
-import hunt.database.postgresql.impl;
+import hunt.database.driver.postgresql;
+import hunt.database.driver.postgresql.impl;
 
 import hunt.Assert;
 import hunt.Exceptions;

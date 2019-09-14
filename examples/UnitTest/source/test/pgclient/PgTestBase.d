@@ -18,7 +18,7 @@
 module test.pgclient.PgTestBase;
 
 import hunt.database.base;
-import hunt.database.postgresql;
+import hunt.database.driver.postgresql;
 
 import hunt.Assert;
 import hunt.Exceptions;

@@ -4,8 +4,8 @@ module test.pgclient.Common;
 mixin template TestSettingTemplate() {
 
     import hunt.database.base;
-    import hunt.database.postgresql;
-    import hunt.database.postgresql.impl;
+    import hunt.database.driver.postgresql;
+    import hunt.database.driver.postgresql.impl;
     import hunt.logging.ConsoleLogger;
     import core.thread;
 

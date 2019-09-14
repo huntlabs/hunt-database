@@ -5,19 +5,16 @@
     "copyright": "Copyright (C) 2018-2019, HuntLabs",
     "homepage": "https://www.huntlabs.net",
     "license": "Apache-2.0",
-    "versions": ["HUNT_DEBUG", "HUNT_NET_DEBUG1", "HUNT_DB_DEBUG"],
+    "versions": ["HUNT_DEBUG", "HUNT_NET_DEBUG1", "HUNT_DB_DEBUG1"],
 	"dependencies":{
-		"mysql":{
-			"path" :"../../mysql"
-		},
-		"postgresql":{
-			"path" :"../../postgresql"
+		"hunt-database":{
+			"path" :"../../"
 		},
 		"hunt-net":{
 			"path" :"../../../hunt-net"
 		}
 	},
-	"subConfigurations": {
+	"hunt-database": {
 		"hunt-net" : "ssl"
 	}
 }

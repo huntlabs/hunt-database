@@ -20,7 +20,7 @@ module test.mysqlclient.MySQLPoolTest;
 import test.mysqlclient.MySQLPoolTestBase;
 
 import hunt.database.base;
-import hunt.database.mysql;
+import hunt.database.driver.mysql;
 
 import hunt.Assert;
 import hunt.Exceptions;
