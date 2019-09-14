@@ -55,7 +55,7 @@ abstract class MySQLPoolTestBase : MySQLTestBase {
 
     @Test
     void testPool() {
-        int num = 1;
+        int num = 10;
         shared int count = 0;
         MySQLPool pool = createPool(options, 4);
         for (int i = 0;i < num;i++) {
