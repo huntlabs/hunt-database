@@ -168,17 +168,23 @@ class InitCommandCodec : CommandCodec!(DbConnection, InitCommand) {
             string authMethodName = authPluginName; // initialHandshakePacket.getAuthMethodName();
             byte[] serverScramble = scramble; // initialHandshakePacket.getScramble();
             Map!(string, string) properties = cmd.properties();
-            MySQLCollation collation;
+            MySQLCollation collation = MySQLCollation.utf8_general_ci;
             try {
-                collation = MySQLCollation.valueOfName(properties.get("collation"));
+                if(properties.containsKey("collation")) {
+                    collation = MySQLCollation.valueOfName(properties.get("collation"));
+                    properties.remove("collation");
+                } else {
+                    version(HUNT_DEBUG) warning(properties.toString());
+                }
             } catch (IllegalArgumentException e) {
-                if(completionHandler !is null)
-                completionHandler(failedResponse!(DbConnection)(e));
-                return;
+                warning(e);
+                // if(completionHandler !is null)
+                //     completionHandler(failedResponse!(DbConnection)(e));
+                // return;
             }
             int collationId = collation.collationId();
             encoder.charset = collation.mappedCharsetName(); // Charset.forName(collation.mappedCharsetName());
-            properties.remove("collation");
+
             Map!(string, string) clientConnectionAttributes = properties;
             if (clientConnectionAttributes !is null && !clientConnectionAttributes.isEmpty()) {
                 encoder.clientCapabilitiesFlag |= CapabilitiesFlag.CLIENT_CONNECT_ATTRS;

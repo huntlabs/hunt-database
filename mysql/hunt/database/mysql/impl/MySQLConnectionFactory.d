@@ -87,7 +87,10 @@ class MySQLConnectionFactory {
             if (ar.succeeded()) {
                 MySQLSocketConnection conn = ar.result();
                 conn.initialization();
-                conn.sendStartupMessage(username, password, database, properties, 
+                import hunt.collection.AbstractMap;
+                // Map!(string, string) p = (cast(AbstractMap!(string, string))properties).clone();
+                auto p = cast(Map!(string, string))properties.clone();
+                conn.sendStartupMessage(username, password, database, p, 
                     (r) { 
                         if(completionHandler !is null) completionHandler(r); 
                     }
