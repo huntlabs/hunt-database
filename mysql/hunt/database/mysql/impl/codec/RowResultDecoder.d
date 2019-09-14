@@ -17,7 +17,6 @@ import hunt.database.base.Row;
 import hunt.database.base.impl.RowDecoder;
 import hunt.database.base.impl.RowSetImpl;
 
-
 import hunt.Exceptions;
 import hunt.Functions;
 import hunt.logging.ConsoleLogger;
@@ -64,7 +63,7 @@ class RowResultDecoder(R) : RowDecoder {
             row = new MySQLRowImpl(rowDesc);
         }
 
-        version(HUNT_DB_DEBUG) infof("row: %d", _size);
+        version(HUNT_DB_DEBUG) infof("row: %d", _size+1);
         Row row = new MySQLRowImpl(rowDesc);
         if (rowDesc.dataFormat() == DataFormat.BINARY) {
             // BINARY row decoding
@@ -90,14 +89,14 @@ class RowResultDecoder(R) : RowDecoder {
                     Charset charset = (MySQLCollation.valueOfId(collationId).mappedCharsetName()); // Charset.forName
                     int columnDefinitionFlags = columnDesc.flags();
 
-                    version(HUNT_DB_DEBUG) {
+                    version(HUNT_DB_DEBUG_MORE) {
                         tracef("    column[%d]: name=%s, type=%s, flags=%d, charset=%s", 
                             c, columnDesc.name(), dataType, columnDefinitionFlags, charset);
                     }
 
                     decoded = DataTypeCodec.decodeBinary(dataType, charset, columnDefinitionFlags, inBuffer);
                     
-                    version(HUNT_DB_DEBUG) {
+                    version(HUNT_DB_DEBUG_MORE) {
                         tracef("    column[%d]: value=%s", c, decoded.toString());
                     }
                 }
@@ -124,7 +123,7 @@ class RowResultDecoder(R) : RowDecoder {
 
                     decoded = DataTypeCodec.decodeText(dataType, charset, columnDefinitionFlags, inBuffer);
 
-                    version(HUNT_DB_DEBUG) {
+                    version(HUNT_DB_DEBUG_MORE) {
                         tracef("    colum[%d]: value=%s", c, decoded.toString());
                     }
                 }

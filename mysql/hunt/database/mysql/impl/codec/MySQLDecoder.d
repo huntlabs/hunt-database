@@ -63,7 +63,7 @@ class MySQLDecoder : Decoder {
 
         while (true) {
             int available = inBuffer.readableBytes();
-            if (available < 4) {
+            if (available < 4) { // no enough bytes available in buffer
                 break;
             }
 
@@ -94,14 +94,18 @@ class MySQLDecoder : Decoder {
                 }
             } else {
                 inBuffer.readerIndex(packetStartIdx);
+                // Need more bytes, so buffer them first.
+                version(HUNT_DB_DEBUG_MORE) warning("Remaining: ", inBuffer.toString());
+                break;
             }
+
         }
 
         if (inBuffer !is null) {
             if(inBuffer.isReadable()) {
                 // copy the remainings in current buffer
-                version(HUNT_DEBUG) warningf("duplicating the remaings: %s", inBuffer.toString());
-                inBuffer = inBuffer.duplicate();
+                version(HUNT_DB_DEBUG_MORE) warningf("copying the remaings: %s", inBuffer.toString());
+                inBuffer = inBuffer.copy();
             } else {
                 // clear up the buffer
                 inBuffer.release();
@@ -111,7 +115,7 @@ class MySQLDecoder : Decoder {
     }
 
     private void decodePayload(ByteBuf payload, int payloadLength, int sequenceId) {
-        version(HUNT_DEBUG) {
+        version(HUNT_DB_DEBUG) {
             if(inflight.empty()) {
                 warning("inflight is empty.");
             }
