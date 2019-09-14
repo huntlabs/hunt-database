@@ -5,7 +5,7 @@
     "homepage": "https://www.huntlabs.net",
     "description": "Database abstraction layer for D programing language, support PostgreSQL / MySQL.",
     "dependencies": {
-        "hunt-net": {"path": "../hunt-net"}
+        "hunt-net": {"version": "~>0.4.0-rc.4"}
     },
     "configurations": [
         {
