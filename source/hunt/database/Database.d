@@ -16,6 +16,7 @@ import hunt.database.DatabaseOption;
 import hunt.database.base;
 import hunt.database.driver.mysql;
 import hunt.database.driver.postgresql;
+import hunt.database.query.QueryBuilder;
 
 import hunt.logging.ConsoleLogger;
 
@@ -79,7 +80,7 @@ class Database
 		import hunt.database.driver.postgresql.impl.PostgreSQLPoolImpl;
 		import hunt.database.Url;
 
-		if(_options.isPgsql) {
+		if(_options.isPgsql()) {
 			URL url = _options.url;
 
 			PgConnectOptions connectOptions = new PgConnectOptions();
@@ -92,7 +93,7 @@ class Database
 			PoolOptions poolOptions = new PoolOptions().setMaxSize(_options.maximumConnection);
 			_pool = new PgPoolImpl(connectOptions, poolOptions);
 
-		} else if(_options.isPgsql) {
+		} else if(_options.isMysql()) {
 			URL url = _options.url;
 
 			MySQLConnectOptions connectOptions = new MySQLConnectOptions();
@@ -178,10 +179,17 @@ class Database
 		}	
 	}
 
-	// QueryBuilder createQueryBuilder()
-	// {
-	// 	return (new SqlFactory(_options)).createQueryBuilder(this);
-	// }
+	QueryBuilder createQueryBuilder()
+	{
+		import hunt.sql.util.DBType;
+		if(_options.isPgsql()) {
+			return new QueryBuilder(DBType.POSTGRESQL);
+		} else if(_options.isMysql()) {
+			return new QueryBuilder(DBType.MYSQL);
+		} else {
+			throw new DatabaseException("Unsupported database driver: " ~ _options.schemeName());
+		}
+	}
 
 
 	// Dialect createDialect()
