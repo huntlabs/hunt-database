@@ -22,7 +22,7 @@ import hunt.database.base.SqlClient;
 import hunt.database.base.SqlConnection;
 
 import hunt.collection.List;
-// import java.util.stream.Collector;
+import hunt.concurrency.Future;
 
 /**
  * A pool of SQL connections.
@@ -61,6 +61,9 @@ interface Pool : SqlClient {
      * @param handler the handler that will get the connection result
      */
     void getConnection(AsyncSqlConnectionHandler handler);
+
+
+    Future!(SqlConnection) getConnectionAsync();
 
 //     /**
 //      * Borrow a connection from the pool and begin a transaction, the underlying connection will be returned

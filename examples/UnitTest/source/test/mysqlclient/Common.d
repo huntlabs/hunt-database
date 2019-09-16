@@ -16,10 +16,14 @@ mixin template TestSettingTemplate() {
         MySQLCollation collation = MySQLCollation.utf8_general_ci;
 
         options = new MySQLConnectOptions();
-        options.setHost("10.1.11.31");
+        // options.setHost("10.1.11.31");
+        // options.setPort(3306);
+        // options.setUser("dev");
+        // options.setPassword("111111");
+        options.setHost("10.1.222.120");
         options.setPort(3306);
-        options.setUser("dev");
-        options.setPassword("111111");
+        options.setUser("mysql");
+        options.setPassword("123456789");        
         options.setDatabase("mysql_test");
         options.setCollation(collation.name());
     }

@@ -32,6 +32,8 @@ import hunt.database.base.impl.command.CommandResponse;
 import hunt.database.base.impl.command.CommandScheduler;
 import hunt.database.base.AsyncResult;
 
+import hunt.concurrency.Future;
+import hunt.concurrency.FuturePromise;
 import hunt.Exceptions;
 
 /**
@@ -69,6 +71,22 @@ abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
                 handler(failedResult!SqlConnection(ar.cause()));
             }
         });
+    }
+
+    Future!(SqlConnection) getConnectionAsync() {
+        auto f = new FuturePromise!SqlConnection();
+        pool.acquire((DbConnectionAsyncResult ar) {
+            if (ar.succeeded()) {
+                DbConnection conn = ar.result();
+                SqlConnection holder = wrap(conn);
+                conn.initHolder(cast(DbConnection.Holder)holder);
+                f.succeeded(holder);
+            } else {
+                f.failed(cast(Exception)ar.cause());
+            }
+        });        
+
+        return f;
     }
 
 //     override
