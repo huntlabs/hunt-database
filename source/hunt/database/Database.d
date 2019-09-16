@@ -88,7 +88,7 @@ class Database
 			connectOptions.setPort(url.port);
 			connectOptions.setUser(url.user);
 			connectOptions.setPassword(url.pass);        
-			connectOptions.setDatabase(url.path);
+			connectOptions.setDatabase(url.path[1..$]);
 
 			PoolOptions poolOptions = new PoolOptions().setMaxSize(_options.maximumConnection);
 			_pool = new PgPoolImpl(connectOptions, poolOptions);
@@ -101,7 +101,7 @@ class Database
 			connectOptions.setPort(url.port);
 			connectOptions.setUser(url.user);
 			connectOptions.setPassword(url.pass);        
-			connectOptions.setDatabase(url.path);
+			connectOptions.setDatabase(url.path[1..$]);
 			connectOptions.setCollation(url.chartset);
 
 			PoolOptions poolOptions = new PoolOptions().setMaxSize(_options.maximumConnection);
@@ -112,17 +112,19 @@ class Database
 		}
 	}
 
-	// int error()
-	// {
-	// 	return 0;
-	// }
+	int execute(string sql)
+	{
+        version(HUNT_DEBUG) trace(sql);
+		SqlConnection conn = getConnection();
+		scope(exit) {
+			conn.close();
+		}
 
-	// int execute(string sql)
-	// {
-    //     version(HUNT_DEBUG) trace(sql);
-	// 	int ret = new Statement(this, sql).execute();
-	// 	return ret;
-	// }
+		// auto srs = conn.queryAsync(sql);
+
+		RowSet rs = conn.query(sql);
+		return rs.rowCount();
+	}
 
 	// int execute(SqlConnection conn, string sql)
 	// {
@@ -158,12 +160,17 @@ class Database
 	// }
 
 
-	// ResultSet query(string sql)
-	// {
-    //     version(HUNT_DEBUG) trace(sql);
-	// 	ResultSet ret = (new Statement(this, sql)).query();
-	// 	return ret;
-	// }
+	RowSet query(string sql)
+	{
+		version(HUNT_DEBUG) trace(sql);
+		SqlConnection conn = getConnection();
+		scope(exit) {
+			conn.close();
+		}
+
+		RowSet rs = conn.query(sql);
+		return rs;
+	}
 
 	// Statement prepare(string sql)
 	// {

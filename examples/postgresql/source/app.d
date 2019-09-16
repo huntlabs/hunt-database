@@ -14,25 +14,25 @@ import hunt.logging;
 
 import hunt.database;
 
-
 void main()
 {
     writeln("run Database for PostgreSQL demo.");
 
-    Database db = new Database("postgresql://postgres:123456@localhost:5432/test?charset=utf-8");
+    Database db = new Database("postgresql://postgres:123456@10.1.11.44:5432/postgres?charset=utf-8");
 
-    string sql = `INSERT INTO public.test(id, name) VALUES (1, 1);`;
+    string sql = `INSERT INTO public.test(id, val) VALUES (1, 1);`;
     int result = db.execute(sql);
-    writeln(result);
+    tracef("result: %d", result);
     
-    Statement statement = db.prepare("SELECT * FROM public.test limit 10");
+    // Statement statement = db.prepare("SELECT * FROM public.test limit 10");
 
-    ResultSet rs = statement.query();
+    // ResultSet rs = statement.query();
 
-    foreach(row; rs)
-    {
-        writeln(row);
-    }
+    // foreach(row; rs)
+    // {
+    //     writeln(row);
+    // }
 
     db.close();
+    getchar();
 }

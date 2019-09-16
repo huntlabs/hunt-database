@@ -1,19 +1,21 @@
 {
-    "name": "postgresql_demo",
-    "authors": ["putao"],
+    "name": "postgresql-demo",
     "targetType": "executable",
+    "description": "A simple demo for PostgreSQL client.",
+    "copyright": "Copyright (C) 2018-2019, HuntLabs",
+    "homepage": "https://www.huntlabs.net",
+    "license": "Apache-2.0",
+    "versions": [
+        "HUNT_DEBUG",
+        "HUNT_NET_DEBUG1",
+        "HUNT_DB_DEBUG1"
+    ],
     "dependencies": {
-        "hunt-database": {"path":"../../"}
-    },
-    "description": "A minimal D application.",
-    "copyright": "Copyright © 2017, Zhang",
-    "license": "public domain",
-    "configurations": [
-        {
-            "name": "default",
-            "subConfigurations": {
-                "hunt-database": "postgresql"
-            }
+        "hunt-database": {
+            "path": "../../"
         }
-    ]
+    },
+    "subConfigurations": {
+        "hunt-database": "ssl"
+    }
 }
