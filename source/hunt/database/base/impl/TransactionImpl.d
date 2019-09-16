@@ -36,6 +36,7 @@ import hunt.database.base.RowSet;
 import hunt.database.base.SqlClient;
 import hunt.database.base.Transaction;
 
+import hunt.concurrency.Future;
 import hunt.Exceptions;
 import hunt.logging.ConsoleLogger;
 import hunt.Object;
@@ -73,6 +74,15 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
     override TransactionImpl query(string sql, RowSetHandler handler) {
         return super.query(sql, handler);
     }
+
+    // override Future!RowSet queryAsync(string sql) {
+    //     return super.queryAsync(sql);
+    // }
+
+    // override RowSet query(string sql) {
+    //     return super.query(sql);
+    // }
+    
     alias query = SqlClientBase!(TransactionImpl).query;
 
     private void doSchedule(ICommand cmd) {

@@ -9,12 +9,9 @@
 	"dependencies":{
 		"hunt-database":{
 			"path" :"../../"
-		},
-		"hunt-net":{
-			"path" :"../../../hunt-net"
 		}
 	},
-	"hunt-database": {
-		"hunt-net" : "ssl"
-	}
+    "subConfigurations": {
+        "hunt-database": "ssl"
+    }
 }

@@ -23,6 +23,7 @@ import hunt.database.base.RowSet;
 import hunt.database.base.Tuple;
 
 import hunt.collection.List;
+import hunt.concurrency.Future;
 
 
 /**
@@ -40,6 +41,10 @@ interface SqlClient {
      * @return a reference to this, so the API can be used fluently
      */
     SqlClient query(string sql, RowSetHandler handler);
+
+    Future!RowSet queryAsync(string sql);
+
+    RowSet query(string sql);
 
     /**
      * Execute a simple query.

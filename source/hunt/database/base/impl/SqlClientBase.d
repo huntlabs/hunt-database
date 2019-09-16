@@ -39,6 +39,8 @@ import hunt.database.base.SqlResult;
 import hunt.database.base.Tuple;
 
 import hunt.collection.List;
+import hunt.concurrency.Future;
+import hunt.concurrency.FuturePromise;
 import hunt.Exceptions;
 import hunt.Functions;
 import hunt.logging.ConsoleLogger;
@@ -53,11 +55,30 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
 
     override
     C query(string sql, RowSetHandler handler) {
-        return query!(RowSet, RowSetImpl, RowSet)(sql, false, RowSetImpl.FACTORY, handler); // RowSetImpl.COLLECTOR, 
+        return query!(RowSet, RowSetImpl, RowSet)(sql, false, RowSetImpl.FACTORY, handler); 
     }
 
-    private C query(R1, R2, R3)(string sql,
-                bool singleton,
+    Future!RowSet queryAsync(string sql) {
+        auto f = new FuturePromise!RowSet();
+
+        auto b = new SqlResultBuilder!(RowSet, RowSetImpl, RowSet)(RowSetImpl.FACTORY, (RowSetAsyncResult ar) {
+            if (ar.succeeded()) { f.succeeded(ar.result());}
+            else { f.failed(cast(Exception)ar.cause()); }
+        });
+
+        schedule!(bool)(new SimpleQueryCommand!(RowSet)(sql, false, b), 
+            (CommandResponse!bool r) {  b.handle(r); }
+        );
+
+        return f;
+    }
+
+    RowSet query(string sql) {
+        auto f = queryAsync(sql);
+        return f.get();
+    }
+
+    private C query(R1, R2, R3)(string sql, bool singleton,
                 Function!(R1, R2) factory,
                 AsyncResultHandler!(R3) handler) {
 
@@ -65,6 +86,7 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
         schedule!(bool)(new SimpleQueryCommand!(R1)(sql, singleton, b), 
             (CommandResponse!bool r) {  b.handle(r); }
         );
+
         return cast(C) this;
     }
 

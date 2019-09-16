@@ -92,6 +92,8 @@ interface SqlConnection : SqlClient {
     // override
     SqlConnection query(string sql, RowSetHandler handler);
 
+    alias query = SqlClient.query;
+
     // override
     // <R> SqlConnection query(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 

@@ -34,5 +34,5 @@ mixin_output.d
 
 # Examples
 examples/mysql/mysql_demo
+examples/postgresql/postgresql-demo
 examples/UnitTest/unittest
-test.log
