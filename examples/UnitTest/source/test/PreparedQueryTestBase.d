@@ -37,92 +37,92 @@ abstract class PreparedQueryTestBase : QueryTestBase {
 
     protected abstract string statement(string[] parts...);
 
-    // @Test
-    // void testPrepare() {
-    //     connect((SqlConnection conn) {
-    //         conn.prepare(statement("SELECT id, message from immutable where id=", ""), (PreparedQueryAsyncResult ar)  {
-    //             if(ar.succeeded()) {
-    //                 trace("running here");
-    //             } else {
-    //                 warning(ar.cause().msg);
-    //             }
-    //             conn.close();
-    //         });
-    //     });
-    // }
+    @Test
+    void testPrepare() {
+        connect((SqlConnection conn) {
+            conn.prepare(statement("SELECT id, message from immutable where id=", ""), (PreparedQueryAsyncResult ar)  {
+                if(ar.succeeded()) {
+                    trace("running here");
+                } else {
+                    warning(ar.cause().msg);
+                }
+                conn.close();
+            });
+        });
+    }
 
-    // @Test
-    // void testPrepareError() {
-    //     connect((SqlConnection conn) {
-    //         conn.prepare("SELECT whatever from DOES_NOT_EXIST", (PreparedQueryAsyncResult ar) {
-    //             trace("running here");
-    //             assert(ar.failed());
-    //             warning(ar.cause().msg);
-    //             conn.close();
-    //         });
-    //     });
-    // }
+    @Test
+    void testPrepareError() {
+        connect((SqlConnection conn) {
+            conn.prepare("SELECT whatever from DOES_NOT_EXIST", (PreparedQueryAsyncResult ar) {
+                trace("running here");
+                assert(ar.failed());
+                warning(ar.cause().msg);
+                conn.close();
+            });
+        });
+    }
 
-    // @Test
-    // void testPreparedQuery() {
-    //     connect((SqlConnection conn) {
-    //         string sql = statement("SELECT * FROM immutable WHERE id=", "");
-    //         conn.preparedQuery(sql, Tuple.of(1), (AsyncResult!RowSet ar) {
-    //             if(ar.succeeded()) {
-    //                 trace("running here");
-    //                 RowSet rowSet = ar.result();
-    //                 assert(1 == rowSet.size());
-    //                 Tuple row = rowSet.iterator().front();
-    //                 assert(1 == row.getInteger(0));
-    //                 assert("fortune: No such file or directory" == row.getString(1));
-    //             } else {
-    //                 warning(ar.cause().msg);
-    //             }
-    //             conn.close();
-    //         });
-    //     });
-    // }
+    @Test
+    void testPreparedQuery() {
+        connect((SqlConnection conn) {
+            string sql = statement("SELECT * FROM immutable WHERE id=", "");
+            conn.preparedQuery(sql, Tuple.of(1), (AsyncResult!RowSet ar) {
+                if(ar.succeeded()) {
+                    trace("running here");
+                    RowSet rowSet = ar.result();
+                    assert(1 == rowSet.size());
+                    Tuple row = rowSet.iterator().front();
+                    assert(1 == row.getInteger(0));
+                    assert("fortune: No such file or directory" == row.getString(1));
+                } else {
+                    warning(ar.cause().msg);
+                }
+                conn.close();
+            });
+        });
+    }
 
-    // @Test
-    // void testPreparedQueryParamCoercionTypeError() {
-    //     connect((SqlConnection conn) {
-    //         string sql = statement("SELECT * FROM immutable WHERE id=", "");
-    //         conn.prepare(sql, (AsyncResult!PreparedQuery ar) {
-    //             if(ar.succeeded()) {
-    //                 PreparedQuery ps = ar.result();
-    //                 ps.execute(Tuple.of("1"), (AsyncResult!RowSet ar2) {
-    //                     trace("running here");
-    //                     assert(ar2.failed());
-    //                     warning(ar2.cause().msg);
-    //                     conn.close();
-    //                 });
-    //             } else {
-    //                 warning(ar.cause().msg);
-    //                 conn.close();
-    //             }
-    //         });
-    //     });
-    // }
+    @Test
+    void testPreparedQueryParamCoercionTypeError() {
+        connect((SqlConnection conn) {
+            string sql = statement("SELECT * FROM immutable WHERE id=", "");
+            conn.prepare(sql, (AsyncResult!PreparedQuery ar) {
+                if(ar.succeeded()) {
+                    PreparedQuery ps = ar.result();
+                    ps.execute(Tuple.of("1"), (AsyncResult!RowSet ar2) {
+                        trace("running here");
+                        assert(ar2.failed());
+                        warning(ar2.cause().msg);
+                        conn.close();
+                    });
+                } else {
+                    warning(ar.cause().msg);
+                    conn.close();
+                }
+            });
+        });
+    }
 
-    // @Test
-    // void testPreparedQueryParamCoercionQuantityError() {
-    //     connect((SqlConnection conn) {
-    //         string sql = statement("SELECT * FROM immutable WHERE id=", "");
-    //         conn.prepare(sql, (AsyncResult!PreparedQuery ar) {
-    //             if(ar.succeeded()) {
-    //                 PreparedQuery ps = ar.result();
-    //                 ps.execute(Tuple.of(1, 2), (AsyncResult!RowSet ar2) {
-    //                     trace("running here");
-    //                     assert(ar2.failed());
-    //                     warning(ar2.cause().msg);
-    //                     conn.close();
-    //                 });
-    //             } else {
-    //                 warning(ar.cause().msg);
-    //             }
-    //         });
-    //     });
-    // }
+    @Test
+    void testPreparedQueryParamCoercionQuantityError() {
+        connect((SqlConnection conn) {
+            string sql = statement("SELECT * FROM immutable WHERE id=", "");
+            conn.prepare(sql, (AsyncResult!PreparedQuery ar) {
+                if(ar.succeeded()) {
+                    PreparedQuery ps = ar.result();
+                    ps.execute(Tuple.of(1, 2), (AsyncResult!RowSet ar2) {
+                        trace("running here");
+                        assert(ar2.failed());
+                        warning(ar2.cause().msg);
+                        conn.close();
+                    });
+                } else {
+                    warning(ar.cause().msg);
+                }
+            });
+        });
+    }
 
     // @Test
     // void testPreparedUpdate() {
@@ -156,21 +156,21 @@ abstract class PreparedQueryTestBase : QueryTestBase {
     //     }));
     // }
 
-    // @Test
-    // void testPreparedUpdateWithNullParams() {
-    //     connect((SqlConnection conn) {
-    //         conn.preparedQuery(
-    //             statement("INSERT INTO mutable (val, id) VALUES (", ",", ")"), 
-    //             Tuple.of(null, 1),
-    //             (AsyncResult!RowSet ar) {
-    //                 trace("running here");
-    //                 assert(ar.failed());
-    //                 warning(ar.cause().msg);
-    //                 conn.close();
-    //             }
-    //         );
-    //     });
-    // }
+    @Test
+    void testPreparedUpdateWithNullParams() {
+        connect((SqlConnection conn) {
+            conn.preparedQuery(
+                statement("INSERT INTO mutable (val, id) VALUES (", ",", ")"), 
+                Tuple.of(null, 1),
+                (AsyncResult!RowSet ar) {
+                    trace("running here");
+                    assert(ar.failed());
+                    warning(ar.cause().msg);
+                    conn.close();
+                }
+            );
+        });
+    }
 
     // // Need to test partial query close or abortion ?
     // @Test

@@ -6,9 +6,10 @@
     "homepage": "https://www.huntlabs.net",
     "license": "Apache-2.0",
     "versions": [
-        "HUNT_DEBUG",
+        "HUNT_DEBUG1",
         "HUNT_NET_DEBUG1",
-        "HUNT_DB_DEBUG1"
+        "HUNT_DB_DEBUG1",
+        "HUNT_SQL_DEBUG1"
     ],
     "dependencies": {
         "hunt-database": {
