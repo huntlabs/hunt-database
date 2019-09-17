@@ -9,9 +9,11 @@ import hunt.collection.Set;
 import hunt.net.OpenSSLEngineOptions;
 import hunt.net.ProxyOptions;
 import hunt.net.util.HttpURI;
+import hunt.net.util.UrlEncoded;
 import hunt.Exceptions;
 
 import core.time;
+import std.array;
 
 /**
  * Connect options for configuring {@link MySQLConnection} or {@link MySQLPool}.
@@ -25,10 +27,9 @@ class MySQLConnectOptions : SqlConnectOptions {
      * @return a {@link MySQLConnectOptions} parsed from the connection URI
      * @throws IllegalArgumentException when the {@code connectionUri} is in an invalid format
      */
-    // static MySQLConnectOptions fromUri(string connectionUri) {
-    //     JsonObject parsedConfiguration = MySQLConnectionUriParser.parse(connectionUri);
-    //     return new MySQLConnectOptions(parsedConfiguration);
-    // }
+    static MySQLConnectOptions fromUri(string connectionUri) {
+        return new MySQLConnectOptions(new HttpURI(connectionUri));
+    }
 
     enum string DEFAULT_HOST = "localhost";
     enum int DEFAULT_PORT = 3306;
@@ -36,16 +37,9 @@ class MySQLConnectOptions : SqlConnectOptions {
     enum string DEFAULT_PASSWORD = "";
     enum string DEFAULT_SCHEMA = "";
     enum string DEFAULT_COLLATION = "utf8mb4_general_ci";
-    // enum Map!(string, string) DEFAULT_CONNECTION_ATTRIBUTES;
-    enum string[string] DEFAULT_CONNECTION_ATTRIBUTES = ["_client_name" : "hunt-mysql-client",
+    enum string[string] DEFAULT_CONNECTION_ATTRIBUTES = [
+        "_client_name" : "hunt-mysql-client",
         "_client_version" : "1.0.0"];
-
-    // static {
-    //     Map!(string, string) defaultAttributes = new HashMap<>();
-    //     defaultAttributes.put("_client_name", "vertx-mysql-client");
-    //     defaultAttributes.put("_client_version", "3.8.0");
-    //     DEFAULT_CONNECTION_ATTRIBUTES = Collections.unmodifiableMap(defaultAttributes);
-    // }
 
     private string collation;
 
@@ -54,11 +48,14 @@ class MySQLConnectOptions : SqlConnectOptions {
         this.collation = DEFAULT_COLLATION;
     }
 
-    // this(JsonObject json) {
-    //     super(json);
-    //     this.collation = DEFAULT_COLLATION;
-    //     MySQLConnectOptionsConverter.fromJson(json, this);
-    // }
+    this(HttpURI uri) {        
+        super(uri);
+        UrlEncoded maps = new UrlEncoded(uri.getQuery());
+        string chartset = maps.getValue("chartset");
+        if(!chartset.empty()) {
+            this.collation = collation;
+        }
+    }
 
     this(MySQLConnectOptions other) {
         super(other);

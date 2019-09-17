@@ -1,6 +1,7 @@
 module hunt.database.base.SqlConnectOptions;
 
 import hunt.net.NetClientOptions;
+import hunt.net.util.HttpURI;
 
 import hunt.collection;
 import hunt.Exceptions;
@@ -30,11 +31,16 @@ abstract class SqlConnectOptions : NetClientOptions {
         initialize();
     }
 
-    // this(JsonObject json) {
-    //     super(json);
-    //     initialize();
-    //     SqlConnectOptionsConverter.fromJson(json, this);
-    // }
+    this(HttpURI uri) {   
+        super();    
+        this.host = uri.getHost();
+        this.port = uri.getPort();
+        this.user = uri.getUser();
+        this.password = uri.getPassword();
+        string path = uri.getPath();
+        assert(path.length >1);
+        this.database = path[1..$];
+    }
 
     this(SqlConnectOptions other) {
         super(other);

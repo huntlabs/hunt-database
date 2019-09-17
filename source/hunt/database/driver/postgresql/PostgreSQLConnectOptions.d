@@ -39,9 +39,6 @@ import std.concurrency : initOnce;
 import std.string;
 
 
-// import static java.lang.Integer.parseInt;
-// import static java.lang.System.getenv;
-
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  * @author Billy Yuan <billy112487983@gmail.com>
@@ -55,10 +52,9 @@ class PgConnectOptions : SqlConnectOptions {
      * @return a {@link PgConnectOptions} parsed from the connection URI
      * @throws IllegalArgumentException when the {@code connectionUri} is in an invalid format
      */
-    // static PgConnectOptions fromUri(string connectionUri) {
-    //     JsonObject parsedConfiguration = PgConnectionUriParser.parse(connectionUri);
-    //     return new PgConnectOptions(parsedConfiguration);
-    // }
+    static PgConnectOptions fromUri(string connectionUri) {
+        return new PgConnectOptions(new HttpURI(connectionUri));
+    }
 
     /**
      * Provide a {@link PgConnectOptions} configured with environment variables, if the environment variable
@@ -105,23 +101,12 @@ class PgConnectOptions : SqlConnectOptions {
     enum string DEFAULT_PASSWORD = "pass";
     enum int DEFAULT_PIPELINING_LIMIT = 256;
     enum SslMode DEFAULT_SSLMODE = SslMode.DISABLE;
-    enum string[string] DEFAULT_PROPERTIES = ["application_name" : "hunt-pg-client",
-            "client_encoding" : "utf8",     "DateStyle" : "ISO", 
-            "intervalStyle" : "postgres",   "extra_float_digits" : "2"];
-    // static Map!(string, string) DEFAULT_PROPERTIES() {
-    //     __gshared Map!(string, string) inst;
-    //     return initOnce!inst(createDefaultProperties());
-    // }
-
-    // private static Map!(string, string) createDefaultProperties() {
-    //     Map!(string, string) defaultProperties = new HashMap!(string, string)();
-    //     defaultProperties.put("application_name", "vertx-pg-client");
-    //     defaultProperties.put("client_encoding", "utf8");
-    //     defaultProperties.put("DateStyle", "ISO");
-    //     defaultProperties.put("intervalStyle", "postgres");
-    //     defaultProperties.put("extra_float_digits", "2");
-    //     return defaultProperties;
-    // }
+    enum string[string] DEFAULT_PROPERTIES = [
+            "application_name" : "hunt-pg-client",
+            "client_encoding" : "utf8",     
+            "DateStyle" : "ISO", 
+            "intervalStyle" : "postgres",   
+            "extra_float_digits" : "2"];
 
     private int pipeliningLimit;
     private SslMode sslMode;
@@ -130,10 +115,9 @@ class PgConnectOptions : SqlConnectOptions {
         super();
     }
 
-    // this(JsonObject json) {
-    //     super(json);
-    //     PgConnectOptionsConverter.fromJson(json, this);
-    // }
+    this(HttpURI uri) {        
+        super(uri);
+    }
 
     this(PgConnectOptions other) {
         super(other);

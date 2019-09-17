@@ -11,8 +11,11 @@
 
 module hunt.database.DatabaseOption;
 
-import hunt.database.Url;
+import hunt.net.util.HttpURI;
 
+/**
+ * 
+ */
 class DatabaseOption
 {
 
@@ -21,26 +24,26 @@ class DatabaseOption
     private int _maximumPoolSize = 2;
     private int _minldle = 1;
     private int _connectionTimeout = 10000;
-    private URL _url;
+    private HttpURI _url;
     
-    this()
-    {
+    // this()
+    // {
     
-    }
+    // }
 
     this(string url)
     {
-        this._url = url.parseURL;
+        this._url = new HttpURI(url);
     }
 
     DatabaseOption addDatabaseSource(string url)
     {
         assert(url);
-        this._url = url.parseURL;
+        this._url = new HttpURI(url);
         return this;
     }
 
-    URL url()
+    HttpURI url()
     {
         return _url;
     }
@@ -79,15 +82,15 @@ class DatabaseOption
     }
 
     string schemeName() {
-        return _url.scheme;
+        return _url.getScheme();
     }
 
 	bool isMysql()
 	{
-		return _url.scheme == "mysql";
+		return _url.getScheme() == "mysql";
 	}
 	bool isPgsql()
 	{
-		return _url.scheme == "postgresql";
+		return _url.getScheme() == "postgresql";
 	}
 }

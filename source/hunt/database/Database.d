@@ -19,6 +19,7 @@ import hunt.database.driver.postgresql;
 import hunt.database.query.QueryBuilder;
 
 import hunt.logging.ConsoleLogger;
+import hunt.net.util.HttpURI;
 
 /**
  * 
@@ -78,32 +79,14 @@ class Database
 	{
 		import hunt.database.driver.mysql.impl.MySQLPoolImpl;
 		import hunt.database.driver.postgresql.impl.PostgreSQLPoolImpl;
-		import hunt.database.Url;
 
 		if(_options.isPgsql()) {
-			URL url = _options.url;
-
-			PgConnectOptions connectOptions = new PgConnectOptions();
-			connectOptions.setHost(url.host);
-			connectOptions.setPort(url.port);
-			connectOptions.setUser(url.user);
-			connectOptions.setPassword(url.pass);        
-			connectOptions.setDatabase(url.path[1..$]);
-
+			PgConnectOptions connectOptions = new PgConnectOptions(_options.url);
 			PoolOptions poolOptions = new PoolOptions().setMaxSize(_options.maximumConnection);
 			_pool = new PgPoolImpl(connectOptions, poolOptions);
 
 		} else if(_options.isMysql()) {
-			URL url = _options.url;
-
-			MySQLConnectOptions connectOptions = new MySQLConnectOptions();
-			connectOptions.setHost(url.host);
-			connectOptions.setPort(url.port);
-			connectOptions.setUser(url.user);
-			connectOptions.setPassword(url.pass);        
-			connectOptions.setDatabase(url.path[1..$]);
-			connectOptions.setCollation(url.chartset);
-
+			MySQLConnectOptions connectOptions = new MySQLConnectOptions(_options.url);
 			PoolOptions poolOptions = new PoolOptions().setMaxSize(_options.maximumConnection);
 			_pool = new MySQLPoolImpl(connectOptions, poolOptions);
 
@@ -119,8 +102,6 @@ class Database
 		scope(exit) {
 			conn.close();
 		}
-
-		// auto srs = conn.queryAsync(sql);
 
 		RowSet rs = conn.query(sql);
 		return rs.rowCount();
