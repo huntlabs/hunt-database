@@ -191,9 +191,6 @@ abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
 
     protected void doClose() {
         pool.close();
-        // if (closeVertx) {
-        //     context.owner().close();
-        // }
     }
 
     override

@@ -31,6 +31,7 @@ import hunt.database.base.RowSet;
 import hunt.database.base.Transaction;
 import hunt.database.base.Tuple;
 
+import hunt.concurrency.Future;
 import hunt.Exceptions;
 import hunt.logging.ConsoleLogger;
 import hunt.net.AbstractConnection;
@@ -56,9 +57,16 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbCo
         return super.query(sql, handler);
     }
 
-
     override C prepare(string sql, PreparedQueryHandler handler) {
         return super.prepare(sql, handler);
+    }
+
+    override Future!PreparedQuery prepareAsync(string sql) {
+        return super.prepareAsync(sql);
+    }
+
+    override PreparedQuery prepare(string sql) {
+        return super.prepare(sql);
     }
 
     override C preparedQuery(string sql, RowSetHandler handler) {

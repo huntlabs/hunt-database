@@ -60,11 +60,15 @@ class PreparedQueryImpl : PreparedQuery {
     private DbConnection conn;
     private PreparedStatement ps;
     private shared bool closed = false;
+    private Variant[string] _parameters;
 
     this(DbConnection conn, PreparedStatement ps) { 
         this.conn = conn;
-        // this.context = context;
         this.ps = ps;
+    }
+
+    void setParameter(string name, Variant value) {
+
     }
 
     PreparedQuery execute(RowSetHandler handler) {
@@ -95,7 +99,6 @@ class PreparedQueryImpl : PreparedQuery {
             string cursorId,
             bool suspended,
             bool singleton,
-            // Collector!(Row, A, R) collector,
             QueryResultHandler!(R) resultHandler,
             ResponseHandler!(bool) handler) {
 

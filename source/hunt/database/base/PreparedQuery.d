@@ -25,7 +25,6 @@ import hunt.database.base.impl.ArrayTuple;
 import hunt.database.base.Tuple;
 
 import hunt.collection.List;
-// import java.util.stream.Collector;
 
 
 alias PreparedQueryHandler = AsyncResultHandler!(PreparedQuery);
@@ -42,9 +41,6 @@ interface PreparedQuery {
      * Calls {@link #execute(Tuple, Handler)} with an empty tuple argument.
      */
     PreparedQuery execute(RowSetHandler handler);
-    // {
-    //     return execute(ArrayTuple.EMPTY, handler);
-    // }
 
     /**
      * Calls {@link #execute(Tuple, Collector, Handler)} with an empty tuple argument.
@@ -74,9 +70,6 @@ interface PreparedQuery {
      * @return create a query cursor with a {@code fetch} size and empty arguments
      */
     Cursor cursor();
-    // default Cursor cursor() {
-    //     return cursor(ArrayTuple.EMPTY);
-    // }
 
     /**
      * Create a cursor with the provided {@code arguments}.

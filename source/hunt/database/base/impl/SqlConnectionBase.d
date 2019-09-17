@@ -27,9 +27,12 @@ import hunt.database.base.impl.command.PrepareStatementCommand;
 import hunt.database.base.AsyncResult;
 import hunt.database.base.PreparedQuery;
 
+import hunt.concurrency.Future;
+import hunt.concurrency.FuturePromise;
 import hunt.Exceptions;
 import hunt.logging.ConsoleLogger;
 import hunt.net.AbstractConnection;
+
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -58,4 +61,26 @@ abstract class SqlConnectionBase(C) : SqlClientBase!(C) {
         );
         return cast(C) this;
     }
+
+    Future!PreparedQuery prepareAsync(string sql) {
+        version(HUNT_DB_DEBUG) trace(sql);
+        auto f = new FuturePromise!PreparedQuery();
+
+        schedule!(PreparedStatement)(new PrepareStatementCommand(sql), 
+            (CommandResponse!PreparedStatement ar) {
+                if (ar.succeeded()) {
+                    f.succeeded(new PreparedQueryImpl(conn, ar.result()));
+                } else {
+                    f.failed(cast(Exception)ar.cause()); 
+                }
+            }
+        );
+        
+        return f;
+    }
+
+    PreparedQuery prepare(string sql) {
+        auto f = prepareAsync(sql);
+        return f.get();
+    }    
 }

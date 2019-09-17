@@ -36,12 +36,12 @@ class DatabaseOption
         this._url = new HttpURI(url);
     }
 
-    DatabaseOption addDatabaseSource(string url)
-    {
-        assert(url);
-        this._url = new HttpURI(url);
-        return this;
-    }
+    // DatabaseOption addDatabaseSource(string url)
+    // {
+    //     assert(url);
+    //     this._url = new HttpURI(url);
+    //     return this;
+    // }
 
     HttpURI url()
     {

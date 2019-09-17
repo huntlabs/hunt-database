@@ -46,9 +46,9 @@ db.execute("SET NAMES utf8");
 int result = db.execute('INSERT INTO user(username) VALUES("Brian")');
 // if execute error ,db will throw an DatabaseException
 ```
--  ResultSet Database.query(sql) Return ResultSet object for query(SELECT).
+-  RowSet Database.query(sql) Return RowSet object for query(SELECT).
 ```D
-ResultSet rs = db.query("SELECT * FROM user LIMIT 10");
+RowSet rs = db.query("SELECT * FROM user LIMIT 10");
 ```
 -  Statement Database.prepare(sql) Create a prepared Statement object.
 ```D
@@ -59,9 +59,9 @@ Statement stmt = db.prepare("SELECT * FROM user where username = :username and a
 stmt.setParameter("username", "viile");
 stmt.setParameter("age", 18);
 ```
-- ResultSet Statement.query()  Return ResultSet 
+- RowSet Statement.query()  Return RowSet 
 ```D
-ResultSet rs = stmt.query();
+RowSet rs = stmt.query();
 foreach(row; rs)
 {
     writeln(row["username"]);

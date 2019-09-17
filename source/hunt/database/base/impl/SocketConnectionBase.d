@@ -55,7 +55,6 @@ abstract class SocketConnectionBase : DbConnection {
     // private ArrayDeque<CommandBase<?>> pending = new ArrayDeque<>();
     private DList!(ICommand) pending;
     
-    // private Context context;
     private int inflight;
     private Holder holder;
     private int pipeliningLimit;
@@ -70,15 +69,10 @@ abstract class SocketConnectionBase : DbConnection {
                         int pipeliningLimit) {
         this._socket = socket;
         this.psSeq = new StringLongSequence();
-        // this.context = context;
         this.pipeliningLimit = pipeliningLimit;
         this.psCache = cachePreparedStatements ? new PreparedStatementCache(preparedStatementCacheSize, this) : null;
         this.preparedStatementCacheSqlLimit = preparedStatementCacheSqlLimit;
     }
-
-    // Context context() {
-    //     return context;
-    // }
 
     void initialization() {
 
@@ -185,12 +179,10 @@ abstract class SocketConnectionBase : DbConnection {
 
 
     private void checkPending() {
-        // ConnectionEventHandler ctx = _socket.getHandler();
         if (inflight < pipeliningLimit) {
             ICommand cmd;
             while (inflight < pipeliningLimit && (cmd = pollPending()) !is null) {
                 inflight++;
-                // _socket.write(cast(Object)cmd)
                 version(HUNT_DB_DEBUG_MORE) {
                     tracef("chekcing %s ... ", typeid(cast(Object)cmd));
                 } else version(HUNT_DB_DEBUG) {
@@ -198,7 +190,6 @@ abstract class SocketConnectionBase : DbConnection {
                 } 
                 _socket.encode(cast(Object)cmd);
             }
-            // ctx.flush();
         }
     }
 

@@ -212,7 +212,7 @@ class ConnectionPool {
     }
 
     private void release(PooledConnection proxy) {
-        version(HUNT_DB_DEBUG) trace("try to release a DB connection");
+        version(HUNT_DB_DEBUG) trace("Try to release a DB connection.");
         if (_all.contains(proxy)) {
 
             synchronized (this) {

@@ -12,6 +12,7 @@
 module hunt.database.Database;
 
 import hunt.database.DatabaseOption;
+import hunt.database.Statement;
 
 import hunt.database.base;
 import hunt.database.driver.mysql;
@@ -53,7 +54,6 @@ class Database
 	Transaction getTransaction(SqlConnection conn) {
 		return conn.begin();
 	}
-	
 
 	SqlConnection getConnection() {
 		auto conn = _pool.getConnectionAsync().get();
@@ -143,7 +143,7 @@ class Database
 
 	RowSet query(string sql)
 	{
-		version(HUNT_DEBUG) trace(sql);
+		version (HUNT_SQL_DEBUG) trace(sql);
 		SqlConnection conn = getConnection();
 		scope(exit) {
 			conn.close();
@@ -153,11 +153,11 @@ class Database
 		return rs;
 	}
 
-	// Statement prepare(string sql)
-	// {
-	// 	Statement ret = new Statement(this, sql);
-	// 	return ret;
-	// }
+	Statement prepare(string sql)
+	{
+		Statement ret = new Statement(this, sql);
+		return ret;
+	}
 
 	void close()
 	{

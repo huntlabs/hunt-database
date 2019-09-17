@@ -5,6 +5,7 @@ import hunt.net.util.HttpURI;
 
 import hunt.collection;
 import hunt.Exceptions;
+import hunt.logging.ConsoleLogger;
 
 import std.array;
 
@@ -27,12 +28,15 @@ abstract class SqlConnectOptions : NetClientOptions {
     private Map!(string, string) properties;
 
     this() {
+        properties = new HashMap!(string, string)();
         super();
         initialize();
     }
 
-    this(HttpURI uri) {   
-        super();    
+    this(HttpURI uri) {
+        version(HUNT_DEBUG) info("DB connection string: ", uri.toString());
+        super(); 
+        initialize();
         this.host = uri.getHost();
         this.port = uri.getPort();
         this.user = uri.getUser();
@@ -44,6 +48,7 @@ abstract class SqlConnectOptions : NetClientOptions {
 
     this(SqlConnectOptions other) {
         super(other);
+        initialize();
         this.host = other.host;
         this.port = other.port;
         this.user = other.user;
@@ -71,7 +76,7 @@ abstract class SqlConnectOptions : NetClientOptions {
      * @return a reference to this, so the API can be used fluently
      */
     SqlConnectOptions setHost(string host) {
-        assert(host, "Host can not be null");
+        assert(!host.empty(), "Host can not be null");
         this.host = host;
         return this;
     }

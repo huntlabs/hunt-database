@@ -26,7 +26,7 @@ import hunt.database.base.Transaction;
 import hunt.database.base.Tuple;
 
 import hunt.collection.List;
-
+import hunt.concurrency.Future;
 
 alias AsyncSqlConnectionHandler = AsyncResultHandler!SqlConnection;
 alias SqlConnectionAsyncResult = AsyncResult!SqlConnection;
@@ -39,14 +39,6 @@ alias SqlConnectionAsyncResult = AsyncResult!SqlConnection;
  * @author <a href="mailto:emad.albloushi@gmail.com">Emad Alblueshi</a>
  */
 interface SqlConnection : SqlClient {
-
-    /**
-     * Create a prepared query.
-     *
-     * @param sql the sql
-     * @param handler the handler notified with the prepared query asynchronously
-     */
-    SqlConnection prepare(string sql, PreparedQueryHandler handler);
 
     /**
      * Set an handler called with connection errors.
@@ -84,8 +76,6 @@ interface SqlConnection : SqlClient {
      */
     void close();
 
-    SqlConnection preparedQuery(string sql, RowSetHandler handler);
-
     // override
     // <R> SqlConnection preparedQuery(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
 
@@ -96,6 +86,20 @@ interface SqlConnection : SqlClient {
 
     // override
     // <R> SqlConnection query(string sql, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+
+    /**
+     * Create a prepared query.
+     *
+     * @param sql the sql
+     * @param handler the handler notified with the prepared query asynchronously
+     */
+    SqlConnection prepare(string sql, PreparedQueryHandler handler);
+
+    Future!PreparedQuery prepareAsync(string sql);
+
+    PreparedQuery prepare(string sql);
+
+    SqlConnection preparedQuery(string sql, RowSetHandler handler);
 
     override
     SqlConnection preparedQuery(string sql, Tuple arguments, RowSetHandler handler);
