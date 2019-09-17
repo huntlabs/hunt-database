@@ -116,9 +116,15 @@ abstract class SocketConnectionBase : DbConnection {
 
     override
     void close(Holder holder) {
+
+        version(HUNT_DB_DEBUG) infof("closing socket... status: %s", status);
+
         if (status == Status.CONNECTED) {
             status = Status.CLOSING;
             _socket.close();
+            // // Append directly since schedule checks the status and won't enqueue the command
+            // pending.add(CloseConnectionCommand.INSTANCE);
+            // checkPending();            
         }
         // if (Vertx.currentContext() == context) {
         //     if (status == Status.CONNECTED) {

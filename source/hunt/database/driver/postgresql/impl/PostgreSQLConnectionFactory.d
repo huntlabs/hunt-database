@@ -169,8 +169,10 @@ class PgConnectionFactory {
 
                 override void connectionOpened(Connection connection) {
                     version(HUNT_DEBUG) infof("Connection created: %s", connection.getRemoteAddress());
+                    AbstractConnection ac = cast(AbstractConnection)connection;
+                    ac.setState(ConnectionState.Opened);
 
-                    pgConn = newSocketConnection(cast(AbstractConnection)connection);
+                    pgConn = newSocketConnection(ac);
                     handler(succeededResult(pgConn));
                 }
 

@@ -150,6 +150,7 @@ class ConnectionPool {
          * Close the underlying connection
          */
         private void close() {
+            version(HUNT_DB_DEBUG) info("closing pooled connection....");
             conn.close(this);
         }
 

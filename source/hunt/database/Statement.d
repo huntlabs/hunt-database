@@ -31,6 +31,10 @@ import std.variant;
 
 /**
  * 
+ * See_Also:
+ *    https://www.codemeright.com/blog/post/named-parameterized-query-java
+ *    https://www.javaworld.com/article/2077706/named-parameters-for-preparedstatement.html
+ *    https://github.com/marcosemiao/jdbc-named-parameters/tree/master/src/main/java/fr/ms/sql
  */
 class Statement
 {
@@ -128,10 +132,11 @@ class Statement
             auto re = regex(r":" ~ k ~ r"([^\w]*)", "g");
             if ((cast(String) v !is null) || (cast(Nullable!string) v !is null))
             {
-                if (_db.getOption().isPgsql()) {
+                if (_db.getOption().isPgsql() || _db.getOption().isMysql()) {
                     // str = str.replaceAll(re, conn.escapeLiteral(v.toString()) ~ "$1");
-                    str = str.replaceAll(re, v.toString() ~ "$1");
-                } else if (_db.getOption().isMysql()) {
+                    // str = str.replaceAll(re, v.toString() ~ "$1");
+        // warning(str ~ "      " ~ v.toString() ~ "$1");
+                // } else if (_db.getOption().isMysql()) {
                     // str = str.replaceAll(re, "'" ~ conn.escape(v.toString()) ~ "'" ~ "$1");
                     str = str.replaceAll(re, "'" ~ v.toString() ~ "'" ~ "$1");
                 }
