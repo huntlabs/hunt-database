@@ -305,4 +305,22 @@ interface Row : Tuple {
 
     // <T> T[] getValues(Class!(T) type, int idx);
 
+    final T getAs(T)() if(is(T == class) || is(T == struct)) {
+        import std.traits;
+        T r;
+        static if(is(T == class)) {
+            r = new T();
+        }
+
+		static foreach (string member; FieldNameTuple!T) {
+            setObjectField!(member, typeof(__traits(getMember, T, member)))(r, 0);
+        }
+
+        return r;
+    }
+
+    private final void setObjectField(string name, M, T)(ref T obj, int index) {
+        __traits(getMember, obj, name) = getValue(name).get!M();
+    }
+
 }

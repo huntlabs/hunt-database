@@ -36,4 +36,15 @@ interface RowSet : Iterable!(Row), SqlResult!(RowSet) {
     RowIterator iterator();
 
     // override RowSet next();
+
+    final T[] getAs(T)() {
+        T[] r = new T[this.rowCount()];
+        size_t index = 0;
+        foreach(Row row; this) {
+            r[index] = row.getAs!T();
+            index++;
+        }
+
+        return r;
+    }
 }
