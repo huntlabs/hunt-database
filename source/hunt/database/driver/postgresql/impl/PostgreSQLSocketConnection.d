@@ -58,7 +58,7 @@ class PgSocketConnection : SocketConnectionBase {
     void initialization() {
         codec = new PgCodec();
         version(HUNT_DEBUG) {
-            trace("Setting codec");
+            trace("Setting DB codec");
         }
         socket().setCodec(codec);
         super.initialization();

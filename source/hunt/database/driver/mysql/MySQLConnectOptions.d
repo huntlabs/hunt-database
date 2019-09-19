@@ -141,6 +141,15 @@ class MySQLConnectOptions : SqlConnectOptions {
     MySQLConnectOptions setReceiveBufferSize(int receiveBufferSize) {
         return cast(MySQLConnectOptions) super.setReceiveBufferSize(receiveBufferSize);
     }
+    override
+    MySQLConnectOptions setDecoderBufferSize(int size) {
+        return cast(MySQLConnectOptions) super.setDecoderBufferSize(size);
+    }
+
+    override
+    MySQLConnectOptions setEncoderBufferSize(int size) {
+        return cast(MySQLConnectOptions) super.setEncoderBufferSize(size);
+    }
 
     override
     MySQLConnectOptions setReuseAddress(bool reuseAddress) {

@@ -11,7 +11,6 @@ import hunt.database.driver.mysql.impl.codec.PrepareStatementCodec;
 import hunt.database.driver.mysql.impl.codec.ResetStatementCommandCodec;
 import hunt.database.driver.mysql.impl.codec.SimpleQueryCommandCodec;
 
-
 import hunt.database.driver.mysql.impl.command.ChangeUserCommand;
 import hunt.database.driver.mysql.impl.command.DebugCommand;
 import hunt.database.driver.mysql.impl.command.InitDbCommand;
@@ -44,8 +43,10 @@ import std.container.dlist;
 import std.range;
 import std.variant;
 
-
-class MySQLEncoder : Encoder {
+/**
+ * 
+ */
+class MySQLEncoder : EncoderChain {
 
     // private final ArrayDeque<CommandCodec<?, ?>> inflight;
     private DList!(CommandCodecBase) *inflight;
@@ -59,11 +60,6 @@ class MySQLEncoder : Encoder {
         this.charset = StandardCharsets.UTF_8;
         initSupportedCapabilitiesFlags();
     }
-
-    // override
-    // void handlerAdded(ChannelHandlerContext ctx) {
-    //     chctx = ctx;
-    // }
 
     // override
     // void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) {

@@ -478,7 +478,7 @@ final class PgEncoder : EncoderChain {
 
     private void ensureBuffer() {
         if (outBuffer is null) {
-            outBuffer = Unpooled.buffer();
+            outBuffer = Unpooled.buffer(_bufferSize);
         }
     }
 }

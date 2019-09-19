@@ -13,9 +13,9 @@ import std.array;
  * Connect options for configuring {@link SqlConnection} or {@link Pool}.
  */
 abstract class SqlConnectOptions : NetClientOptions {
-    static enum bool DEFAULT_CACHE_PREPARED_STATEMENTS = false;
-    static enum int DEFAULT_PREPARED_STATEMENT_CACHE_MAX_SIZE = 256;
-    static enum int DEFAULT_PREPARED_STATEMENT_CACHE_SQL_LIMIT = 2048;
+    enum bool DEFAULT_CACHE_PREPARED_STATEMENTS = false;
+    enum int DEFAULT_PREPARED_STATEMENT_CACHE_MAX_SIZE = 256;
+    enum int DEFAULT_PREPARED_STATEMENT_CACHE_SQL_LIMIT = 2048;
 
     private string host;
     private int port;

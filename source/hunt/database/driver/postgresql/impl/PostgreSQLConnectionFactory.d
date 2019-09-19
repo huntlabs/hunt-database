@@ -173,7 +173,14 @@ class PgConnectionFactory {
                     ac.setState(ConnectionState.Opened);
 
                     pgConn = newSocketConnection(ac);
-                    handler(succeededResult(pgConn));
+                    if(handler !is null) {
+                        try {
+                            handler(succeededResult(pgConn));
+                        } catch(Throwable ex) {
+                            version(HUNT_DB_DEBUG_MORE) warning(ex);
+                            handler(failedResult!(PgSocketConnection)(ex));
+                        }
+                    }
                 }
 
                 override void connectionClosed(Connection connection) {
@@ -196,7 +203,9 @@ class PgConnectionFactory {
                     if(pgConn !is null) {
                         pgConn.handleException(connection, t);
                     }
-                    handler(failedResult!(PgSocketConnection)(t));
+                    if(handler !is null) {
+                        handler(failedResult!(PgSocketConnection)(t));
+                    }
                 }
 
                 override void failedOpeningConnection(int connectionId, Throwable t) {

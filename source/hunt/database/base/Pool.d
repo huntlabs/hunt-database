@@ -65,6 +65,8 @@ interface Pool : SqlClient {
 
     Future!(SqlConnection) getConnectionAsync();
 
+    SqlConnection getConnection();
+
 //     /**
 //      * Borrow a connection from the pool and begin a transaction, the underlying connection will be returned
 //      * to the pool when the transaction ends.

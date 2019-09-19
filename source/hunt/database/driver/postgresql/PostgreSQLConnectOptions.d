@@ -215,6 +215,16 @@ class PgConnectOptions : SqlConnectOptions {
     }
 
     override
+    PgConnectOptions setDecoderBufferSize(int size) {
+        return cast(PgConnectOptions) super.setDecoderBufferSize(size);
+    }
+
+    override
+    PgConnectOptions setEncoderBufferSize(int size) {
+        return cast(PgConnectOptions) super.setEncoderBufferSize(size);
+    }
+
+    override
     PgConnectOptions setReuseAddress(bool reuseAddress) {
         return cast(PgConnectOptions) super.setReuseAddress(reuseAddress);
     }

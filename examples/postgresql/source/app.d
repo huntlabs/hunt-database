@@ -16,10 +16,11 @@ import hunt.database;
 import std.datetime;
 
 void main() {
-    writeln("run Database for PostgreSQL demo.");
+    writeln("PostgreSQL demo.");
     string sql;
     int result;
     Statement statement;
+    RowSet rs;
 
     Database db = new Database(
             "postgresql://postgres:123456@10.1.11.44:5432/postgres?charset=utf-8");
@@ -51,9 +52,9 @@ void main() {
     writeln("============= Select ==================");
     statement = db.prepare("SELECT * FROM public.test where id=:id limit 10");
     statement.setParameter("id", 1);
-    RowSet rs = statement.query();
+    rs = statement.query();
 
-    foreach (row; rs) {
+    foreach (Row row; rs) {
         writeln(row);
     }
 
@@ -61,7 +62,7 @@ void main() {
     //
     writeln("============= Binding ==================");
     statement = db.prepare("SELECT * FROM public.test limit 10");
-    RowSet rs = statement.query();
+    rs = statement.query();
 
     TestEntity[] testEntities = rs.getAs!TestEntity();
 

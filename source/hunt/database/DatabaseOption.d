@@ -19,6 +19,8 @@ import hunt.net.util.HttpURI;
 class DatabaseOption
 {
 
+    private int _encoderBufferSize = 256;
+    private int _decoderBufferSize = 1024*8;
     private int _maxLifetime = 30000;
     private int _minimumPoolSize = 1;
     private int _maximumPoolSize = 2;
@@ -80,6 +82,27 @@ class DatabaseOption
     {
         return _connectionTimeout;
     }
+
+    int getDecoderBufferSize() {
+        return _decoderBufferSize;
+    }
+
+    DatabaseOption setDecoderBufferSize(int size) {
+        assert(size > 0, "decoderBufferSize must be > 0");
+        this._decoderBufferSize = size;
+        return this;
+    }
+
+    int getEncoderBufferSize() {
+        return _encoderBufferSize;
+    }
+
+    DatabaseOption setEncoderBufferSize(int size) {
+        assert(size > 0, "encoderBufferSize must be > 0");
+        this._encoderBufferSize = size;
+        return this;
+    }
+
 
     string schemeName() {
         return _url.getScheme();

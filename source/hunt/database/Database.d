@@ -56,8 +56,7 @@ class Database
 	}
 
 	SqlConnection getConnection() {
-		auto conn = _pool.getConnectionAsync().get();
-		return conn;
+		return _pool.getConnection();
 	}
 
 	void closeConnection(SqlConnection conn) {
@@ -82,11 +81,17 @@ class Database
 
 		if(_options.isPgsql()) {
 			PgConnectOptions connectOptions = new PgConnectOptions(_options.url);
+			connectOptions.setDecoderBufferSize(_options.getDecoderBufferSize());
+			connectOptions.setEncoderBufferSize(_options.getEncoderBufferSize());
+
 			PoolOptions poolOptions = new PoolOptions().setMaxSize(_options.maximumConnection);
 			_pool = new PgPoolImpl(connectOptions, poolOptions);
 
 		} else if(_options.isMysql()) {
 			MySQLConnectOptions connectOptions = new MySQLConnectOptions(_options.url);
+			connectOptions.setDecoderBufferSize(_options.getDecoderBufferSize());
+			connectOptions.setEncoderBufferSize(_options.getEncoderBufferSize());
+			
 			PoolOptions poolOptions = new PoolOptions().setMaxSize(_options.maximumConnection);
 			_pool = new MySQLPoolImpl(connectOptions, poolOptions);
 
@@ -143,7 +148,7 @@ class Database
 
 	RowSet query(string sql)
 	{
-		version (HUNT_SQL_DEBUG) trace(sql);
+		version (HUNT_SQL_DEBUG) info(sql);
 		SqlConnection conn = getConnection();
 		scope(exit) {
 			conn.close();

@@ -45,10 +45,6 @@ class PoolOptions {
     this() {
     }
 
-    // this(JsonObject json) {
-    //     PoolOptionsConverter.fromJson(json, this);
-    // }
-
     this(PoolOptions other) {
         maxSize = other.maxSize;
         maxWaitQueueSize = other.maxWaitQueueSize;

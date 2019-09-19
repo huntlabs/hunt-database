@@ -88,6 +88,11 @@ abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
         return f;
     }
 
+    SqlConnection getConnection() {
+        Future!(SqlConnection) f = getConnectionAsync();
+        return f.get();
+    }
+
 //     override
 //     void begin(Handler!(AsyncResult!(Transaction)) handler) {
 //         getConnection(ar -> {
