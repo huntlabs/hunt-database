@@ -113,6 +113,8 @@ class PgConnectionFactory {
                 );
             } else if(completionHandler !is null) {
                 completionHandler(failedResponse!(DbConnection)(ar.cause()));
+            } else {
+                warning("do nothing");
             }
         });
     }

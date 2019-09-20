@@ -112,4 +112,27 @@ interface SqlConnection : SqlClient {
 
     // override
     // <R> SqlConnection preparedBatch(string sql, List!(Tuple) batch, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);
+
+
+    /**
+     * Return the given string suitably quoted to be used as an identifier in an SQL statement string.
+     * Quotes are added only if necessary (i.e., if the string contains non-identifier characters or
+     * would be case-folded). Embedded quotes are properly doubled.
+     *
+     * @param identifier input identifier
+     * @return the escaped identifier
+     * @throws SQLException if something goes wrong
+     */
+    string escapeIdentifier(string identifier);
+
+    /**
+     * Return the given string suitably quoted to be used as a string literal in an SQL statement
+     * string. Embedded single-quotes and backslashes are properly doubled. Note that quote_literal
+     * returns null on null input.
+     *
+     * @param literal input literal
+     * @return the quoted literal
+     * @throws SQLException if something goes wrong
+     */
+    string escapeLiteral(string literal);
 }

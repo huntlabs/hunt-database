@@ -129,7 +129,7 @@ final class PgEncoder : EncoderChain {
             }
 
             ConnectionEventHandler handler = ctx.getHandler();
-            handler.messageReceived(ctx, cast(Object)resp);
+            if(handler !is null) handler.messageReceived(ctx, cast(Object)resp);
         };
 
         inflight.insertBack(cmdCodec);

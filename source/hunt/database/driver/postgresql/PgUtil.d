@@ -104,8 +104,7 @@ class PgUtil {
      * @return the sbuf argument; or a new string builder for sbuf is null
      * @throws SQLException if the string contains a <tt>\0</tt> character
      */
-    static StringBuilder escapeIdentifier(StringBuilder sbuf, string value)
-            {
+    static StringBuilder escapeIdentifier(StringBuilder sbuf, string value) {
         if (sbuf is null) {
             sbuf = new StringBuilder(2 + (cast(int)value.length + 10) / 10 * 11); // Add 10% for escaping.
         }

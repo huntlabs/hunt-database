@@ -44,6 +44,9 @@ class PgSocketConnection : SocketConnectionBase {
     int processId;
     int secretKey;
 
+    // default value for server versions that don't report standard_conforming_strings
+    private bool _standardConformingStrings = false;
+
     this(AbstractConnection socket,
             bool cachePreparedStatements,
             int preparedStatementCacheSize,
@@ -112,6 +115,14 @@ class PgSocketConnection : SocketConnectionBase {
     override
     int getSecretKey() {
         return secretKey;
+    }
+
+    void setStandardConformingStrings(bool value) {
+        _standardConformingStrings = value;
+    }
+
+    bool getStandardConformingStrings() {
+        return _standardConformingStrings;
     }
 
     void upgradeToSSLConnection(Callback completionHandler) {

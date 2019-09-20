@@ -132,4 +132,14 @@ class MySQLConnectionImpl : SqlConnectionImpl!(MySQLConnectionImpl), MySQLConnec
         schedule(cmd);
         return this;
     }
+
+    string escapeIdentifier(string identifier) {
+// TODO: Tasks pending completion -@zxp at Fri, 20 Sep 2019 02:44:54 GMT        
+// 
+        return identifier;
+    }
+
+    string escapeLiteral(string literal) {
+        return literal;
+    }      
 }

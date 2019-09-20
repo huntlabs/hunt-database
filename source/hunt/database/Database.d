@@ -125,18 +125,18 @@ class Database
 	// 	return str;
 	// }
 
-    string escapeLiteral(string str) {
+    // string escapeLiteral(string str) {
 		
-		if(_options.isPgsql()) {
-			scope StringBuilder sb = new StringBuilder((cast(int)str.length + 10) / 10 * 11); // Add 10% for escaping.
-			PgUtil.escapeLiteral(sb, str, true);
+	// 	if(_options.isPgsql()) {
+	// 		scope StringBuilder sb = new StringBuilder((cast(int)str.length + 10) / 10 * 11); // Add 10% for escaping.
+	// 		PgUtil.escapeLiteral(sb, str, true);
 
-			return sb.toString();
-		} 
+	// 		return sb.toString();
+	// 	} 
 
-		return str;
+	// 	return str;
 
-	}
+	// }
 
     // string escapeIdentifier(string msg){
 	// 	auto conn = getConnection();
@@ -145,14 +145,14 @@ class Database
 	// 	return str;
 	// }
 
-	string escapeWithQuotes(string str) {
+	// string escapeWithQuotes(string str) {
 
-		if(_options.isPgsql()) {
-			return PgUtil.escapeWithQuotes(str);
-		} 
+	// 	if(_options.isPgsql()) {
+	// 		return PgUtil.escapeWithQuotes(str);
+	// 	} 
 
-		return str;
-	}
+	// 	return str;
+	// }
 
 
 	RowSet query(string sql)

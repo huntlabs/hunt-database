@@ -17,10 +17,12 @@
 module hunt.database.driver.postgresql.impl.PostgreSQLConnectionImpl;
 
 import hunt.database.driver.postgresql.impl.PostgreSQLConnectionFactory;
+import hunt.database.driver.postgresql.impl.PostgreSQLSocketConnection;
 
 import hunt.database.driver.postgresql.PostgreSQLConnectOptions;
 import hunt.database.driver.postgresql.PostgreSQLConnection;
 import hunt.database.driver.postgresql.PostgreSQLNotification;
+import hunt.database.driver.postgresql.PgUtil;
 
 import hunt.database.base.AsyncResult;
 import hunt.database.base.Common;
@@ -32,15 +34,27 @@ import hunt.database.base.Row;
 import hunt.database.base.SqlClient;
 import hunt.database.base.Tuple;
 
-import hunt.logging.ConsoleLogger;
-
 import hunt.collection.List;
 import hunt.Exceptions;
+import hunt.logging.ConsoleLogger;
+import hunt.text.StringBuilder;
+
 
 /**
  * 
  */
 class PgConnectionImpl : SqlConnectionImpl!(PgConnectionImpl), PgConnection  {
+
+    private PgConnectionFactory factory;
+    private PgNotificationHandler _notificationHandler;
+    private PgSocketConnection _socketConn;
+
+    this(PgConnectionFactory factory, DbConnection conn) {
+        super(conn);
+        _socketConn = cast(PgSocketConnection)conn;
+
+        this.factory = factory;
+    }
 
     override PgConnectionImpl query(string sql, RowSetHandler handler) {
         return super.query(sql, handler);
@@ -56,33 +70,6 @@ class PgConnectionImpl : SqlConnectionImpl!(PgConnectionImpl), PgConnection  {
 
     override PgConnectionImpl preparedBatch(string sql, List!(Tuple) batch, RowSetHandler handler) {
         return super.preparedBatch(sql, batch, handler);
-    }
-
-    static void connect(PgConnectOptions options, AsyncResultHandler!(PgConnection) handler) {
-        PgConnectionFactory client = new PgConnectionFactory(options);
-        version(HUNT_DB_DEBUG) trace("connecting ...");
-        client.connectAndInit( (ar) {
-            version(HUNT_DB_DEBUG) info("connection result: ", ar.succeeded());
-            if (ar.succeeded()) {
-                DbConnection conn = ar.result();
-                PgConnectionImpl p = new PgConnectionImpl(client, conn);
-                conn.initHolder(p);
-                if(handler !is null) {
-                    handler(succeededResult!(PgConnection)(p));
-                }
-            } else if(handler !is null) {
-                handler(failedResult!(PgConnection)(ar.cause()));
-            }
-        });
-    }
-
-    private PgConnectionFactory factory;
-    private PgNotificationHandler _notificationHandler;
-
-    this(PgConnectionFactory factory, DbConnection conn) {
-        super(conn);
-
-        this.factory = factory;
     }
 
     override
@@ -127,4 +114,37 @@ class PgConnectionImpl : SqlConnectionImpl!(PgConnectionImpl), PgConnection  {
         // }
         return this;
     }
+
+
+    string escapeIdentifier(string identifier) {
+        return PgUtil.escapeIdentifier(null, identifier).toString();
+    }
+
+    string escapeLiteral(string literal) {
+        scope StringBuilder sb = new StringBuilder((cast(int)literal.length + 10) / 10 * 11); // Add 10% for escaping.
+        PgUtil.escapeLiteral(sb, literal, _socketConn.getStandardConformingStrings());
+        return sb.toString();
+    } 
+
+
+    /* ----------------------------- Static Metholds ---------------------------- */
+
+    static void connect(PgConnectOptions options, AsyncResultHandler!(PgConnection) handler) {
+        PgConnectionFactory client = new PgConnectionFactory(options);
+        version(HUNT_DB_DEBUG) trace("connecting ...");
+        client.connectAndInit( (AsyncResult!(DbConnection) ar) {
+            version(HUNT_DB_DEBUG) info("connection result: ", ar.succeeded());
+            if (ar.succeeded()) {
+                DbConnection conn = ar.result();
+                PgConnectionImpl p = new PgConnectionImpl(client, conn);
+                conn.initHolder(p);
+                if(handler !is null) {
+                    handler(succeededResult!(PgConnection)(p));
+                }
+            } else if(handler !is null) {
+                handler(failedResult!(PgConnection)(ar.cause()));
+            }
+        });
+    }
+
 }

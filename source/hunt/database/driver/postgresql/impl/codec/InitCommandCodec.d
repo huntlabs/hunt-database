@@ -35,9 +35,11 @@ class InitCommandCodec : CommandCodec!(DbConnection, InitCommand) {
 
     private PgEncoder encoder;
     private string encoding;
+    private PgSocketConnection pgConnection;
 
     this(InitCommand cmd) {
         super(cmd);
+        pgConnection = cast(PgSocketConnection)cmd.connection();
     }
 
     override
@@ -65,24 +67,40 @@ class InitCommandCodec : CommandCodec!(DbConnection, InitCommand) {
     override
     void handleAuthenticationOk() {
         version(HUNT_DB_DEBUG) info("Authentication done.");
+        // TODO: Tasks pending completion -@zxp at Fri, 20 Sep 2019 02:31:50 GMT
+        // Return the server setup information.
 //      handler.handle(Future.succeededFuture(conn));
 //      handler = null;
     }
 
     override
-    void handleParameterStatus(string key, string value) {
-        version(HUNT_DB_DEBUG_MORE) tracef("key: %s, value: %s", key, value);
-        if(key == "client_encoding") {
-            encoding = value;
+    void handleParameterStatus(string name, string value) {
+        version(HUNT_DB_DEBUG_MORE) tracef("key: %s, value: %s", name, value);
+        // FIXME: Needing refactor or cleanup -@zxp at Fri, 20 Sep 2019 02:25:36 GMT
+        // handle more status
+        // pgjdbc\src\main\java\org\postgresql\core\v3\QueryExecutorImpl.java
+
+        switch(name) {
+            case "client_encoding":
+                encoding = value; break;
+
+            case "standard_conforming_strings":
+                pgConnection.setStandardConformingStrings(value == "on");
+                break;
+
+            default: break;
+        }
+
+        if (name == "standard_conforming_strings") {
+
         }
     }
 
     override
     void handleBackendKeyData(int processId, int secretKey) {
         version(HUNT_DB_DEBUG) tracef("processId: %d, secretKey: %d", processId, secretKey);
-        PgSocketConnection conn = cast(PgSocketConnection)cmd.connection();
-        conn.processId = processId;
-        conn.secretKey = secretKey;
+        pgConnection.processId = processId;
+        pgConnection.secretKey = secretKey;
     }
 
     override
@@ -106,13 +124,14 @@ class InitCommandCodec : CommandCodec!(DbConnection, InitCommand) {
         //     cs = Charset.forName(encoding);
         // } catch (Exception ignore) {
         // }
-        CommandResponse!(DbConnection) resp;
-        if(encoding != "UTF8") {
-            resp = failedResponse!(DbConnection)(encoding ~ " is not supported in the client only UTF8");
-        } else {
-            resp = succeededResponse!(DbConnection)(cmd.connection());
-        }
+
         if(completionHandler !is null) {
+            CommandResponse!(DbConnection) resp;
+            if(encoding != "UTF8") {
+                resp = failedResponse!(DbConnection)(encoding ~ " is not supported in the client only UTF8");
+            } else {
+                resp = succeededResponse!(DbConnection)(cmd.connection());
+            }
             // resp.cmd = cmd;
             completionHandler(resp);
         }
