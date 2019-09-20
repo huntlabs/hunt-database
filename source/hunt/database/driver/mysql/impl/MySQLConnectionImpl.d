@@ -13,6 +13,7 @@ import hunt.database.driver.mysql.impl.command.PingCommand;
 import hunt.database.driver.mysql.impl.command.ResetConnectionCommand;
 import hunt.database.driver.mysql.impl.command.SetOptionCommand;
 import hunt.database.driver.mysql.impl.command.StatisticsCommand;
+import hunt.database.driver.mysql.MySQLUtil;
 
 import hunt.database.base.AsyncResult;
 import hunt.database.base.Common;
@@ -140,6 +141,6 @@ class MySQLConnectionImpl : SqlConnectionImpl!(MySQLConnectionImpl), MySQLConnec
     }
 
     string escapeLiteral(string literal) {
-        return literal;
+        return MySQLUtil.escapeLiteral(literal);
     }      
 }

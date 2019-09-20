@@ -133,6 +133,9 @@ interface SqlConnection : SqlClient {
      * @param literal input literal
      * @return the quoted literal
      * @throws SQLException if something goes wrong
+     * 
+     * See_Also:
+     *    https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html
      */
     string escapeLiteral(string literal);
 }

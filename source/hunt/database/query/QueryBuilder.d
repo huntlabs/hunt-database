@@ -23,6 +23,7 @@ import hunt.database.query.Expression;
 
 
 import hunt.database.driver.postgresql.PgUtil;
+import hunt.database.driver.mysql.MySQLUtil;
 
 import hunt.sql;
 import hunt.Byte;
@@ -676,7 +677,9 @@ class QueryBuilder
 			PgUtil.escapeLiteral(sb, str, true);
 
 			return sb.toString();
-		} 
+		} else if(_dbType == DBType.MYSQL) {
+            return MySQLUtil.escapeLiteral(str);
+        }
 
 		return str;
 	}
@@ -685,7 +688,9 @@ class QueryBuilder
 
 		if(_dbType == DBType.POSTGRESQL) {
 			return PgUtil.escapeWithQuotes(str);
-		} 
+		} else if(_dbType == DBType.MYSQL) {
+            return MySQLUtil.escapeWithQuotes(str);
+        }
 
 		return str;
 	}
