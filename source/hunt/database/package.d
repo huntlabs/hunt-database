@@ -7,5 +7,4 @@ public import hunt.database.Statement;
 public import hunt.database.base;
 public import hunt.database.driver.mysql;
 public import hunt.database.driver.postgresql;
-public import hunt.database.query.Common;
-public import hunt.database.query.QueryBuilder;
+public import hunt.database.query;

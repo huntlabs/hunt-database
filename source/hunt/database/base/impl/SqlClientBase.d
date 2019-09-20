@@ -75,7 +75,13 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
 
     RowSet query(string sql) {
         auto f = queryAsync(sql);
-        return f.get();
+        try {
+            return f.get();
+        } catch(Exception ex) {
+            warning(ex.msg);
+            version(HUNT_DEBUG) warning(ex);
+            throw new DatabaseException(ex.msg);
+        }
     }
 
     private C query(R1, R2, R3)(string sql, bool singleton,
