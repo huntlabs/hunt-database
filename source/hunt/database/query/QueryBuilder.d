@@ -17,20 +17,26 @@
 module hunt.database.query.QueryBuilder;
 
 import hunt.database.query.Common;
+import hunt.database.query.Comparison;
 import hunt.database.query.Expr;
 import hunt.database.query.Expression;
 
-import hunt.sql;
 
+import hunt.database.driver.postgresql.PgUtil;
+
+import hunt.sql;
 import hunt.Byte;
+import hunt.Exceptions;
 import hunt.Integer;
 import hunt.Long;
+import hunt.logging.ConsoleLogger;
 import hunt.Double;
 import hunt.Float;
 import hunt.Short;
 import hunt.String;
+import hunt.text.StringBuilder;
 import hunt.Nullable;
-import hunt.logging.ConsoleLogger;
+
 
 import std.array;
 import std.conv;
@@ -43,7 +49,7 @@ import std.string;
 class QueryBuilder
 {
 
-    private string _dbType = DBType.MYSQL.name;
+    private DBType _dbType = DBType.MYSQL;
 
     private QUERY_TYPE _type = QUERY_TYPE.SELECT;
     private string _table;
@@ -67,7 +73,7 @@ class QueryBuilder
 
     
     this(DBType dbType) {
-        _dbType = dbType.name;
+        _dbType = dbType;
     }
 
     // @property Expr expr()
@@ -237,18 +243,16 @@ class QueryBuilder
 
     private string getExprStr(T)(Comparison!T comExpr)
     {
-        static if (is(T == string) || is(T == String) || is(T == Nullable!string))
-        // FIXME: Needing refactor or cleanup -@zxp at 9/16/2019, 4:28:40 PM
-        // _db.escapeWithQuotes
-            return comExpr.variant ~ " " ~ comExpr.operator ~ " " ~ /*quoteSqlString*/ (
-                    comExpr.value.to!string);
-        else
+        static if (is(T == string) || is(T == String) || is(T == Nullable!string)) {
+            return comExpr.variant ~ " " ~ comExpr.operator ~ " " ~ 
+                escapeWithQuotes(comExpr.value.to!string);
+        } else {
             return comExpr.variant ~ " " ~ comExpr.operator ~ " " ~ comExpr.value.to!string;
+        }
     }
 
     QueryBuilder where(string expression)
     {
-        // logDebug("where(string) : ",expression);
         _where = expression;
         return this;
     }
@@ -412,11 +416,10 @@ class QueryBuilder
         foreach (k, v; params)
         {
             auto re = regex(r":" ~ k ~ r"([^\w]*)", "g");
-            if ((cast(String) v !is null) || (cast(Nullable!string)v !is null) )
+            version(HUNT_DB_DEBUG) tracef("value: %s, type: %s", v.toString(), typeid(v));
+            if (cast(Nullable!string)v !is null)
             {
-                // FIXME: Needing refactor or cleanup -@zxp at 9/16/2019, 4:29:53 PM
-                // _db.escapeLiteral
-                sql = sql.replaceAll(re, (v.toString()) ~ "$1");
+                sql = sql.replaceAll(re,  escapeLiteral(v.toString()) ~ "$1");
             }
             else
             {
@@ -437,7 +440,7 @@ class QueryBuilder
             {
             case QUERY_TYPE.SELECT:
                 {
-                    auto builder = new SQLSelectBuilderImpl(_dbType);
+                    auto builder = new SQLSelectBuilderImpl(_dbType.name);
                     builder.from(_table, _tableAlias);
                     builder.select(_select);
                     if (_join.length > 0)
@@ -496,7 +499,7 @@ class QueryBuilder
                 break;
             case QUERY_TYPE.UPDATE:
                 {
-                    auto builder = new SQLUpdateBuilderImpl(_dbType);
+                    auto builder = new SQLUpdateBuilderImpl(_dbType.name);
                     builder.from(_table, _tableAlias);
                     // logDebug("set values len : ",_values.length);
                     if (_values.length > 0)
@@ -551,7 +554,7 @@ class QueryBuilder
                 break;
             case QUERY_TYPE.DELETE:
                 {
-                    auto builder = new SQLDeleteBuilderImpl(_dbType);
+                    auto builder = new SQLDeleteBuilderImpl(_dbType.name);
                     builder.from(_table, _tableAlias);
 
                     {
@@ -606,12 +609,10 @@ class QueryBuilder
                         if ((cast(String)(v.value) !is null) || (cast(Nullable!string)(v.value) !is null))
                         {
                             // logDebug("---Insert(%s , %s )".format(k,v.value));
-                            // FIXME: Needing refactor or cleanup -@zxp at 9/16/2019, 4:30:16 PM
-                            // _db.escapeLiteral
-                            values ~= (v.value.toString()) ~ ",";
+                            values ~= escapeLiteral(v.value.toString()) ~ ", ";
+                        } else {
+                            values ~= v.value.toString() ~ ", ";
                         }
-                        else
-                            values ~= v.value.toString() ~ ",";
                     }
                     str ~= "(" ~ keys[0 .. $ - 1] ~ ") VALUES(" ~ values[0 .. $ - 1] ~ ")";
                 }
@@ -620,28 +621,31 @@ class QueryBuilder
                 // str ~= " select count(*) " ~ _table;
                 break;
             case QUERY_TYPE.SHOW_TABLES:
-                if (_dbType == DBType.POSTGRESQL.name)
+                if (_dbType == DBType.POSTGRESQL)
                     str ~= "select tablename from pg_tables where schemaname = 'public'";
                 else
                     str ~= " show tables ";
                 break;
             case QUERY_TYPE.DESC_TABLE:
-                if (_dbType == DBType.POSTGRESQL.name)
-                    str ~= "SELECT column_name as Field, data_type FROM information_schema.columns WHERE table_schema='public' and table_name='" ~ _table ~ "'";
-                else if (_dbType == DBType.MYSQL.name)
+                if (_dbType == DBType.POSTGRESQL) {
+                    str ~= "SELECT column_name as Field, data_type FROM information_schema.columns" ~
+                            " WHERE table_schema='public' and table_name='" ~ _table ~ "'";
+                } else if (_dbType == DBType.MYSQL) {
                     str ~= "desc " ~ _table;
-                else if (_dbType == DBType.SQLITE.name)
-                    str ~= "select * from sqlite_master where type=\"table\" and name=\""
-                        ~ _table ~ "\"";
+                // } else if (_dbType == DBType.SQLITE) {
+                //     str ~= "select * from sqlite_master where type=\"table\" and name=\""
+                //         ~ _table ~ "\"";
+                }
                 break;
             default:
                 throw new Exception("query build method not found");
             }
-            // logDebug("QueryBuilder : ", str);
+            version(HUNT_DB_DEBUG) trace("QueryBuilder : ", str);
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
-            logDebug("Query Builder Exception : ", e.msg);
+            version(HUNT_DEBUG) warning("Query Builder Exception : ", ex.msg);
+            version(HUNT_DB_DEBUG) warning(ex);
             sqlDebugInfo();
         }
 
@@ -664,4 +668,25 @@ class QueryBuilder
                    }".format(_type, _table, _tableAlias, _select, _where,
                 _whereAnd, _whereOr, _orderBy, _having, _groupBy, _limit, _offset));
     }
+
+    string escapeLiteral(string str) {
+		
+		if(_dbType == DBType.POSTGRESQL) {
+			scope StringBuilder sb = new StringBuilder((cast(int)str.length + 10) / 10 * 11); // Add 10% for escaping.
+			PgUtil.escapeLiteral(sb, str, true);
+
+			return sb.toString();
+		} 
+
+		return str;
+	}
+
+    string escapeWithQuotes(string str) {
+
+		if(_dbType == DBType.POSTGRESQL) {
+			return PgUtil.escapeWithQuotes(str);
+		} 
+
+		return str;
+	}
 }

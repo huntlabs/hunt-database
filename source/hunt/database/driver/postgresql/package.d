@@ -23,3 +23,4 @@ public import hunt.database.driver.postgresql.PostgreSQLException;
 public import hunt.database.driver.postgresql.PostgreSQLNotification;
 public import hunt.database.driver.postgresql.PostgreSQLPool;
 public import hunt.database.driver.postgresql.SslMode;
+public import hunt.database.driver.postgresql.PgUtil;

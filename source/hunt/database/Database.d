@@ -21,6 +21,7 @@ import hunt.database.query.QueryBuilder;
 
 import hunt.logging.ConsoleLogger;
 import hunt.net.util.HttpURI;
+import hunt.text.StringBuilder;
 
 /**
  * 
@@ -124,12 +125,18 @@ class Database
 	// 	return str;
 	// }
 
-    // string escapeLiteral(string msg){
-	// 	auto conn = getConnection();
-    //     scope(exit) relaseConnection(conn);
-	// 	string str = conn.escapeLiteral(msg);
-	// 	return str;
-	// }
+    string escapeLiteral(string str) {
+		
+		if(_options.isPgsql()) {
+			scope StringBuilder sb = new StringBuilder((cast(int)str.length + 10) / 10 * 11); // Add 10% for escaping.
+			PgUtil.escapeLiteral(sb, str, true);
+
+			return sb.toString();
+		} 
+
+		return str;
+
+	}
 
     // string escapeIdentifier(string msg){
 	// 	auto conn = getConnection();
@@ -138,12 +145,14 @@ class Database
 	// 	return str;
 	// }
 
-	// string escapeWithQuotes(string msg){
-	// 	auto conn = getConnection();
-    //     scope(exit) relaseConnection(conn);
-	// 	string str = conn.escapeWithQuotes(msg);
-	// 	return str;
-	// }
+	string escapeWithQuotes(string str) {
+
+		if(_options.isPgsql()) {
+			return PgUtil.escapeWithQuotes(str);
+		} 
+
+		return str;
+	}
 
 
 	RowSet query(string sql)
@@ -184,25 +193,6 @@ class Database
 		}
 	}
 
-
-	// Dialect createDialect()
-	// {
-	// 	version(USE_MYSQL){
-	// 		if(_options.isMysql)
-	// 		return new MysqlDialect(this);
-	// 	}
-    //      version(USE_POSTGRESQL)
-	// 	{
-	// 		if(_options.isPgsql)
-	// 		return new PostgresqlDialect(this); 
-	// 	}
-	// 	 version(USE_SQLITE)
-	// 	{
-	// 		if(_options.isSqlite)
-	// 		return new SqliteDialect(this); 
-	// 	}
-    //     throw new DatabaseException("Unknow Dialect");
-	// }
 }
 
 unittest{
