@@ -43,6 +43,7 @@ import std.array;
 import std.conv;
 import std.regex;
 import std.string;
+import std.variant;
 
 /**
  * 
@@ -306,7 +307,7 @@ class QueryBuilder
         return this;
     }
 
-    QueryBuilder values(Object[string] arr)
+    QueryBuilder values(Variant[string] arr)
     {
         // logDebug("set values  : ",arr);
         foreach (key, value; arr)
@@ -616,7 +617,8 @@ class QueryBuilder
                     foreach (k, v; _values)
                     {
                         keys ~= k ~ ",";
-                        if ((cast(String)(v.value) !is null) || (cast(Nullable!string)(v.value) !is null))
+                        // if ((cast(String)(v.value) !is null) || (cast(Nullable!string)(v.value) !is null))
+                        if(v.value.type == typeid(string))
                         {
                             // logDebug("---Insert(%s , %s )".format(k,v.value));
                             values ~= escapeLiteral(v.value.toString()) ~ ", ";

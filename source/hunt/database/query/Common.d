@@ -2,6 +2,7 @@
 module hunt.database.query.Common;
 
 import std.conv;
+import std.variant;
 
 enum QUERY_TYPE : byte
 {
@@ -17,8 +18,8 @@ enum QUERY_TYPE : byte
 class ValueVariant 
 {
     string key;
-    Object value;
-    this(string key , Object value)
+    Variant value;
+    this(string key , Variant value)
     {
         this.key = key;
         this.value = value;
