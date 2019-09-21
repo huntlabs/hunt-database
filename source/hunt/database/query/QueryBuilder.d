@@ -317,53 +317,61 @@ class QueryBuilder
         return this;
     }
 
-    QueryBuilder set(R)(string key, R param)
+    QueryBuilder set(R)(string fieldName, string columnName, string tableName, R param)
     {
-        // logDebug("---sey param : ( %s , %s )".format(R.stringof,param));
+        version(HUNT_ENTITY_DEBUG) {
+            tracef("---(fieldName: %s, columnName: %s, value: %s,  type: %s )", 
+                fieldName, columnName, param, typeid(param).name);
+        }
+
+        if(fieldName in _values) {
+            warningf("Key exists: %s", fieldName);
+        }
 
         static if (is(R == int) || is(R == uint))
         {
-            _values[key] = new ValueVariant(key, new Integer(param));
+            _values[fieldName] = new ValueVariant(columnName, new Integer(param));
         }
         else static if (is(R == string) || is(R == char) || is(R == byte[]))
         {
-            _values[key] = new ValueVariant(key, new String(param));
+            _values[fieldName] = new ValueVariant(columnName, new String(param));
         }
         else static if (is(R == bool))
         {
-            _values[key] = new ValueVariant(key, new Boolean(param));
+            _values[fieldName] = new ValueVariant(columnName, new Boolean(param));
         }
         else static if (is(R == double))
         {
-            _values[key] = new ValueVariant(key, new Double(param));
+            _values[fieldName] = new ValueVariant(columnName, new Double(param));
         }
         else static if (is(R == float))
         {
-            _values[key] = new ValueVariant(key, new Float(param));
+            _values[fieldName] = new ValueVariant(columnName, new Float(param));
         }
         else static if (is(R == short) || is(R == ushort))
         {
-            _values[key] = new ValueVariant(key, new Short(param));
+            _values[fieldName] = new ValueVariant(columnName, new Short(param));
         }
         else static if (is(R == long) || is(R == ulong))
         {
-            _values[key] = new ValueVariant(key, new Long(param));
+            _values[fieldName] = new ValueVariant(columnName, new Long(param));
         }
         else static if (is(R == byte) || is(R == ubyte))
         {
-            _values[key] = new ValueVariant(key, new Byte(param));
+            _values[fieldName] = new ValueVariant(columnName, new Byte(param));
         }
         // else static if (is(R == Object))
         // {
-        //     _values[key] = new ValueVariant(key,new String(param.toString));
+        //     _values[fieldName] = new ValueVariant(columnName,new String(param.toString));
         // }
         else
         {
-            _values[key] = new ValueVariant(key, param);
+            _values[fieldName] = new ValueVariant(columnName, param);
         }
 
         return this;
     }
+
 
     QueryBuilder setParameter(R)(string key, R param)
     {
@@ -498,6 +506,7 @@ class QueryBuilder
                     str = parameterized(str, _parameters);
                 }
                 break;
+
             case QUERY_TYPE.UPDATE:
                 {
                     auto builder = new SQLUpdateBuilderImpl(_dbType.name);
@@ -505,9 +514,9 @@ class QueryBuilder
                     // logDebug("set values len : ",_values.length);
                     if (_values.length > 0)
                     {
-                        foreach (item; _values)
+                        foreach (ValueVariant item; _values)
                         {
-                           version(HUNT_SQL_DEBUG) logDebug("set values  : ",item);
+                           version(HUNT_ENTITY_DEBUG) tracef("Update: %s", item);
 
                             builder.setValue(item.key, item.value);
                         }

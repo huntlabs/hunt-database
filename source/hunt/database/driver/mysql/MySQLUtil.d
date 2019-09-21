@@ -18,7 +18,7 @@ class MySQLUtil {
      *            literal
      * @return escaped literal
      */
-    static string escapeLiteral(string s) {
+    static string escapeLiteral(string str) {
         // https://stackoverflow.com/questions/1812891/java-escape-string-to-prevent-sql-injection?noredirect=1&lq=1
         // return s.replace("\"", "\"\"");
         // FIXME: Needing refactor or cleanup -@zxp at Fri, 20 Sep 2019 05:54:46 GMT
