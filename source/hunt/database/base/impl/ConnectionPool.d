@@ -98,7 +98,7 @@ class ConnectionPool {
         // _waiters.add(promise);
         auto promise = new CompletableFuture!(DbConnectionAsyncResult)();
         promise.thenAccept((r) { 
-            version(HUNT_DB_DEBUG) tracef("Acquired a DB connection. size: %d, available: %d, waiters: %d",
+            version(HUNT_DB_DEBUG) infof("Acquired a DB connection. size: %d, available: %d, waiters: %d",
                 _size, available(), waitersSize());
             if(holder !is null) holder(r);
         });
@@ -221,7 +221,7 @@ class ConnectionPool {
             synchronized (this) {
                 _available.insertBack(proxy);
                 version(HUNT_DB_DEBUG) {
-                    tracef("Return a DB connection to the pool. size: %d, available: %d, waiters: %d",
+                    infof("Return a DB connection to the pool. size: %d, available: %d, waiters: %d",
                         _size, available(), waitersSize());
                 }
             }

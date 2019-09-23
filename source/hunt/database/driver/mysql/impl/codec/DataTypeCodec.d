@@ -55,14 +55,17 @@ class DataTypeCodec {
             buffer.skipBytes(len);
         }
 
+        bool isBinaryField = isBinaryField(columnDefinitionFlags);
+
         version(HUNT_DB_DEBUG_MORE) {
             tracef("dataType=%s, index=%d, len=%d, columnDefinitionFlags=%d, isBinaryField=%s", 
-                dataType, index, len, columnDefinitionFlags, isBinaryField(columnDefinitionFlags));
+                dataType, index, len, columnDefinitionFlags, isBinaryField);
         }
 
         string value = "";
-        if (isBinaryField(columnDefinitionFlags)) {
-            return textDecodeBlob(index, len, buffer).Variant();
+        if (isBinaryField) {
+            byte[] data = textDecodeBlob(index, len, buffer);
+            return Variant(cast(string)data);
         } else {
             value = textDecodeText(charset, index, len, buffer);
         }        
@@ -102,11 +105,13 @@ class DataTypeCodec {
             case DataType.VARSTRING:
             case DataType.BLOB:
             default:
-                if (isBinaryField(columnDefinitionFlags)) {
-                    return textDecodeBlob(index, len, buffer).Variant();
-                } else {
-                    return textDecodeText(charset, index, len, buffer).Variant();
-                }
+                // if (isBinaryField(columnDefinitionFlags)) {
+                //     return textDecodeBlob(index, len, buffer).Variant();
+                // } else {
+                //     return textDecodeText(charset, index, len, buffer).Variant();
+                // }
+
+                return textDecodeText(charset, index, len, buffer).Variant();
         }
     }
 
