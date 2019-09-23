@@ -90,7 +90,7 @@ class ConnectionPool {
         }
         version(HUNT_DB_DEBUG) {
             tracef("Try to acquire a DB connection... size: %d, available: %d, waiters: %d",
-                _size, available, waitersSize);
+                _size, available(), waitersSize());
         }
 
         // Promise!(Connection) promise = Promise.promise();
@@ -98,9 +98,11 @@ class ConnectionPool {
         // _waiters.add(promise);
         auto promise = new CompletableFuture!(DbConnectionAsyncResult)();
         promise.thenAccept((r) { 
-            version(HUNT_DB_DEBUG) trace("Acquired a DB connection.");
+            version(HUNT_DB_DEBUG) tracef("Acquired a DB connection. size: %d, available: %d, waiters: %d",
+                _size, available(), waitersSize());
             if(holder !is null) holder(r);
         });
+        
         synchronized (this) {
             _waiters.insertBack(promise);
         }
@@ -220,11 +222,13 @@ class ConnectionPool {
                 _available.insertBack(proxy);
                 version(HUNT_DB_DEBUG) {
                     tracef("Return a DB connection to the pool. size: %d, available: %d, waiters: %d",
-                        _size, available, waitersSize);
+                        _size, available(), waitersSize());
                 }
             }
             
             check();
+        } else {
+            warning("Releasing a untraced connection!");
         }
     }
 

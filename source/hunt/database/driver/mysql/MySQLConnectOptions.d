@@ -50,10 +50,12 @@ class MySQLConnectOptions : SqlConnectOptions {
 
     this(HttpURI uri) {        
         super(uri);
+        this.collation = DEFAULT_COLLATION;
         UrlEncoded maps = new UrlEncoded(uri.getQuery());
-        string chartset = maps.getValue("chartset");
-        if(!chartset.empty()) {
-            this.collation = collation;
+        string charset = maps.getValue("charset");
+        if(!charset.empty()) {
+            import hunt.database.driver.mysql.impl.MySQLCollation;
+            this.collation = MySQLCollation.getDefaultCollationFromCharsetName(charset);
         }
     }
 

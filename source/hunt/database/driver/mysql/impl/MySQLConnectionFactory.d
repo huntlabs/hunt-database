@@ -37,7 +37,6 @@ class MySQLConnectionFactory {
     private bool cachePreparedStatements;
     private int preparedStatementCacheSize;
     private int preparedStatementCacheSqlLimit;
-    // private Closeable hook;
 
     this(MySQLConnectOptions options) {
         clients = new ArrayList!NetClient(50);

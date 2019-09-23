@@ -177,13 +177,11 @@ class InitCommandCodec : CommandCodec!(DbConnection, InitCommand) {
                     version(HUNT_DEBUG) warning(properties.toString());
                 }
             } catch (IllegalArgumentException e) {
-                warning(e);
-                // if(completionHandler !is null)
-                //     completionHandler(failedResponse!(DbConnection)(e));
-                // return;
+                version(HUNT_DEBUG) warning(e.msg);
+                version(HUNT_DB_DEBUG) warning(e);
             }
             int collationId = collation.collationId();
-            encoder.charset = collation.mappedCharsetName(); // Charset.forName(collation.mappedCharsetName());
+            encoder.charset = collation.mappedCharsetName();
 
             Map!(string, string) clientConnectionAttributes = properties;
             if (clientConnectionAttributes !is null && !clientConnectionAttributes.isEmpty()) {
