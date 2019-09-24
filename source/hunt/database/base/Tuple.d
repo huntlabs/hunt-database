@@ -73,20 +73,23 @@ interface Tuple {
     }    
 
     /**
-     * Get a boolean value at {@code pos}.
-     *
-     * @param pos the position
-     * @return the value or {@code null}
-     */
-    bool getBoolean(int pos);
-
-    /**
      * Get an object value at {@code pos}.
      *
      * @param pos the position
      * @return the value or {@code null}
      */
     Variant getValue(int pos);
+
+    /// ditto
+    alias opIndex = getValue;
+
+    /**
+     * Get a boolean value at {@code pos}.
+     *
+     * @param pos the position
+     * @return the value or {@code null}
+     */
+    bool getBoolean(int pos);
 
     /**
      * Get a short value at {@code pos}.

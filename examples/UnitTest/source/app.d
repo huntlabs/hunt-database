@@ -24,14 +24,14 @@ void main()
 	// testUnits!(MySQLSimpleQueryTest);
 	// testUnits!(MySQLPreparedQueryTest);
 	// testUnits!(Native41AuthenticatorTest);
-	testUnits!(MySQLPoolTest);
+	// testUnits!(MySQLPoolTest);
 
 /* ---------------------------- PostgreSQL tests ---------------------------- */
 
 	// testUnits!(PgConnectionTest);
 	// testUnits!(PgPreparedQueryTest);
 	// testUnits!(PgPoolTest);
-	// testUnits!(PgSimpleQueryTest);
+	testUnits!(PgSimpleQueryTest);
 	// testUnits!(PgTransactionTest);
 	// testUnits!(UtilTest);
 

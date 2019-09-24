@@ -28,7 +28,9 @@ import hunt.util.Common;
 import hunt.util.UnitTest;
 
 import core.atomic;
+
 import std.conv;
+import std.variant;
 
 alias SqlConnectionHandler = Action1!SqlConnection;
 
@@ -49,9 +51,15 @@ abstract class SimpleQueryTestBase : QueryTestBase {
                     assert(12 == result.rowCount()); // this line does not pass in MySQL but passes in PG                    
                     assert(12 == result.size());
 
-                    Tuple row = result.iterator().front();
+                    Row row = result.iterator().front();
                     assert(1 == row.getInteger(0));
                     assert("fortune: No such file or directory" == row.getString(1));
+                    Variant v = row[0];
+                    info("columnValue: ", v.toString());
+                    string columnName = row.getColumnName(0);
+                    info("columnName: ", columnName);
+                    v = row[columnName];
+                    assert(1 == v.get!int());
 
                 } else {
                     warning(ar.cause().msg);

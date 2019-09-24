@@ -52,6 +52,10 @@ interface Row : Tuple {
      */
     Variant getValue(string name);
     alias getValue = Tuple.getValue;
+    alias opIndex = getValue;
+
+    // Variant opIndex(string name);
+    // alias opIndex = Tuple.opIndex;
 
     /**
      * Get a boolean value at {@code pos}.
