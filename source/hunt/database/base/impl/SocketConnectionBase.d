@@ -37,6 +37,7 @@ import hunt.util.TypeUtils;
 
 import std.container.dlist;
 import std.conv;
+import std.range;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -257,7 +258,9 @@ abstract class SocketConnectionBase : DbConnection {
     }
 
     private void handleClose(Throwable t) {
-        version(HUNT_DB_DEBUG) info("Connection closed.");
+        version(HUNT_DEBUG) {
+            infof("Connection closed. Throwable: %s", t is null);
+        }
         if (status != Status.CLOSED) {
             status = Status.CLOSED;
             if (t !is null) {
@@ -267,15 +270,21 @@ abstract class SocketConnectionBase : DbConnection {
                     }
                 }
             }
-            // Throwable cause = t is null ? new VertxException("closed") : t;
-            // CommandBase<?> cmd;
-            // while ((cmd = pending.poll()) !is null) {
-            //     CommandBase<?> c = cmd;
-            //     context.runOnContext(v -> c.fail(cause));
-            // }
-            // if (holder !is null) {
-            //     holder.handleClosed();
-            // }
+
+            version(HUNT_DB_DEBUG) {
+                tracef("pending: %d, holder: %s", pending[].walkLength(), typeid(cast(Object)holder));
+            }
+
+            Throwable cause = t is null ? new Exception("closed") : t;
+            ICommand cmd;
+            while ((cmd = pollPending()) !is null) {
+                ICommand c = cmd;
+                c.fail(cause);
+            }
+
+            if (holder !is null) {
+                holder.handleClosed();
+            }
         }
     }
 }

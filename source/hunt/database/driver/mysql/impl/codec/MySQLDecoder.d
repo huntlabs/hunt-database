@@ -116,7 +116,7 @@ class MySQLDecoder : Decoder {
 
     private void decodePayload(ByteBuf payload, int payloadLength, int sequenceId) {
         version(HUNT_DB_DEBUG) {
-            if(inflight.empty()) {
+            while(inflight.empty()) {
                 warning("inflight is empty.");
             }
         }

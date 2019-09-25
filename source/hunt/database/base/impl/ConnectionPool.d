@@ -34,6 +34,7 @@ import core.atomic;
 
 import std.algorithm;
 import std.container;
+import std.format;
 import std.range;
 
 alias DbConnectionPromise = CompletableFuture!(DbConnectionAsyncResult);
@@ -65,9 +66,10 @@ class ConnectionPool {
         this(connector, maxSize, PoolOptions.DEFAULT_MAX_WAIT_QUEUE_SIZE);
     }
 
-    this(Consumer!(AsyncDbConnectionHandler) connector, int maxSize, int _maxWaitQueueSize) {
+    this(Consumer!(AsyncDbConnectionHandler) connector, int maxSize, int maxWaitQueueSize) {
+        version(HUNT_DEBUG) infof("Database pool: maxSize=%d, maxWaitQueueSize=%d", maxSize, maxWaitQueueSize);
         this.maxSize = maxSize;
-        this._maxWaitQueueSize = _maxWaitQueueSize;
+        this._maxWaitQueueSize = maxWaitQueueSize;
         this.connector = connector;
         _all = new ArrayList!PooledConnection();
     }
@@ -89,8 +91,8 @@ class ConnectionPool {
             throw new IllegalStateException("Connection pool closed");
         }
         version(HUNT_DB_DEBUG) {
-            tracef("Try to acquire a DB connection... size: %d, available: %d, waiters: %d",
-                _size, available(), waitersSize());
+            tracef("Try to acquire a DB connection... size: %d/%d, available: %d, waiters: %d",
+                _size, maxSize, available(), waitersSize());
         }
 
         // Promise!(Connection) promise = Promise.promise();
@@ -98,8 +100,8 @@ class ConnectionPool {
         // _waiters.add(promise);
         auto promise = new CompletableFuture!(DbConnectionAsyncResult)();
         promise.thenAccept((r) { 
-            version(HUNT_DB_DEBUG) infof("Acquired a DB connection. size: %d, available: %d, waiters: %d",
-                _size, available(), waitersSize());
+            version(HUNT_DB_DEBUG) infof("Acquired a DB connection. size: %d/%d, available: %d, waiters: %d",
+                _size, maxSize, available(), waitersSize());
             if(holder !is null) holder(r);
         });
         
@@ -175,19 +177,25 @@ class ConnectionPool {
 
         override
         void handleClosed() {
-            if (_all.remove(cast(PooledConnection)this)) {
-                _size--;
-                if (holder is null) {
-                    _available.linearRemoveElement(this);
+            synchronized (this) {
+                if (_all.remove(cast(PooledConnection)this)) {
+                    _size--;
+                    if(_size<0) _size = 0;
+
+                    if (holder is null) {
+                        _available.linearRemoveElement(this);
+                    } else {
+                        holder.handleClosed();
+                    }
+                    check();
                 } else {
-                    holder.handleClosed();
+                    throw new IllegalStateException(format("Can't close connection, processId=%s", getProcessId()));
                 }
-                check();
-            } else {
-                throw new IllegalStateException();
+                
+                version(HUNT_DEBUG) infof("pool status, size: %d/%d, available: %d, waiters: %d",
+                    _size, maxSize, available(), waitersSize());
             }
         }
-
 
         override
         void handleNotification(int processId, string channel, string payload) {
@@ -221,8 +229,8 @@ class ConnectionPool {
             synchronized (this) {
                 _available.insertBack(proxy);
                 version(HUNT_DB_DEBUG) {
-                    infof("Return a DB connection to the pool. size: %d, available: %d, waiters: %d",
-                        _size, available(), waitersSize());
+                    infof("Return a DB connection to the pool. size: %d/%d, available: %d, waiters: %d",
+                        _size, maxSize, available(), waitersSize());
                 }
             }
             
@@ -243,7 +251,7 @@ class ConnectionPool {
 
         scope(exit) {
             _checkInProgress = false;
-            version(HUNT_DB_DEBUG_MORE) tracef("pool size=%d", _size);
+            version(HUNT_DB_DEBUG_MORE) tracef("pool size=%d/%d", _size, maxSize);
         }
 
         try {
