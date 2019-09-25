@@ -50,23 +50,24 @@ class DatabaseOption
         return _url;
     }
 
-    DatabaseOption setMaximumConnection(int num)
+    DatabaseOption maximumPoolSize(int num)
     {
         this._maximumPoolSize = num;
         return this;
     }
-    DatabaseOption setMinimumConnection(int num)
+    
+    DatabaseOption minimumPoolSize(int num)
     {
         this._minimumPoolSize = num;
         return this;
     }
 
-    int maximumConnection()
+    int maximumPoolSize()
     {
         return _maximumPoolSize;
     }
 
-    int minimumConnection()
+    int minimumPoolSize()
     {
         return _minimumPoolSize;
     }

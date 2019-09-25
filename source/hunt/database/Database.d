@@ -80,12 +80,14 @@ class Database
 		import hunt.database.driver.mysql.impl.MySQLPoolImpl;
 		import hunt.database.driver.postgresql.impl.PostgreSQLPoolImpl;
 
+		version(HUNT_DB_DEBUG) tracef("maximumSize: %d", _options.maximumPoolSize);
+
 		if(_options.isPgsql()) {
 			PgConnectOptions connectOptions = new PgConnectOptions(_options.url);
 			connectOptions.setDecoderBufferSize(_options.getDecoderBufferSize());
 			connectOptions.setEncoderBufferSize(_options.getEncoderBufferSize());
 
-			PoolOptions poolOptions = new PoolOptions().setMaxSize(_options.maximumConnection);
+			PoolOptions poolOptions = new PoolOptions().setMaxSize(_options.maximumPoolSize);
 			_pool = new PgPoolImpl(connectOptions, poolOptions);
 
 		} else if(_options.isMysql()) {
@@ -93,7 +95,7 @@ class Database
 			connectOptions.setDecoderBufferSize(_options.getDecoderBufferSize());
 			connectOptions.setEncoderBufferSize(_options.getEncoderBufferSize());
 			
-			PoolOptions poolOptions = new PoolOptions().setMaxSize(_options.maximumConnection);
+			PoolOptions poolOptions = new PoolOptions().setMaxSize(_options.maximumPoolSize);
 			_pool = new MySQLPoolImpl(connectOptions, poolOptions);
 
 		} else {
