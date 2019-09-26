@@ -180,8 +180,8 @@ class MysqlConnection : Connection
         if(t.length > 0 && sql.indexOf("?") != -1) {
             string fixedup;
             int currentIndex;
-            int currentStart = 0;
-            foreach(int i, dchar c; sql) {
+            size_t currentStart = 0;
+            foreach(size_t i, dchar c; sql) {
                 if(c == '?') {
                     fixedup ~= sql[currentStart .. i];
 

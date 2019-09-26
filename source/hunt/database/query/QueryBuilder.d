@@ -498,7 +498,7 @@ class QueryBuilder
                     {
                         foreach (item; _values)
                         {
-                           version(HUNT_SQL_DEBUG) logDebug("set values  : ",item);
+                           version(HUNT_ENDITY_DEBUG) logDebug("set values  : ",item);
 
                             builder.setValue(item.key, item.value);
                         }
