@@ -40,7 +40,7 @@ import hunt.util.Common;
  */
 class PgSocketConnection : SocketConnectionBase {
 
-    private PgCodec codec;
+    // private PgCodec codec;
     int processId;
     int secretKey;
 
@@ -57,15 +57,15 @@ class PgSocketConnection : SocketConnectionBase {
                 preparedStatementCacheSqlLimit, pipeliningLimit);
     }
 
-    override
-    void initialization() {
-        codec = new PgCodec();
-        version(HUNT_DEBUG) {
-            trace("Setting DB codec");
-        }
-        socket().setCodec(codec);
-        super.initialization();
-    }
+    // override
+    // void initialization() {
+    //     codec = new PgCodec();
+    //     version(HUNT_DEBUG) {
+    //         trace("Setting DB codec");
+    //     }
+    //     socket().setCodec(codec);
+    //     super.initialization();
+    // }
 
     void sendStartupMessage(string username, string password, string database, Map!(string, string) properties,
             ResponseHandler!(DbConnection) completionHandler) {

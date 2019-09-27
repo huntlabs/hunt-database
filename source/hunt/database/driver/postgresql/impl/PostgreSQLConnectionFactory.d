@@ -17,6 +17,7 @@
 
 module hunt.database.driver.postgresql.impl.PostgreSQLConnectionFactory;
 
+import hunt.database.driver.postgresql.impl.codec.PgCodec;
 import hunt.database.driver.postgresql.impl.PostgreSQLSocketConnection;
 import hunt.database.driver.postgresql.PostgreSQLConnectOptions;
 import hunt.database.driver.postgresql.SslMode;
@@ -222,6 +223,12 @@ class PgConnectionFactory {
                     handler(failedResult!(PgSocketConnection)(t));
                 }
             });        
+
+
+        version(HUNT_DEBUG) {
+            trace("Setting PostgreSQL codec");
+        }
+        client.setCodec(new PgCodec());
 
         try {
             client.connect(host, port);

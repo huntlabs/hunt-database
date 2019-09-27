@@ -1,5 +1,6 @@
 module hunt.database.driver.mysql.impl.MySQLConnectionFactory;
 
+import hunt.database.driver.mysql.impl.codec.MySQLCodec;
 import hunt.database.driver.mysql.impl.MySQLSocketConnection;
 import hunt.database.driver.mysql.MySQLConnectOptions;
 
@@ -103,27 +104,46 @@ class MySQLConnectionFactory {
 
     private void doConnect(bool ssl, AsyncResultHandler!(MySQLSocketConnection) handler) {
 
-        auto netClient = NetUtil.createNetClient(_netClientOptions);
+        NetClient netClient = NetUtil.createNetClient(_netClientOptions);
+
         netClient.setHandler(new class ConnectionEventHandler {
 
-                MySQLSocketConnection pgConn;
+                MySQLSocketConnection myConn;
 
                 override void connectionOpened(Connection connection) {
                     version(HUNT_DEBUG) infof("Connection created: %s", connection.getRemoteAddress());
-
-                    pgConn = newSocketConnection(cast(AbstractConnection)connection);
-                    handler(succeededResult(pgConn));
+// FIXME: Needing refactor or cleanup -@zhangxueping at 2019-09-25T11:26:40+08:00
+// 
+                    if(myConn is null) {
+                        myConn = newSocketConnection(cast(AbstractConnection)connection);
+                        if(handler !is null) 
+                            handler(succeededResult(myConn));
+                    } else {
+                        warning("MySQLSocketConnection has been opened already.");
+                    }
                 }
 
                 override void connectionClosed(Connection connection) {
                     version(HUNT_DEBUG) infof("Connection closed: %s", connection.getRemoteAddress());
-                    pgConn.handleClosed(connection);
+                    myConn.handleClosed(connection);
                 }
 
                 override void messageReceived(Connection connection, Object message) {
-                    version(HUNT_DB_DEBUG_MORE) tracef("message type: %s", typeid(message).name);
+                    version(HUNT_DB_DEBUG) tracef("message type: %s", typeid(message).name);
+                    if(myConn is null) {
+                        // warningf("Waiting for the MySQLSocketConnection get ready");
+                        version(HUNT_DEBUG) warningf("MySQLSocketConnection is not ready.");
+                        
+                        // import std.stdio;
+                        while(myConn is null) {
+                            // warningf("Waiting for the MySQLSocketConnection get ready...");
+                            // write(".");
+                        }
+                        version(HUNT_DEBUG) warningf("MySQLSocketConnection is ready.");
+                    }
+
                     try {
-                        pgConn.handleMessage(connection, message);
+                        myConn.handleMessage(connection, message);
                     } catch(Throwable t) {
                         exceptionCaught(connection, t);
                     }
@@ -132,8 +152,8 @@ class MySQLConnectionFactory {
                 override void exceptionCaught(Connection connection, Throwable t) {
                     version(HUNT_DB_DEBUG) warning(t);
                     else version(HUNT_DEBUG) warning(t.msg);
-                    if(pgConn !is null) {
-                        pgConn.handleException(connection, t);
+                    if(myConn !is null) {
+                        myConn.handleException(connection, t);
                     }
                     handler(failedResult!(MySQLSocketConnection)(t));
                 }
@@ -149,7 +169,12 @@ class MySQLConnectionFactory {
                     warning(t);
                     handler(failedResult!(MySQLSocketConnection)(t));
                 }
-            });        
+            });
+
+        version(HUNT_DEBUG) {
+            trace("Setting MySQL codec");
+        }
+        netClient.setCodec(new MySQLCodec());     
 
         try {
             netClient.connect(host, port);

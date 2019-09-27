@@ -17,7 +17,6 @@
 
 module hunt.database.driver.mysql.impl.MySQLSocketConnection;
 
-import hunt.database.driver.mysql.impl.codec.MySQLCodec;
 
 import hunt.database.base.AsyncResult;
 import hunt.database.base.Common;
@@ -40,32 +39,25 @@ import hunt.util.Common;
  */
 class MySQLSocketConnection : SocketConnectionBase {
 
-    private MySQLCodec codec;
-
     this(AbstractConnection socket,
             bool cachePreparedStatements,
             int preparedStatementCacheSize,
             int preparedStatementCacheSqlLimit) {
-                
+
         super(socket, cachePreparedStatements, preparedStatementCacheSize, 
                 preparedStatementCacheSqlLimit, 1);
     }
 
-    override
-    void initialization() {
-        codec = new MySQLCodec();
-        version(HUNT_DEBUG) {
-            trace("Setting codec");
-        }
-        socket().setCodec(codec);
-        super.initialization();
-    }
+    // override
+    // void initialization() {
+    //     super.initialization();
+    // }
 
     void sendStartupMessage(string username, string password, string database, Map!(string, string) properties, 
             ResponseHandler!(DbConnection) completionHandler) {
         InitCommand cmd = new InitCommand(this, username, password, database, properties);
         cmd.handler = completionHandler;
-        version(HUNT_DEBUG) {
+        version(HUNT_DB_DEBUG) {
             trace("Sending InitCommand");
         }
         schedule(cmd);
