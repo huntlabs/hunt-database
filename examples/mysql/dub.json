@@ -1,20 +1,23 @@
 {
-    "name": "mysql_demo",
+    "name": "mysql-demo",
     "targetType": "executable",
-    "dependencies": {
-        "hunt-database": {"path":"../../"}
-    },
-    "description": "A minimal D application.",
-    "license": "Apache-2.0",
-    "copyright": "Copyright (C) 2017-2019, HuntLabs",
+    "description": "A simple demo for MySQL client.",
+    "copyright": "Copyright (C) 2018-2019, HuntLabs",
     "homepage": "https://www.huntlabs.net",
-    "configurations": [
-        {
-            "name": "default",
-            "subConfigurations": {
-                "hunt-database": "mysql"
-            }
-        }
+    "license": "Apache-2.0",
+    "versions": [
+        "HUNT_DEBUG",
+        "HUNT_NET_DEBUG1",
+        "HUNT_DB_DEBUG",
+        "HUNT_DB_DEBUG_MORE",
+        "HUNT_SQL_DEBUG"
     ],
-    "versions": ["HUNT_DEBUG", "HUNT_SQL_DEBUG"]
+    "dependencies": {
+        "hunt-database": {
+            "path": "../../"
+        }
+    },
+    "subConfigurations": {
+        "hunt-database": "ssl"
+    }
 }

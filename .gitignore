@@ -33,6 +33,6 @@ mixin_output.d
 *.zip
 
 # Examples
-examples/mysql/mysql_demo
+examples/mysql/mysql-demo
 examples/postgresql/postgresql-demo
 examples/UnitTest/unittest

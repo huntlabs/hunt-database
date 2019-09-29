@@ -17,17 +17,15 @@ import hunt.database;
 
 void main()
 {
-    writeln("run database MySQL demo.");
+    info("run database MySQL demo.");
 
-    Database db = new Database("mysql://dev:111111@10.1.11.31:3306/mysql?charset=utf-8");
+    Database db = new Database("mysql://dev:111111@10.1.11.31:3306/mysql?charset=utf8");
 
     Statement stmt = db.prepare("SELECT * FROM user where User = :user");
     stmt.setParameter("user","root");
 
-    writeln(stmt.sql);
-
     int r = stmt.execute();
-    writeln(r);
+    info(r);
 
     db.close();
 }
