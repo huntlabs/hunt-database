@@ -72,8 +72,7 @@ class DataTypeCodec {
         // ByteBuf data = buffer.readSlice(length);
         switch (dataType) {
             case DataType.INT1:
-                // return buffer.getByte(index).Variant();
-                return value[0].Variant();
+                return to!(byte)(value).Variant();
 
             case DataType.INT2:
             case DataType.YEAR:
