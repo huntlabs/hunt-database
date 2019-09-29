@@ -22,6 +22,8 @@ import hunt.net.NetClient;
 import hunt.net.NetClientOptions;
 import hunt.net.NetUtil;
 
+import core.thread;
+
 /**
  * 
  */
@@ -67,6 +69,8 @@ class MySQLConnectionFactory {
     void close() {
         foreach(client; clients)
             client.close();
+
+        clients.clear();
     }
 
     void connect(AsyncResultHandler!(DbConnection) completionHandler) {
@@ -126,6 +130,16 @@ class MySQLConnectionFactory {
                 override void connectionClosed(Connection connection) {
                     version(HUNT_DEBUG) infof("Connection closed: %s", connection.getRemoteAddress());
                     myConn.handleClosed(connection);
+                    
+                    // 
+                    synchronized(this.outer) {
+                        clients.remove(netClient);
+                    }
+                    // destroy(netClient);
+                    version(HUNT_DB_DEBUG) {
+                        infof("Remaining clients: %d, threads: %d", 
+                            clients.size(), Thread.getAll().length);
+                    }
                 }
 
                 override void messageReceived(Connection connection, Object message) {
@@ -155,7 +169,17 @@ class MySQLConnectionFactory {
                     if(myConn !is null) {
                         myConn.handleException(connection, t);
                     }
-                    handler(failedResult!(MySQLSocketConnection)(t));
+                    if(handler !is null)
+                        handler(failedResult!(MySQLSocketConnection)(t));
+                    
+                    synchronized(this.outer) {
+                        clients.remove(netClient);
+                    }
+                    destroy(netClient);
+                    version(HUNT_DB_DEBUG) {
+                        infof("Remaining clients: %d, threads: %d", 
+                            clients.size(), Thread.getAll().length);
+                    }
                 }
 
                 override void failedOpeningConnection(int connectionId, Throwable t) {

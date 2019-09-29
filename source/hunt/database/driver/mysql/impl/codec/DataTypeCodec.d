@@ -57,10 +57,10 @@ class DataTypeCodec {
 
         bool isBinaryField = isBinaryField(columnDefinitionFlags);
 
-        version(HUNT_DB_DEBUG_MORE) {
-            tracef("dataType=%s, index=%d, len=%d, columnDefinitionFlags=%d, isBinaryField=%s", 
-                dataType, index, len, columnDefinitionFlags, isBinaryField);
-        }
+        // version(HUNT_DB_DEBUG_MORE) {
+        //     tracef("dataType=%s, index=%d, len=%d, columnDefinitionFlags=%d, isBinaryField=%s", 
+        //         dataType, index, len, columnDefinitionFlags, isBinaryField);
+        // }
 
         string value = "";
         if (isBinaryField) {

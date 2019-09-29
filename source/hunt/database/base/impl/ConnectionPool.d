@@ -192,8 +192,11 @@ class ConnectionPool {
                     throw new IllegalStateException(format("Can't close connection, processId=%s", getProcessId()));
                 }
                 
-                version(HUNT_DEBUG) infof("pool status, size: %d/%d, available: %d, waiters: %d",
-                    _size, maxSize, available(), waitersSize());
+                version(HUNT_DEBUG) {
+                        import core.thread;
+                        infof("pool status, size: %d/%d, available: %d, waiters: %d, threads: %d",
+                            _size, maxSize, available(), waitersSize(), Thread.getAll().length);
+                }
             }
         }
 
@@ -229,8 +232,11 @@ class ConnectionPool {
             synchronized (this) {
                 _available.insertBack(proxy);
                 version(HUNT_DB_DEBUG) {
-                    infof("Return a DB connection to the pool. size: %d/%d, available: %d, waiters: %d",
-                        _size, maxSize, available(), waitersSize());
+                    infof("Return a DB connection to the pool.");
+                    
+                    import core.thread;
+                    tracef("pool status, size: %d/%d, available: %d, waiters: %d, threads: %d",
+                        _size, maxSize, available(), waitersSize(), Thread.getAll().length);
                 }
             }
             

@@ -77,7 +77,7 @@ class SimpleQueryCommandCodec(T) : QueryCommandBaseCodec!(T, SimpleQueryCommand!
         // encode packet payload
         packet.writeByte(CommandType.COM_QUERY);
         version(HUNT_DB_DEBUG) {
-            tracef("sql: %s", cmd.sql());
+            tracef("%s", cmd.sql());
         }
         packet.writeCharSequence(cmd.sql(), StandardCharsets.UTF_8);
 
