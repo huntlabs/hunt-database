@@ -119,10 +119,8 @@ class MySQLDecoder : Decoder {
         //      warning("inflight is empty.");
         //      return;
         // }
-        version(HUNT_DB_DEBUG) {
-            while(inflight.empty()) {
-                warning("inflight is empty.");
-            }
+        while(inflight.empty()) {
+            version(HUNT_DB_DEBUG) warning("inflight is empty.");
         }
         CommandCodecBase ctx = inflight.front();
         version(HUNT_DB_DEBUG_MORE) {
