@@ -166,6 +166,7 @@ class MySQLConnectionFactory {
                 override void exceptionCaught(Connection connection, Throwable t) {
                     version(HUNT_DB_DEBUG) warning(t);
                     else version(HUNT_DEBUG) warning(t.msg);
+                    
                     if(myConn !is null) {
                         myConn.handleException(connection, t);
                     }

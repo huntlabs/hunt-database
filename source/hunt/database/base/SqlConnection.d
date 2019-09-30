@@ -66,6 +66,8 @@ interface SqlConnection : SqlClient {
      */
     Transaction begin();
 
+    Transaction begin(bool closeOnEnd);
+
     /**
      * @return whether the connection uses SSL
      */

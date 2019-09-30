@@ -200,7 +200,7 @@ class MySQLEncoder : EncoderChain {
     }
 
     void writeAndFlush(ByteBuf outBuffer) {
-        version(HUNT_DB_DEBUG) trace("writting ...");
+        version(HUNT_DB_DEBUG_MORE) trace("writting ...");
 
         if(ctx is null) {
             warning("ctx is null");
@@ -210,10 +210,10 @@ class MySQLEncoder : EncoderChain {
         if (outBuffer !is null) {
             ByteBuf buff = outBuffer;
             byte[] avaliableData = buff.getReadableBytes();
-            version(HUNT_DB_DEBUG_MORE) {
-                tracef("buffer: %s", buff.toString());
-                tracef("buffer data: %s", cast(string)avaliableData);
-            }
+            // version(HUNT_DB_DEBUG_MORE) {
+            //     tracef("buffer: %s", buff.toString());
+            //     // tracef("buffer data: %s", cast(string)avaliableData);
+            // }
             ctx.write(cast(const(ubyte)[])avaliableData);
         }        
     }

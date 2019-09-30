@@ -20,6 +20,7 @@ module hunt.database.base.Pool;
 import hunt.database.base.AsyncResult;
 import hunt.database.base.SqlClient;
 import hunt.database.base.SqlConnection;
+import hunt.database.base.Transaction;
 
 import hunt.collection.List;
 import hunt.concurrency.Future;
@@ -67,13 +68,16 @@ interface Pool : SqlClient {
 
     SqlConnection getConnection();
 
-//     /**
-//      * Borrow a connection from the pool and begin a transaction, the underlying connection will be returned
-//      * to the pool when the transaction ends.
-//      *
-//      * @return the transaction
-//      */
-//     void begin(Handler!(AsyncResult!(Transaction)) handler);
+    /**
+     * Borrow a connection from the pool and begin a transaction, the underlying connection will be returned
+     * to the pool when the transaction ends.
+     *
+     * @return the transaction
+     */
+    // void begin(AsyncTransactionHandler handler);
+    Transaction begin();
+
+    Future!(Transaction) beginAsync();
 
     /**
      * Close the pool and release the associated resources.

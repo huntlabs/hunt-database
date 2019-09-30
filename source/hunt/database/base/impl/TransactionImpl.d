@@ -229,17 +229,17 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
     }
 
     void commit(AsyncVoidHandler handler) {
-        warning("status: %d", status);
+        version(HUNT_DB_DEBUG_MORE) tracef("status: %d", status);
         switch (status) {
             case ST_BEGIN:
             case ST_PENDING:
             case ST_PROCESSING:
-                version(HUNT_DB_DEBUG) trace("running here");
+                // version(HUNT_DB_DEBUG) trace("running here");
                 schedule(doQuery("COMMIT", (ar) {
-                    version(HUNT_DB_DEBUG) trace("running here");
+                    // version(HUNT_DB_DEBUG) trace("running here");
                     disposeHandler(null);
                     if (handler !is null) {
-                        version(HUNT_DB_DEBUG) trace("running here");
+                        // version(HUNT_DB_DEBUG) trace("running here");
                         if (ar.succeeded()) {
                             handler(succeededResult(cast(Void)null));
                         } else {
@@ -266,9 +266,9 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
     }
 
     void rollback(AsyncVoidHandler handler) {
-        version(HUNT_DB_DEBUG) trace("running here");
+        // version(HUNT_DB_DEBUG) trace("running here");
         schedule(doQuery("ROLLBACK", (RowSetAsyncResult ar) {
-            version(HUNT_DB_DEBUG) trace("running here");
+            // version(HUNT_DB_DEBUG) trace("running here");
             disposeHandler(null);
             if (handler !is null) {
                 handler(succeededResult(cast(Void)null));

@@ -29,6 +29,7 @@ import hunt.database.driver.mysql.impl.util.BufferUtils;
 import hunt.database.base.Common;
 import hunt.database.base.impl.command.CommandBase;
 import hunt.database.base.impl.command.CommandResponse;
+import hunt.database.base.impl.TxStatus;
 
 import hunt.net.buffer;
 import hunt.logging.ConsoleLogger;
@@ -144,7 +145,7 @@ abstract class CommandCodec(R, C) : CommandCodecBase
 
         if(completionHandler !is null) {
             completionHandler(failedResponse!R(
-                    new MySQLException(errorMessage, errorCode, sqlState)));
+                    new MySQLException(errorMessage, errorCode, sqlState), TxStatus.FAILED));
         }
         
     }

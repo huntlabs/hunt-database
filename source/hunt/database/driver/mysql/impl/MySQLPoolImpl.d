@@ -33,10 +33,6 @@ class MySQLPoolImpl : PoolBase!(MySQLPoolImpl), MySQLPool {
         return new MySQLConnectionImpl(factory, conn);
     }
 
-    // override void begin(Handler!(AsyncResult!(Transaction)) handler) {
-    //     throw new UnsupportedOperationException("Transaction is not supported for now");
-    // }
-
     override protected void doClose() {
         factory.close();
         super.doClose();

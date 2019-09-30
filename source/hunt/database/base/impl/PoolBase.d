@@ -93,18 +93,38 @@ abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
         return f.get();
     }
 
-//     override
-//     void begin(Handler!(AsyncResult!(Transaction)) handler) {
-//         getConnection(ar -> {
-//             if (ar.succeeded()) {
-//                 SqlConnectionImpl conn = (SqlConnectionImpl) ar.result();
-//                 Transaction tx = conn.begin(true);
-//                 handler.handle(Future.succeededFuture(tx));
-//             } else {
-//                 handler.handle(Future.failedFuture(ar.cause()));
-//             }
-//         });
-//     }
+    Transaction begin() {
+        SqlConnection conn = getConnection();
+        return conn.begin(true);
+    }
+
+    Future!Transaction beginAsync() {
+        auto r = new FuturePromise!Transaction();
+        getConnection( (SqlConnectionAsyncResult ar) {
+            if (ar.succeeded()) {
+                SqlConnection conn = ar.result();
+                Transaction tx = conn.begin(true);
+                r.succeeded(tx);
+            } else {
+                r.failed(cast(Exception)ar.cause());
+            }
+        });
+        return r;
+    }
+
+    // override
+    // void begin(AsyncTransactionHandler handler) {
+    //     if(handler is null) return;
+    //     getConnection( (SqlConnectionAsyncResult ar) {
+    //         if (ar.succeeded()) {
+    //             SqlConnection conn = ar.result();
+    //             Transaction tx = conn.begin(true);
+    //             handler(succeededResult(tx));
+    //         } else {
+    //             handler(failedResult!(Transaction)(ar.cause()));
+    //         }
+    //     });
+    // }
 
 //     override
 //     <R> void schedule(CommandBase!(R) cmd, Handler<? super CommandResponse!(R)> handler) {

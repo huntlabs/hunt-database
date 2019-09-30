@@ -61,16 +61,6 @@ class MySQLConnectionImpl : SqlConnectionImpl!(MySQLConnectionImpl), MySQLConnec
     }
 
     override
-    Transaction begin() {
-        throw new UnsupportedOperationException("Transaction is not supported for now");
-    }
-
-    override
-    Transaction begin(bool closeOnEnd) {
-        throw new UnsupportedOperationException("Transaction is not supported for now");
-    }
-
-    override
     MySQLConnection ping(AsyncVoidHandler handler) {
         PingCommand cmd = new PingCommand();
         cmd.handler = (r) { handler(r); };

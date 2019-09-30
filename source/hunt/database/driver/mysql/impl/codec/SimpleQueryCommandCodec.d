@@ -49,7 +49,7 @@ class SimpleQueryCommandCodec(T) : QueryCommandBaseCodec!(T, SimpleQueryCommand!
     protected void handleInitPacket(ByteBuf payload) {
         // may receive ERR_Packet, OK_Packet, LOCAL INFILE Request, Text Resultset
         int firstByte = payload.getUnsignedByte(payload.readerIndex());
-        tracef("firstByte: %d", firstByte);
+        // version(HUNT_DB_DEBUG_MORE) tracef("firstByte: %d", firstByte);
         if (firstByte == Packets.OK_PACKET_HEADER) {
             OkPacket okPacket = decodeOkPacketPayload(payload, StandardCharsets.UTF_8);
             handleSingleResultsetDecodingCompleted(okPacket.serverStatusFlags(),
@@ -77,7 +77,7 @@ class SimpleQueryCommandCodec(T) : QueryCommandBaseCodec!(T, SimpleQueryCommand!
         // encode packet payload
         packet.writeByte(CommandType.COM_QUERY);
         version(HUNT_DB_DEBUG) {
-            tracef("%s", cmd.sql());
+            infof("%s", cmd.sql());
         }
         packet.writeCharSequence(cmd.sql(), StandardCharsets.UTF_8);
 

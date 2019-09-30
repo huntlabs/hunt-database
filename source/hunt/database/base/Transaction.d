@@ -24,6 +24,9 @@ import hunt.database.base.SqlClient;
 
 import hunt.collection.List;
 
+alias AsyncTransactionHandler = AsyncResultHandler!Transaction;
+alias TransactionAsyncResult = AsyncResult!Transaction;
+
 /**
  * A transaction that allows to control the transaction and receive events.
  */
