@@ -39,17 +39,8 @@ import std.conv;
 class PgTransactionTest : PgClientTestBase!(Transaction) {
 
     private PgPool pool;
-
     private Consumer!(Action1!SqlConnection) sqlConnectionConnector;
 
-    // this() {
-    //     connector = handler -> {
-    //         if (pool == null) {
-    //             pool = PgPool.pool(vertx, new PgConnectOptions(options), new PoolOptions().setMaxSize(1));
-    //         }
-    //         pool.begin(handler);
-    //     };
-    // }
     this() {
         connector = (handler) {
             trace("Initializing connect ...");
