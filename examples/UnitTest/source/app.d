@@ -23,10 +23,10 @@ void main()
 /* ------------------------------- MySQL Tests ------------------------------ */
 	// testUnits!(MySQLQueryTest);
 	// testUnits!(MySQLSimpleQueryTest);
-	// testUnits!(MySQLPreparedQueryTest);
+	testUnits!(MySQLPreparedQueryTest);
 	// testUnits!(Native41AuthenticatorTest);
 	// testUnits!(MySQLPoolTest);
-	testUnits!(MySQLTransactionTest);
+	// testUnits!(MySQLTransactionTest);
 
 /* ---------------------------- PostgreSQL tests ---------------------------- */
 

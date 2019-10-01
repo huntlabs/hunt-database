@@ -31,7 +31,7 @@ class MySQLParamDesc : ParamDesc {
 
     override
     string prepare(List!(Variant) values) {
-        // warning("xxxx=>>>>", values.size());
+        // warning("values.size: ", values.size());
         // warning(toString());
         if (values.size() != _paramDefinitions.length) {
             return buildReport(values);
