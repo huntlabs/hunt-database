@@ -39,7 +39,7 @@ class ExtendedQueryCommandCodec(R) : ExtendedQueryCommandBaseCodec!(R, ExtendedQ
             encoder.writeSync();
         } else {
             PgPreparedStatement ps = cast(PgPreparedStatement) cmd.preparedStatement();
-            version(HUNT_DB_DEBUG) tracef("prepared sql: %s", ps.sql());
+            version(HUNT_DB_DEBUG) infof("prepared sql: %s", ps.sql());
             if (ps.bind.statement == 0) {
                 encoder.writeParse(new Parse(ps.sql()));
             }

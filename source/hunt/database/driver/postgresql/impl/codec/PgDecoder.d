@@ -89,7 +89,7 @@ class PgDecoder : Decoder {
     }
 
     private void doEecode(ByteBuffer msg, Connection connection) {
-        version(HUNT_DB_DEBUG_MORE) tracef("decoding buffer: %s", msg.toString());
+        // version(HUNT_DB_DEBUG_MORE) tracef("decoding buffer: %s", msg.toString());
 
         ByteBuf buff = Unpooled.wrappedBuffer(msg);
         if (inBuffer is null) {
@@ -119,7 +119,7 @@ class PgDecoder : Decoder {
             int writerIndex = inBuffer.writerIndex();
             try {
                 inBuffer.setIndex(beginIdx + 5, endIdx);
-                version(HUNT_DB_DEBUG_MORE) infof("Protocol(Message type) id=%c", cast(char)id);
+                // version(HUNT_DB_DEBUG_MORE) infof("Protocol(Message type) id=%c", cast(char)id);
                 switch (id) {
                     case PgProtocolConstants.MESSAGE_TYPE_READY_FOR_QUERY: {
                         decodeReadyForQuery(inBuffer);

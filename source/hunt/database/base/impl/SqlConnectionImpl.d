@@ -121,9 +121,7 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbCo
             conn.schedule(cmd);
         }
     }
-    alias schedule = typeof(super).schedule;
-
-    // override
+    
     void handleException(Throwable err) {
         EventHandler!(Throwable) handler = _exceptionHandler;
         if (handler !is null) {

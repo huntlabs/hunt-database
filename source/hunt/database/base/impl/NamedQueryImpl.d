@@ -28,27 +28,6 @@ abstract class NamedQueryImpl : PreparedQueryImpl, NamedQuery {
         _queryDesc = queryDesc;
     }
 
-    
-
-    // void setParameter(string name, Variant value) {
-    //     version(HUNT_DEBUG) {
-    //         auto itemPtr = name in _parameters;
-    //         if(itemPtr !is null) {
-    //             warning("% will be overwrited with %s", name, value.toString());
-    //         }
-    //     }
-
-
-    //     // TODO: Tasks pending completion -@zhangxueping at 2019-10-01T13:35:23+08:00
-    //     // validate the type of parameter
-    //     // hunt.database.driver.mysql.impl.codec.ColumnDefinition;
-
-    //     // RowDesc rowDesc = getPreparedStatement().rowDesc();
-    //     // warning(rowDesc.toString());
-
-    //     _parameters[name] = value;
-    // }
-
     override PreparedQuery execute(RowSetHandler handler) {
         ArrayTuple tuples = new ArrayTuple(_queryDesc.getSize());
         foreach(string name, ref Variant value; _parameters) {

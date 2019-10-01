@@ -43,7 +43,7 @@ abstract class ExtendedQueryCommandBaseCodec(R, C) : QueryCommandBaseCodec!(R, C
     override
     void handleParseComplete() {
         // Response to Parse
-        version(HUNT_DB_DEBUG) info("running here");
+        // version(HUNT_DB_DEBUG) info("running here");
     }
 
     override
@@ -59,6 +59,6 @@ abstract class ExtendedQueryCommandBaseCodec(R, C) : QueryCommandBaseCodec!(R, C
     override
     void handleBindComplete() {
         // Response to Bind
-        version(HUNT_DB_DEBUG) info("running here");
+        // version(HUNT_DB_DEBUG) info("running here");
     }
 }
