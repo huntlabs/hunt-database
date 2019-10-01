@@ -129,7 +129,7 @@ class Statement
 
         foreach (k, v; _parameters)
         {
-            auto re = regex(r":" ~ k ~ r"([^\w]*)", "g");
+            auto re = regex(r":" ~ k ~ r"(\W[^\w]*)", "g");
             if ((cast(String) v !is null) || (cast(Nullable!string) v !is null))
             {
                 if (_db.getOption().isPgsql() || _db.getOption().isMysql()) {
