@@ -34,7 +34,6 @@ import hunt.net.buffer.ByteBuf;
 abstract class QueryCommandBaseCodec(T, C) : CommandCodec!(bool, C) 
     if(is(C : QueryCommandBase!(T))) { 
 
-    // RowResultDecoder<?, T> decoder;
     RowResultDecoder!T decoder;
 
     this(C cmd) {
@@ -53,7 +52,6 @@ abstract class QueryCommandBaseCodec(T, C) : CommandCodec!(bool, C)
             size = decoder.size();
             decoder.reset();
         } else {
-            // r = emptyResult(cmd.collector());
             r = new RowSetImpl(); 
             size = 0;
             desc = null;

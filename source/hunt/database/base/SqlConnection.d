@@ -101,10 +101,22 @@ interface SqlConnection : SqlClient {
 
     PreparedQuery prepare(string sql);
 
+    /**
+     * 
+     */
     SqlConnection preparedQuery(string sql, RowSetHandler handler);
 
     override
     SqlConnection preparedQuery(string sql, Tuple arguments, RowSetHandler handler);
+
+    /**
+     * 
+     */
+    Future!NamedQuery prepareNamedQueryAsync(string sql);
+
+    NamedQuery prepareNamedQuery(string sql);
+
+
 
     // override
     // <R> SqlConnection preparedQuery(string sql, Tuple arguments, Collector<Row, ?, R> collector, Handler!(AsyncResult!(SqlResult!(R))) handler);

@@ -60,15 +60,14 @@ class PreparedQueryImpl : PreparedQuery {
     private DbConnection conn;
     private PreparedStatement ps;
     private shared bool closed = false;
-    private Variant[string] _parameters;
 
     this(DbConnection conn, PreparedStatement ps) { 
         this.conn = conn;
         this.ps = ps;
     }
-
-    void setParameter(string name, Variant value) {
-
+    
+    PreparedStatement getPreparedStatement() {
+        return ps;
     }
 
     PreparedQuery execute(RowSetHandler handler) {
@@ -84,7 +83,6 @@ class PreparedQueryImpl : PreparedQuery {
     private PreparedQuery execute(R1, R2, R3)(
             Tuple args, bool singleton,
             Function!(R1, R2) factory,
-            // Collector<Row, ?, R1> collector,
             AsyncResultHandler!(R3) handler) {
 
         SqlResultBuilder!(R1, R2, R3) b = new SqlResultBuilder!(R1, R2, R3)(factory, handler);

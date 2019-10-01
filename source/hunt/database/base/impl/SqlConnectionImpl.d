@@ -24,6 +24,7 @@ import hunt.database.base.Common;
 import hunt.database.base.SqlConnection;
 import hunt.database.base.impl.command.CommandResponse;
 import hunt.database.base.impl.command.CommandBase;
+import hunt.database.base.impl.NamedQueryDesc;
 import hunt.database.base.impl.SqlConnectionBase;
 import hunt.database.base.impl.TransactionImpl;
 import hunt.database.base.PreparedQuery;
@@ -82,6 +83,19 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbCo
     //     return super.preparedBatch(sql, batch, handler);
     // }
 
+    
+    // override protected AbstractNamedQueryDesc getNamedQueryDesc(string sql) {
+    //     return super.getNamedQueryDesc(sql);
+    // }
+
+    // override Future!(NamedQuery) prepareNamedQueryAsync(string sql) {
+    //     return super.prepareNamedQueryAsync(sql);
+    // }
+
+    // override NamedQuery prepareNamedQuery(string sql) {
+    //     return super.prepareNamedQuery(sql);
+    // }
+
     // override
     void handleClosed() {
         VoidHandler handler = _closeHandler;
@@ -100,13 +114,14 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbCo
     //     schedule(cmd);
     // }
 
-    override protected void schedule(ICommand cmd) {
+    override void schedule(ICommand cmd) {
         if (tx !is null) {
             tx.schedule(cmd);
         } else {
             conn.schedule(cmd);
         }
     }
+    alias schedule = typeof(super).schedule;
 
     // override
     void handleException(Throwable err) {

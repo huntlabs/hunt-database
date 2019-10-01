@@ -24,8 +24,9 @@ import hunt.database.base.RowSet;
 import hunt.database.base.impl.ArrayTuple;
 import hunt.database.base.Tuple;
 
-import hunt.collection.List;
+import hunt.database.base.impl.PreparedStatement;
 
+import hunt.collection.List;
 
 alias PreparedQueryHandler = AsyncResultHandler!(PreparedQuery);
 alias PreparedQueryAsyncResult = AsyncResult!PreparedQuery;
@@ -36,6 +37,8 @@ alias PreparedQueryAsyncResult = AsyncResult!PreparedQuery;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 interface PreparedQuery {
+
+    PreparedStatement getPreparedStatement();
 
     /**
      * Calls {@link #execute(Tuple, Handler)} with an empty tuple argument.
@@ -118,4 +121,34 @@ interface PreparedQuery {
      */
     void close(AsyncVoidHandler completionHandler);
 
+}
+
+
+/**
+ * This class wraps around a {@link PreparedStatement} and allows the programmer to set parameters by name instead of by
+ * index. This eliminates any confusion as to which parameter index represents what. This also means that rearranging
+ * the SQL statement or adding a parameter doesn't involve renumbering your indices. Code such as this:
+ * 
+ * 
+ * Connection con=getConnection(); String query="select * from my_table where name=? or address=?"; PreparedStatement
+ * p=con.prepareStatement(query); p.setString(1, "bob"); p.setString(2, "123 terrace ct"); ResultSet
+ * rs=p.executeQuery();
+ * 
+ * can be replaced with:
+ * 
+ * Connection con=getConnection(); String query="select * from my_table where name=:name or address=:address";
+ * NamedParameterStatement p=new NamedParameterStatement(con, query); p.setString("name", "bob"); p.setString("address",
+ * "123 terrace ct"); ResultSet rs=p.executeQuery();
+ * 
+ * Sourced from JavaWorld Article @ http://www.javaworld.com/javaworld/jw-04-2007/jw-04-jdbc.html
+ * 
+ */
+interface NamedQuery : PreparedQuery {
+
+    import std.variant;
+    void setParameter(string name, Variant value);
+    
+    final void setParameter(R)(string name, R value) if(!is(R == Variant)) {
+        setParameter(name, Variant(value));
+    }
 }

@@ -19,14 +19,25 @@ import hunt.database.base.AsyncResult;
 import hunt.database.base.Common;
 import hunt.database.base.Transaction;
 import hunt.database.base.impl.Connection;
+import hunt.database.base.impl.command.CommandResponse;
+import hunt.database.base.impl.command.PrepareStatementCommand;
+import hunt.database.base.impl.NamedQueryDesc;
 import hunt.database.base.impl.SqlConnectionImpl;
 
 import hunt.logging.ConsoleLogger;
 
 import hunt.collection.List;
+import hunt.concurrency.Future;
+import hunt.concurrency.FuturePromise;
 import hunt.Exceptions;
 
 
+
+alias MySQLNamedQueryDesc = NamedQueryDesc!("?", false);
+
+/**
+ * 
+ */
 class MySQLConnectionImpl : SqlConnectionImpl!(MySQLConnectionImpl), MySQLConnection {
 
     static void connect(MySQLConnectOptions options, AsyncResultHandler!(MySQLConnection) handler) {
@@ -124,6 +135,38 @@ class MySQLConnectionImpl : SqlConnectionImpl!(MySQLConnectionImpl), MySQLConnec
         return this;
     }
 
+    // override protected AbstractNamedQueryDesc getNamedQueryDesc(string sql) {
+    //     return new MySQLNamedQueryDesc(sql);
+    // }
+
+    // protected AbstractNamedQueryDesc getNamedQueryDesc(string sql) {
+    //     throw new NotImplementedException("getNamedQueryDesc");
+    // }
+
+    Future!NamedQuery prepareNamedQueryAsync(string sql) {
+        version(HUNT_DB_DEBUG) trace(sql);
+        auto f = new FuturePromise!NamedQuery();
+        AbstractNamedQueryDesc queryDesc = new MySQLNamedQueryDesc(sql);
+
+        scheduleThen!(PreparedStatement)(new PrepareStatementCommand(queryDesc.getSql()), 
+            (CommandResponse!PreparedStatement ar) {
+                if (ar.succeeded()) {
+                    NamedQueryImpl queryImpl = new MySQLNamedQueryImpl(conn, ar.result(), queryDesc);
+                    f.succeeded(queryImpl);
+                } else {
+                    f.failed(cast(Exception)ar.cause()); 
+                }
+            }
+        );
+        
+        return f;
+    }
+
+    NamedQuery prepareNamedQuery(string sql) {
+        auto f = prepareNamedQueryAsync(sql);
+        return f.get();
+    }       
+
     string escapeIdentifier(string identifier) {
 // TODO: Tasks pending completion -@zxp at Fri, 20 Sep 2019 02:44:54 GMT        
 // 
@@ -133,4 +176,56 @@ class MySQLConnectionImpl : SqlConnectionImpl!(MySQLConnectionImpl), MySQLConnec
     string escapeLiteral(string literal) {
         return MySQLUtil.escapeLiteral(literal);
     }      
+}
+
+
+import hunt.database.driver.mysql.impl.codec.MySQLRowDesc;
+
+import hunt.database.base.impl.NamedQueryDesc;
+import hunt.database.base.impl.NamedQueryImpl;
+import hunt.database.base.impl.PreparedQueryImpl;
+import hunt.database.base.impl.RowDesc;
+
+import hunt.database.base.impl.ArrayTuple;
+import hunt.database.base.impl.Connection;
+import hunt.database.base.impl.ParamDesc;
+import hunt.database.base.impl.PreparedStatement;
+
+import hunt.database.base.PreparedQuery;
+import hunt.database.base.RowSet;
+import std.variant;
+
+/**
+ * 
+ */
+class MySQLNamedQueryImpl : NamedQueryImpl {
+
+    this(DbConnection conn, PreparedStatement ps, AbstractNamedQueryDesc queryDesc) {
+        super(conn, ps, queryDesc);
+    }
+
+    void setParameter(string name, Variant value) {
+        version(HUNT_DEBUG) {
+            auto itemPtr = name in _parameters;
+            if(itemPtr !is null) {
+                warning("% will be overwrited with %s", name, value.toString());
+            }
+        }
+
+
+        // TODO: Tasks pending completion -@zhangxueping at 2019-10-01T13:35:23+08:00
+        // validate the type of parameter
+        // hunt.database.driver.mysql.impl.codec.ColumnDefinition;
+
+        // getPreparedStatement().paramDesc();
+
+        // MySQLRowDesc rowDesc = cast(MySQLRowDesc)getPreparedStatement().rowDesc();
+        // warning(rowDesc.toString());
+
+        // ParamDesc pd = getPreparedStatement().paramDesc();
+        // warning(pd.toString());
+
+        _parameters[name] = value;
+    }
+
 }

@@ -61,7 +61,6 @@ interface Tuple {
     static Tuple of(Args...)(Args elts) {
         ArrayTuple tuple = new ArrayTuple(cast(int)Args.length);
         foreach (elt; elts) {
-            // tuple.addValue(elt);
             static if(is(T == Variant)) {
                 tuple.addValue(elt);
             } else {

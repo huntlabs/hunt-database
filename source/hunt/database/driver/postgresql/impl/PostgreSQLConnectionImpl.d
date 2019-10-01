@@ -27,6 +27,9 @@ import hunt.database.driver.postgresql.PgUtil;
 import hunt.database.base.AsyncResult;
 import hunt.database.base.Common;
 import hunt.database.base.impl.Connection;
+import hunt.database.base.impl.command.CommandResponse;
+import hunt.database.base.impl.command.PrepareStatementCommand;
+import hunt.database.base.impl.NamedQueryDesc;
 import hunt.database.base.impl.SqlConnectionImpl;
 import hunt.database.base.SqlResult;
 import hunt.database.base.RowSet;
@@ -35,10 +38,14 @@ import hunt.database.base.SqlClient;
 import hunt.database.base.Tuple;
 
 import hunt.collection.List;
+import hunt.concurrency.Future;
+import hunt.concurrency.FuturePromise;
 import hunt.Exceptions;
 import hunt.logging.ConsoleLogger;
 import hunt.text.StringBuilder;
 
+
+alias PgNamedQueryDesc = NamedQueryDesc!("$", true);
 
 /**
  * 
@@ -115,6 +122,33 @@ class PgConnectionImpl : SqlConnectionImpl!(PgConnectionImpl), PgConnection  {
         return this;
     }
 
+    // override protected AbstractNamedQueryDesc getNamedQueryDesc(string sql) {
+    //     return new PgNamedQueryDesc(sql);
+    // }
+
+    Future!NamedQuery prepareNamedQueryAsync(string sql) {
+        version(HUNT_DB_DEBUG) trace(sql);
+        auto f = new FuturePromise!NamedQuery();
+        AbstractNamedQueryDesc queryDesc = new PgNamedQueryDesc(sql);
+
+        scheduleThen!(PreparedStatement)(new PrepareStatementCommand(queryDesc.getSql()), 
+            (CommandResponse!PreparedStatement ar) {
+                if (ar.succeeded()) {
+                    NamedQueryImpl queryImpl = new PgNamedQueryImpl(conn, ar.result(), queryDesc);
+                    f.succeeded(queryImpl);
+                } else {
+                    f.failed(cast(Exception)ar.cause()); 
+                }
+            }
+        );
+        
+        return f;
+    }
+
+    NamedQuery prepareNamedQuery(string sql) {
+        auto f = prepareNamedQueryAsync(sql);
+        return f.get();
+    }       
 
     string escapeIdentifier(string identifier) {
         return PgUtil.escapeIdentifier(null, identifier).toString();
@@ -145,6 +179,48 @@ class PgConnectionImpl : SqlConnectionImpl!(PgConnectionImpl), PgConnection  {
                 handler(failedResult!(PgConnection)(ar.cause()));
             }
         });
+    }
+
+}
+
+
+
+import hunt.database.base.impl.NamedQueryDesc;
+import hunt.database.base.impl.NamedQueryImpl;
+import hunt.database.base.impl.PreparedQueryImpl;
+import hunt.database.base.impl.RowDesc;
+
+import hunt.database.base.impl.ArrayTuple;
+import hunt.database.base.impl.Connection;
+import hunt.database.base.impl.PreparedStatement;
+
+import hunt.database.base.PreparedQuery;
+import hunt.database.base.RowSet;
+import std.variant;
+
+class PgNamedQueryImpl : NamedQueryImpl {
+
+    this(DbConnection conn, PreparedStatement ps, AbstractNamedQueryDesc queryDesc) {
+        super(conn, ps, queryDesc);
+    }
+
+    void setParameter(string name, Variant value) {
+        version(HUNT_DEBUG) {
+            auto itemPtr = name in _parameters;
+            if(itemPtr !is null) {
+                warning("% will be overwrited with %s", name, value.toString());
+            }
+        }
+
+
+        // TODO: Tasks pending completion -@zhangxueping at 2019-10-01T13:35:23+08:00
+        // validate the type of parameter
+        // hunt.database.driver.mysql.impl.codec.ColumnDefinition;
+
+        // RowDesc rowDesc = getPreparedStatement().rowDesc();
+        // warning(rowDesc.toString());
+
+        _parameters[name] = value;
     }
 
 }

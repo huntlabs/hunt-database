@@ -18,6 +18,8 @@
 module hunt.database.base.impl.SqlConnectionBase;
 
 import hunt.database.base.impl.Connection;
+import hunt.database.base.impl.NamedQueryDesc;
+import hunt.database.base.impl.NamedQueryImpl;
 import hunt.database.base.impl.PreparedQueryImpl;
 import hunt.database.base.impl.PreparedStatement;
 import hunt.database.base.impl.SqlClientBase;
@@ -48,7 +50,7 @@ abstract class SqlConnectionBase(C) : SqlClientBase!(C) {
 
     C prepare(string sql, PreparedQueryHandler handler) {
         version(HUNT_DB_DEBUG) trace(sql);
-        schedule!(PreparedStatement)(new PrepareStatementCommand(sql), 
+        scheduleThen!(PreparedStatement)(new PrepareStatementCommand(sql), 
             (CommandResponse!PreparedStatement cr) {
                 if(handler !is null) {
                     if (cr.succeeded()) {
@@ -66,7 +68,7 @@ abstract class SqlConnectionBase(C) : SqlClientBase!(C) {
         version(HUNT_DB_DEBUG) trace(sql);
         auto f = new FuturePromise!PreparedQuery();
 
-        schedule!(PreparedStatement)(new PrepareStatementCommand(sql), 
+        scheduleThen!(PreparedStatement)(new PrepareStatementCommand(sql), 
             (CommandResponse!PreparedStatement ar) {
                 if (ar.succeeded()) {
                     f.succeeded(new PreparedQueryImpl(conn, ar.result()));
@@ -82,5 +84,34 @@ abstract class SqlConnectionBase(C) : SqlClientBase!(C) {
     PreparedQuery prepare(string sql) {
         auto f = prepareAsync(sql);
         return f.get();
-    }    
+    }
+
+    // protected AbstractNamedQueryDesc getNamedQueryDesc(string sql) {
+    //     throw new NotImplementedException("getNamedQueryDesc");
+    // }
+
+    // Future!NamedQuery prepareNamedQueryAsync(string sql) {
+    //     version(HUNT_DB_DEBUG) trace(sql);
+    //     auto f = new FuturePromise!NamedQuery();
+    //     AbstractNamedQueryDesc queryDesc = getNamedQueryDesc(sql);
+
+    //     scheduleThen!(PreparedStatement)(new PrepareStatementCommand(queryDesc.getSql()), 
+    //         (CommandResponse!PreparedStatement ar) {
+    //             if (ar.succeeded()) {
+    //                 NamedQueryImpl queryImpl = new NamedQueryImpl(conn, ar.result(), queryDesc);
+    //                 f.succeeded(queryImpl);
+    //             } else {
+    //                 f.failed(cast(Exception)ar.cause()); 
+    //             }
+    //         }
+    //     );
+        
+    //     return f;
+    // }
+
+    // NamedQuery prepareNamedQuery(string sql) {
+    //     auto f = prepareNamedQueryAsync(sql);
+    //     return f.get();
+    // }    
 }
+

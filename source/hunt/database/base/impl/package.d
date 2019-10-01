@@ -4,6 +4,8 @@ public import hunt.database.base.impl.ArrayTuple;
 public import hunt.database.base.impl.Connection;
 public import hunt.database.base.impl.ConnectionPool;
 public import hunt.database.base.impl.CursorImpl;
+public import hunt.database.base.impl.NamedQueryDesc;
+public import hunt.database.base.impl.NamedQueryImpl;
 public import hunt.database.base.impl.Notice;
 public import hunt.database.base.impl.Notification;
 public import hunt.database.base.impl.ParamDesc;

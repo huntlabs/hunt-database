@@ -66,7 +66,7 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
             else { f.failed(cast(Exception)ar.cause()); }
         });
 
-        schedule!(bool)(new SimpleQueryCommand!(RowSet)(sql, false, b), 
+        scheduleThen!(bool)(new SimpleQueryCommand!(RowSet)(sql, false, b), 
             (CommandResponse!bool r) {  b.handle(r); }
         );
 
@@ -89,7 +89,7 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
                 AsyncResultHandler!(R3) handler) {
 
         SqlResultBuilder!(R1, R2, R3) b = new SqlResultBuilder!(R1, R2, R3)(factory, handler);
-        schedule!(bool)(new SimpleQueryCommand!(R1)(sql, singleton, b), 
+        scheduleThen!(bool)(new SimpleQueryCommand!(R1)(sql, singleton, b), 
             (CommandResponse!bool r) {  b.handle(r); }
         );
 
@@ -110,7 +110,7 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
             Function!(R1, R2) factory,
             AsyncResultHandler!(R3) handler) {
 
-        schedule!(PreparedStatement)(new PrepareStatementCommand(sql), 
+        scheduleThen!(PreparedStatement)(new PrepareStatementCommand(sql), 
             (CommandResponse!PreparedStatement cr) {
                 if (cr.succeeded()) {
                     PreparedStatement ps = cr.result();
@@ -131,7 +131,7 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
                         SqlClientBase!(C) client = cast(SqlClientBase!(C))sc;
                         assert(client is this);
 
-                        schedule!(bool)(new ExtendedQueryCommand!(R1)(ps, arguments, singleton, b), 
+                        scheduleThen!(bool)(new ExtendedQueryCommand!(R1)(ps, arguments, singleton, b), 
                             (CommandResponse!bool r) {  b.handle(r); }
                         ); 
                     }
@@ -200,7 +200,7 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
     //     return (C) this;
     // }
 
-    protected void schedule(R)(CommandBase!(R) cmd, ResponseHandler!R handler) {
+    protected void scheduleThen(R)(CommandBase!(R) cmd, ResponseHandler!R handler) {
         cmd.handler = (cr) {
             // Tx might be gone ???
             cr.scheduler = this;

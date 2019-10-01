@@ -22,7 +22,7 @@ import hunt.database.base.impl.command.QueryCommandBase;
 import hunt.database.base.Row;
 import hunt.database.base.impl.QueryResultHandler;
 
-// import java.util.stream.Collector;
+import hunt.logging.ConsoleLogger;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -33,11 +33,9 @@ class SimpleQueryCommand(T) : QueryCommandBase!(T) {
     private string _sql;
     private bool _singleton;
 
-    this(string sql,
-            bool singleton,
-            // Collector<Row, ?, T> collector,
-            QueryResultHandler!(T) resultHandler) {
-        super(resultHandler); // collector, 
+    this(string sql, bool singleton, QueryResultHandler!(T) resultHandler) {
+        version(HUNT_DB_DEBUG) info(sql);
+        super(resultHandler);
         this._sql = sql;
         this._singleton = singleton;
     }

@@ -19,7 +19,11 @@ module hunt.database.base.impl.command.PrepareStatementCommand;
 
 import hunt.database.base.impl.command.CommandBase;
 import hunt.database.base.impl.PreparedStatement;
+import hunt.logging.ConsoleLogger;
 
+/**
+ * 
+ */
 class PrepareStatementCommand : CommandBase!(PreparedStatement) {
 
     private string _sql;
@@ -27,6 +31,7 @@ class PrepareStatementCommand : CommandBase!(PreparedStatement) {
     Object cached;
 
     this(string sql) {
+        version(HUNT_DB_DEBUG) info(sql);
         this._sql = sql;
     }
 

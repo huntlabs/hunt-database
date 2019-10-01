@@ -11,6 +11,7 @@ import hunt.collection.List;
 import hunt.logging.ConsoleLogger;
 import hunt.Exceptions;
 
+import std.conv;
 import std.variant;
 import std.algorithm.iteration;
 
@@ -30,6 +31,8 @@ class MySQLParamDesc : ParamDesc {
 
     override
     string prepare(List!(Variant) values) {
+        // warning("xxxx=>>>>", values.size());
+        // warning(toString());
         if (values.size() != _paramDefinitions.length) {
             return buildReport(values);
         }
@@ -58,5 +61,9 @@ class MySQLParamDesc : ParamDesc {
         });
 
         return Util.buildInvalidArgsError(values.toArray(), types);
+    }
+
+    override string toString() {
+        return "MySQLParamDesc{paramDataTypes=" ~ _paramDefinitions.to!string() ~ "}";
     }
 }
