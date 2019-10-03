@@ -309,7 +309,9 @@ interface Row : Tuple {
 
     // <T> T[] getValues(Class!(T) type, int idx);
 
-    final T getAs(T)() if(is(T == class) || is(T == struct)) {
+    alias getAs = bind;
+
+    final T bind(T)() if(is(T == class) || is(T == struct)) {
         import std.traits;
         T r;
         static if(is(T == class)) {

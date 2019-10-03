@@ -37,11 +37,13 @@ interface RowSet : Iterable!(Row), SqlResult!(RowSet) {
 
     // override RowSet next();
 
-    final T[] getAs(T)() {
+    alias getAs = bind;
+
+    final T[] bind(T)() if(is(T == class) || is(T == struct)) {
         T[] r = new T[this.rowCount()];
         size_t index = 0;
         foreach(Row row; this) {
-            r[index] = row.getAs!T();
+            r[index] = row.bind!T();
             index++;
         }
 
