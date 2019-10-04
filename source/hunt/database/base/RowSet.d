@@ -39,11 +39,11 @@ interface RowSet : Iterable!(Row), SqlResult!(RowSet) {
 
     alias getAs = bind;
 
-    final T[] bind(T)() if(is(T == class) || is(T == struct)) {
+    final T[] bind(T, alias getColumnNameFun="b")() if(is(T == class) || is(T == struct)) {
         T[] r = new T[this.rowCount()];
         size_t index = 0;
         foreach(Row row; this) {
-            r[index] = row.bind!T();
+            r[index] = row.bind!(T, getColumnNameFun)();
             index++;
         }
 

@@ -16,20 +16,25 @@
  */
 module hunt.database.base.Row;
 
+import hunt.database.base.Annotations;
 import hunt.database.base.Tuple;
+
+import hunt.logging.ConsoleLogger;
 
 // import java.math.BigDecimal;
 // import java.time.*;
 // import java.time.temporal.Temporal;
 
-import hunt.database.base.Annotations;
 import std.array;
 import std.format;
+import std.functional;
 import std.meta;
 import std.traits;
 import std.variant;
 
-
+/**
+ * 
+ */
 interface Row : Tuple {
 
     /**
@@ -332,26 +337,23 @@ interface Row : Tuple {
         return r;
     }
 
-    final void bindObject(string tableName = T.stringof, alias getColumnNameFun="b", T)(ref T obj) {
+    
+    final void bindObject(string tableName = T.stringof, 
+            alias getColumnNameFun="b", T)(ref T obj) if(is(T == struct)) {
+        alias getColumnName = binaryFun!getColumnNameFun;
 
         // current fields in T
-		static foreach (string member; FieldNameTuple!T) {
-            alias currentMember = Alias!(__traits(getMember, T, memberName));
+		static foreach (string member; FieldNameTuple!T) {{
+            alias currentMember = Alias!(__traits(getMember, T, member));
             alias memberType = typeof(__traits(getMember, T, member));
 
             static if(hasUDA!(currentMember, Ignore)) {
-                version(HUNT_DEBUG) { info("Field %s ignored.", member); }
+                version(HUNT_DEBUG) { warningf("Field %s.%s ignored.", T.stringof, member); }
             } else static if(is(memberType == class) || is(memberType == struct) ) {
-                static if(hasUDA!(memberType, Table)) {
-                    enum memberTableName = getUDAs!(T, Table)[0].name;
-                } else {
-                    enum memberTableName = memberType.stringof;
-                }
-                version(HUNT_DEBUG) infof("bingding sub table: %s", memberTableName);
-                bindObject!(memberTableName, getColumnNameFun)(obj);
+                __traits(getMember, obj, member) = bind!(memberType, getColumnNameFun)();
             } else {
                 static if(hasUDA!(currentMember, Column)) {
-                    alias memberColumnAttr = getUDAs!(currentMember, Column)[0];
+                    enum memberColumnAttr = getUDAs!(currentMember, Column)[0];
                     enum string memberColumnName = memberColumnAttr.name;
                     static assert(!memberColumnName.empty());
 
@@ -362,14 +364,46 @@ interface Row : Tuple {
                 }
 
                 __traits(getMember, obj, member) = getValueAs!(memeberColumnOrder, memberType)
-                    (getColumnNameFun(memberColumnName));
+                    (getColumnName(tableName, memberColumnName));
             }
-        }
+        }}
+
+    }
+
+    final void bindObject(string tableName = T.stringof, 
+            alias getColumnNameFun="b", T)(T obj) if(is(T == class)) {
+        alias getColumnName = binaryFun!getColumnNameFun;
+
+        // current fields in T
+		static foreach (string member; FieldNameTuple!T) {{
+            alias currentMember = Alias!(__traits(getMember, T, member));
+            alias memberType = typeof(__traits(getMember, T, member));
+
+            static if(hasUDA!(currentMember, Ignore)) {
+                version(HUNT_DEBUG) { warningf("Field %s.%s ignored.", T.stringof, member); }
+            } else static if(is(memberType == class) || is(memberType == struct) ) {
+                __traits(getMember, obj, member) = bind!(memberType, getColumnNameFun)();
+            } else {
+                static if(hasUDA!(currentMember, Column)) {
+                    enum memberColumnAttr = getUDAs!(currentMember, Column)[0];
+                    enum string memberColumnName = memberColumnAttr.name;
+                    static assert(!memberColumnName.empty());
+
+                    enum int memeberColumnOrder = memberColumnAttr.order;
+                } else {
+                    enum string memberColumnName = member;
+                    enum int memeberColumnOrder = -1;
+                }
+
+                __traits(getMember, obj, member) = getValueAs!(memeberColumnOrder, memberType)
+                    (getColumnName(tableName, memberColumnName));
+            }
+        }}
 
         static if(is(T == class)) {
             // all fields in the super of T
             alias baseClasses = BaseClassesTuple!T;
-            static if(baseClasses>=2) { // skip Object
+            static if(baseClasses.length >= 2) { // skip Object
                 bindObject!(tableName, getColumnNameFun, baseClasses[0])(obj);
             }
         }
@@ -390,7 +424,7 @@ interface Row : Tuple {
             return T.init;
         }
 
-        version(HUNT_DEBUG) warningf("column, name=%s, index=%d", memberColumnName, columnIndex);
+        version(HUNT_DB_DEBUG) tracef("column, name=%s, index=%d", memberColumnName, columnIndex);
 
         Variant currentColumnValue = getValue(columnIndex);
 
@@ -399,8 +433,10 @@ interface Row : Tuple {
             // 1) If the types are same, or the column's type can convert to the member's type
             return currentColumnValue.get!T();
         } else {
-            static assert(false, format("Can't convert the value from %s to %s", 
-                currentColumnValue.type, memberTypeInfo));
+            // 2) try to coerce to T
+            return currentColumnValue.coerce!T();
+            // assert(false, format("Can't convert a value from %s to %s", 
+            //     currentColumnValue.type, memberTypeInfo));
         }
     }
 }
