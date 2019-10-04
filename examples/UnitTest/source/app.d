@@ -16,6 +16,8 @@ import test.pgclient.PgPoolTest;
 import test.pgclient.PgTransactionTest;
 import test.pgclient.UtilTest;
 
+import test.RowBindingTest;
+
 
 void main()
 {
@@ -31,13 +33,15 @@ void main()
 /* ---------------------------- PostgreSQL tests ---------------------------- */
 
 	// testUnits!(PgConnectionTest);
-	testUnits!(PgPreparedQueryTest);
+	// testUnits!(PgPreparedQueryTest);
 	// testUnits!(PgPoolTest);
 	// testUnits!(PgSimpleQueryTest);
 	// testUnits!(PgTransactionTest);
 
 	// testUnits!(UtilTest);
 
+/* ------------------------------- Row binding ------------------------------ */
+	testUnits!(RowBindingTest);
 
 	getchar();
 }
