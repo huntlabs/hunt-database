@@ -38,9 +38,11 @@ class RowImpl : ArrayTuple, RowInternal {
     override
     int getColumnIndex(string name) {
         if (name.empty()) {
-            throw new NullPointerException();
+            throw new NullPointerException(name);
         }
-        return cast(int)desc.columnNames().countUntil(name);
+
+        return desc.columnIndex(name);
+        // return cast(int)desc.columnNames().countUntil(name);
     }
 
     // override

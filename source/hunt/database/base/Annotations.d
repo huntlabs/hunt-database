@@ -20,7 +20,7 @@ struct JoinTable {
 
 struct Column {
     string name;
-    int index = -1;
+    int order = -1;
     bool nullable = true;
 }
 
@@ -39,4 +39,4 @@ struct InverseJoinColumn {
 struct Transient {
     string reason;
 }
-alias Ignor = Transient;
+alias Ignore = Transient;

@@ -21,8 +21,12 @@ import hunt.database.base.Tuple;
 // import java.math.BigDecimal;
 // import java.time.*;
 // import java.time.temporal.Temporal;
-// import java.util.UUID;
 
+import hunt.database.base.Annotations;
+import std.array;
+import std.format;
+import std.meta;
+import std.traits;
 import std.variant;
 
 
@@ -311,22 +315,92 @@ interface Row : Tuple {
 
     alias getAs = bind;
 
-    final T bind(T)() if(is(T == class) || is(T == struct)) {
-        import std.traits;
+    final T bind(T, alias getColumnNameFun="b")() if(is(T == class) || is(T == struct)) {
         T r;
         static if(is(T == class)) {
             r = new T();
         }
 
-		static foreach (string member; FieldNameTuple!T) {
-            setObjectField!(member, typeof(__traits(getMember, T, member)))(r, 0);
+        static if(hasUDA!(T, Table)) {
+            enum tableName = getUDAs!(T, Table)[0].name;
+        } else {
+            enum tableName = T.stringof;
         }
+
+        bindObject!(tableName, getColumnNameFun)(r);
 
         return r;
     }
 
-    private final void setObjectField(string name, M, T)(ref T obj, int index) {
-        __traits(getMember, obj, name) = getValue(name).get!M();
+    final void bindObject(string tableName = T.stringof, alias getColumnNameFun="b", T)(ref T obj) {
+
+        // current fields in T
+		static foreach (string member; FieldNameTuple!T) {
+            alias currentMember = Alias!(__traits(getMember, T, memberName));
+            alias memberType = typeof(__traits(getMember, T, member));
+
+            static if(hasUDA!(currentMember, Ignore)) {
+                version(HUNT_DEBUG) { info("Field %s ignored.", member); }
+            } else static if(is(memberType == class) || is(memberType == struct) ) {
+                static if(hasUDA!(memberType, Table)) {
+                    enum memberTableName = getUDAs!(T, Table)[0].name;
+                } else {
+                    enum memberTableName = memberType.stringof;
+                }
+                version(HUNT_DEBUG) infof("bingding sub table: %s", memberTableName);
+                bindObject!(memberTableName, getColumnNameFun)(obj);
+            } else {
+                static if(hasUDA!(currentMember, Column)) {
+                    alias memberColumnAttr = getUDAs!(currentMember, Column)[0];
+                    enum string memberColumnName = memberColumnAttr.name;
+                    static assert(!memberColumnName.empty());
+
+                    enum int memeberColumnOrder = memberColumnAttr.order;
+                } else {
+                    enum string memberColumnName = member;
+                    enum int memeberColumnOrder = -1;
+                }
+
+                __traits(getMember, obj, member) = getValueAs!(memeberColumnOrder, memberType)
+                    (getColumnNameFun(memberColumnName));
+            }
+        }
+
+        static if(is(T == class)) {
+            // all fields in the super of T
+            alias baseClasses = BaseClassesTuple!T;
+            static if(baseClasses>=2) { // skip Object
+                bindObject!(tableName, getColumnNameFun, baseClasses[0])(obj);
+            }
+        }
     }
 
+    final private T getValueAs(int memeberColumnOrder = -1, T)(string memberColumnName) {
+        int columnIndex = memeberColumnOrder;
+        static if(memeberColumnOrder == -1) {
+            columnIndex = getColumnIndex(memberColumnName);
+            if(columnIndex == -1) {
+                version(HUNT_DEBUG) warningf("Column does not exist: %s", memberColumnName);
+                return T.init;
+            }
+        }
+
+        if(columnIndex>=this.size()) {
+            version(HUNT_DEBUG) warningf("Index is out of range: %d>%d", columnIndex, this.size());
+            return T.init;
+        }
+
+        version(HUNT_DEBUG) warningf("column, name=%s, index=%d", memberColumnName, columnIndex);
+
+        Variant currentColumnValue = getValue(columnIndex);
+
+        auto memberTypeInfo = typeid(T);
+        if(memberTypeInfo == currentColumnValue.type || currentColumnValue.convertsTo!(T)) {
+            // 1) If the types are same, or the column's type can convert to the member's type
+            return currentColumnValue.get!T();
+        } else {
+            static assert(false, format("Can't convert the value from %s to %s", 
+                currentColumnValue.type, memberTypeInfo));
+        }
+    }
 }
