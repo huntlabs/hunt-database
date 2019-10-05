@@ -365,7 +365,8 @@ interface Row : Tuple {
         }}
     }
 
-    final T bind(T, bool traverseBase=true, alias getColumnNameFun="b")() if(is(T == class)) {
+    final T bind(T, bool traverseBase=true, alias getColumnNameFun="b")() 
+            if(is(T == class) && __traits(compiles, new T())) {
         T r = new T();
 
         static if(hasUDA!(T, Table)) {
