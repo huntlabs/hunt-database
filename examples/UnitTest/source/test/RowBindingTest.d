@@ -8,6 +8,7 @@ import hunt.util.UnitTest;
 
 import std.conv;
 import std.format;
+import std.range;
 import std.stdio;
 
 
@@ -31,18 +32,26 @@ class RowBindingTest {
 
     }
 
-    @Test
-    void simpleStructTest() {
-    
-        statement = db.prepare("SELECT * FROM public.test limit 10");
-        rs = statement.query();
-
-        TestEntity[] testEntities = rs.bind!TestEntity();
-
-        foreach (TestEntity t; testEntities) {
-            writeln(t);
-        }
+    @After
+    void dispose() {
+        db.close();
     }
+
+    // @Test
+    // void simpleStructTest() {
+    
+    //     statement = db.prepare("SELECT * FROM public.test limit 10");
+    //     rs = statement.query();
+
+    //     TestEntity[] testEntities = rs.bind!TestEntity();
+
+    //     foreach (TestEntity t; testEntities) {
+    //         writeln(t);
+    //     }
+    //     // TestEntity(1, "{escaped}")
+    //     assert(testEntities.length > 0);
+    //     assert(testEntities[0].id == 1);    
+    // }
 
     @Test
     void testClassWithColumn() {
@@ -53,7 +62,12 @@ class RowBindingTest {
 
         foreach (ClassEntity t; testEntities) {
             writeln(t);
-        }    
+        }
+        
+        // id=1, value={escaped}, desc=
+        assert(testEntities.length > 0); 
+        assert(testEntities[0].id == 1);  
+        assert(!testEntities[0].value.empty());    
     }
 
     @Test
@@ -66,11 +80,16 @@ class RowBindingTest {
         statement = db.prepare(sql);
         rs = statement.query();
 
-        Immutable[] testEntities = rs.bind!(Immutable, (a, b) => a ~ "__as__" ~ b)();
+        // Immutable[] testEntities = rs.bind!(Immutable, true, (a, b) => a ~ "__as__" ~ b)(); // bug
+        Immutable[] testEntities = rs.bind!(Immutable, true, `a ~ "__as__" ~ b`)();
 
         foreach (Immutable t; testEntities) {
             writeln(t);
-        }  
+        }
+        // id=1, message=fortune: No such file or directory, world={id=0, randomnumber=3847}
+        assert(testEntities.length > 0);
+        assert(testEntities[0].world !is null);  
+        assert(testEntities[0].world.id == 0);  
     }  
 }
 

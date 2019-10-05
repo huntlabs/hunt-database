@@ -320,11 +320,8 @@ interface Row : Tuple {
 
     alias getAs = bind;
 
-    final T bind(T, alias getColumnNameFun="b")() if(is(T == class) || is(T == struct)) {
+    final T bind(T, alias getColumnNameFun="b")() if(is(T == struct)) {
         T r;
-        static if(is(T == class)) {
-            r = new T();
-        }
 
         static if(hasUDA!(T, Table)) {
             enum tableName = getUDAs!(T, Table)[0].name;
@@ -337,7 +334,6 @@ interface Row : Tuple {
         return r;
     }
 
-    
     final void bindObject(string tableName = T.stringof, 
             alias getColumnNameFun="b", T)(ref T obj) if(is(T == struct)) {
         alias getColumnName = binaryFun!getColumnNameFun;
@@ -363,14 +359,26 @@ interface Row : Tuple {
                     enum int memeberColumnOrder = -1;
                 }
 
-                __traits(getMember, obj, member) = getValueAs!(memeberColumnOrder, memberType)
-                    (getColumnName(tableName, memberColumnName));
+                enum string columnName = getColumnName(tableName, memberColumnName);
+                __traits(getMember, obj, member) = getValueAs!(columnName, memeberColumnOrder, memberType)();
             }
         }}
-
     }
 
-    final void bindObject(string tableName = T.stringof, 
+    final T bind(T, bool traverseBase=true, alias getColumnNameFun="b")() if(is(T == class)) {
+        T r = new T();
+
+        static if(hasUDA!(T, Table)) {
+            enum tableName = getUDAs!(T, Table)[0].name;
+        } else {
+            enum tableName = T.stringof;
+        }
+
+        bindObject!(tableName, traverseBase, getColumnNameFun, T)(r); // bug
+        return r;
+    }
+
+    final void bindObject(string tableName = T.stringof,  bool traverseBase=true,
             alias getColumnNameFun="b", T)(T obj) if(is(T == class)) {
         alias getColumnName = binaryFun!getColumnNameFun;
 
@@ -381,8 +389,10 @@ interface Row : Tuple {
 
             static if(hasUDA!(currentMember, Ignore)) {
                 version(HUNT_DEBUG) { warningf("Field %s.%s ignored.", T.stringof, member); }
-            } else static if(is(memberType == class) || is(memberType == struct) ) {
+            } else static if(is(memberType == struct) ) {
                 __traits(getMember, obj, member) = bind!(memberType, getColumnNameFun)();
+            } else static if(is(memberType == class)) {
+                __traits(getMember, obj, member) = bind!(memberType, traverseBase,  getColumnNameFun)(); // bug
             } else {
                 static if(hasUDA!(currentMember, Column)) {
                     enum memberColumnAttr = getUDAs!(currentMember, Column)[0];
@@ -395,21 +405,21 @@ interface Row : Tuple {
                     enum int memeberColumnOrder = -1;
                 }
 
-                __traits(getMember, obj, member) = getValueAs!(memeberColumnOrder, memberType)
-                    (getColumnName(tableName, memberColumnName));
+                enum string columnName = getColumnName(tableName, memberColumnName);
+                __traits(getMember, obj, member) = getValueAs!(columnName, memeberColumnOrder, memberType)();
             }
         }}
 
-        static if(is(T == class)) {
+        static if(traverseBase) {
             // all fields in the super of T
             alias baseClasses = BaseClassesTuple!T;
             static if(baseClasses.length >= 2) { // skip Object
-                bindObject!(tableName, getColumnNameFun, baseClasses[0])(obj);
+                bindObject!(tableName, traverseBase, getColumnNameFun, baseClasses[0])(obj);
             }
         }
     }
 
-    final private T getValueAs(int memeberColumnOrder = -1, T)(string memberColumnName) {
+    final private T getValueAs(string memberColumnName, int memeberColumnOrder = -1, T)() {
         int columnIndex = memeberColumnOrder;
         static if(memeberColumnOrder == -1) {
             columnIndex = getColumnIndex(memberColumnName);
