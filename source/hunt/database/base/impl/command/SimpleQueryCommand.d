@@ -27,7 +27,6 @@ import hunt.logging.ConsoleLogger;
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
-
 class SimpleQueryCommand(T) : QueryCommandBase!(T) {
 
     private string _sql;
