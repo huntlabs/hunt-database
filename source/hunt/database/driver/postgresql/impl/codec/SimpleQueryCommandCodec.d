@@ -37,7 +37,7 @@ class SimpleQueryCommandCodec(T) : QueryCommandBaseCodec!(T, SimpleQueryCommand!
 
     override
     void encode(PgEncoder encoder) {
-        version(HUNT_DB_DEBUG) infof("sql statement: %s", cmd.sql());
+        // version(HUNT_DB_DEBUG) infof("sql statement: %s", cmd.sql());
         encoder.writeQuery(new Query(cmd.sql()));
     }
 

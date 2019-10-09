@@ -27,6 +27,7 @@ import hunt.Exceptions;
 import hunt.Functions;
 
 import std.array;
+import std.ascii : newline;
 import std.variant;
 
 /**
@@ -112,6 +113,32 @@ class RowSetImpl : SqlResultBase!(RowSet, RowSetImpl), RowSet {
     // override string[] columnsNames() {
     //     return super.columnsNames();
     // }
+
+    override string toString() {
+        Appender!string sb;
+
+        sb.put("|");
+        foreach(string name; _columnNames) {
+            sb.put(" ");
+            sb.put(name);
+            sb.put(" |");
+        }
+        sb.put(newline);
+        sb.put("-------------------------------------------------------");
+        sb.put(newline);
+
+        foreach(Row row; this) {
+            sb.put("|");
+            for(int i=0; i<row.size(); i++) {
+                sb.put(" ");
+                sb.put(row[i].toString());
+                sb.put(" |");
+            }
+            sb.put(newline);
+        }
+
+        return sb.data;
+    }
 
     int opApply(scope int delegate(ref Row) dg) {
 

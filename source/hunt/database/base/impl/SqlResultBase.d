@@ -71,4 +71,8 @@ abstract class SqlResultBase(T, R) : SqlResult!(T) { //  extends SqlResultBase!(
     void next(R v) {
         this._next = v;
     }
+
+    override string toString() {
+        return super.toString();
+    }
 }

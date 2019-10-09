@@ -79,4 +79,5 @@ interface SqlResult(T) {
      */
     SqlResult!(T) next();
 
+    string toString();
 }
