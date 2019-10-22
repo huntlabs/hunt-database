@@ -17,13 +17,15 @@ enum QUERY_TYPE : byte
 
 class ValueVariant 
 {
-    string key;
+    string key; // columnName
     Variant value;
-    this(string key , Variant value)
+
+    this(string key, Variant value)
     {
         this.key = key;
         this.value = value;
     }
+	
     override string toString()
     {
         return  key ~ " = " ~ value.toString ;

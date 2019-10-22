@@ -68,7 +68,7 @@ class QueryBuilder
     private string[] _orderBy;
     private int _offset;
     private int _limit;
-    private Object[string] _parameters;
+    private Variant[string] _parameters; // TODO: use Variant[string];
     // private Expr _expr;
     private bool _distinct;
     private string _autoIncreaseKey;
@@ -320,55 +320,57 @@ class QueryBuilder
 
     QueryBuilder set(R)(string fieldName, string columnName, string tableName, R param)
     {
-        version(HUNT_ENTITY_DEBUG) {
+        version(HUNT_DB_DEBUG) {
             tracef("---(fieldName: %s, columnName: %s, value: %s,  type: %s )", 
-                fieldName, columnName, param, typeid(param).name);
+                fieldName, columnName, param, typeid(param));
         }
 
         if(fieldName in _values) {
             warningf("Key exists: %s", fieldName);
         }
 
-        static if (is(R == int) || is(R == uint))
-        {
-            _values[fieldName] = new ValueVariant(columnName, new Integer(param));
-        }
-        else static if (is(R == string) || is(R == char) || is(R == byte[]))
-        {
-            _values[fieldName] = new ValueVariant(columnName, new String(param));
-        }
-        else static if (is(R == bool))
-        {
-            _values[fieldName] = new ValueVariant(columnName, new Boolean(param));
-        }
-        else static if (is(R == double))
-        {
-            _values[fieldName] = new ValueVariant(columnName, new Double(param));
-        }
-        else static if (is(R == float))
-        {
-            _values[fieldName] = new ValueVariant(columnName, new Float(param));
-        }
-        else static if (is(R == short) || is(R == ushort))
-        {
-            _values[fieldName] = new ValueVariant(columnName, new Short(param));
-        }
-        else static if (is(R == long) || is(R == ulong))
-        {
-            _values[fieldName] = new ValueVariant(columnName, new Long(param));
-        }
-        else static if (is(R == byte) || is(R == ubyte))
-        {
-            _values[fieldName] = new ValueVariant(columnName, new Byte(param));
-        }
-        // else static if (is(R == Object))
+        _values[fieldName] = new ValueVariant(columnName, param);
+
+        // static if (is(R == int) || is(R == uint))
         // {
-        //     _values[fieldName] = new ValueVariant(columnName,new String(param.toString));
+        //     _values[fieldName] = new ValueVariant(columnName, param);
         // }
-        else
-        {
-            _values[fieldName] = new ValueVariant(columnName, param);
-        }
+        // else static if (is(R == string) || is(R == char) || is(R == byte[]))
+        // {
+        //     _values[fieldName] = new ValueVariant(columnName, new String(param));
+        // }
+        // else static if (is(R == bool))
+        // {
+        //     _values[fieldName] = new ValueVariant(columnName, new Boolean(param));
+        // }
+        // else static if (is(R == double))
+        // {
+        //     _values[fieldName] = new ValueVariant(columnName, new Double(param));
+        // }
+        // else static if (is(R == float))
+        // {
+        //     _values[fieldName] = new ValueVariant(columnName, new Float(param));
+        // }
+        // else static if (is(R == short) || is(R == ushort))
+        // {
+        //     _values[fieldName] = new ValueVariant(columnName, new Short(param));
+        // }
+        // else static if (is(R == long) || is(R == ulong))
+        // {
+        //     _values[fieldName] = new ValueVariant(columnName, new Long(param));
+        // }
+        // else static if (is(R == byte) || is(R == ubyte))
+        // {
+        //     _values[fieldName] = new ValueVariant(columnName, new Byte(param));
+        // }
+        // // else static if (is(R == Object))
+        // // {
+        // //     _values[fieldName] = new ValueVariant(columnName,new String(param.toString));
+        // // }
+        // else
+        // {
+        //     _values[fieldName] = new ValueVariant(columnName, param);
+        // }
 
         return this;
     }
@@ -376,58 +378,61 @@ class QueryBuilder
 
     QueryBuilder setParameter(R)(string key, R param)
     {
-        static if (is(R == int) || is(R == uint))
-        {
-            _parameters[key] = new Integer(param);
-        }
-        else static if (is(R == string) || is(R == char) || is(R == byte[]))
-        {
-            _parameters[key] = new String(param);
-        }
-        else static if (is(R == bool))
-        {
-            _parameters[key] = new Boolean(param);
-        }
-        else static if (is(R == double))
-        {
-            _parameters[key] = new Double(param);
-        }
-        else static if (is(R == float))
-        {
-            _parameters[key] = new Float(param);
-        }
-        else static if (is(R == short) || is(R == ushort))
-        {
-            _parameters[key] = new Short(param);
-        }
-        else static if (is(R == long) || is(R == ulong))
-        {
-            _parameters[key] = new Long(param);
-        }
-        else static if (is(R == byte) || is(R == ubyte))
-        {
-            _parameters[key] = new Byte(param);
-        }
-        else static if(is(R == class))
-        {
-            _parameters[key] = param;
-        }
-        else
-        {
-            throw new Exception("IllegalArgument not support : " ~ R.stringof);
-        }
+        // static if (is(R == int) || is(R == uint))
+        // {
+        //     _parameters[key] = new Integer(param);
+        // }
+        // else static if (is(R == string) || is(R == char) || is(R == byte[]))
+        // {
+        //     _parameters[key] = new String(param);
+        // }
+        // else static if (is(R == bool))
+        // {
+        //     _parameters[key] = new Boolean(param);
+        // }
+        // else static if (is(R == double))
+        // {
+        //     _parameters[key] = new Double(param);
+        // }
+        // else static if (is(R == float))
+        // {
+        //     _parameters[key] = new Float(param);
+        // }
+        // else static if (is(R == short) || is(R == ushort))
+        // {
+        //     _parameters[key] = new Short(param);
+        // }
+        // else static if (is(R == long) || is(R == ulong))
+        // {
+        //     _parameters[key] = new Long(param);
+        // }
+        // else static if (is(R == byte) || is(R == ubyte))
+        // {
+        //     _parameters[key] = new Byte(param);
+        // }
+        // else static if(is(R == class))
+        // {
+        //     _parameters[key] = param;
+        // }
+        // else
+        // {
+        //     throw new Exception("IllegalArgument not support : " ~ R.stringof);
+        // }
 
+        _parameters[key] = Variant(param);
 
         return this;
     }
 
-    string parameterized(string sql, Object[string] params)
+    string parameterized(string sql, Variant[string] params)
     {
-        foreach (k, v; params)
+        foreach (string k, Variant v; params)
         {
             auto re = regex(r":" ~ k ~ r"([^\w]*)", "g");
             version(HUNT_DB_DEBUG) tracef("value: %s, type: %s", v.toString(), typeid(v));
-            if (cast(Nullable!string)v !is null)
+            // if (cast(Nullable!string)v !is null)
+            version(HUNT_DB_DEBUG) warning("type: ", v.type);
+            if(v.type == typeid(string))
             {
                 sql = sql.replaceAll(re,  escapeLiteral(v.toString()) ~ "$1");
             }
@@ -517,7 +522,7 @@ class QueryBuilder
                     {
                         foreach (ValueVariant item; _values)
                         {
-                           version(HUNT_ENTITY_DEBUG) tracef("Update: %s", item);
+                           version(HUNT_DB_DEBUG) tracef("Update: %s", item);
 
                             builder.setValue(item.key, item.value);
                         }
@@ -614,19 +619,32 @@ class QueryBuilder
                     str ~= " insert into " ~ _table;
                     string keys;
                     string values;
+                    string tempValue;
+                    bool isFirstItem = true;
                     foreach (k, v; _values)
                     {
-                        keys ~= k ~ ",";
                         // if ((cast(String)(v.value) !is null) || (cast(Nullable!string)(v.value) !is null))
+                        // tracef("key: %s, type:%s, value: %s", k, v.value.type, v.value);
+
                         if(v.value.type == typeid(string))
                         {
                             // logDebug("---Insert(%s , %s )".format(k,v.value));
-                            values ~= escapeLiteral(v.value.toString()) ~ ", ";
+                            tempValue = escapeWithQuotes(v.value.get!string());
                         } else {
-                            values ~= v.value.toString() ~ ", ";
+                            tempValue = v.value.toString();
                         }
+
+                        if(isFirstItem) {
+                            isFirstItem = false;
+                            keys = k;
+                            values = tempValue;
+                        } else {
+                            keys ~= ", " ~ k;
+                            values ~= ", " ~ tempValue;
+                        }
+
                     }
-                    str ~= "(" ~ keys[0 .. $ - 1] ~ ") VALUES(" ~ values[0 .. $ - 1] ~ ")";
+                    str ~= "(" ~ keys ~ ") VALUES(" ~ values ~ ")";
                 }
                 break;
             case QUERY_TYPE.COUNT:
@@ -652,7 +670,7 @@ class QueryBuilder
             default:
                 throw new Exception("query build method not found");
             }
-            version(HUNT_DB_DEBUG) trace("QueryBuilder : ", str);
+            version(HUNT_DB_DEBUG) infof("Query string: %s", str);
         }
         catch (Exception ex)
         {

@@ -23,8 +23,7 @@ class MySQLUtil {
         // return s.replace("\"", "\"\"");
         // FIXME: Needing refactor or cleanup -@zxp at Fri, 20 Sep 2019 05:54:46 GMT
         // 
-        string data = null;
-        if (str.empty()) {
+        if (!str.empty()) {
             str = str.replace("\\", "\\\\");
             str = str.replace("'", "\\'");
             str = str.replace("\0", "\\0");
@@ -32,9 +31,8 @@ class MySQLUtil {
             str = str.replace("\r", "\\r");
             str = str.replace("\"", "\\\"");
             str = str.replace("\\x1a", "\\Z");
-            data = str;
         }
-        return data;        
+        return str;        
     }    
  
 }
