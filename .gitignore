@@ -11,6 +11,7 @@
 
 # Compiled Static libraries
 *.a
+*.lib
 
 # Executables
 *.exe
