@@ -84,4 +84,12 @@ interface Pool : SqlClient {
      */
     void close();
 
+    int available();
+    
+    int waiters();
+
+    int maxSize();
+    
+    int size();
+
 }

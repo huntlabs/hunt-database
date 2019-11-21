@@ -46,7 +46,7 @@ class ConnectionPool {
 
     private Consumer!(AsyncDbConnectionHandler) connector;
     // private Consumer!(Handler!(AsyncResult!(Connection))) connector;
-    private int maxSize;
+    private int _maxSize;
     // private ArrayDeque!(Promise!(Connection)) _waiters = new ArrayDeque<>();
     // private Set!(PooledConnection) all = new HashSet<>();
     // private ArrayDeque!(PooledConnection) available = new ArrayDeque<>();
@@ -68,18 +68,22 @@ class ConnectionPool {
 
     this(Consumer!(AsyncDbConnectionHandler) connector, int maxSize, int maxWaitQueueSize) {
         version(HUNT_DEBUG) infof("Database pool: maxSize=%d, maxWaitQueueSize=%d", maxSize, maxWaitQueueSize);
-        this.maxSize = maxSize;
+        this._maxSize = maxSize;
         this._maxWaitQueueSize = maxWaitQueueSize;
         this.connector = connector;
         _all = new ArrayList!PooledConnection();
     }
 
-    private int waitersSize() {
+    int waitersSize() {
         return cast(int)_waiters[].walkLength();
     }
 
     int available() {
         return cast(int)_available[].walkLength();
+    }
+
+    int maxSize() {
+        return _maxSize;
     }
 
     int size() {
@@ -92,7 +96,7 @@ class ConnectionPool {
         }
         version(HUNT_DB_DEBUG) {
             tracef("Try to acquire a DB connection... size: %d/%d, available: %d, waiters: %d",
-                _size, maxSize, available(), waitersSize());
+                _size, _maxSize, available(), waitersSize());
         }
 
         // Promise!(Connection) promise = Promise.promise();
@@ -101,7 +105,7 @@ class ConnectionPool {
         auto promise = new CompletableFuture!(DbConnectionAsyncResult)();
         promise.thenAccept((r) { 
             version(HUNT_DB_DEBUG) infof("Acquired a DB connection. size: %d/%d, available: %d, waiters: %d",
-                _size, maxSize, available(), waitersSize());
+                _size, _maxSize, available(), waitersSize());
             if(holder !is null) holder(r);
         });
         
@@ -195,7 +199,7 @@ class ConnectionPool {
                 version(HUNT_DEBUG) {
                         import core.thread;
                         infof("pool status, size: %d/%d, available: %d, waiters: %d, threads: %d",
-                            _size, maxSize, available(), waitersSize(), Thread.getAll().length);
+                            _size, _maxSize, available(), waitersSize(), Thread.getAll().length);
                 }
             }
         }
@@ -232,11 +236,12 @@ class ConnectionPool {
             synchronized (this) {
                 _available.insertBack(proxy);
                 version(HUNT_DB_DEBUG) {
+                    // infof("Return a DB connection %d to the pool.", proxy.getProcessId());
                     infof("Return a DB connection to the pool.");
                     
                     import core.thread;
                     tracef("pool status, size: %d/%d, available: %d, waiters: %d, threads: %d",
-                        _size, maxSize, available(), waitersSize(), Thread.getAll().length);
+                        _size, _maxSize, available(), waitersSize(), Thread.getAll().length);
                 }
             }
             
@@ -257,7 +262,7 @@ class ConnectionPool {
 
         scope(exit) {
             _checkInProgress = false;
-            version(HUNT_DB_DEBUG_MORE) tracef("pool size=%d/%d", _size, maxSize);
+            version(HUNT_DB_DEBUG_MORE) tracef("pool size=%d/%d", _size, _maxSize);
         }
 
         try {
@@ -267,7 +272,7 @@ class ConnectionPool {
                     CompletableFuture!(DbConnectionAsyncResult) waiter = _waiters.front(); _waiters.removeFront();
                     waiter.complete(succeededResult!(DbConnection)(proxy));
                 } else {
-                    if (size < maxSize) {
+                    if (size < _maxSize) {
                         CompletableFuture!(DbConnectionAsyncResult) waiter = _waiters.front(); _waiters.removeFront();
                         _size++;
                         connector( (DbConnectionAsyncResult ar) {

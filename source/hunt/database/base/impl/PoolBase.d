@@ -222,4 +222,12 @@ abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
     void close() {
         doClose();
     }
+
+    int available() { return pool.available(); }
+    
+    int waiters() { return pool.waitersSize(); }
+
+    int maxSize() { return pool.maxSize(); }
+    
+    int size() { return pool.size(); }
 }
