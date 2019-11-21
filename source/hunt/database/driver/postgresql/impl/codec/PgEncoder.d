@@ -128,7 +128,7 @@ final class PgEncoder : EncoderChain {
                 resp.attachCommand(cmdCodec.getCommand());
             }
 
-            ConnectionEventHandler handler = ctx.getHandler();
+            NetConnectionHandler handler = ctx.getHandler();
             if(handler !is null) handler.messageReceived(ctx, cast(Object)resp);
         };
 

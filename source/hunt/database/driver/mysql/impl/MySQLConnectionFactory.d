@@ -110,7 +110,7 @@ class MySQLConnectionFactory {
 
         NetClient netClient = NetUtil.createNetClient(_netClientOptions);
 
-        netClient.setHandler(new class ConnectionEventHandler {
+        netClient.setHandler(new class NetConnectionHandler {
 
                 MySQLSocketConnection myConn;
 

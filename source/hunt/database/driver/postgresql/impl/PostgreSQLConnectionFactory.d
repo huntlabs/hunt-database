@@ -166,7 +166,7 @@ class PgConnectionFactory {
 
         auto client = NetUtil.createNetClient(_netClientOptions);
 
-        client.setHandler(new class ConnectionEventHandler {
+        client.setHandler(new class NetConnectionHandler {
 
                 PgSocketConnection pgConn;
 

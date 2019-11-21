@@ -102,7 +102,7 @@ class MySQLEncoder : EncoderChain {
                 resp.attachCommand(cmdCodec.getCommand());
             }
 
-            ConnectionEventHandler handler = ctx.getHandler();
+            NetConnectionHandler handler = ctx.getHandler();
             handler.messageReceived(ctx, cast(Object)resp);
         };
 
