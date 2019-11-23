@@ -57,10 +57,10 @@ class DataTypeCodec {
 
         bool isBinaryField = isBinaryField(columnDefinitionFlags);
 
-        // version(HUNT_DB_DEBUG_MORE) {
-        //     tracef("dataType=%s, index=%d, len=%d, columnDefinitionFlags=%d, isBinaryField=%s", 
-        //         dataType, index, len, columnDefinitionFlags, isBinaryField);
-        // }
+        version(HUNT_DB_DEBUG_MORE) {
+            tracef("dataType=%s, index=%d, len=%d, columnDefinitionFlags=%d, isBinaryField=%s", 
+                dataType, index, len, columnDefinitionFlags, isBinaryField);
+        }
 
         string value = "";
         if (isBinaryField) {
@@ -68,9 +68,22 @@ class DataTypeCodec {
             return Variant(cast(string)data);
         } else {
             value = textDecodeText(charset, index, len, buffer);
-        }        
+        }
+        
+        version(HUNT_DB_DEBUG_MORE) {
+            byte[] d = new byte[len];
+            for(int i=0; i< len; i++) {
+                d[i] = buffer.getByte(index + i);
+            }
+            tracef("raw value: %s, bytes: [%(%02X  %)]", value, d);
+        }
         // ByteBuf data = buffer.readSlice(length);
         switch (dataType) {
+            case DataType.BIT:
+                byte v = buffer.getByte(index);
+                if(v == 1)  return Variant(true);
+                return Variant(false);
+
             case DataType.INT1:
                 return to!(byte)(value).Variant();
 

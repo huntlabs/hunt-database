@@ -10,6 +10,7 @@ module hunt.database.driver.mysql.impl.codec.DataType;
 // import java.time.LocalDateTime;
 
 enum DataType {
+    BIT = ColumnType.MYSQL_TYPE_BIT,
     INT1 = ColumnType.MYSQL_TYPE_TINY,
     INT2 = ColumnType.MYSQL_TYPE_SHORT,
     INT3 = ColumnType.MYSQL_TYPE_INT24,
