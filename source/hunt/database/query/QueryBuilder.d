@@ -457,6 +457,7 @@ class QueryBuilder
                 {
                     auto builder = new SQLSelectBuilderImpl(_dbType.name);
                     builder.from(_table, _tableAlias);
+                    // warning(_select);
                     builder.select(_select);
                     if (_join.length > 0)
                     {
@@ -515,16 +516,21 @@ class QueryBuilder
 
             case QUERY_TYPE.UPDATE:
                 {
-                    auto builder = new SQLUpdateBuilderImpl(_dbType.name);
+                    SQLUpdateBuilderImpl builder = new SQLUpdateBuilderImpl(_dbType.name);
                     builder.from(_table, _tableAlias);
                     // logDebug("set values len : ",_values.length);
                     if (_values.length > 0)
                     {
-                        foreach (ValueVariant item; _values)
-                        {
-                           version(HUNT_DB_DEBUG) tracef("Update: %s", item);
-
-                            builder.setValue(item.key, item.value);
+                        if(_dbType == DBType.MYSQL) {
+                            foreach (ValueVariant item; _values) {
+                                version(HUNT_DB_DEBUG) tracef("Update: %s", item);
+                                builder.setValue("`" ~ item.key ~ "`", item.value);
+                            }
+                        } else {
+                            foreach (ValueVariant item; _values) {
+                                version(HUNT_DB_DEBUG) tracef("Update: %s", item);
+                                builder.setValue("\"" ~ item.key ~ "\"", item.value);
+                            }
                         }
                     }
 

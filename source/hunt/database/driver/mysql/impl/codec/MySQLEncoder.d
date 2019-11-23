@@ -79,13 +79,13 @@ class MySQLEncoder : EncoderChain {
             warningf("The message is not a ICommand: %s", typeid(message));
         }
 
-        version(HUNT_DB_DEBUG) 
+        version(HUNT_DB_DEBUG_MORE) 
         tracef("encoding a message: %s", typeid(message));
 
         CommandCodecBase cmdCodec = wrap(cmd);
 
         cmdCodec.completionHandler = (ICommandResponse resp) {
-            version(HUNT_DB_DEBUG) {
+            version(HUNT_DB_DEBUG_MORE) {
                 infof("message encoding completed");
                 // CommandCodecBase c = inflight.front();
                 // assert(cmdCodec is c);
@@ -94,7 +94,7 @@ class MySQLEncoder : EncoderChain {
                     warningf("Response error: %s", th.msg);
                 }
             }
-            version(HUNT_DB_DEBUG) tracef("%s", typeid(cast(Object)resp));
+            version(HUNT_DB_DEBUG_MORE) tracef("%s", typeid(cast(Object)resp));
             inflight.removeFront();
 
             if(!resp.isCommandAttatched()) {

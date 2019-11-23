@@ -179,7 +179,7 @@ abstract class QueryCommandBaseCodec(T, C) : CommandCodec!(bool, C) {
             size = 0;
             rowDesc = null;
         }
-        version(HUNT_DB_DEBUG) infof("size=%d, affectedRows=%d", size, affectedRows);
+        version(HUNT_DB_DEBUG_MORE) infof("size=%d, affectedRows=%d", size, affectedRows);
 
         // MySQL returns affected rows as 0 for SELECT query but Postgres returns queried amount
         if(affectedRows == -1)

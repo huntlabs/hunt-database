@@ -143,7 +143,7 @@ class MySQLConnectionFactory {
                 }
 
                 override void messageReceived(Connection connection, Object message) {
-                    version(HUNT_DB_DEBUG) tracef("message type: %s", typeid(message).name);
+                    version(HUNT_DB_DEBUG_MORE) tracef("message type: %s", typeid(message).name);
                     if(myConn is null) {
                         // warningf("Waiting for the MySQLSocketConnection get ready");
                         version(HUNT_DEBUG) warningf("MySQLSocketConnection is not ready.");

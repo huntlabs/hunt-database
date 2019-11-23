@@ -104,8 +104,8 @@ class ConnectionPool {
         // _waiters.add(promise);
         auto promise = new CompletableFuture!(DbConnectionAsyncResult)();
         promise.thenAccept((r) { 
-            version(HUNT_DB_DEBUG) infof("Acquired a DB connection. size: %d/%d, available: %d, waiters: %d",
-                _size, _maxSize, available(), waitersSize());
+            version(HUNT_DB_DEBUG) infof("Acquired a DB connection %d. size: %d/%d, available: %d, waiters: %d",
+                r.result.getProcessId(), _size, _maxSize, available(), waitersSize());
             if(holder !is null) holder(r);
         });
         
@@ -182,7 +182,7 @@ class ConnectionPool {
         override
         void handleClosed() {
             synchronized (this) {
-                if (_all.remove(cast(PooledConnection)this)) {
+                if (_all.remove(this)) {
                     _size--;
                     if(_size<0) _size = 0;
 
@@ -198,6 +198,7 @@ class ConnectionPool {
                 
                 version(HUNT_DEBUG) {
                         import core.thread;
+                        tracef("DB collection %d closed.", getProcessId());
                         infof("pool status, size: %d/%d, available: %d, waiters: %d, threads: %d",
                             _size, _maxSize, available(), waitersSize(), Thread.getAll().length);
                 }
@@ -236,18 +237,17 @@ class ConnectionPool {
             synchronized (this) {
                 _available.insertBack(proxy);
                 version(HUNT_DB_DEBUG) {
-                    // infof("Return a DB connection %d to the pool.", proxy.getProcessId());
-                    infof("Return a DB connection to the pool.");
+                    tracef("A DB connection %d returned to the pool.", proxy.getProcessId());
                     
                     import core.thread;
-                    tracef("pool status, size: %d/%d, available: %d, waiters: %d, threads: %d",
+                    infof("pool status, size: %d/%d, available: %d, waiters: %d, threads: %d",
                         _size, _maxSize, available(), waitersSize(), Thread.getAll().length);
                 }
             }
             
             check();
         } else {
-            warning("Releasing a untraced connection!");
+            warningf("Releasing a untraced connection %d!", proxy.getProcessId());
         }
     }
 
