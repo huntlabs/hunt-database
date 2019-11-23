@@ -107,7 +107,7 @@ abstract class SocketConnectionBase : DbConnection {
 
     override
     int getProcessId() {
-        throw new UnsupportedOperationException();
+        return _socket.getId();
     }
 
     override

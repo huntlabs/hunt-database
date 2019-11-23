@@ -38,7 +38,7 @@ import std.variant;
  */
 class Statement
 {
-    private Database _db = null;
+    private SqlConnection _db = null;
     private string _sql;
     private bool _isUsed = false;
     private int _lastInsertId;
@@ -46,12 +46,12 @@ class Statement
     private RowSet _rs;
     private Object[string] _parameters;
 
-    this(Database db)
+    this(SqlConnection db)
     {
         _db = db;
     }
 
-    this(Database db, string sql)
+    this(SqlConnection db, string sql)
     {
         _db = db;
         prepare(sql);
@@ -132,18 +132,20 @@ class Statement
             auto re = regex(r":" ~ k ~ r"(\W[^\w]*)", "g");
             if ((cast(String) v !is null) || (cast(Nullable!string) v !is null))
             {
-                if (_db.getOption().isPgsql() || _db.getOption().isMysql()) {
-                    // str = str.replaceAll(re, conn.escapeLiteral(v.toString()) ~ "$1");
-                    // str = str.replaceAll(re, v.toString() ~ "$1");
-        // warning(str ~ "      " ~ v.toString() ~ "$1");
-                // } else if (_db.getOption().isMysql()) {
-                    // str = str.replaceAll(re, "'" ~ conn.escape(v.toString()) ~ "'" ~ "$1");
-                    str = str.replaceAll(re, "'" ~ v.toString() ~ "'" ~ "$1");
-                }
-                else
-                {
-                    str = str.replaceAll(re, quoteSqlString(v.toString()) ~ "$1");
-                }
+                str = str.replaceAll(re, "'" ~ v.toString() ~ "'" ~ "$1");
+                
+        //         if (_db.getOption().isPgsql() || _db.getOption().isMysql()) {
+        //             // str = str.replaceAll(re, conn.escapeLiteral(v.toString()) ~ "$1");
+        //             // str = str.replaceAll(re, v.toString() ~ "$1");
+        // // warning(str ~ "      " ~ v.toString() ~ "$1");
+        //         // } else if (_db.getOption().isMysql()) {
+        //             // str = str.replaceAll(re, "'" ~ conn.escape(v.toString()) ~ "'" ~ "$1");
+        //             str = str.replaceAll(re, "'" ~ v.toString() ~ "'" ~ "$1");
+        //         }
+        //         else
+        //         {
+        //             str = str.replaceAll(re, quoteSqlString(v.toString()) ~ "$1");
+        //         }
             }
             else
             {
@@ -160,24 +162,33 @@ class Statement
 
     int execute()
     {
-        string execSql = sql(null);
+        string execSql = sql(_db);
 
         version (HUNT_SQL_DEBUG)
             logDebug(execSql);
 
         _rs = _db.query(execSql);
 
-        if (_db.getOption().isMysql()) {
-            import hunt.database.driver.mysql.MySQLClient;
-            Variant value2 = _rs.property(MySQLClient.LAST_INSERTED_ID);
-            if(value2.type != typeid(int)) {
-                warning("Not expected type: ", value2.type);
-            } else {
-                _lastInsertId = value2.get!int();
-            }
-        } else {
+        // if (_db.getOption().isMysql()) {
+        //     import hunt.database.driver.mysql.MySQLClient;
+        //     Variant value2 = _rs.property(MySQLClient.LAST_INSERTED_ID);
+        //     if(value2.type != typeid(int)) {
+        //         warning("Not expected type: ", value2.type);
+        //     } else {
+        //         _lastInsertId = value2.get!int();
+        //     }
+        // } else {
+        //     _lastInsertId = 0;
+        // }
+
+        import hunt.database.driver.mysql.MySQLClient;
+        Variant value2 = _rs.property(MySQLClient.LAST_INSERTED_ID);
+        if(value2.type != typeid(int)) {
+            version(HUNT_DEBUG) warning("Not expected type: ", value2.type);
             _lastInsertId = 0;
-        }
+        } else {
+            _lastInsertId = value2.get!int();
+        }        
 
         _affectRows = _rs.rowCount();
         return _affectRows;

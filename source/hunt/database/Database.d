@@ -127,9 +127,9 @@ class Database
 		return rs;
 	}
 
-	Statement prepare(string sql)
+	Statement prepare(SqlConnection conn, string sql)
 	{
-		Statement ret = new Statement(this, sql);
+		Statement ret = new Statement(conn, sql);
 		return ret;
 	}
 

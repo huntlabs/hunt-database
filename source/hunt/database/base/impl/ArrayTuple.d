@@ -30,6 +30,7 @@ import hunt.database.base.Tuple;
 import hunt.collection.ArrayList;
 import hunt.collection.Collection;
 
+import std.conv;
 import std.concurrency : initOnce;
 import std.variant;
 
@@ -97,7 +98,17 @@ class ArrayTuple : ArrayList!(Variant), Tuple {
 
     override
     int getInteger(int pos) {
-        return get(pos).get!int();
+        Variant v = get(pos);
+        if(v == null) {
+            return 0;
+        }
+
+        if(v.type == typeid(int)) {
+            return v.get!int();
+        } else {
+            string str = v.toString();
+            return to!int(str);
+        }
         // Object val = get(pos);
         // if (val instanceof Integer) {
         //     return (Integer) val;
