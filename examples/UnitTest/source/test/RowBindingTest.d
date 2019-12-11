@@ -55,7 +55,9 @@ class RowBindingTest {
 
     @Test
     void testClassWithColumn() {
-        statement = db.prepare("SELECT * FROM test limit 10");
+        SqlConnection conn = db.getConnection();
+        scope(exit) conn.close();
+        statement = db.prepare(conn, "SELECT * FROM test limit 10");
         rs = statement.query();
 
         ClassEntity[] testEntities = rs.bind!ClassEntity();
@@ -77,7 +79,10 @@ class RowBindingTest {
         b.id as world__as__id, b.randomnumber as world__as__randomnumber 
         FROM immutable as a LEFT JOIN world as b on a.id = b.id where a.id=1;`;
 
-        statement = db.prepare(sql);
+        SqlConnection conn = db.getConnection();
+        scope(exit) conn.close();
+
+        statement = db.prepare(conn, sql);
         rs = statement.query();
 
         // Immutable[] testEntities = rs.bind!(Immutable, true, (a, b) => a ~ "__as__" ~ b)(); // bug
