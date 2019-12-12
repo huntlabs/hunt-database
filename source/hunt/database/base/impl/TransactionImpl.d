@@ -37,6 +37,7 @@ import hunt.database.base.SqlClient;
 import hunt.database.base.Transaction;
 
 import hunt.concurrency.Future;
+import hunt.concurrency.FuturePromise;
 import hunt.Exceptions;
 import hunt.logging.ConsoleLogger;
 import hunt.Object;
@@ -90,14 +91,14 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
     }
 
     private void afterBegin(AsyncResult!RowSet ar) {
-        synchronized (this) {
+        // synchronized (this) {
             if (ar.succeeded()) {
                 status = ST_PENDING;
             } else {
                 status = ST_COMPLETED;
             }
             checkPending();
-        }
+        // }
     }
 
     private bool isComplete(ICommand cmd) {
@@ -223,23 +224,32 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
         };
     }
 
-    // override
     void commit() {
-        commit(null);
+        auto f = new FuturePromise!Void();
+        while(status == ST_BEGIN) {
+            version(HUNT_DB_DEBUG_MORE) warning("Waiting for the response for BEGIN");
+        }
+
+        commit((VoidAsyncResult ar) {
+            if (ar.succeeded()) { 
+                f.succeeded(null);
+            } else {
+                f.failed(cast(Exception)ar.cause()); 
+            }
+        });
+
+        f.get();
     }
 
     void commit(AsyncVoidHandler handler) {
-        version(HUNT_DB_DEBUG_MORE) tracef("status: %d", status);
+        version(HUNT_DB_DEBUG) tracef("status: %d", status);
         switch (status) {
             case ST_BEGIN:
             case ST_PENDING:
             case ST_PROCESSING:
-                // version(HUNT_DB_DEBUG) trace("running here");
                 schedule(doQuery("COMMIT", (ar) {
-                    // version(HUNT_DB_DEBUG) trace("running here");
                     disposeHandler(null);
                     if (handler !is null) {
-                        // version(HUNT_DB_DEBUG) trace("running here");
                         if (ar.succeeded()) {
                             handler(succeededResult(cast(Void)null));
                         } else {
@@ -260,9 +270,22 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
         }
     }
 
-    // override
     void rollback() {
-        rollback(null);
+        // rollback(null);
+        auto f = new FuturePromise!Void();
+        while(status == ST_BEGIN) {
+            version(HUNT_DB_DEBUG_MORE) warning("Waiting for the response for BEGIN");
+        }
+
+        rollback((VoidAsyncResult ar) {
+            if (ar.succeeded()) { 
+                f.succeeded(null);
+            } else {
+                f.failed(cast(Exception)ar.cause()); 
+            }
+        });
+
+        f.get();
     }
 
     void rollback(AsyncVoidHandler handler) {

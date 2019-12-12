@@ -28,7 +28,7 @@ void main()
 	// testUnits!(MySQLPreparedQueryTest);
 	// testUnits!(Native41AuthenticatorTest);
 	// testUnits!(MySQLPoolTest);
-	// testUnits!(MySQLTransactionTest);
+	testUnits!(MySQLTransactionTest);
 
 /* ---------------------------- PostgreSQL tests ---------------------------- */
 
@@ -41,7 +41,7 @@ void main()
 	// testUnits!(UtilTest);
 
 /* ------------------------------- Row binding ------------------------------ */
-	testUnits!(RowBindingTest);
+	// testUnits!(RowBindingTest);
 
 	getchar();
 }
