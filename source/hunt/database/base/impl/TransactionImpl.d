@@ -238,7 +238,9 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
             }
         });
 
-        f.get();
+        version(HUNT_DEBUG) warning("try to get a commit result");
+        import core.time;
+        f.get(10.seconds);
     }
 
     void commit(AsyncVoidHandler handler) {
@@ -285,13 +287,13 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
             }
         });
 
-        f.get();
+        version(HUNT_DEBUG) warning("try to get a rollback result");
+        import core.time;
+        f.get(10.seconds);
     }
 
     void rollback(AsyncVoidHandler handler) {
-        // version(HUNT_DB_DEBUG) trace("running here");
         schedule(doQuery("ROLLBACK", (RowSetAsyncResult ar) {
-            // version(HUNT_DB_DEBUG) trace("running here");
             disposeHandler(null);
             if (handler !is null) {
                 handler(succeededResult(cast(Void)null));

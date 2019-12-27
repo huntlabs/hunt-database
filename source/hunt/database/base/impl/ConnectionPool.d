@@ -53,7 +53,7 @@ class ConnectionPool {
     private DList!(CompletableFuture!(DbConnectionAsyncResult)) _waiters;
     private ArrayList!PooledConnection _all;
     private DList!PooledConnection _available;
-    private int _size;
+    private shared int _size;
     private int _maxWaitQueueSize;
     private shared bool _checkInProgress;
     private shared bool _closed;
@@ -94,7 +94,7 @@ class ConnectionPool {
         if (_closed) {
             throw new IllegalStateException("Connection pool closed");
         }
-        version(HUNT_DB_DEBUG) {
+        version(HUNT_DEBUG) {
             tracef("Try to acquire a DB connection... size: %d/%d, available: %d, waiters: %d",
                 _size, _maxSize, available(), waitersSize());
         }
@@ -104,15 +104,15 @@ class ConnectionPool {
         // _waiters.add(promise);
         auto promise = new CompletableFuture!(DbConnectionAsyncResult)();
         promise.thenAccept((r) { 
-            version(HUNT_DB_DEBUG) infof("Acquired a DB connection %d. size: %d/%d, available: %d, waiters: %d",
+            version(HUNT_DEBUG) infof("Acquired a DB connection %d. size: %d/%d, available: %d, waiters: %d",
                 r.result.getProcessId(), _size, _maxSize, available(), waitersSize());
             if(holder !is null) holder(r);
         });
         
         synchronized (this) {
             _waiters.insertBack(promise);
+            check();
         }
-        check();
     }
 
     void close() {
@@ -183,7 +183,7 @@ class ConnectionPool {
         void handleClosed() {
             synchronized (this) {
                 if (_all.remove(this)) {
-                    _size--;
+                    atomicOp!("-=")(_size, 1); // --;
                     if(_size<0) _size = 0;
 
                     if (holder is null) {
@@ -232,22 +232,22 @@ class ConnectionPool {
 
     private void release(PooledConnection proxy) {
         version(HUNT_DB_DEBUG) trace("Try to release a DB connection.");
-        if (_all.contains(proxy)) {
+        synchronized (this) {
+            if (_all.contains(proxy)) {
 
-            synchronized (this) {
-                _available.insertBack(proxy);
-                version(HUNT_DB_DEBUG) {
-                    tracef("A DB connection %d returned to the pool.", proxy.getProcessId());
-                    
-                    import core.thread;
-                    infof("pool status, size: %d/%d, available: %d, waiters: %d, threads: %d",
-                        _size, _maxSize, available(), waitersSize(), Thread.getAll().length);
-                }
+                    _available.insertBack(proxy);
+                    version(HUNT_DB_DEBUG) {
+                        tracef("A DB connection %d returned to the pool.", proxy.getProcessId());
+                        
+                        import core.thread;
+                        infof("pool status, size: %d/%d, available: %d, waiters: %d, threads: %d",
+                            _size, _maxSize, available(), waitersSize(), Thread.getAll().length);
+                    }
+                
+                check();
+            } else {
+                warningf("Releasing a untraced connection %d!", proxy.getProcessId());
             }
-            
-            check();
-        } else {
-            warningf("Releasing a untraced connection %d!", proxy.getProcessId());
         }
     }
 
@@ -257,7 +257,7 @@ class ConnectionPool {
         }
 
         if(!cas(&_checkInProgress, false, true)) {
-            version(HUNT_DB_DEBUG) trace("check in progress...");
+            version(HUNT_DEBUG) warning("check in progress...");
         }
 
         scope(exit) {
@@ -265,46 +265,58 @@ class ConnectionPool {
             version(HUNT_DB_DEBUG_MORE) tracef("pool size=%d/%d", _size, _maxSize);
         }
 
-        try {
-            while (waitersSize() > 0) {
-                if (available() > 0) {
-                    PooledConnection proxy = _available.front(); _available.removeFront();
+        synchronized (this) {
+            try {
+                doCheck();
+            } catch(Exception ex) {
+                warning(ex);
+            }
+        }
+    }
+
+    private void doCheck() {
+        while (waitersSize() > 0) {
+            if (available() > 0) {
+                PooledConnection proxy = _available.front(); _available.removeFront();
+                CompletableFuture!(DbConnectionAsyncResult) waiter = _waiters.front(); _waiters.removeFront();
+                waiter.complete(succeededResult!(DbConnection)(proxy));
+            } else {
+                if (_size < _maxSize) {
+                    // _size++;
+                    atomicOp!("+=")(_size, 1);
+
+                    version(HUNT_DEBUG) infof("Creating a new DB connection. total: %d", _size);
                     CompletableFuture!(DbConnectionAsyncResult) waiter = _waiters.front(); _waiters.removeFront();
-                    waiter.complete(succeededResult!(DbConnection)(proxy));
-                } else {
-                    if (size < _maxSize) {
-                        CompletableFuture!(DbConnectionAsyncResult) waiter = _waiters.front(); _waiters.removeFront();
-                        _size++;
-                        connector( (DbConnectionAsyncResult ar) {
-                            if (ar.succeeded()) {
-                                version(HUNT_DB_DEBUG) info("A new DB connection created.");
-                                DbConnection conn = ar.result();
-                                PooledConnection proxy = new PooledConnection(conn);
-                                _all.add(proxy);
-                                conn.initHolder(proxy);
-                                waiter.complete(succeededResult!(DbConnection)(proxy));
-                            } else {
-                                _size--;
-                                version(HUNT_DEBUG) warning(ar.cause());
-                                waiter.completeExceptionally(ar.cause());
-                                check();
-                            }
-                        });
-                    } else {
-                        if (_maxWaitQueueSize >= 0) {
-                            int numInProgress = _size - _all.size();
-                            int numToFail = cast(int)_waiters[].walkLength() - (_maxWaitQueueSize + numInProgress);
-                            while (numToFail-- > 0) {
-                                CompletableFuture!(DbConnectionAsyncResult) waiter = _waiters.back(); _waiters.removeBack();
-                                waiter.completeExceptionally(new NoStackTraceThrowable("Max waiter size reached"));
-                            }
+                    connector( (DbConnectionAsyncResult ar) {
+
+                        if (ar.succeeded()) {
+                            version(HUNT_DEBUG) info("A new DB connection created. total: %d", _size);
+                            DbConnection conn = ar.result();
+                            PooledConnection proxy = new PooledConnection(conn);
+                            _all.add(proxy);
+                            conn.initHolder(proxy);
+                            waiter.complete(succeededResult!(DbConnection)(proxy));
+                        } else {
+                            // _size--;
+                            atomicOp!("-=")(_size, 1);
+                            version(HUNT_DEBUG) warning(ar.cause());
+                            waiter.completeExceptionally(ar.cause());
+                            check();
                         }
-                        break;
+                    });
+                } else {
+                    version(HUNT_DEBUG) warningf("waiters: %d / %d", waitersSize(), _maxWaitQueueSize);
+                    if (_maxWaitQueueSize >= 0) {
+                        int numInProgress = _size - _all.size();
+                        int numToFail = waitersSize() - (_maxWaitQueueSize + numInProgress);
+                        while (numToFail-- > 0) {
+                            CompletableFuture!(DbConnectionAsyncResult) waiter = _waiters.back(); _waiters.removeBack();
+                            waiter.completeExceptionally(new NoStackTraceThrowable("Max waiter size reached"));
+                        }
                     }
+                    break;
                 }
             }
-        } catch(Exception ex) {
-            warning(ex);
         }
     }
 }

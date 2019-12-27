@@ -50,7 +50,8 @@ import std.variant;
 
 
 /**
-*/
+ * 
+ */
 abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : SqlClient))
 
     override
@@ -76,7 +77,9 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
     RowSet query(string sql) {
         auto f = queryAsync(sql);
         try {
-            return f.get();
+            version(HUNT_DEBUG) warning("try to get a query result");
+            import core.time;
+            return f.get(10.seconds);
         } catch(Exception ex) {
             warning(ex.msg);
             version(HUNT_DEBUG) warning(ex);

@@ -34,6 +34,7 @@ import hunt.database.base.AsyncResult;
 import hunt.concurrency.Future;
 import hunt.concurrency.FuturePromise;
 import hunt.Exceptions;
+import hunt.logging.ConsoleLogger;
 
 /**
  * Todo :
@@ -90,7 +91,9 @@ abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
 
     SqlConnection getConnection() {
         Future!(SqlConnection) f = getConnectionAsync();
-        return f.get();
+        version(HUNT_DEBUG) warning("try to get a connection");
+        import core.time;
+        return f.get(10.seconds);
     }
 
     Transaction begin() {

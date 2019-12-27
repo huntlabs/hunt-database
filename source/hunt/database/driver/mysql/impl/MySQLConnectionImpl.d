@@ -164,7 +164,9 @@ class MySQLConnectionImpl : SqlConnectionImpl!(MySQLConnectionImpl), MySQLConnec
 
     NamedQuery prepareNamedQuery(string sql) {
         auto f = prepareNamedQueryAsync(sql);
-        return f.get();
+        version(HUNT_DEBUG) warning("try to get a result");
+        import core.time;
+        return f.get(10.seconds);
     }       
 
     string escapeIdentifier(string identifier) {
