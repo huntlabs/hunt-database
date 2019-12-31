@@ -64,15 +64,15 @@ class Line {
     override
     size_t toHash() @trusted nothrow {
         import hunt.Double;
-        size_t result;
-        size_t temp;
+        ulong result;
+        ulong temp;
         temp = Double.doubleToLongBits(a);
         result = (temp ^ (temp >>> 32));
         temp = Double.doubleToLongBits(b);
         result = 31 * result + (temp ^ (temp >>> 32));
         temp = Double.doubleToLongBits(c);
         result = 31 * result + (temp ^ (temp >>> 32));
-        return result;
+        return cast(size_t)result;
     }
 
     override

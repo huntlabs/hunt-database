@@ -55,8 +55,8 @@ class Circle {
     size_t toHash() @trusted nothrow {
         import hunt.Double;
         size_t result = centerPoint.toHash();
-        size_t temp = Double.doubleToLongBits(radius);
-        result = 31 * result + cast(int) (temp ^ (temp >>> 32));
+        ulong temp = Double.doubleToLongBits(radius);
+        result = 31 * result + cast(size_t) (temp ^ (temp >>> 32));
         return result;
     }
 
