@@ -31,6 +31,7 @@ import hunt.logging.ConsoleLogger;
 import hunt.Functions;
 
 import core.atomic;
+import core.thread;
 
 import std.algorithm;
 import std.container;
@@ -94,7 +95,8 @@ class ConnectionPool {
         if (_closed) {
             throw new IllegalStateException("Connection pool closed");
         }
-        version(HUNT_DEBUG) {
+        version(HUNT_DEBUG) 
+        {
             tracef("Try to acquire a DB connection... size: %d/%d, available: %d, waiters: %d",
                 _size, _maxSize, available(), waitersSize());
         }
@@ -165,7 +167,7 @@ class ConnectionPool {
         override
         void initHolder(Holder holder) {
             if (this.holder !is null) {
-                throw new IllegalStateException();
+                throw new IllegalStateException("Illegal state");
             }
             this.holder = holder;
         }
@@ -173,7 +175,7 @@ class ConnectionPool {
         override
         void close(Holder holder) {
             if (holder !is this.holder) {
-                throw new IllegalStateException();
+                throw new IllegalStateException("Illegal state");
             }
             this.holder = null;
             release(this);
@@ -196,11 +198,11 @@ class ConnectionPool {
                     throw new IllegalStateException(format("Can't close connection, processId=%s", getProcessId()));
                 }
                 
-                version(HUNT_DEBUG) {
-                        import core.thread;
-                        tracef("DB collection %d closed.", getProcessId());
-                        infof("pool status, size: %d/%d, available: %d, waiters: %d, threads: %d",
-                            _size, _maxSize, available(), waitersSize(), Thread.getAll().length);
+                version(HUNT_DEBUG) 
+                {
+                    tracef("DB collection %d closed.", getProcessId());
+                    infof("pool status, size: %d/%d, available: %d, waiters: %d, threads: %d",
+                        _size, _maxSize, available(), waitersSize(), Thread.getAll().length);
                 }
             }
         }
@@ -238,8 +240,6 @@ class ConnectionPool {
                     _available.insertBack(proxy);
                     version(HUNT_DB_DEBUG) {
                         tracef("A DB connection %d returned to the pool.", proxy.getProcessId());
-                        
-                        import core.thread;
                         infof("pool status, size: %d/%d, available: %d, waiters: %d, threads: %d",
                             _size, _maxSize, available(), waitersSize(), Thread.getAll().length);
                     }
@@ -274,11 +274,18 @@ class ConnectionPool {
         }
     }
 
+    void logStatus() {
+        infof("pool status, size: %d/%d, available: %d, waiters: %d, threads: %d",
+            _size, _maxSize, available(), waitersSize(), Thread.getAll().length);
+    }
+
     private void doCheck() {
-        while (waitersSize() > 0) {
+        // while (waitersSize() > 0) 
+        while(!_waiters.empty())
+        {
             if (available() > 0) {
-                PooledConnection proxy = _available.front(); _available.removeFront();
                 CompletableFuture!(DbConnectionAsyncResult) waiter = _waiters.front(); _waiters.removeFront();
+                PooledConnection proxy = _available.front(); _available.removeFront();
                 waiter.complete(succeededResult!(DbConnection)(proxy));
             } else {
                 if (_size < _maxSize) {
@@ -290,7 +297,7 @@ class ConnectionPool {
                     connector( (DbConnectionAsyncResult ar) {
 
                         if (ar.succeeded()) {
-                            version(HUNT_DEBUG) info("A new DB connection created. total: %d", _size);
+                            version(HUNT_DEBUG) infof("A new DB connection created. total: %d", _size);
                             DbConnection conn = ar.result();
                             PooledConnection proxy = new PooledConnection(conn);
                             _all.add(proxy);
@@ -305,7 +312,13 @@ class ConnectionPool {
                         }
                     });
                 } else {
-                    version(HUNT_DEBUG) warningf("waiters: %d / %d", waitersSize(), _maxWaitQueueSize);
+                    version(HUNT_DEBUG) {
+                        // warningf("waiters: %d / %d", waitersSize(), _maxWaitQueueSize);
+                        infof("pool status, size: %d/%d, available: %d, waiters: %d, threads: %d",
+                            _size, _maxSize, available(), waitersSize(), Thread.getAll().length);
+                    }
+
+
                     if (_maxWaitQueueSize >= 0) {
                         int numInProgress = _size - _all.size();
                         int numToFail = waitersSize() - (_maxWaitQueueSize + numInProgress);

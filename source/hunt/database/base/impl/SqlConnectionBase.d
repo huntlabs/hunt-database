@@ -85,7 +85,7 @@ abstract class SqlConnectionBase(C) : SqlClientBase!(C) {
         auto f = prepareAsync(sql);
         version(HUNT_DEBUG) warning("try to get a prepare result");
         import core.time;
-        return f.get(10.seconds);
+        return f.get(5.seconds);
     }
 
     // protected AbstractNamedQueryDesc getNamedQueryDesc(string sql) {

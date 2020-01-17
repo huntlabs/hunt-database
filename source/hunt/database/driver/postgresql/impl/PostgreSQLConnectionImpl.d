@@ -149,7 +149,7 @@ class PgConnectionImpl : SqlConnectionImpl!(PgConnectionImpl), PgConnection  {
         auto f = prepareNamedQueryAsync(sql);
         version(HUNT_DEBUG) warning("try to get a result");
         import core.time;
-        return f.get(10.seconds);
+        return f.get(5.seconds);
     }       
 
     string escapeIdentifier(string identifier) {

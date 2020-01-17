@@ -73,15 +73,43 @@ abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
         });
     }
 
+
+    int nextPromiseId() {
+        import core.atomic;
+        int c = atomicOp!("+=")(_promiseCounter, 1);
+        return c;
+    }
+    private shared int _promiseCounter = 0;
+
     Future!(SqlConnection) getConnectionAsync() {
+        import std.conv;
         auto f = new FuturePromise!SqlConnection();
+
+        int id = nextPromiseId();
+        version(HUNT_DEBUG) tracef("Try to get a DB connection for promise: %d", id);
+        f.id = id.to!string();
+
         pool.acquire((DbConnectionAsyncResult ar) {
             if (ar.succeeded()) {
                 DbConnection conn = ar.result();
+                version(HUNT_DEBUG) tracef("Got a DB connection (id=%d) from promise (id=%s)", conn.getProcessId(), f.id);
+                
+                // FIXME: Needing refactor or cleanup -@zhangxueping at 2020-01-17T16:41:20+08:00
+                // 
                 SqlConnection holder = wrap(conn);
                 conn.initHolder(cast(DbConnection.Holder)holder);
-                f.succeeded(holder);
+
+                if(f.isDone()) {
+                    debug {
+                        warningf("The promise %s has been done. So the connection %d will be returned to the pool.", 
+                            f.id(), conn.getProcessId());
+                    }
+                    conn.close(cast(DbConnection.Holder)holder);
+                } else {
+                    f.succeeded(holder);
+                }
             } else {
+                debug warningf("A promise failed, id=%s", f.id);
                 f.failed(cast(Exception)ar.cause());
             }
         });        
@@ -91,9 +119,18 @@ abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
 
     SqlConnection getConnection() {
         Future!(SqlConnection) f = getConnectionAsync();
-        version(HUNT_DEBUG) warning("try to get a connection");
+        version(HUNT_DEBUG) trace("try to get a connection");
+        // pool.logStatus();
         import core.time;
-        return f.get(10.seconds);
+        try {
+            return f.get(5.seconds);
+        } catch(Exception ex) { 
+            debug {
+                warning(ex.msg);
+                pool.logStatus();
+            }
+            throw ex;
+        }
     }
 
     Transaction begin() {

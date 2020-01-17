@@ -33,8 +33,7 @@ class SimpleQueryCommand(T) : QueryCommandBase!(T) {
     private bool _singleton;
 
     this(string sql, bool singleton, QueryResultHandler!(T) resultHandler) {
-        // version(HUNT_DB_DEBUG) 
-        version(HUNT_DEBUG) info(sql);
+        version(HUNT_SQL_DEBUG) info(sql);
         super(resultHandler);
         this._sql = sql;
         this._singleton = singleton;

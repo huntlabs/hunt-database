@@ -174,7 +174,8 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbCo
 
     override
     void close() {
-        version(HUNT_DB_DEBUG) trace("Closing a SQL connection...");
+        version(HUNT_DB_DEBUG) 
+            tracef("Closing a SQL connection %d...", conn.getProcessId());
         if (tx !is null) {
             tx.rollback( (ar) { conn.close(this); });
             tx = null;
