@@ -23,6 +23,8 @@ import hunt.logging.ConsoleLogger;
 import hunt.net.util.HttpURI;
 import hunt.text.StringBuilder;
 
+import core.time;
+
 /**
  * 
  */
@@ -80,14 +82,18 @@ class Database
 		import hunt.database.driver.mysql.impl.MySQLPoolImpl;
 		import hunt.database.driver.postgresql.impl.PostgreSQLPoolImpl;
 
-		version(HUNT_DB_DEBUG) tracef("maximumSize: %d", _options.maximumPoolSize);
+		version(HUNT_DB_DEBUG) {
+			tracef("maximumSize: %d, connectionTimeout: %d", _options.maximumPoolSize, _options.connectionTimeout);
+		}
 
 		if(_options.isPgsql()) {
 			PgConnectOptions connectOptions = new PgConnectOptions(_options.url);
 			connectOptions.setDecoderBufferSize(_options.getDecoderBufferSize());
 			connectOptions.setEncoderBufferSize(_options.getEncoderBufferSize());
 
-			PoolOptions poolOptions = new PoolOptions().setMaxSize(_options.maximumPoolSize);
+			PoolOptions poolOptions = new PoolOptions()
+				.setMaxSize(_options.maximumPoolSize)
+				.awaittingTimeout(_options.connectionTimeout.msecs);
 			_pool = new PgPoolImpl(connectOptions, poolOptions);
 
 		} else if(_options.isMysql()) {
@@ -95,7 +101,9 @@ class Database
 			connectOptions.setDecoderBufferSize(_options.getDecoderBufferSize());
 			connectOptions.setEncoderBufferSize(_options.getEncoderBufferSize());
 			
-			PoolOptions poolOptions = new PoolOptions().setMaxSize(_options.maximumPoolSize);
+			PoolOptions poolOptions = new PoolOptions()
+				.setMaxSize(_options.maximumPoolSize)
+				.awaittingTimeout(_options.connectionTimeout.msecs);
 			_pool = new MySQLPoolImpl(connectOptions, poolOptions);
 
 		} else {

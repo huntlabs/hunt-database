@@ -48,8 +48,10 @@ import hunt.logging.ConsoleLogger;
 abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
 
     private ConnectionPool pool;
+    private PoolOptions _options;
 
     this(PoolOptions options) {
+        this._options = options;
         int maxSize = options.getMaxSize();
         if (maxSize < 1) {
             throw new IllegalArgumentException("Pool max size must be > 0");
@@ -123,7 +125,7 @@ abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
         // pool.logStatus();
         import core.time;
         try {
-            return f.get(5.seconds);
+            return f.get(_options.awaittingTimeout());
         } catch(Exception ex) { 
             debug {
                 warning(ex.msg);

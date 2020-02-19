@@ -35,7 +35,6 @@ import hunt.Exceptions;
 import hunt.logging.ConsoleLogger;
 import hunt.net.AbstractConnection;
 
-
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
@@ -84,8 +83,7 @@ abstract class SqlConnectionBase(C) : SqlClientBase!(C) {
     PreparedQuery prepare(string sql) {
         auto f = prepareAsync(sql);
         version(HUNT_DEBUG) warning("try to get a prepare result");
-        import core.time;
-        return f.get(5.seconds);
+        return f.get(awaittingTimeout);
     }
 
     // protected AbstractNamedQueryDesc getNamedQueryDesc(string sql) {

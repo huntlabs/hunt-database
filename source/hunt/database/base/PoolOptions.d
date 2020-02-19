@@ -19,8 +19,7 @@ module hunt.database.base.PoolOptions;
 
 import hunt.Exceptions;
 
-// import io.vertx.codegen.annotations.DataObject;
-// import io.vertx.core.json.JsonObject;
+import core.time;
 
 /**
  * The options for configuring a connection pool.
@@ -42,12 +41,24 @@ class PoolOptions {
     private int maxSize = DEFAULT_MAX_SIZE;
     private int maxWaitQueueSize = DEFAULT_MAX_WAIT_QUEUE_SIZE;
 
+    private Duration _awaittingTimeout = 10.seconds;
+
     this() {
     }
 
     this(PoolOptions other) {
         maxSize = other.maxSize;
         maxWaitQueueSize = other.maxWaitQueueSize;
+        awaittingTimeout = other.awaittingTimeout;
+    }
+
+    Duration awaittingTimeout() {
+        return _awaittingTimeout;
+    }
+
+    PoolOptions awaittingTimeout(Duration value) {
+        _awaittingTimeout = value;
+        return this;
     }
 
     /**

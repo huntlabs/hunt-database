@@ -46,6 +46,7 @@ import hunt.Functions;
 import hunt.logging.ConsoleLogger;
 import hunt.net.AbstractConnection;
 
+import core.time;
 import std.variant;
 
 
@@ -53,6 +54,16 @@ import std.variant;
  * 
  */
 abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : SqlClient))
+
+    private Duration _awaittingTimeout = 10.seconds;
+
+    Duration awaittingTimeout() {
+        return _awaittingTimeout;
+    }
+
+    void awaittingTimeout(Duration value) {
+        _awaittingTimeout = value;
+    }
 
     override
     C query(string sql, RowSetHandler handler) {
@@ -79,7 +90,7 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
         try {
             version(HUNT_DEBUG) trace("try to get a query result");
             import core.time;
-            return f.get(5.seconds);
+            return f.get(_awaittingTimeout);
         } catch(Exception ex) {
             warning(ex.msg);
             version(HUNT_DEBUG) warning(ex);
