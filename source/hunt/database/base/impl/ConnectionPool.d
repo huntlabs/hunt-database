@@ -200,7 +200,7 @@ class ConnectionPool {
                 
                 version(HUNT_DEBUG) 
                 {
-                    tracef("DB collection %d closed.", getProcessId());
+                    tracef("DB connection %d closed.", getProcessId());
                     infof("pool status, size: %d/%d, available: %d, waiters: %d, threads: %d",
                         _size, _maxSize, available(), waitersSize(), Thread.getAll().length);
                 }
