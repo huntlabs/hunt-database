@@ -272,7 +272,9 @@ abstract class SocketConnectionBase : DbConnection {
             }
 
             version(HUNT_DB_DEBUG) {
-                tracef("pending: %d, holder: %s", pending[].walkLength(), typeid(cast(Object)holder));
+                if(holder !is null) {
+                    tracef("pending: %d, holder: %s", pending[].walkLength(), typeid(cast(Object)holder));
+                }
             }
 
             Throwable cause = t is null ? new Exception("closed") : t;
