@@ -164,9 +164,15 @@ class Util {
                 ts = *localtime(&now);
                 strftime(buf.ptr, buf.length, "%m-%d %H:%M:%S", &ts);
 
-                printf("%s%s.%d | %s | %d | %s | %s | %s:%d%s\n", leadingColor.ptr, buf.ptr, 0, level.ptr, 
-                    getTid(), cast(cstring)func.ptr, msg, 
-                    cast(cstring)file.ptr, line, CONSOLE_COLOR_NONE.ptr);
+                version(X86_64) {
+                    printf("%s%s.%d | %s | %llu | %s | %s | %s:%llu%s\n", leadingColor.ptr, buf.ptr, 0, level.ptr, 
+                        getTid(), cast(cstring)func.ptr, msg, 
+                        cast(cstring)file.ptr, line, CONSOLE_COLOR_NONE.ptr);
+                } else {
+                    printf("%s%s.%d | %s | %u | %s | %s | %s:%u%s\n", leadingColor.ptr, buf.ptr, 0, level.ptr, 
+                        getTid(), cast(cstring)func.ptr, msg, 
+                        cast(cstring)file.ptr, line, CONSOLE_COLOR_NONE.ptr);
+                }
                             
             }
 
