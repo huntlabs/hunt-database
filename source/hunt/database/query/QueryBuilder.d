@@ -35,7 +35,7 @@ import hunt.Double;
 import hunt.Float;
 import hunt.Short;
 import hunt.String;
-import hunt.text.StringBuilder;
+import hunt.util.StringBuilder;
 import hunt.Nullable;
 
 

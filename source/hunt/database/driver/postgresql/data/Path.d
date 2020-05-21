@@ -4,7 +4,7 @@ import hunt.database.driver.postgresql.data.Point;
 
 import hunt.collection.ArrayList;
 import hunt.collection.List;
-import hunt.text.StringBuilder;
+import hunt.util.StringBuilder;
 
 /**
  * Path data type in Postgres represented by lists of connected points.

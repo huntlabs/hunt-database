@@ -29,7 +29,7 @@ import hunt.database.base.impl.command;
 import hunt.database.base.RowSet;
 
 import hunt.collection.ArrayDeque;
-import hunt.collection.ByteBuffer;
+import hunt.io.ByteBuffer;
 import hunt.collection.List;
 import hunt.collection.Map;
 import hunt.Exceptions;

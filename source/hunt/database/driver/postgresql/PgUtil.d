@@ -9,8 +9,9 @@ module hunt.database.driver.postgresql.PgUtil;
 
 import hunt.database.base.Exceptions;
 import hunt.Exceptions;
-import hunt.text.StringBuilder;
+import hunt.util.Appendable;
 import hunt.util.Common;
+import hunt.util.StringBuilder;
 
 /**
  * Collection of utilities used by the protocol-level code.

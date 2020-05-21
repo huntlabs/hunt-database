@@ -9,7 +9,7 @@
         "HUNT_DEBUG",
         "HUNT_NET_DEBUG1",
         "HUNT_DB_DEBUG",
-        "HUNT_SQL_DEBUG1"
+        "HUNT_SQL_DEBUG"
     ],
     "dependencies": {
         "hunt-database": {

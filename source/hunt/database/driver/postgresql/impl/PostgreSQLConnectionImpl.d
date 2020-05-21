@@ -42,7 +42,7 @@ import hunt.concurrency.Future;
 import hunt.concurrency.FuturePromise;
 import hunt.Exceptions;
 import hunt.logging.ConsoleLogger;
-import hunt.text.StringBuilder;
+import hunt.util.StringBuilder;
 
 
 alias PgNamedQueryDesc = NamedQueryDesc!("$", true);

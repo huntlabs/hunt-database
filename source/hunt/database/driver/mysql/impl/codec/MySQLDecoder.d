@@ -9,7 +9,7 @@ import hunt.database.base.impl.RowDecoder;
 import hunt.database.base.impl.TxStatus;
 
 
-import hunt.collection.ByteBuffer;
+import hunt.io.ByteBuffer;
 import hunt.collection.List;
 import hunt.collection.Map;
 import hunt.Exceptions;

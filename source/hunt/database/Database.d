@@ -21,7 +21,7 @@ import hunt.database.query.QueryBuilder;
 
 import hunt.logging.ConsoleLogger;
 import hunt.net.util.HttpURI;
-import hunt.text.StringBuilder;
+import hunt.util.StringBuilder;
 
 import core.time;
 

@@ -26,8 +26,8 @@ import hunt.database.base.impl.SocketConnectionBase;
 import hunt.database.base.impl.command.CommandResponse;
 import hunt.database.base.impl.command.InitCommand;
 
-import hunt.collection.ByteBuffer;
-import hunt.collection.BufferUtils;
+import hunt.io.ByteBuffer;
+import hunt.io.BufferUtils;
 import hunt.collection.Map;
 import hunt.Exceptions;
 import hunt.logging.ConsoleLogger;

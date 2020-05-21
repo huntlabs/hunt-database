@@ -22,8 +22,15 @@ void main() {
     Statement statement;
     RowSet rs;
 
+    // Database db = new Database(
+    //         "postgresql://postgres:123456@10.1.11.44:5432/postgres?charset=utf-8");
+
+    // Database db = new Database(
+    //     "postgresql://putao:putao123@10.1.223.62:5432/uas?prefix=&charset=utf8");
+
+
     Database db = new Database(
-            "postgresql://postgres:123456@10.1.11.44:5432/postgres?charset=utf-8");
+        "postgresql://test:91U9fFz5MsGj@putao-test-pgsql.ckaa5jsjnqez.rds.cn-north-1.amazonaws.com.cn:5432/test_putao_uas");
 
     // // 
     // writeln("============= Delete ==================");
@@ -34,7 +41,7 @@ void main() {
     // // 
     // writeln("============= Insert ==================");
 
-    // sql = `INSERT INTO public.test(id, val) VALUES (1, 1);`;
+    // sql = `INSERT INTO public.test(id, val) VALUES (13, 'abc');`;
     // result = db.execute(sql);
     // tracef("result: %d", result);
 
@@ -58,6 +65,23 @@ void main() {
     //     writeln(row);
     // }
 
+    //
+    // writeln("============= Select ==================");
+    // rs = db.query("SELECT * FROM app");
+
+    // foreach (Row row; rs) {
+    //     writeln(row);
+    // }
+
+    writeln("============= Select ==================");
+    rs = db.query("SELECT * FROM user_account");
+
+    foreach (Row row; rs) {
+        writeln(row);
+    }
+
+
+    rs = db.query("SELECT email FROM user_account");
 
     //
     // writeln("============= Binding ==================");
@@ -93,20 +117,20 @@ void main() {
     // }    
 
 
-    // 
-    writeln("============= Class Binding ==================");
-    sql = `SELECT a.id as immutable__as__id, a.message as immutable__as__message, 
-	b.id as world__as__id, b.randomnumber as world__as__randomnumber 
-	FROM immutable as a LEFT JOIN world as b on a.id = b.id where a.id=1;`;
+    // // 
+    // writeln("============= Class Binding ==================");
+    // sql = `SELECT a.id as immutable__as__id, a.message as immutable__as__message, 
+	// b.id as world__as__id, b.randomnumber as world__as__randomnumber 
+	// FROM immutable as a LEFT JOIN world as b on a.id = b.id where a.id=1;`;
 
-    statement = db.prepare(sql);
-    rs = statement.query();
+    // statement = db.prepare(sql);
+    // rs = statement.query();
 
-    Immutable[] testEntities = rs.bind!(Immutable, (a, b) => a ~ "__as__" ~ b)();
+    // Immutable[] testEntities = rs.bind!(Immutable, (a, b) => a ~ "__as__" ~ b)();
 
-    foreach (Immutable t; testEntities) {
-        writeln(t);
-    }    
+    // foreach (Immutable t; testEntities) {
+    //     writeln(t);
+    // }    
 
 
     db.close();
