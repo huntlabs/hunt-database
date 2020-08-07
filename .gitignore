@@ -37,3 +37,5 @@ mixin_output.d
 examples/mysql/mysql-demo
 examples/postgresql/postgresql-demo
 examples/UnitTest/unittest
+examples/postgresql/core
+*-bak

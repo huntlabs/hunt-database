@@ -70,9 +70,17 @@ class RowSetImpl : SqlResultBase!(RowSet, RowSetImpl), RowSet {
         this._updated = v;
     }
 
-    override
-    int size() {
+    override int size() {
         return _size;
+    }
+
+    
+    Row firstRow() {
+        return head;
+    }
+
+    Row lastRow() {
+        return tail;
     }
 
     Variant property(string key) {

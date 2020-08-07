@@ -27,6 +27,7 @@ import hunt.util.Common;
 alias RowSetHandler = AsyncResultHandler!RowSet;
 alias RowSetAsyncResult = AsyncResult!RowSet;
 
+import std.variant;
 
 /**
  * A set of rows.
@@ -56,6 +57,20 @@ interface RowSet : Iterable!(Row), SqlResult!(RowSet) {
         foreach(Row row; this) {
             r[index] = row.bind!(T, traverseBase, getColumnNameFun)();
             index++;
+        }
+
+        return r;
+    }
+
+    Row firstRow();
+    
+    Row lastRow();
+    
+    final T columnInLastRow(T = int)(string name) {
+        T r = T.init;
+        foreach(Row row; this) {
+            Variant v = row.getValue(name);
+            r = v.get!T();
         }
 
         return r;
