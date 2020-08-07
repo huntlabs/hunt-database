@@ -191,7 +191,7 @@ abstract class SocketConnectionBase : DbConnection {
             while (inflight < pipeliningLimit && (cmd = pollPending()) !is null) {
                 inflight++;
                 version(HUNT_DB_DEBUG_MORE) {
-                    tracef("chekcing %s ... ", typeid(cast(Object)cmd));
+                    // tracef("chekcing %s ... ", typeid(cast(Object)cmd));
                 } else version(HUNT_DB_DEBUG) {
                     // trace("chekcing... ");
                 } 

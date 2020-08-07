@@ -80,7 +80,7 @@ class RowResultDecoder(R) : RowDecoder {
                 PgColumnDesc columnDesc = desc.columns[c];
 
                 version(HUNT_DB_DEBUG_MORE) {
-                    tracef("    column[%d]: name=%s, dataType=%s, dataFormat=%s", 
+                    tracef("    column[%d]: name=%s, %s, dataFormat=%s", 
                        c, columnDesc.name, columnDesc.dataType, columnDesc.dataFormat);
                 }
 
