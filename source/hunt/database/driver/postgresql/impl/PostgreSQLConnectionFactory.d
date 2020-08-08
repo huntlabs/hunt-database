@@ -188,7 +188,8 @@ class PgConnectionFactory {
 
                 override void connectionClosed(Connection connection) {
                     version(HUNT_DEBUG) infof("Connection closed: %s", connection.getRemoteAddress());
-                    pgConn.handleClosed(connection);
+                    if(pgConn !is null)
+                        pgConn.handleClosed(connection);
                 }
 
                 override void messageReceived(Connection connection, Object message) {
