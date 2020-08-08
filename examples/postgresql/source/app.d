@@ -25,12 +25,11 @@ void main() {
     // Database db = new Database(
     //         "postgresql://postgres:123456@10.1.11.44:5432/postgres?charset=utf-8");
 
+    Database db = new Database(
+            "postgresql://postgres:123456@10.1.222.110:5432/postgres?charset=utf-8");            
+
     // Database db = new Database(
     //     "postgresql://putao:putao123@10.1.223.62:5432/uas?prefix=&charset=utf8");
-
-
-    Database db = new Database(
-        "postgresql://test:91U9fFz5MsGj@putao-test-pgsql.ckaa5jsjnqez.rds.cn-north-1.amazonaws.com.cn:5432/test_putao_uas");
 
     // // 
     // writeln("============= Delete ==================");
@@ -42,8 +41,20 @@ void main() {
     // writeln("============= Insert ==================");
 
     // sql = `INSERT INTO public.test(id, val) VALUES (13, 'abc');`;
+    // sql = `INSERT INTO public.test(val) VALUES ('abc') RETURNING id;`;
+    // sql = `INSERT INTO public.test(val) VALUES ('abc'), ('123') RETURNING id, val;`;
+    sql = `INSERT INTO public.test(val) VALUES ('abc');`;
     // result = db.execute(sql);
-    // tracef("result: %d", result);
+    // result = db.execute(sql, "id");
+    // result = db.query(sql).columnInLastRow("id");
+    Row row = db.query(sql).lastRow();
+    if(row !is null) {
+        result = row.getInteger("id");
+    }
+    tracef("result: %d", result);
+
+    // string v  = db.execute!(string)(sql, "val");
+    // tracef("val: %s", v);    
 
     // // 
     // writeln("============= Update ==================");
@@ -73,15 +84,15 @@ void main() {
     //     writeln(row);
     // }
 
-    writeln("============= Select ==================");
-    rs = db.query("SELECT * FROM user_account");
+    // writeln("============= Select ==================");
+    // rs = db.query("SELECT * FROM user_account");
 
-    foreach (Row row; rs) {
-        writeln(row);
-    }
+    // foreach (Row row; rs) {
+    //     writeln(row);
+    // }
 
 
-    rs = db.query("SELECT email FROM user_account");
+    // rs = db.query("SELECT email FROM user_account");
 
     //
     // writeln("============= Binding ==================");

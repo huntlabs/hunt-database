@@ -12,6 +12,7 @@
 module hunt.database.Statement;
 
 import hunt.database.Database;
+import hunt.database.DatabaseOption;
 import hunt.database.base;
 import hunt.database.query.Common;
 
@@ -46,14 +47,18 @@ class Statement
     private RowSet _rs;
     private Object[string] _parameters;
 
-    this(SqlConnection db)
+    private DatabaseOption _options;
+
+    this(SqlConnection db, DatabaseOption options)
     {
         _db = db;
+        _options = options;
     }
 
-    this(SqlConnection db, string sql)
+    this(SqlConnection db, string sql, DatabaseOption options)
     {
         _db = db;
+        _options = options;
         prepare(sql);
     }
 
@@ -168,27 +173,54 @@ class Statement
             logDebug(execSql);
 
         _rs = _db.query(execSql);
+        _lastInsertId = 0;
 
-        // if (_db.getOption().isMysql()) {
-        //     import hunt.database.driver.mysql.MySQLClient;
-        //     Variant value2 = _rs.property(MySQLClient.LAST_INSERTED_ID);
-        //     if(value2.type != typeid(int)) {
-        //         warning("Not expected type: ", value2.type);
-        //     } else {
-        //         _lastInsertId = value2.get!int();
-        //     }
-        // } else {
+        if (_options.isMysql()) {
+            import hunt.database.driver.mysql.MySQLClient;
+            Variant value2 = _rs.property(MySQLClient.LAST_INSERTED_ID);
+            if(value2.type != typeid(int)) {
+                warning("Not expected type: ", value2.type);
+            } else {
+                _lastInsertId = value2.get!int();
+            }
+        } 
+
+        // import hunt.database.driver.mysql.MySQLClient;
+        // Variant value2 = _rs.property(MySQLClient.LAST_INSERTED_ID);
+        // if(value2.type != typeid(int)) {
+        //     version(HUNT_DEBUG) warning("Not expected type: ", value2.type);
         //     _lastInsertId = 0;
-        // }
+        // } else {
+        //     _lastInsertId = value2.get!int();
+        // }        
 
-        import hunt.database.driver.mysql.MySQLClient;
-        Variant value2 = _rs.property(MySQLClient.LAST_INSERTED_ID);
-        if(value2.type != typeid(int)) {
-            version(HUNT_DEBUG) warning("Not expected type: ", value2.type);
-            _lastInsertId = 0;
-        } else {
-            _lastInsertId = value2.get!int();
-        }        
+        _affectRows = _rs.rowCount();
+        return _affectRows;
+    }
+
+    
+    int execute(string lastIdName)
+    {
+        string execSql = sql(_db);
+        version (HUNT_SQL_DEBUG) logDebug(execSql);
+
+        _rs = _db.query(execSql);
+        _lastInsertId = 0;
+
+        if(_options.isPgsql()) {
+            Row row = _rs.lastRow();
+            if(row !is null) {
+                _lastInsertId = row.getInteger(lastIdName);
+            }
+        } else if (_options.isMysql()) {
+            import hunt.database.driver.mysql.MySQLClient;
+            Variant value2 = _rs.property(MySQLClient.LAST_INSERTED_ID);
+            if(value2.type != typeid(int)) {
+                warning("Not expected type: ", value2.type);
+            } else {
+                _lastInsertId = value2.get!int();
+            }
+        }
 
         _affectRows = _rs.rowCount();
         return _affectRows;

@@ -651,6 +651,12 @@ class QueryBuilder
 
                     }
                     str ~= "(" ~ keys ~ ") VALUES(" ~ values ~ ")";
+
+                    if(_dbType == DBType.POSTGRESQL) {
+                        // To get the last insert id
+                        if(!_autoIncreaseKey.empty())
+                            str ~= " returning " ~ _autoIncreaseKey;
+                    }
                 }
                 break;
             case QUERY_TYPE.COUNT:

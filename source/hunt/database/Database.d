@@ -126,7 +126,7 @@ class Database
 
     Statement prepare(SqlConnection conn, string sql)
     {
-        Statement ret = new Statement(conn, sql);
+        Statement ret = new Statement(conn, sql, _options);
         return ret;
     }
 
