@@ -11,13 +11,6 @@ import hunt.logging.ConsoleLogger;
 import hunt.net.buffer.ByteBuf;
 import hunt.net.Exceptions;
 import hunt.text.Charset;
-// import java.time.Duration;
-// import java.time.LocalDate;
-// import java.time.LocalDateTime;
-// import java.time.format.DateTimeFormatterBuilder;
-
-// import java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
-// import java.time.temporal.ChronoField.*;
 
 import std.conv;
 import std.concurrency : initOnce;
@@ -65,7 +58,11 @@ class DataTypeCodec {
         string value = "";
         if (isBinaryField) {
             byte[] data = textDecodeBlob(index, len, buffer);
-            return Variant(cast(string)data);
+            if(data is null) {
+                return Variant("");
+            } else {
+                return Variant(cast(string)data);
+            }
         } else {
             value = textDecodeText(charset, index, len, buffer);
         }
