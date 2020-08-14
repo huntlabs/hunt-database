@@ -521,15 +521,28 @@ class QueryBuilder
                     // logDebug("set values len : ",_values.length);
                     if (_values.length > 0)
                     {
+                        import std.algorithm.searching;
+                        string[] existKeys;
                         if(_dbType == DBType.MYSQL) {
                             foreach (ValueVariant item; _values) {
-                                version(HUNT_DB_DEBUG) tracef("Update: %s", item);
-                                builder.setValue("`" ~ item.key ~ "`", item.value);
+                                if(!canFind(existKeys, item.key)) {
+                                    version(HUNT_DB_DEBUG) tracef("Update: %s", item);
+                                    builder.setValue("`" ~ item.key ~ "`", item.value);
+                                    existKeys ~= item.key;
+                                } else {
+                                    version(HUNT_DB_DEBUG) warningf("Update: %s exists.", item);
+                                }
+                                
                             }
                         } else {
                             foreach (ValueVariant item; _values) {
-                                version(HUNT_DB_DEBUG) tracef("Update: %s", item);
-                                builder.setValue("\"" ~ item.key ~ "\"", item.value);
+                                if(!canFind(existKeys, item.key)) {
+                                    version(HUNT_DB_DEBUG) tracef("Update: %s", item);
+                                    builder.setValue("\"" ~ item.key ~ "\"", item.value);
+                                    existKeys ~= item.key;
+                                } else {
+                                    version(HUNT_DB_DEBUG) warningf("Update: %s exists.", item);
+                                }
                             }
                         }
                     }
