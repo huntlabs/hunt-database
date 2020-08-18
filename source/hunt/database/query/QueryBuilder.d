@@ -633,6 +633,7 @@ class QueryBuilder
 
                 }
                 break;
+
             case QUERY_TYPE.INSERT:
                 {
                     str ~= " insert into " ~ _table;
@@ -640,7 +641,7 @@ class QueryBuilder
                     string values;
                     string tempValue;
                     bool isFirstItem = true;
-                    foreach (k, v; _values)
+                    foreach (string k, ValueVariant v; _values)
                     {
                         // if ((cast(String)(v.value) !is null) || (cast(Nullable!string)(v.value) !is null))
                         // tracef("key: %s, type:%s, value: %s", k, v.value.type, v.value);
@@ -653,12 +654,19 @@ class QueryBuilder
                             tempValue = v.value.toString();
                         }
 
+                        string columnName;
+                        if(_dbType == DBType.POSTGRESQL) {
+                            columnName = "\"" ~ k ~ "\"";
+                        } else {
+                            columnName = k;
+                        }
+
                         if(isFirstItem) {
                             isFirstItem = false;
-                            keys = k;
+                            keys = columnName;
                             values = tempValue;
                         } else {
-                            keys ~= ", " ~ k;
+                            keys ~= ", " ~ columnName;
                             values ~= ", " ~ tempValue;
                         }
 
@@ -699,8 +707,8 @@ class QueryBuilder
         }
         catch (Exception ex)
         {
-            version(HUNT_DEBUG) warning("Query Builder Exception : ", ex.msg);
-            version(HUNT_DB_DEBUG) warning(ex);
+            warning("Query Builder Exception : ", ex.msg);
+            version(HUNT_DEBUG) warning(ex);
             sqlDebugInfo();
         }
 
