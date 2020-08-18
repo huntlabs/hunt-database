@@ -309,7 +309,7 @@ class QueryBuilder
 
     QueryBuilder values(Variant[string] arr)
     {
-        // logDebug("set values  : ",arr);
+        version(HUNT_DB_DEBUG) logDebug("set values: ",arr);
         foreach (key, value; arr)
         {
             auto expr = new ValueVariant(key, value);
