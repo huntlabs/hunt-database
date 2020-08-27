@@ -175,7 +175,12 @@ class Statement
         _rs = _db.query(execSql);
         _lastInsertId = 0;
 
-        if (_options.isMysql()) {
+        if(_options.isPgsql()) {
+            Row row = _rs.lastRow();
+            if(row !is null) {
+                _lastInsertId = row.getInteger(0);
+            }
+        } else if (_options.isMysql()) {
             import hunt.database.driver.mysql.MySQLClient;
             Variant value2 = _rs.property(MySQLClient.LAST_INSERTED_ID);
             if(value2.type != typeid(int)) {
