@@ -42,6 +42,7 @@ class PoolOptions {
     private int maxWaitQueueSize = DEFAULT_MAX_WAIT_QUEUE_SIZE;
 
     private Duration _awaittingTimeout = 10.seconds;
+    private size_t _retry = 5;
 
     this() {
     }
@@ -101,28 +102,38 @@ class PoolOptions {
         return this;
     }
 
+    size_t retry() {
+        return _retry;
+    }
+
+    PoolOptions retry(size_t value) {
+        _retry = value;
+        return this;
+    }    
+
     // JsonObject toJson() {
     //     JsonObject json = new JsonObject();
     //     PoolOptionsConverter.toJson(this, json);
     //     return json;
     // }
 
-    override
-    bool opEquals(Object o) {
-        if (this is o) return true;
-        if (!super.opEquals(o)) return false;
-
-        PoolOptions that = cast(PoolOptions) o;
-        if(that is null)
+    override bool opEquals(Object o) {
+        if (this is o)
+            return true;
+        if (!super.opEquals(o))
             return false;
 
-        if (maxSize != that.maxSize) return false;
+        PoolOptions that = cast(PoolOptions) o;
+        if (that is null)
+            return false;
+
+        if (maxSize != that.maxSize)
+            return false;
 
         return true;
     }
 
-    override
-    size_t toHash() @trusted nothrow {
+    override size_t toHash() @trusted nothrow {
         size_t result = super.toHash();
         result = 31 * result + maxSize;
         return result;

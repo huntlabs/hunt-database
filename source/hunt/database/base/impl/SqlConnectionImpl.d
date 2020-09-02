@@ -44,7 +44,7 @@ import hunt.collection.List;
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
  */
 abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbConnection.Holder //, 
-         { // if(is(C : SqlConnectionImpl))
+{ // if(is(C : SqlConnectionImpl))
 
     private ExceptionHandler _exceptionHandler;
     private VoidHandler _closeHandler;
@@ -78,12 +78,10 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbCo
         return super.preparedQuery(sql, arguments, handler);
     }
 
-
     // override C preparedBatch(string sql, List!(Tuple) batch, RowSetHandler handler) {
     //     return super.preparedBatch(sql, batch, handler);
     // }
 
-    
     // override protected AbstractNamedQueryDesc getNamedQueryDesc(string sql) {
     //     return super.getNamedQueryDesc(sql);
     // }
@@ -121,13 +119,13 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbCo
             conn.schedule(cmd);
         }
     }
-    
+
     void handleException(Throwable err) {
         EventHandler!(Throwable) handler = _exceptionHandler;
         if (handler !is null) {
             handler(err);
         } else {
-            version(HUNT_DB_DEBUG_MORE) {
+            version (HUNT_DB_DEBUG_MORE) {
                 warning(err);
             } else {
                 warning(err.msg);
@@ -135,25 +133,25 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbCo
         }
     }
 
-    override
-    bool isSSL() {
+    override bool isSSL() {
         return conn.isSsl();
     }
 
-    override
-    C closeHandler(VoidHandler handler) {
+    override bool isConnected() {
+        return conn.isConnected();
+    }
+
+    override C closeHandler(VoidHandler handler) {
         _closeHandler = handler;
         return cast(C) this;
     }
 
-    override
-    C exceptionHandler(ExceptionHandler handler) {
+    override C exceptionHandler(ExceptionHandler handler) {
         _exceptionHandler = handler;
         return cast(C) this;
     }
 
-    override
-    Transaction begin() {
+    override Transaction begin() {
         return begin(false);
     }
 
@@ -172,12 +170,11 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbCo
 
     abstract void handleNotification(int processId, string channel, string payload);
 
-    override
-    void close() {
-        version(HUNT_DB_DEBUG) 
+    override void close() {
+        version (HUNT_DB_DEBUG)
             infof("Closing a SQL connection %d...", conn.getProcessId());
         if (tx !is null) {
-            tx.rollback( (ar) { conn.close(this); });
+            tx.rollback((ar) { conn.close(this); });
             tx = null;
         } else {
             conn.close(this);

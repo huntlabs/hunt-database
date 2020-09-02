@@ -128,7 +128,7 @@ class MySQLConnectionFactory {
                 }
 
                 override void connectionClosed(Connection connection) {
-                    version(HUNT_DEBUG) infof("Connection closed: %s", connection.getRemoteAddress());
+                    version(HUNT_DEBUG) infof("The DB connection closed, remote: %s", connection.getRemoteAddress());
                     if(myConn !is null)
                         myConn.handleClosed(connection);
                     

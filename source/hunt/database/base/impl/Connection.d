@@ -34,6 +34,8 @@ interface DbConnection {
 
     bool isSsl();
 
+    bool isConnected();
+
     void schedule(ICommand cmd);
 
     void close(Holder holder);

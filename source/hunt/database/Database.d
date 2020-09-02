@@ -28,19 +28,16 @@ import core.time;
 /**
  * 
  */
-class Database
-{
+class Database {
     Pool _pool;
     DatabaseOption _options;
 
-    this(string url)
-    {
+    this(string url) {
         this._options = new DatabaseOption(url);
         initPool();
     }
 
-    this(DatabaseOption options)
-    {
+    this(DatabaseOption options) {
         this._options = options;
         initPool();
     }
@@ -49,8 +46,7 @@ class Database
         close();
     }
 
-    DatabaseOption getOption()
-    {
+    DatabaseOption getOption() {
         return _options;
     }
 
@@ -59,6 +55,22 @@ class Database
     }
 
     SqlConnection getConnection() {
+        // SqlConnection conn = _pool.getConnection();
+
+        // size_t times = 0;
+        // while(!conn.isConnected() && times < _options.retry()) {
+        //     times++;
+        //     warningf("Got a broken connection, so try it again (%d).", times);
+
+        //     // Destory the broken connection
+        //     conn.close();
+        //     conn = _pool.getConnection();
+        // }
+
+        // if(times == _options.retry() && times > 0) {
+        //     throw new DatabaseException("Can't get a working DB connection.");
+        // }
+        // return conn;
         return _pool.getConnection();
     }
 
@@ -66,57 +78,54 @@ class Database
         conn.close();
     }
 
-    void relaseConnection(SqlConnection conn)
-    {
+    void relaseConnection(SqlConnection conn) {
         conn.close();
     }
 
-    private void initPool()
-    {
+    private void initPool() {
         import hunt.database.driver.mysql.impl.MySQLPoolImpl;
         import hunt.database.driver.postgresql.impl.PostgreSQLPoolImpl;
 
-        version(HUNT_DB_DEBUG) {
-            tracef("maximumSize: %d, connectionTimeout: %d", _options.maximumPoolSize, _options.connectionTimeout);
+        version (HUNT_DB_DEBUG) {
+            tracef("maximumSize: %d, connectionTimeout: %d",
+                    _options.maximumPoolSize, _options.connectionTimeout);
         }
+
+        // dfmt off
+        PoolOptions poolOptions = new PoolOptions()
+            .setMaxSize(_options.maximumPoolSize)
+            .retry(_options.retry)
+            .awaittingTimeout(_options.connectionTimeout.msecs);
 
         if(_options.isPgsql()) {
             PgConnectOptions connectOptions = new PgConnectOptions(_options.url);
             connectOptions.setDecoderBufferSize(_options.getDecoderBufferSize());
             connectOptions.setEncoderBufferSize(_options.getEncoderBufferSize());
-
-            PoolOptions poolOptions = new PoolOptions()
-                .setMaxSize(_options.maximumPoolSize)
-                .awaittingTimeout(_options.connectionTimeout.msecs);
             _pool = new PgPoolImpl(connectOptions, poolOptions);
-
         } else if(_options.isMysql()) {
             MySQLConnectOptions connectOptions = new MySQLConnectOptions(_options.url);
             connectOptions.setDecoderBufferSize(_options.getDecoderBufferSize());
             connectOptions.setEncoderBufferSize(_options.getEncoderBufferSize());
-            
-            PoolOptions poolOptions = new PoolOptions()
-                .setMaxSize(_options.maximumPoolSize)
-                .awaittingTimeout(_options.connectionTimeout.msecs);
             _pool = new MySQLPoolImpl(connectOptions, poolOptions);
 
         } else {
             throw new DatabaseException("Unsupported database driver: " ~ _options.schemeName());
         }
+
+        // dfmt on
     }
 
     /// return the count of affected rows.
-    int execute(string sql)
-    {
+    int execute(string sql) {
         RowSet rs = query(sql);
         return rs.rowCount();
     }
 
-    RowSet query(string sql)
-    {
-        version (HUNT_SQL_DEBUG) info(sql);
+    RowSet query(string sql) {
+        version (HUNT_SQL_DEBUG)
+            info(sql);
         SqlConnection conn = getConnection();
-        scope(exit) {
+        scope (exit) {
             conn.close();
         }
 
@@ -124,26 +133,24 @@ class Database
         return rs;
     }
 
-    Statement prepare(SqlConnection conn, string sql)
-    {
+    Statement prepare(SqlConnection conn, string sql) {
         Statement ret = new Statement(conn, sql, _options);
         return ret;
     }
 
-    void close()
-    {
-        if(_pool !is null) {
+    void close() {
+        if (_pool !is null) {
             _pool.close();
             _pool = null;
-        }	
+        }
     }
 
-    QueryBuilder createQueryBuilder()
-    {
+    QueryBuilder createQueryBuilder() {
         import hunt.sql.util.DBType;
-        if(_options.isPgsql()) {
+
+        if (_options.isPgsql()) {
             return new QueryBuilder(DBType.POSTGRESQL);
-        } else if(_options.isMysql()) {
+        } else if (_options.isMysql()) {
             return new QueryBuilder(DBType.MYSQL);
         } else {
             throw new DatabaseException("Unsupported database driver: " ~ _options.schemeName());

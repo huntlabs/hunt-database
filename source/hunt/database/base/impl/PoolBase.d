@@ -22,6 +22,7 @@ import hunt.database.base.impl.ConnectionPool;
 import hunt.database.base.impl.SqlClientBase;
 import hunt.database.base.impl.SqlConnectionImpl;
 
+import hunt.database.base.Exceptions;
 import hunt.database.base.PoolOptions;
 import hunt.database.base.Pool;
 import hunt.database.base.SqlConnection;
@@ -35,6 +36,8 @@ import hunt.concurrency.Future;
 import hunt.concurrency.FuturePromise;
 import hunt.Exceptions;
 import hunt.logging.ConsoleLogger;
+
+import core.time;
 
 /**
  * Todo :
@@ -120,12 +123,26 @@ abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
     }
 
     SqlConnection getConnection() {
-        Future!(SqlConnection) f = getConnectionAsync();
-        version(HUNT_DEBUG) trace("try to get a connection");
         // pool.logStatus();
-        import core.time;
+        size_t times = 0;
+        SqlConnection conn;
+
         try {
-            return f.get(_options.awaittingTimeout());
+            version(HUNT_DEBUG) trace("try to get a connection");
+            
+            Future!(SqlConnection) f = getConnectionAsync();
+            conn = f.get(_options.awaittingTimeout());
+
+            while(!conn.isConnected() && times < _options.retry()) {
+                times++;
+                warningf("Got a broken connection, so try it again (%d).", times);
+
+                // Destory the broken connection
+                conn.close();
+                f = getConnectionAsync();
+                conn = f.get(_options.awaittingTimeout());
+            }
+
         } catch(Exception ex) { 
             debug {
                 warning(ex.msg);
@@ -133,6 +150,12 @@ abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
             }
             throw ex;
         }
+
+        if(times > 0 && times == _options.retry()) {
+            throw new DatabaseException("Can't get a working DB connection.");
+        }
+
+        return conn;
     }
 
     Transaction begin() {

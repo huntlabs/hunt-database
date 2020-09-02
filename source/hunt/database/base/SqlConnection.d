@@ -73,6 +73,8 @@ interface SqlConnection : SqlClient {
      */
     bool isSSL();
 
+    bool isConnected();
+
     /**
      * Close the current connection after all the pending commands have been processed.
      */

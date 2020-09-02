@@ -16,25 +16,24 @@ import hunt.net.util.HttpURI;
 /**
  * 
  */
-class DatabaseOption
-{
+class DatabaseOption {
 
     private int _encoderBufferSize = 256;
-    private int _decoderBufferSize = 1024*8;
+    private int _decoderBufferSize = 1024 * 8;
     private int _maxLifetime = 30000;
     private int _minimumPoolSize = 1;
     private int _maximumPoolSize = 2;
     private int _minldle = 1;
     private int _connectionTimeout = 10000;
+    private size_t _retry = 5;
     private HttpURI _url;
-    
+
     // this()
     // {
-    
+
     // }
 
-    this(string url)
-    {
+    this(string url) {
         this._url = new HttpURI(url);
     }
 
@@ -45,42 +44,44 @@ class DatabaseOption
     //     return this;
     // }
 
-    HttpURI url()
-    {
+    HttpURI url() {
         return _url;
     }
 
-    DatabaseOption maximumPoolSize(int num)
-    {
+    DatabaseOption maximumPoolSize(int num) {
         this._maximumPoolSize = num;
         return this;
     }
-    
-    DatabaseOption minimumPoolSize(int num)
-    {
+
+    int maximumPoolSize() {
+        return _maximumPoolSize;
+    }
+
+    DatabaseOption minimumPoolSize(int num) {
         this._minimumPoolSize = num;
         return this;
     }
 
-    int maximumPoolSize()
-    {
-        return _maximumPoolSize;
-    }
-
-    int minimumPoolSize()
-    {
+    int minimumPoolSize() {
         return _minimumPoolSize;
     }
-    
-    DatabaseOption setConnectionTimeout(int time)
-    {
+
+    size_t retry() {
+        return _retry;
+    }
+
+    DatabaseOption retry(size_t value) {
+        _retry = value;
+        return this;
+    }
+
+    DatabaseOption setConnectionTimeout(int time) {
         assert(time);
         this._connectionTimeout = time;
         return this;
     }
 
-    int connectionTimeout()
-    {
+    int connectionTimeout() {
         return _connectionTimeout;
     }
 
@@ -104,17 +105,15 @@ class DatabaseOption
         return this;
     }
 
-
     string schemeName() {
         return _url.getScheme();
     }
 
-	bool isMysql()
-	{
-		return _url.getScheme() == "mysql";
-	}
-	bool isPgsql()
-	{
-		return _url.getScheme() == "postgresql";
-	}
+    bool isMysql() {
+        return _url.getScheme() == "mysql";
+    }
+
+    bool isPgsql() {
+        return _url.getScheme() == "postgresql";
+    }
 }

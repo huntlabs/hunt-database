@@ -100,6 +100,10 @@ abstract class SocketConnectionBase : DbConnection {
         return _socket.isSecured();
     }
 
+    bool isConnected() {
+        return status == Status.CONNECTED;
+    }
+
     override
     void initHolder(Holder holder) {
         this.holder = holder;
@@ -180,7 +184,7 @@ abstract class SocketConnectionBase : DbConnection {
             pending.insertBack(cmd);
             checkPending();
         } else {
-            cmd.fail(new IOException("Connection not open " ~ status.to!string()));
+            cmd.fail(new IOException("Connection not open, the status is " ~ status.to!string()));
         }
     }
 
@@ -261,32 +265,36 @@ abstract class SocketConnectionBase : DbConnection {
         version(HUNT_DEBUG) {
             infof("Connection closed. Throwable: %s", t is null);
         }
-        if (status != Status.CLOSED) {
-            status = Status.CLOSED;
-            if (t !is null) {
-                synchronized (this) {
-                    if (holder !is null) {
-                        holder.handleException(t);
-                    }
+
+        if (status == Status.CLOSED) {
+            warning("The closed connection has been handled already.");
+            return;
+        }
+
+        status = Status.CLOSED;
+        if (t !is null) {
+            synchronized (this) {
+                if (holder !is null) {
+                    holder.handleException(t);
                 }
             }
+        }
 
-            version(HUNT_DB_DEBUG) {
-                if(holder !is null) {
-                    tracef("pending: %d, holder: %s", pending[].walkLength(), typeid(cast(Object)holder));
-                }
+        version(HUNT_DB_DEBUG) {
+            if(holder !is null) {
+                tracef("pending: %d, holder: %s", pending[].walkLength(), typeid(cast(Object)holder));
             }
+        }
 
-            Throwable cause = t is null ? new Exception("closed") : t;
-            ICommand cmd;
-            while ((cmd = pollPending()) !is null) {
-                ICommand c = cmd;
-                c.fail(cause);
-            }
+        Throwable cause = t is null ? new Exception("closed") : t;
+        ICommand cmd;
+        while ((cmd = pollPending()) !is null) {
+            ICommand c = cmd;
+            c.fail(cause);
+        }
 
-            if (holder !is null) {
-                holder.handleClosed();
-            }
+        if (holder !is null) {
+            holder.handleClosed();
         }
     }
 }

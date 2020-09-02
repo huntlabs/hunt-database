@@ -146,9 +146,12 @@ class ConnectionPool {
             this.conn = conn;
         }
 
-        override
-        bool isSsl() {
+        override bool isSsl() {
             return conn.isSsl();
+        }
+
+        override bool isConnected() {
+            return conn.isConnected();
         }
 
         override
@@ -237,13 +240,16 @@ class ConnectionPool {
         synchronized (this) {
             if (_all.contains(proxy)) {
 
+                if(proxy.isConnected()) {
                     _available.insertBack(proxy);
                     version(HUNT_DB_DEBUG) {
                         tracef("A DB connection %d returned to the pool.", proxy.getProcessId());
                         infof("pool status, size: %d/%d, available: %d, waiters: %d, threads: %d",
                             _size, _maxSize, available(), waitersSize(), Thread.getAll().length);
                     }
-                
+                } else {                
+                    warningf("For some reasons, a DB connection %d is closed, so drop it now.", proxy.getProcessId());
+                }
                 check();
             } else {
                 warningf("Releasing a untraced connection %d!", proxy.getProcessId());
@@ -317,7 +323,6 @@ class ConnectionPool {
                         infof("pool status, size: %d/%d, available: %d, waiters: %d, threads: %d",
                             _size, _maxSize, available(), waitersSize(), Thread.getAll().length);
                     }
-
 
                     if (_maxWaitQueueSize >= 0) {
                         int numInProgress = _size - _all.size();
