@@ -128,6 +128,7 @@ abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
         SqlConnection conn;
 
         try {
+            // https://github.com/eclipse-vertx/vertx-sql-client/issues/463
             version(HUNT_DEBUG) trace("try to get a connection");
             
             Future!(SqlConnection) f = getConnectionAsync();

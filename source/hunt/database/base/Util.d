@@ -19,6 +19,7 @@ module hunt.database.base.Util;
 
 import hunt.Byte;
 import hunt.net.buffer.ByteBuf;
+import hunt.net.buffer.ByteBufUtil;
 import hunt.text.Charset;
 import hunt.util.TypeUtils;
 
@@ -30,16 +31,24 @@ import core.stdc.stdio;
 import core.stdc.stdarg;
 import core.stdc.time;
 
+import hunt.logging.ConsoleLogger;
 
 
 /**
-*/
+ * 
+ */
 class Util {
 
     private enum byte ZERO = 0;
 
     static string readCString(ByteBuf src, Charset charset) {
+        string data;
         int len = src.bytesBefore(ZERO);
+
+        version(HUNT_DB_DEBUG_MORE) {
+            tracef("len: %d, buffer: %s", len, src);
+        }
+
         string s = src.readCharSequence(len, charset);
         src.readByte();
         return s;

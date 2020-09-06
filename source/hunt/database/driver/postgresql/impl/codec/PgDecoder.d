@@ -83,8 +83,8 @@ class PgDecoder : Decoder {
         try {
             doEecode(payload, connection);
         } catch(Exception ex) {
+            warning(ex.msg);
             version(HUNT_DEBUG) warning(ex);
-            else warning(ex.msg);
         }
     }
 
@@ -111,6 +111,11 @@ class PgDecoder : Decoder {
             }
             int beginIdx = inBuffer.readerIndex();
             int length = inBuffer.getInt(beginIdx + 1);
+
+            version(HUNT_DB_DEBUG_MORE) {
+                tracef("beginIdx: %d, required: %d, available: %d", beginIdx, length, available);
+            }
+
             if (length + 1 > available) {
                 break;
             }
@@ -155,8 +160,12 @@ class PgDecoder : Decoder {
         if (inBuffer !is null) {
             if(inBuffer.isReadable()) {
                 // copy the remainings in current buffer
-                version(HUNT_DB_DEBUG_MORE) infof("copying the remaings: %s", inBuffer.toString());
-                inBuffer = inBuffer.copy();
+                // version(HUNT_DB_DEBUG_MORE) {
+                //     // infof("copying the remaings: %s", inBuffer.toString());
+                //     // tracef("buffer: %s, remaings: %s", inBuffer.toString(), ByteBufUtil.hexDump(inBuffer));
+                // }
+                // inBuffer = inBuffer.copy();
+                // version(HUNT_DB_DEBUG_MORE) infof("the remaings: %s", inBuffer.toString());
             } else {
                 // clear up the buffer
                 inBuffer.release();

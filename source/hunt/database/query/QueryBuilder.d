@@ -455,7 +455,7 @@ class QueryBuilder
             {
             case QUERY_TYPE.SELECT:
                 {
-                    auto builder = new SQLSelectBuilderImpl(_dbType.name);
+                    SQLSelectBuilderImpl builder = new SQLSelectBuilderImpl(_dbType.name);
                     builder.from(_table, _tableAlias);
                     // warning(_select);
                     builder.select(_select);
