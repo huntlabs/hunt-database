@@ -72,10 +72,27 @@ class QueryBuilder
     // private Expr _expr;
     private bool _distinct;
     private string _autoIncreaseKey;
+    private FormatOption _formatOption;
+    private char _quotes = '"';
 
     
     this(DBType dbType) {
         _dbType = dbType;
+        _formatOption = new FormatOption(true, true);
+        _formatOption.config(VisitorFeature.OutputQuotedIdentifier, true);
+        if(dbType == dbType.POSTGRESQL) {
+            _quotes = '"';
+        } else if(dbType == dbType.MYSQL) {
+            _quotes = '`';
+        }
+    }
+
+    FormatOption formatOption() {
+        return _formatOption;
+    }
+
+    void formatOption(FormatOption value) {
+        _formatOption = value;
     }
 
     // @property Expr expr()
@@ -509,7 +526,7 @@ class QueryBuilder
                         builder.offset(_offset);
                     if (_distinct)
                         builder.setDistinct();
-                    str = builder.toString();
+                    str = builder.toString(_formatOption);
                     str = parameterized(str, _parameters);
                 }
                 break;
@@ -527,7 +544,7 @@ class QueryBuilder
                             foreach (ValueVariant item; _values) {
                                 if(!canFind(existKeys, item.key)) {
                                     version(HUNT_DB_DEBUG) tracef("Update: %s", item);
-                                    builder.setValue("`" ~ item.key ~ "`", item.value);
+                                    builder.setValue(item.key, item.value);
                                     existKeys ~= item.key;
                                 } else {
                                     version(HUNT_DB_DEBUG) warningf("Update: %s exists.", item);
@@ -538,7 +555,7 @@ class QueryBuilder
                             foreach (ValueVariant item; _values) {
                                 if(!canFind(existKeys, item.key)) {
                                     version(HUNT_DB_DEBUG) tracef("Update: %s", item);
-                                    builder.setValue("\"" ~ item.key ~ "\"", item.value);
+                                    builder.setValue(item.key, item.value);
                                     existKeys ~= item.key;
                                 } else {
                                     version(HUNT_DB_DEBUG) warningf("Update: %s exists.", item);
@@ -583,7 +600,7 @@ class QueryBuilder
                     if (_offset != int.init)
                         builder.offset(_offset);
 
-                    str = builder.toString();
+                    str = builder.toString(_formatOption);
                     str = parameterized(str, _parameters);
                 }
                 break;
@@ -628,7 +645,7 @@ class QueryBuilder
                     if (_offset != int.init)
                         builder.offset(_offset);
 
-                    str = builder.toString();
+                    str = builder.toString(_formatOption);
                     str = parameterized(str, _parameters);
 
                 }
@@ -636,11 +653,19 @@ class QueryBuilder
 
             case QUERY_TYPE.INSERT:
                 {
-                    str ~= " insert into " ~ _table;
+                    str ~= " INSERT into ";
+
+                    if(formatOption.isEnabled(VisitorFeature.OutputQuotedIdentifier)) {
+                        str ~= _quotes ~ _table ~ _quotes;
+                    } else {
+                        str ~= _table;
+                    }
                     string keys;
                     string values;
                     string tempValue;
                     bool isFirstItem = true;
+                    string tablePrefix = _table ~ ".";
+
                     foreach (string k, ValueVariant v; _values)
                     {
                         // if ((cast(String)(v.value) !is null) || (cast(Nullable!string)(v.value) !is null))
@@ -654,9 +679,12 @@ class QueryBuilder
                             tempValue = v.value.toString();
                         }
 
+                        // chomp the table prefix
+                        k = chompPrefix(k, tablePrefix);
+
                         string columnName;
-                        if(_dbType == DBType.POSTGRESQL) {
-                            columnName = "\"" ~ k ~ "\"";
+                        if(formatOption.isEnabled(VisitorFeature.OutputQuotedIdentifier)) {
+                            columnName = _quotes ~ k ~ _quotes;
                         } else {
                             columnName = k;
                         }
@@ -671,12 +699,12 @@ class QueryBuilder
                         }
 
                     }
-                    str ~= "(" ~ keys ~ ") VALUES(" ~ values ~ ")";
+                    str ~= " (" ~ keys ~ ") VALUES(" ~ values ~ ")";
 
                     if(_dbType == DBType.POSTGRESQL) {
                         // To get the last insert id
                         if(!_autoIncreaseKey.empty())
-                            str ~= " returning " ~ _autoIncreaseKey;
+                            str ~= " returning \"" ~ _autoIncreaseKey ~ "\"";
                     }
                 }
                 break;
