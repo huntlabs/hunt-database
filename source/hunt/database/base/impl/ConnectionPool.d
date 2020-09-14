@@ -242,8 +242,8 @@ class ConnectionPool {
 
                 if(proxy.isConnected()) {
                     _available.insertBack(proxy);
-                    version(HUNT_DB_DEBUG) {
-                        tracef("A DB connection %d returned to the pool.", proxy.getProcessId());
+                    version(HUNT_DEBUG) {
+                        tracef("The DB connection %d returned to the pool.", proxy.getProcessId());
                         infof("pool status, size: %d/%d, available: %d, waiters: %d, threads: %d",
                             _size, _maxSize, available(), waitersSize(), Thread.getAll().length);
                     }

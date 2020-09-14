@@ -39,7 +39,7 @@ import std.variant;
  */
 class Statement
 {
-    private SqlConnection _db = null;
+    private SqlConnection _sqlConn = null;
     private string _sql;
     private bool _isUsed = false;
     private int _lastInsertId;
@@ -51,13 +51,13 @@ class Statement
 
     this(SqlConnection db, DatabaseOption options)
     {
-        _db = db;
+        _sqlConn = db;
         _options = options;
     }
 
     this(SqlConnection db, string sql, DatabaseOption options)
     {
-        _db = db;
+        _sqlConn = db;
         _options = options;
         prepare(sql);
     }
@@ -119,9 +119,9 @@ class Statement
 
     // string sql()
     // {
-    //     auto conn = _db.getConnection();
+    //     auto conn = _sqlConn.getConnection();
     //     scope (exit)
-    //         _db.relaseConnection(conn);
+    //         _sqlConn.relaseConnection(conn);
     //     return sql(conn);
     // }
 
@@ -139,11 +139,11 @@ class Statement
             {
                 str = str.replaceAll(re, "'" ~ v.toString() ~ "'" ~ "$1");
                 
-        //         if (_db.getOption().isPgsql() || _db.getOption().isMysql()) {
+        //         if (_sqlConn.getOption().isPgsql() || _sqlConn.getOption().isMysql()) {
         //             // str = str.replaceAll(re, conn.escapeLiteral(v.toString()) ~ "$1");
         //             // str = str.replaceAll(re, v.toString() ~ "$1");
         // // warning(str ~ "      " ~ v.toString() ~ "$1");
-        //         // } else if (_db.getOption().isMysql()) {
+        //         // } else if (_sqlConn.getOption().isMysql()) {
         //             // str = str.replaceAll(re, "'" ~ conn.escape(v.toString()) ~ "'" ~ "$1");
         //             str = str.replaceAll(re, "'" ~ v.toString() ~ "'" ~ "$1");
         //         }
@@ -167,12 +167,12 @@ class Statement
 
     int execute()
     {
-        string execSql = sql(_db);
+        string execSql = sql(_sqlConn);
 
         version (HUNT_SQL_DEBUG)
             logDebug(execSql);
 
-        _rs = _db.query(execSql);
+        _rs = _sqlConn.query(execSql);
         _lastInsertId = 0;
 
         if(_options.isPgsql()) {
@@ -206,10 +206,10 @@ class Statement
     
     int execute(string lastIdName)
     {
-        string execSql = sql(_db);
+        string execSql = sql(_sqlConn);
         version (HUNT_SQL_DEBUG) logDebug(execSql);
 
-        _rs = _db.query(execSql);
+        _rs = _sqlConn.query(execSql);
         _lastInsertId = 0;
 
         if(_options.isPgsql()) {
@@ -263,7 +263,7 @@ class Statement
     RowSet query()
     {
         string execSql = sql(null);
-        _rs = _db.query(execSql);
+        _rs = _sqlConn.query(execSql);
         return _rs;
     }
 
