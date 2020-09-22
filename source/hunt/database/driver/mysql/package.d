@@ -23,3 +23,4 @@ public import hunt.database.driver.mysql.MySQLConnectOptions;
 public import hunt.database.driver.mysql.MySQLException;
 public import hunt.database.driver.mysql.MySQLPool;
 public import hunt.database.driver.mysql.MySQLSetOption;
+public import hunt.database.driver.mysql.MySQLUtil;
