@@ -541,24 +541,24 @@ class QueryBuilder
                         import std.algorithm.searching;
                         string[] existKeys;
                         if(_dbType == DBType.MYSQL) {
-                            foreach (ValueVariant item; _values) {
+                            foreach (string key, ref ValueVariant item; _values) {
                                 if(!canFind(existKeys, item.key)) {
-                                    version(HUNT_DB_DEBUG) tracef("Update: %s", item);
+                                    version(HUNT_DB_DEBUG) tracef("Field: %s, Update: %s", key, item);
                                     builder.setValue(item.key, item.value);
                                     existKeys ~= item.key;
                                 } else {
-                                    version(HUNT_DB_DEBUG) warningf("Update: %s exists.", item);
+                                    version(HUNT_DB_DEBUG) warningf("Field: %s, Update: %s exists.", key, item);
                                 }
                                 
                             }
                         } else {
-                            foreach (ValueVariant item; _values) {
+                            foreach (string key, ref ValueVariant item; _values) {
                                 if(!canFind(existKeys, item.key)) {
-                                    version(HUNT_DB_DEBUG) tracef("Update: %s", item);
+                                    version(HUNT_DB_DEBUG) tracef("Field: %s, Update: %s", key, item);
                                     builder.setValue(item.key, item.value);
                                     existKeys ~= item.key;
                                 } else {
-                                    version(HUNT_DB_DEBUG) warningf("Update: %s exists.", item);
+                                    version(HUNT_DB_DEBUG) warningf("Field: %s, Update: %s exists.", key, item);
                                 }
                             }
                         }
@@ -761,27 +761,27 @@ class QueryBuilder
     }
 
     string escapeLiteral(string str) {
-		
-		if(_dbType == DBType.POSTGRESQL) {
-			scope StringBuilder sb = new StringBuilder((cast(int)str.length + 10) / 10 * 11); // Add 10% for escaping.
-			PgUtil.escapeLiteral(sb, str, true);
+        
+        if(_dbType == DBType.POSTGRESQL) {
+            scope StringBuilder sb = new StringBuilder((cast(int)str.length + 10) / 10 * 11); // Add 10% for escaping.
+            PgUtil.escapeLiteral(sb, str, true);
 
-			return sb.toString();
-		} else if(_dbType == DBType.MYSQL) {
+            return sb.toString();
+        } else if(_dbType == DBType.MYSQL) {
             return MySQLUtil.escapeLiteral(str);
         }
 
-		return str;
-	}
+        return str;
+    }
 
     string escapeWithQuotes(string str) {
 
-		if(_dbType == DBType.POSTGRESQL) {
-			return PgUtil.escapeWithQuotes(str);
-		} else if(_dbType == DBType.MYSQL) {
+        if(_dbType == DBType.POSTGRESQL) {
+            return PgUtil.escapeWithQuotes(str);
+        } else if(_dbType == DBType.MYSQL) {
             return MySQLUtil.escapeWithQuotes(str);
         }
 
-		return str;
-	}
+        return str;
+    }
 }
