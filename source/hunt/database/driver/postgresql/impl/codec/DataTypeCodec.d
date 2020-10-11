@@ -554,8 +554,8 @@ class DataTypeCodec {
     //             return textDecodeUUID(index, len, buff).Variant();
     //         case DataType.UUID_ARRAY:
     //             return textDecodeArray(UUID_ARRAY_FACTORY, DataType.UUID, index, len, buff).Variant();
-    //         case DataType.NUMERIC:
-    //             return textDecodeNUMERIC(index, len, buff).Variant();
+            case DataType.NUMERIC:
+                return textDecodeNUMERIC(index, len, buff).Variant();
     //         case DataType.NUMERIC_ARRAY:
     //             return textDecodeArray(NUMERIC_ARRAY_FACTORY, DataType.NUMERIC, index, len, buff).Variant();
     //         case DataType.JSON:
@@ -758,11 +758,12 @@ class DataTypeCodec {
         return cs.to!double();
     }
 
-    // private static Number textDecodeNUMERIC(int index, int len, ByteBuf buff) {
-    //     // Todo optimize that
-    //     CharSequence cs = buff.getCharSequence(index, len, StandardCharsets.UTF_8);
-    //     return Numeric.parse(cs.toString());
-    // }
+    private static long textDecodeNUMERIC(int index, int len, ByteBuf buff) {
+        // Todo optimize that
+        CharSequence cs = buff.getCharSequence(index, len, StandardCharsets.UTF_8);
+        // return Numeric.parse(cs.toString());
+        return cs.to!long();
+    }
 
     // private static Point textDecodePOINT(int index, int len, ByteBuf buff) {
     //     // Point representation: (x,y)
