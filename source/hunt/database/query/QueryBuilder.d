@@ -629,13 +629,31 @@ class QueryBuilder
                     bool isFirstItem = true;
                     foreach (k, v; _values)
                     {
-                        // if ((cast(String)(v.value) !is null) || (cast(Nullable!string)(v.value) !is null))
-                        // tracef("key: %s, type:%s, value: %s", k, v.value.type, v.value);
+                        TypeInfo fieldTypeInfo = v.value.type;
+                        version(HUNT_DB_DEBUG) {
+                            tracef("field: %s, type: %s, value: %s", k, fieldTypeInfo, v.value);
+                        }
 
-                        if(v.value.type == typeid(string))
+                        if(fieldTypeInfo == typeid(string))
                         {
                             // logDebug("---Insert(%s , %s )".format(k,v.value));
                             tempValue = escapeWithQuotes(v.value.get!string());
+                        } else if(fieldTypeInfo == typeid(byte[])) {
+                            if(_dbType == DBType.POSTGRESQL) {
+                                tempValue = format("'\\x%(%02X%)'", v.value.get!(byte[]));
+                            } else if(_dbType == DBType.MYSQL) {
+                                tempValue = format("unhex('%(%02X%)')", v.value.get!(byte[]));
+                            } else {
+                                throw new Exception("Unsupported type: " ~ fieldTypeInfo.toString());
+                            }
+                        } else if(fieldTypeInfo == typeid(ubyte[])) {
+                            if(_dbType == DBType.POSTGRESQL) {
+                                tempValue = format("'\\x%(%02X%)'", v.value.get!(ubyte[]));
+                            } else if(_dbType == DBType.POSTGRESQL) {
+                                tempValue = format("unhex('%(%02X%)')", v.value.get!(byte[]));
+                            } else {
+                                throw new Exception("Unsupported type: " ~ fieldTypeInfo.toString());
+                            }
                         } else {
                             tempValue = v.value.toString();
                         }
