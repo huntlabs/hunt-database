@@ -758,11 +758,19 @@ class DataTypeCodec {
         return cs.to!double();
     }
 
-    private static long textDecodeNUMERIC(int index, int len, ByteBuf buff) {
+    private static double textDecodeNUMERIC(int index, int len, ByteBuf buff) {
         // Todo optimize that
         CharSequence cs = buff.getCharSequence(index, len, StandardCharsets.UTF_8);
         // return Numeric.parse(cs.toString());
-        return cs.to!long();
+        double v = 0;
+        
+        try {
+            v = cs.to!double();
+        } catch (Exception ex) {
+            warningf("Not a number: %s", cs);
+        }
+
+        return v;
     }
 
     // private static Point textDecodePOINT(int index, int len, ByteBuf buff) {
