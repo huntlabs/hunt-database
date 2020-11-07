@@ -133,6 +133,12 @@ class Database {
         return rs;
     }
 
+    Statement prepare(string sql) {
+        SqlConnection conn = getConnection();
+        Statement ret = new Statement(conn, sql, _options);
+        return ret;
+    }
+
     Statement prepare(SqlConnection conn, string sql) {
         Statement ret = new Statement(conn, sql, _options);
         return ret;

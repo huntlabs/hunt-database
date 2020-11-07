@@ -132,9 +132,9 @@ class Statement
 
         string str = _sql;
 
-        foreach (k, v; _parameters)
+        foreach (string k, Object v; _parameters)
         {
-            auto re = regex(r":" ~ k ~ r"(\W[^\w]*)", "g");
+            auto re = regex(r":" ~ k ~ r"([^\w]*)", "g");
             if ((cast(String) v !is null) || (cast(Nullable!string) v !is null))
             {
                 str = str.replaceAll(re, "'" ~ v.toString() ~ "'" ~ "$1");
