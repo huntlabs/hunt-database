@@ -9,10 +9,12 @@ import hunt.database.base.impl.RowDecoder;
 import hunt.database.base.impl.TxStatus;
 
 
-import hunt.io.ByteBuffer;
 import hunt.collection.List;
 import hunt.collection.Map;
 import hunt.Exceptions;
+import hunt.io.ByteBuffer;
+import hunt.io.BufferUtils;
+import hunt.io.channel;
 import hunt.logging.ConsoleLogger;
 import hunt.net.codec.Decoder;
 import hunt.net.Connection;
@@ -36,17 +38,22 @@ class MySQLDecoder : Decoder {
         alloc = UnpooledByteBufAllocator.DEFAULT();
     }
 
-    void decode(ByteBuffer payload, Connection connection) {
+    DataHandleStatus decode(ByteBuffer payload, Connection connection) {
+        DataHandleStatus resultStatus = DataHandleStatus.Done;
         try {
-            doEecode(payload, connection);
+            resultStatus = doEecode(payload, connection);
         } catch(Exception ex) {
+            BufferUtils.clear(payload);
             version(HUNT_DEBUG) warning(ex);
             else warning(ex.msg);
         }
+
+        return resultStatus;
     }
 
-    private void doEecode(ByteBuffer payload, Connection connection) {
+    private DataHandleStatus doEecode(ByteBuffer payload, Connection connection) {
         version(HUNT_DB_DEBUG_MORE) tracef("decoding buffer: %s", payload.toString());
+        DataHandleStatus resultStatus = DataHandleStatus.Done;
 
         ByteBuf buff = Unpooled.wrappedBuffer(payload);
         if (inBuffer is null) {
@@ -111,7 +118,9 @@ class MySQLDecoder : Decoder {
                 inBuffer.release();
                 inBuffer = null;
             }
-        }            
+        }
+
+        return resultStatus;          
     }
 
     private void decodePayload(ByteBuf payload, int payloadLength, int sequenceId) {

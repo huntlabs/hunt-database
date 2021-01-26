@@ -31,6 +31,8 @@ import hunt.collection.ArrayList;
 import hunt.collection.HashMap;
 import hunt.collection.Map;
 import hunt.Exceptions;
+import hunt.io.BufferUtils;
+import hunt.io.channel;
 import hunt.logging.ConsoleLogger;
 import hunt.Object;
 
@@ -192,13 +194,18 @@ class PgConnectionFactory {
                         pgConn.handleClosed(connection);
                 }
 
-                override void messageReceived(Connection connection, Object message) {
+                override DataHandleStatus messageReceived(Connection connection, Object message) {
+                    DataHandleStatus resultStatus = DataHandleStatus.Done;
                     version(HUNT_DB_DEBUG_MORE) tracef("message type: %s", typeid(message).name);
                     try {
+                        // FIXME: Needing refactor or cleanup -@zhangxueping at 2021-01-26T14:46:35+08:00
+                        // 
                         pgConn.handleMessage(connection, message);
                     } catch(Throwable t) {
                         exceptionCaught(connection, t);
                     }
+
+                    return resultStatus;
                 }
 
                 override void exceptionCaught(Connection connection, Throwable t) {

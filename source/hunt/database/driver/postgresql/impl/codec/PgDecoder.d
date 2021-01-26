@@ -41,10 +41,12 @@ import hunt.database.base.impl.Notification;
 import hunt.database.base.impl.RowDecoder;
 import hunt.database.base.impl.TxStatus;
 
-import hunt.io.ByteBuffer;
 import hunt.collection.List;
 import hunt.collection.Map;
 import hunt.Exceptions;
+import hunt.io.ByteBuffer;
+import hunt.io.BufferUtils;
+import hunt.io.channel;
 import hunt.logging.ConsoleLogger;
 import hunt.net.codec.Decoder;
 import hunt.net.Connection;
@@ -79,17 +81,21 @@ class PgDecoder : Decoder {
     //     alloc = ctx.alloc();
     // }
 
-    void decode(ByteBuffer payload, Connection connection) {
+    DataHandleStatus decode(ByteBuffer payload, Connection connection) {
+        DataHandleStatus resultStatus = DataHandleStatus.Done;
         try {
-            doEecode(payload, connection);
+            resultStatus = doEecode(payload, connection);
         } catch(Exception ex) {
+            BufferUtils.clear(payload);
             warning(ex.msg);
             version(HUNT_DEBUG) warning(ex);
         }
+        return resultStatus;
     }
 
-    private void doEecode(ByteBuffer msg, Connection connection) {
+    private DataHandleStatus doEecode(ByteBuffer msg, Connection connection) {
         // version(HUNT_DB_DEBUG_MORE) tracef("decoding buffer: %s", msg.toString());
+        DataHandleStatus resultStatus = DataHandleStatus.Done;
 
         ByteBuf buff = Unpooled.wrappedBuffer(msg);
         if (inBuffer is null) {
@@ -172,6 +178,8 @@ class PgDecoder : Decoder {
                 inBuffer = null;
             }
         }
+
+        return resultStatus;
     }
 
     private void decodeMessage(byte id, ByteBuf inBuffer) {
