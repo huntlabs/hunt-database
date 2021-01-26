@@ -22,11 +22,15 @@ void main() {
     Statement statement;
     RowSet rs;
 
-    // Database db = new Database(
-    //         "postgresql://postgres:123456@10.1.11.44:5432/postgres?charset=utf-8");
-
     Database db = new Database(
-            "postgresql://postgres:123456@10.1.222.110:5432/postgres?charset=utf-8");            
+            "postgresql://postgres:123456@10.1.11.44:5432/postgres?charset=utf-8");
+
+    // Database db = new Database(
+    //         "postgresql://postgres:123456@10.1.11.44:5432/eql_test?charset=utf-8");
+
+
+    // Database db = new Database(
+    //         "postgresql://postgres:123456@10.1.223.222:5432/postgres?charset=utf-8");            
 
     // Database db = new Database(
     //     "postgresql://putao:putao123@10.1.223.62:5432/uas?prefix=&charset=utf8");
@@ -41,16 +45,16 @@ void main() {
     // writeln("============= Insert ==================");
 
     // sql = `INSERT INTO public.test(id, val) VALUES (13, 'abc');`;
-    // sql = `INSERT INTO public.test(val) VALUES ('abc') RETURNING id;`;
+    sql = `INSERT INTO public.test(val) VALUES ('abc') RETURNING id;`;
     // sql = `INSERT INTO public.test(val) VALUES ('abc'), ('123') RETURNING id, val;`;
-    sql = `INSERT INTO public.test(val) VALUES ('abc');`;
-    // result = db.execute(sql);
+    // sql = `INSERT INTO public.test(val) VALUES ('abc');`;
+    result = db.execute(sql);
     // result = db.execute(sql, "id");
     // result = db.query(sql).columnInLastRow("id");
-    Row row = db.query(sql).lastRow();
-    if(row !is null) {
-        result = row.getInteger("id");
-    }
+    // Row row = db.query(sql).lastRow();
+    // if(row !is null) {
+    //     result = row.getInteger("id");
+    // }
     tracef("result: %d", result);
 
     // string v  = db.execute!(string)(sql, "val");
@@ -68,13 +72,38 @@ void main() {
 
     // //
     // writeln("============= Select ==================");
-    // statement = db.prepare("SELECT * FROM public.test where id=:id limit 10");
-    // statement.setParameter("id", 1);
+
+    // SqlConnection conn = db.getConnection();
+
+    // // case 1
+    // // {
+    // //     string sql = "SELECT * FROM public.test where id=:id limit 10";
+        
+    // //     statement = db.prepare(conn, sql);
+    // //     statement.setParameter("id", 1);
+    // // }
+
+    // {
+    //     sql = "SELECT * FROM userinfo where id=1";
+        
+    //     statement = db.prepare(conn, sql);
+    //     statement.setParameter("id", 1);
+    // }
+
     // rs = statement.query();
 
     // foreach (Row row; rs) {
     //     writeln(row);
+
+    //     byte[] b  = row.getBuffer(3);
+    //     warningf("%(%02X %)", b);
     // }
+
+
+    // warning("11111");
+    // conn.close();
+
+    // warning("xxxx");
 
     //
     // writeln("============= Select ==================");

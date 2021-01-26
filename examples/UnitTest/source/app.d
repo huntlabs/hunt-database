@@ -19,6 +19,14 @@ import test.pgclient.UtilTest;
 import test.RowBindingTest;
 
 
+/**
+ * https://blog.csdn.net/wangdaoyin2010/article/details/82770988
+ * 
+ * update dj_data SET data_content='\175\175'::bytea where terminal_id='321'; 
+ * 
+ * insert into userinfo(nickname, age, image) VALUES('image', 12, '\x010203')
+ */
+
 void main()
 {
 
@@ -28,7 +36,7 @@ void main()
 	// testUnits!(MySQLPreparedQueryTest);
 	// testUnits!(Native41AuthenticatorTest);
 	// testUnits!(MySQLPoolTest);
-	testUnits!(MySQLTransactionTest);
+	// testUnits!(MySQLTransactionTest);
 
 /* ---------------------------- PostgreSQL tests ---------------------------- */
 
