@@ -94,7 +94,7 @@ class PgDecoder : Decoder {
     }
 
     private DataHandleStatus doEecode(ByteBuffer msg, Connection connection) {
-        // version(HUNT_DB_DEBUG_MORE) tracef("decoding buffer: %s", msg.toString());
+        version(HUNT_DB_DEBUG_MORE) tracef("decoding buffer: %s", msg.toString());
         DataHandleStatus resultStatus = DataHandleStatus.Done;
 
         ByteBuf buff = Unpooled.wrappedBuffer(msg);
@@ -123,6 +123,9 @@ class PgDecoder : Decoder {
             }
 
             if (length + 1 > available) {
+                version(HUNT_DB_DEBUG) {
+                    warningf("Waitting for more data: required: %d, available: %d", length, available);
+                }
                 break;
             }
             byte id = inBuffer.getByte(beginIdx);

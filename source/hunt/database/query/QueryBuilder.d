@@ -476,17 +476,15 @@ class QueryBuilder
                     builder.from(_table, _tableAlias);
                     // warning(_select);
                     builder.select(_select);
-                    if (_join.length > 0)
+                    
+                    foreach (item; _join)
                     {
-                        foreach (item; _join)
-                        {
-                            if (item._join == JoinMethod.LeftJoin)
-                                builder.leftJoin(item._table, item._tableAlias, item._on);
-                            else if (item._join == JoinMethod.RightJoin)
-                                builder.rightJoin(item._table, item._tableAlias, item._on);
-                            else if (item._join == JoinMethod.InnerJoin)
-                                builder.innerJoin(item._table, item._tableAlias, item._on);
-                        }
+                        if (item._join == JoinMethod.LeftJoin)
+                            builder.leftJoin(item._table, item._tableAlias, item._on);
+                        else if (item._join == JoinMethod.RightJoin)
+                            builder.rightJoin(item._table, item._tableAlias, item._on);
+                        else if (item._join == JoinMethod.InnerJoin)
+                            builder.innerJoin(item._table, item._tableAlias, item._on);
                     }
 
                     {
