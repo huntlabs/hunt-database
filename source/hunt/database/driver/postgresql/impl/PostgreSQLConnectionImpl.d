@@ -104,7 +104,7 @@ class PgConnectionImpl : SqlConnectionImpl!(PgConnectionImpl), PgConnection  {
     }
 
     override
-    PgConnection cancelRequest(VoidHandler handler) {
+    PgConnection cancelRequest(hunt.database.base.Common.VoidHandler handler) {
         implementationMissing(false);
         // Context current = Vertx.currentContext();
         // if (current == context) {
