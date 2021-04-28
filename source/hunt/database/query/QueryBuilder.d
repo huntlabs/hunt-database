@@ -466,6 +466,11 @@ class QueryBuilder
         if (!_table.length && _type != QUERY_TYPE.SHOW_TABLES)
             throw new Exception("query build table name not exists");
         string str;
+
+        version(HUNT_DB_DEBUG) {
+            tracef("Query type: %s", _type);
+        }
+
         try
         {
             switch (_type)
@@ -752,7 +757,7 @@ class QueryBuilder
         }
         catch (Exception ex)
         {
-            warning("Query Builder Exception : ", ex.msg);
+            warning(ex.msg);
             version(HUNT_DEBUG) warning(ex);
             sqlDebugInfo();
         }
