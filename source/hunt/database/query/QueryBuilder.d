@@ -697,6 +697,11 @@ class QueryBuilder
                             } else {
                                 throw new Exception("Unsupported type: " ~ fieldTypeInfo.toString());
                             }
+                        } else if(fieldTypeInfo == typeid(float) || fieldTypeInfo == typeid(double)) {
+                            tempValue = v.value.toString();
+                            if(tempValue == "nan") {
+                                tempValue = escapeWithQuotes(tempValue);
+                            }
                         } else {
                             tempValue = v.value.toString();
                         }
