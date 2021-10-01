@@ -85,6 +85,7 @@ class Database {
     private void initPool() {
         import hunt.database.driver.mysql.impl.MySQLPoolImpl;
         import hunt.database.driver.postgresql.impl.PostgreSQLPoolImpl;
+        import core.time;
 
         version (HUNT_DB_DEBUG) {
             tracef("maximumSize: %d, connectionTimeout: %d",
@@ -101,11 +102,15 @@ class Database {
             PgConnectOptions connectOptions = new PgConnectOptions(_options.url);
             connectOptions.setDecoderBufferSize(_options.getDecoderBufferSize());
             connectOptions.setEncoderBufferSize(_options.getEncoderBufferSize());
+            connectOptions.setConnectTimeout(_options.connectionTimeout().msecs);
+
             _pool = new PgPoolImpl(connectOptions, poolOptions);
         } else if(_options.isMysql()) {
             MySQLConnectOptions connectOptions = new MySQLConnectOptions(_options.url);
             connectOptions.setDecoderBufferSize(_options.getDecoderBufferSize());
             connectOptions.setEncoderBufferSize(_options.getEncoderBufferSize());
+            connectOptions.setConnectTimeout(_options.connectionTimeout().msecs);
+
             _pool = new MySQLPoolImpl(connectOptions, poolOptions);
 
         } else {

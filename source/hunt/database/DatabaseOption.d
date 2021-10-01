@@ -22,7 +22,7 @@ class DatabaseOption {
     private int _decoderBufferSize = 1024 * 8;
     private int _maxLifetime = 30000;
     private int _minimumPoolSize = 1;
-    private int _maximumPoolSize = 2;
+    private int _maximumPoolSize = 5;
     private int _minldle = 1;
     private int _connectionTimeout = 10000;
     private size_t _retry = 5;
