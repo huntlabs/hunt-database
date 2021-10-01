@@ -69,7 +69,6 @@ class PgConnectionFactory {
 
     this(PgConnectOptions options) {
         clients = new ArrayList!NetClient(50);
-
         _netClientOptions = new NetClientOptions(options);
 
         // Make sure ssl=false as we will use STARTLS
@@ -100,8 +99,11 @@ class PgConnectionFactory {
     }
 
     void close() {
-        foreach(client; clients)
-            client.close();
+        foreach(client; clients) {
+            if(client !is null) {
+                client.close();
+            }
+        }
     }
 
     void connectAndInit(AsyncResultHandler!(DbConnection) completionHandler) {
@@ -165,6 +167,8 @@ class PgConnectionFactory {
     }
 
     private void doConnect(bool ssl, AsyncResultHandler!(PgSocketConnection) handler) {
+
+        version(HUNT_DB_DEBUG) tracef("Creating a DB connection in %s...", _netClientOptions.getConnectTimeout);
 
         auto client = NetUtil.createNetClient(_netClientOptions);
 
@@ -233,7 +237,7 @@ class PgConnectionFactory {
             });        
 
 
-        version(HUNT_DEBUG) {
+        version(HUNT_DB_DEBUG) {
             trace("Setting PostgreSQL codec");
         }
         client.setCodec(new PgCodec());

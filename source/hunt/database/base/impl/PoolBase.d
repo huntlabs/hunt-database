@@ -39,6 +39,59 @@ import hunt.logging.ConsoleLogger;
 
 import core.time;
 
+import std.conv;
+
+import hunt.util.pool;
+import hunt.Functions;
+
+alias DbPoolOptions = hunt.database.base.PoolOptions.PoolOptions;
+alias ObjectPoolOptions = hunt.util.pool.PoolOptions;
+
+alias DbConnectionPool = ObjectPool!DbConnection;
+
+class DbConnectionFactory : ObjectFactory!(DbConnection) {
+
+    private Consumer!(AsyncDbConnectionHandler) connector;
+    private int counter = 0;
+
+    override DbConnection makeObject() {
+        counter++;
+        FuturePromise!DbConnection promise = new FuturePromise!DbConnection("DbFactory " ~ counter.to!string());
+
+        connector( (DbConnectionAsyncResult ar) {
+
+            if (ar.succeeded()) {
+                version(HUNT_DEBUG) infof("A new DB connection created");
+                DbConnection conn = ar.result();
+                promise.succeeded(conn);
+            } else {
+                version(HUNT_DEBUG) {
+                    warning(ar.cause());
+                }
+
+                version(HUNT_DB_DEBUG) warning(ar);
+                
+                promise.failed(ar.cause());
+            }
+        });    
+
+        DbConnection r = promise.get(5.seconds);
+
+        return r;
+    }
+
+    override void destroyObject(DbConnection p) {
+        version(HUNT_DB_DEBUG) {
+            tracef("connection, id: %d, connected", p.getProcessId(), p.isConnected());
+        }
+        p.close(null);
+    }
+
+    override bool isValid(DbConnection p) {
+        return p.isConnected();
+    }
+}
+
 /**
  * Todo :
  *
@@ -50,33 +103,43 @@ import core.time;
  */
 abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
 
-    private ConnectionPool pool;
-    private PoolOptions _options;
+    private DbConnectionPool pool;
+    private DbPoolOptions _options;
 
-    this(PoolOptions options) {
+    this(DbPoolOptions options) {
         this._options = options;
         int maxSize = options.getMaxSize();
         if (maxSize < 1) {
             throw new IllegalArgumentException("Pool max size must be > 0");
         }
-        this.pool = new ConnectionPool(&this.connect, maxSize, options.getMaxWaitQueueSize());
+        // this.pool = new ConnectionPool(&this.connect, maxSize, options.getMaxWaitQueueSize());
+
+        
+        ObjectPoolOptions opOptions = new ObjectPoolOptions();
+        opOptions.size = options.getMaxSize();
+        opOptions.name = "DbPool";
+
+        DbConnectionFactory factory = new DbConnectionFactory();
+        factory.connector = &connect;
+
+        pool = new DbConnectionPool(factory, opOptions);
     }
 
     abstract void connect(AsyncDbConnectionHandler completionHandler);
 
-    override
-    void getConnection(AsyncSqlConnectionHandler handler) {
-        pool.acquire((DbConnectionAsyncResult ar) {
-            if (ar.succeeded()) {
-                DbConnection conn = ar.result();
-                SqlConnection holder = wrap(conn);
-                conn.initHolder(cast(DbConnection.Holder)holder);
-                handler(succeededResult!SqlConnection(holder));
-            } else {
-                handler(failedResult!SqlConnection(ar.cause()));
-            }
-        });
-    }
+    // override
+    // void getConnection(AsyncSqlConnectionHandler handler) {
+    //     pool.acquire((DbConnectionAsyncResult ar) {
+    //         if (ar.succeeded()) {
+    //             DbConnection conn = ar.result();
+    //             SqlConnection holder = wrap(conn);
+    //             conn.initHolder(cast(DbConnection.Holder)holder);
+    //             handler(succeededResult!SqlConnection(holder));
+    //         } else {
+    //             handler(failedResult!SqlConnection(ar.cause()));
+    //         }
+    //     });
+    // }
 
 
     int nextPromiseId() {
@@ -86,76 +149,107 @@ abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
     }
     private shared int _promiseCounter = 0;
 
-    Future!(SqlConnection) getConnectionAsync() {
-        import std.conv;
-        auto f = new FuturePromise!SqlConnection();
+    // Future!(SqlConnection) getConnectionAsync() {
+    //     import std.conv;
 
-        int id = nextPromiseId();
-        version(HUNT_DEBUG) tracef("Try to get a DB connection for promise: %d", id);
-        f.id = id.to!string();
+    //     int id = nextPromiseId();
+    //     version(HUNT_DEBUG) tracef("Try to get a DB connection for promise: %d", id);
+    //     auto f = new FuturePromise!SqlConnection("acquire " ~ id.to!string());
 
-        pool.acquire((DbConnectionAsyncResult ar) {
-            if (ar.succeeded()) {
-                DbConnection conn = ar.result();
-                version(HUNT_DEBUG) tracef("Got a DB connection (id=%d) from promise (id=%s)", conn.getProcessId(), f.id);
+    //     pool.acquire((DbConnectionAsyncResult ar) {
+    //         if (ar.succeeded()) {
+    //             DbConnection conn = ar.result();
+    //             version(HUNT_DEBUG) tracef("Got a DB connection (id=%d) from promise (id=%s)", conn.getProcessId(), f.id);
                 
-                // FIXME: Needing refactor or cleanup -@zhangxueping at 2020-01-17T16:41:20+08:00
-                // 
-                SqlConnection holder = wrap(conn);
-                conn.initHolder(cast(DbConnection.Holder)holder);
+    //             // FIXME: Needing refactor or cleanup -@zhangxueping at 2020-01-17T16:41:20+08:00
+    //             // 
+    //             SqlConnection holder = wrap(conn);
+    //             conn.initHolder(cast(DbConnection.Holder)holder);
 
-                if(f.isDone()) {
-                    debug {
-                        warningf("The promise %s has been done. So the connection %d will be returned to the pool.", 
-                            f.id(), conn.getProcessId());
-                    }
-                    conn.close(cast(DbConnection.Holder)holder);
-                } else {
-                    f.succeeded(holder);
-                }
-            } else {
-                debug warningf("A promise failed, id=%s", f.id);
-                f.failed(cast(Exception)ar.cause());
-            }
-        });        
+    //             if(f.isDone()) {
+    //                 debug {
+    //                     warningf("The promise %s has been done. So the connection %d will be returned to the pool.", 
+    //                         f.id(), conn.getProcessId());
+    //                 }
+    //                 conn.close(cast(DbConnection.Holder)holder);
+    //             } else {
+    //                 f.succeeded(holder);
+    //             }
+    //         } else {
+    //             debug warningf("A promise failed, id=%s", f.id);
+    //             f.failed(ar.cause());
+    //         }
+    //     });        
 
-        return f;
-    }
+    //     return f;
+    // }
 
     SqlConnection getConnection() {
         // pool.logStatus();
         size_t times = 0;
         SqlConnection conn;
+        Duration dur = _options.awaittingTimeout();
 
         try {
             // https://github.com/eclipse-vertx/vertx-sql-client/issues/463
-            version(HUNT_DEBUG) trace("try to get a connection");
-            
-            Future!(SqlConnection) f = getConnectionAsync();
-            conn = f.get(_options.awaittingTimeout());
+            version(HUNT_DEBUG) tracef("try to get a connection in %s", dur);
+            DbConnection dbConn =  pool.borrow(dur);
+            version(HUNT_DEBUG) tracef("Got a DB connection (id=%d)", dbConn.getProcessId());
 
-            while(!conn.isConnected() && times < _options.retry()) {
-                times++;
-                warningf("Got a broken connection, so try it again (%d).", times);
+            conn = wrap(dbConn);
+            dbConn.initHolder(cast(DbConnection.Holder)conn);
 
-                // Destory the broken connection
-                conn.close();
-                f = getConnectionAsync();
-                conn = f.get(_options.awaittingTimeout());
-            }
+            conn.closeHandler(() {
+                version(HUNT_DEBUG) {
+                    tracef("Returning DB connection (id=%d)", dbConn.getProcessId());
+                }
+                dbConn.initHolder(null);
+                pool.returnObject(dbConn);
+            });
+                         
 
-        } catch(Exception ex) { 
+        } catch(Throwable ex) { 
             debug {
                 warning(ex.msg);
-                pool.logStatus();
+                info(pool.toString());
             }
-            throw ex;
+
+            version(HUNT_DB_DEBUG) {
+                warning(ex);
+            }
+            // throw ex;
         }
 
-        if(times > 0 && times == _options.retry()) {
-            throw new DatabaseException("Can't get a working DB connection.");
-        }
+        version(HUNT_DB_DEBUG) {
+            if(conn is null) {
+                throw new DatabaseException("Can't get a working DB connection.");
+            }
+        } else {
+            while((conn is null) || (!conn.isConnected() && times < _options.retry())) {
+                times++;
+                warningf("Try to get a connection again, times: %d.", times);
 
+                // Destory the broken connection
+                if(conn !is null) {
+                    conn.close();
+                }
+
+                // Future!(SqlConnection) f = getConnectionAsync();
+
+                try {
+                    DbConnection dbConn = pool.borrow(dur);
+                    version(HUNT_DEBUG) tracef("Got a DB connection (id=%d)", dbConn.getProcessId());
+                    conn = wrap(dbConn);
+                    dbConn.initHolder(cast(DbConnection.Holder)conn); 
+                } catch(Exception ex) {
+                    warningf("Failed to get a connection after trying %d times", times);
+                }
+            }
+
+            if(times > 0 && times == _options.retry()) {
+                throw new DatabaseException("Can't get a working DB connection.");
+            }
+        }
         return conn;
     }
 
@@ -164,19 +258,19 @@ abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
         return conn.begin(true);
     }
 
-    Future!Transaction beginAsync() {
-        auto r = new FuturePromise!Transaction();
-        getConnection( (SqlConnectionAsyncResult ar) {
-            if (ar.succeeded()) {
-                SqlConnection conn = ar.result();
-                Transaction tx = conn.begin(true);
-                r.succeeded(tx);
-            } else {
-                r.failed(cast(Exception)ar.cause());
-            }
-        });
-        return r;
-    }
+    // Future!Transaction beginAsync() {
+    //     auto r = new FuturePromise!Transaction();
+    //     getConnection( (SqlConnectionAsyncResult ar) {
+    //         if (ar.succeeded()) {
+    //             SqlConnection conn = ar.result();
+    //             Transaction tx = conn.begin(true);
+    //             r.succeeded(tx);
+    //         } else {
+    //             r.failed(ar.cause());
+    //         }
+    //     });
+    //     return r;
+    // }
 
     // override
     // void begin(AsyncTransactionHandler handler) {
@@ -289,11 +383,11 @@ abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
         doClose();
     }
 
-    int available() { return pool.available(); }
+    int available() { return cast(int)pool.getNumActive(); }
     
-    int waiters() { return pool.waitersSize(); }
+    int waiters() { return cast(int)pool.getNumWaiters(); }
 
-    int maxSize() { return pool.maxSize(); }
+    int maxSize() { return cast(int)pool.size(); }
     
-    int size() { return pool.size(); }
+    int size() { return cast(int)pool.size(); }
 }

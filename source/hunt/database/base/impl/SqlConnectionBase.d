@@ -72,7 +72,7 @@ abstract class SqlConnectionBase(C) : SqlClientBase!(C) {
                 if (ar.succeeded()) {
                     f.succeeded(new PreparedQueryImpl(conn, ar.result()));
                 } else {
-                    f.failed(cast(Exception)ar.cause()); 
+                    f.failed(ar.cause()); 
                 }
             }
         );
@@ -101,7 +101,7 @@ abstract class SqlConnectionBase(C) : SqlClientBase!(C) {
     //                 NamedQueryImpl queryImpl = new NamedQueryImpl(conn, ar.result(), queryDesc);
     //                 f.succeeded(queryImpl);
     //             } else {
-    //                 f.failed(cast(Exception)ar.cause()); 
+    //                 f.failed(ar.cause()); 
     //             }
     //         }
     //     );

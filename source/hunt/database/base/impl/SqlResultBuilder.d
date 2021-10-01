@@ -72,7 +72,7 @@ class SqlResultBuilder(T, R, L) : QueryResultHandler!(T) { // , Handler!(AsyncRe
         suspended = res.succeeded() && res.result();
         // version(HUNT_DB_DEBUG_MORE) 
         version(HUNT_DEBUG) 
-        infof("succeeded: %s, result: %s", res.succeeded(), res.result());
+        tracef("succeeded: %s, result: %s", res.succeeded(), res.result());
         if(handler !is null) {
             handler(res.map!(L)(first)); // AsyncResult!(RowSetImpl)
         }

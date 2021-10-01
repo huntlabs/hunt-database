@@ -112,7 +112,7 @@ final class PgEncoder : EncoderChain {
 
         cmdCodec.completionHandler = (ICommandResponse resp) {
             version(HUNT_DB_DEBUG) {
-                infof("message encoding completed");
+                tracef("message encoding completed");
                 // CommandCodecBase c = inflight.front();
                 // assert(cmdCodec is c);
                 if(resp.failed()) {

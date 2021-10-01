@@ -66,7 +66,7 @@ class InitCommandCodec : CommandCodec!(DbConnection, InitCommand) {
 
     override
     void handleAuthenticationOk() {
-        version(HUNT_DB_DEBUG) info("Authentication done.");
+        version(HUNT_DB_DEBUG) info("TODO: Authentication done.");
         // TODO: Tasks pending completion -@zxp at Fri, 20 Sep 2019 02:31:50 GMT
         // Return the server setup information.
 //      handler.handle(Future.succeededFuture(conn));

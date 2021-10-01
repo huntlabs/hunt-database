@@ -61,10 +61,10 @@ interface Pool : SqlClient {
      *
      * @param handler the handler that will get the connection result
      */
-    void getConnection(AsyncSqlConnectionHandler handler);
+    // void getConnection(AsyncSqlConnectionHandler handler);
 
 
-    Future!(SqlConnection) getConnectionAsync();
+    // Future!(SqlConnection) getConnectionAsync();
 
     SqlConnection getConnection();
 
@@ -77,7 +77,7 @@ interface Pool : SqlClient {
     // void begin(AsyncTransactionHandler handler);
     Transaction begin();
 
-    Future!(Transaction) beginAsync();
+    // Future!(Transaction) beginAsync();
 
     /**
      * Close the pool and release the associated resources.

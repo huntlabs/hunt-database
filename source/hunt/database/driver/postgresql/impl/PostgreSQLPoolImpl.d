@@ -59,7 +59,9 @@ class PgPoolImpl : PoolBase!(PgPoolImpl), PgPool {
 
     override
     protected void doClose() {
-        factory.close();
+        if(factory !is null) {
+            factory.close();
+        }
         super.doClose();
     }
 }

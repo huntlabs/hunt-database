@@ -145,7 +145,7 @@ class MySQLConnectionImpl : SqlConnectionImpl!(MySQLConnectionImpl), MySQLConnec
 
     Future!NamedQuery prepareNamedQueryAsync(string sql) {
         version(HUNT_DB_DEBUG) trace(sql);
-        auto f = new FuturePromise!NamedQuery();
+        auto f = new FuturePromise!NamedQuery("NamedQuery");
         AbstractNamedQueryDesc queryDesc = new MySQLNamedQueryDesc(sql);
 
         scheduleThen!(PreparedStatement)(new PrepareStatementCommand(queryDesc.getSql()), 
@@ -154,7 +154,7 @@ class MySQLConnectionImpl : SqlConnectionImpl!(MySQLConnectionImpl), MySQLConnec
                     NamedQueryImpl queryImpl = new MySQLNamedQueryImpl(conn, ar.result(), queryDesc);
                     f.succeeded(queryImpl);
                 } else {
-                    f.failed(cast(Exception)ar.cause()); 
+                    f.failed(ar.cause()); 
                 }
             }
         );

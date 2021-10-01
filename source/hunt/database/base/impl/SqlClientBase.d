@@ -71,11 +71,11 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
     }
 
     Future!RowSet queryAsync(string sql) {
-        auto f = new FuturePromise!RowSet();
+        auto f = new FuturePromise!RowSet("query");
 
         auto b = new SqlResultBuilder!(RowSet, RowSetImpl, RowSet)(RowSetImpl.FACTORY, (RowSetAsyncResult ar) {
             if (ar.succeeded()) { f.succeeded(ar.result());}
-            else { f.failed(cast(Exception)ar.cause()); }
+            else { f.failed(ar.cause()); }
         });
 
         scheduleThen!(bool)(new SimpleQueryCommand!(RowSet)(sql, false, b), 

@@ -25,7 +25,7 @@ import hunt.database.base.PoolOptions;
 import hunt.database.base.impl.command.CommandBase;
 
 import hunt.collection.ArrayList;
-import hunt.concurrency.CompletableFuture;
+import hunt.concurrency.FuturePromise;
 import hunt.Exceptions;
 import hunt.logging.ConsoleLogger;
 import hunt.Functions;
@@ -38,7 +38,7 @@ import std.container;
 import std.format;
 import std.range;
 
-alias DbConnectionPromise = CompletableFuture!(DbConnectionAsyncResult);
+alias DbConnectionPromise = FuturePromise!(DbConnectionAsyncResult);
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>
@@ -51,7 +51,7 @@ class ConnectionPool {
     // private ArrayDeque!(Promise!(Connection)) _waiters = new ArrayDeque<>();
     // private Set!(PooledConnection) all = new HashSet<>();
     // private ArrayDeque!(PooledConnection) available = new ArrayDeque<>();
-    private DList!(CompletableFuture!(DbConnectionAsyncResult)) _waiters;
+    private DList!(FuturePromise!(DbConnectionAsyncResult)) _waiters;
     private ArrayList!PooledConnection _all;
     private DList!PooledConnection _available;
     private shared int _size;
@@ -95,27 +95,43 @@ class ConnectionPool {
         if (_closed) {
             throw new IllegalStateException("Connection pool closed");
         }
-        version(HUNT_DEBUG) 
+        
+        import std.conv;
+        _waiterCount++;
+        string waiterName = "ConnectWaiter " ~ _waiterCount.to!string();
+
+        // version(HUNT_DEBUG) 
         {
-            tracef("Try to acquire a DB connection... size: %d/%d, available: %d, waiters: %d",
-                _size, _maxSize, available(), waitersSize());
+            tracef("Try to acquire a DB connection for %s... size: %d/%d, available: %d, waiters: %d", 
+                waiterName, _size, _maxSize, available(), waitersSize());
         }
 
         // Promise!(Connection) promise = Promise.promise();
         // promise.future().setHandler(holder);
         // _waiters.add(promise);
-        auto promise = new CompletableFuture!(DbConnectionAsyncResult)();
-        promise.thenAccept((r) { 
-            version(HUNT_DEBUG) infof("Acquired a DB connection %d. size: %d/%d, available: %d, waiters: %d",
-                r.result.getProcessId(), _size, _maxSize, available(), waitersSize());
+
+        auto promise = new FuturePromise!(DbConnectionAsyncResult)(waiterName);
+        promise.then((r) { 
+            // version(HUNT_DEBUG) {
+                infof("Acquired a DB connection %d for %s. size: %d/%d, available: %d, waiters: %d",
+                    r.result.getProcessId(), waiterName, _size, _maxSize, available(), waitersSize());
+            // }
+
             if(holder !is null) holder(r);
         });
         
-        synchronized (this) {
-            _waiters.insertBack(promise);
-            check();
-        }
+        // synchronized (this) {
+        //     warning("ddddddddddddd");
+        //     _waiters.insertBack(promise);
+        // }
+
+        insertWaiter(promise);
+
+        check();
+        warning("eeeeeeee: " ~ waiterName);
     }
+
+    private int _waiterCount = 0;
 
     void close() {
         version(HUNT_DB_DEBUG) info("Closing...", _closed);
@@ -128,9 +144,9 @@ class ConnectionPool {
         }
 
         DbConnectionAsyncResult failure = failedResult!(DbConnection)(new Exception("Connection pool closed"));
-        foreach (CompletableFuture!(DbConnectionAsyncResult) pending ; _waiters) {
+        foreach (FuturePromise!(DbConnectionAsyncResult) pending ; _waiters) {
             try {
-                pending.complete(failure);
+                pending.succeeded(failure);
             } catch (Exception ignore) {
                 version(HUNT_DEBUG) warning(ignore);
             }
@@ -258,12 +274,14 @@ class ConnectionPool {
     }
 
     private void check() {
-        if (_closed || _checkInProgress) {
+        if (_closed) {
+            version(HUNT_DEBUG) warning("pool closed!");
             return;
         }
 
         if(!cas(&_checkInProgress, false, true)) {
             version(HUNT_DEBUG) warning("check in progress...");
+            return;
         }
 
         scope(exit) {
@@ -271,13 +289,13 @@ class ConnectionPool {
             version(HUNT_DB_DEBUG_MORE) tracef("pool size=%d/%d", _size, _maxSize);
         }
 
-        synchronized (this) {
+        // synchronized (this) {
             try {
                 doCheck();
             } catch(Exception ex) {
                 warning(ex);
             }
-        }
+        // }
     }
 
     void logStatus() {
@@ -285,21 +303,40 @@ class ConnectionPool {
             _size, _maxSize, available(), waitersSize(), Thread.getAll().length);
     }
 
+    private void insertWaiter(FuturePromise!(DbConnectionAsyncResult) waiter) {
+        synchronized (this) {
+            _waiters.insertBack(waiter);
+        }
+        info("okkkkkkk");
+    }
+
+    private FuturePromise!(DbConnectionAsyncResult) popWaiter() {
+        FuturePromise!(DbConnectionAsyncResult) waiter;
+        synchronized (this) {
+            warning("vvvvvvvvvv");
+            waiter = _waiters.front(); 
+            _waiters.removeFront();
+        }
+        info("ttttttttttttt");    
+        return waiter;    
+    }
+
     private void doCheck() {
         // while (waitersSize() > 0) 
         while(!_waiters.empty())
         {
             if (available() > 0) {
-                CompletableFuture!(DbConnectionAsyncResult) waiter = _waiters.front(); _waiters.removeFront();
+                FuturePromise!(DbConnectionAsyncResult) waiter = popWaiter(); 
                 PooledConnection proxy = _available.front(); _available.removeFront();
-                waiter.complete(succeededResult!(DbConnection)(proxy));
+                waiter.succeeded(succeededResult!(DbConnection)(proxy));
             } else {
                 if (_size < _maxSize) {
                     // _size++;
                     atomicOp!("+=")(_size, 1);
 
                     version(HUNT_DEBUG) infof("Creating a new DB connection. total: %d", _size);
-                    CompletableFuture!(DbConnectionAsyncResult) waiter = _waiters.front(); _waiters.removeFront();
+                    FuturePromise!(DbConnectionAsyncResult) waiter = popWaiter(); 
+
                     connector( (DbConnectionAsyncResult ar) {
 
                         if (ar.succeeded()) {
@@ -308,15 +345,17 @@ class ConnectionPool {
                             PooledConnection proxy = new PooledConnection(conn);
                             _all.add(proxy);
                             conn.initHolder(proxy);
-                            waiter.complete(succeededResult!(DbConnection)(proxy));
+                            waiter.succeeded(succeededResult!(DbConnection)(proxy));
                         } else {
                             // _size--;
                             atomicOp!("-=")(_size, 1);
                             version(HUNT_DEBUG) warning(ar.cause());
-                            waiter.completeExceptionally(ar.cause());
+                            waiter.failed(ar.cause());
                             check();
                         }
                     });
+
+                    info("connector connector connector");
                 } else {
                     version(HUNT_DEBUG) {
                         // warningf("waiters: %d / %d", waitersSize(), _maxWaitQueueSize);
@@ -328,8 +367,8 @@ class ConnectionPool {
                         int numInProgress = _size - _all.size();
                         int numToFail = waitersSize() - (_maxWaitQueueSize + numInProgress);
                         while (numToFail-- > 0) {
-                            CompletableFuture!(DbConnectionAsyncResult) waiter = _waiters.back(); _waiters.removeBack();
-                            waiter.completeExceptionally(new NoStackTraceThrowable("Max waiter size reached"));
+                            FuturePromise!(DbConnectionAsyncResult) waiter = _waiters.back(); _waiters.removeBack();
+                            waiter.failed(new NoStackTraceThrowable("Max waiter size reached"));
                         }
                     }
                     break;

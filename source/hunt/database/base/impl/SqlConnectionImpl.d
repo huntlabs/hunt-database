@@ -49,6 +49,7 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbCo
     private ExceptionHandler _exceptionHandler;
     private VoidHandler _closeHandler;
     private TransactionImpl tx;
+    private bool _isClosed = false;
 
     this(DbConnection conn) {
         super(conn);
@@ -96,9 +97,17 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbCo
 
     // override
     void handleClosed() {
+        if(_isClosed) {
+            version(HUNT_DEBUG) { 
+                warningf("connection %d closed already.", conn.getProcessId());
+            }
+            return;
+        }
+        _isClosed = true;
+
         VoidHandler handler = _closeHandler;
         if (handler !is null) {
-            handler(null);
+            handler();
         }
     }
 
@@ -143,6 +152,9 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbCo
 
     override C closeHandler(VoidHandler handler) {
         _closeHandler = handler;
+        import hunt.Functions;
+        
+        
         return cast(C) this;
     }
 
@@ -171,13 +183,30 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbCo
     abstract void handleNotification(int processId, string channel, string payload);
 
     override void close() {
-        version (HUNT_DB_DEBUG)
-            infof("Closing a SQL connection %d...", conn.getProcessId());
-        if (tx !is null) {
-            tx.rollback((ar) { conn.close(this); });
-            tx = null;
+        // version (HUNT_DB_DEBUG)
+        //     infof("Closing a SQL connection %d...", conn.getProcessId());
+
+        if(_isClosed) {
+            warningf("connection %d closed already.", conn.getProcessId());
+            return;
+        }
+
+        _isClosed = true;
+
+        if(_closeHandler !is null) {
+            version (HUNT_DB_DEBUG)
+                infof("Closing a SQL connection %d with handler...", conn.getProcessId());
+            _closeHandler();
         } else {
-            conn.close(this);
+            version (HUNT_DB_DEBUG)
+                infof("Closing a DB connection in SQL connection %d...", conn.getProcessId());
+
+            if (tx !is null) {
+                tx.rollback((ar) { conn.close(this); });
+                tx = null;
+            } else {
+                conn.close(this);
+            }
         }
     }
 }

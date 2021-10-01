@@ -137,7 +137,7 @@ class PgConnectionImpl : SqlConnectionImpl!(PgConnectionImpl), PgConnection  {
                     NamedQueryImpl queryImpl = new PgNamedQueryImpl(conn, ar.result(), queryDesc);
                     f.succeeded(queryImpl);
                 } else {
-                    f.failed(cast(Exception)ar.cause()); 
+                    f.failed(ar.cause()); 
                 }
             }
         );

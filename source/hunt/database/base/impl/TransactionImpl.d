@@ -234,7 +234,7 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
             if (ar.succeeded()) { 
                 f.succeeded(null);
             } else {
-                f.failed(cast(Exception)ar.cause()); 
+                f.failed(ar.cause()); 
             }
         });
 
@@ -274,7 +274,7 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
 
     void rollback() {
         // rollback(null);
-        auto f = new FuturePromise!Void();
+        auto f = new FuturePromise!Void("rollback");
         while(status == ST_BEGIN) {
             version(HUNT_DB_DEBUG_MORE) warning("Waiting for the response for BEGIN");
         }
@@ -283,7 +283,7 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
             if (ar.succeeded()) { 
                 f.succeeded(null);
             } else {
-                f.failed(cast(Exception)ar.cause()); 
+                f.failed(ar.cause()); 
             }
         });
 
