@@ -18,7 +18,6 @@
 module hunt.database.base.impl.PoolBase;
 
 import hunt.database.base.impl.Connection;
-import hunt.database.base.impl.ConnectionPool;
 import hunt.database.base.impl.SqlClientBase;
 import hunt.database.base.impl.SqlConnectionImpl;
 
@@ -49,6 +48,9 @@ alias ObjectPoolOptions = hunt.util.pool.PoolOptions;
 
 alias DbConnectionPool = ObjectPool!DbConnection;
 
+/** 
+ * 
+ */
 class DbConnectionFactory : ObjectFactory!(DbConnection) {
 
     private Consumer!(AsyncDbConnectionHandler) connector;
@@ -70,7 +72,7 @@ class DbConnectionFactory : ObjectFactory!(DbConnection) {
                 }
 
                 version(HUNT_DB_DEBUG) warning(ar);
-                
+
                 promise.failed(ar.cause());
             }
         });    
