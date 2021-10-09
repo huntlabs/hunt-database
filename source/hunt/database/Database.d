@@ -55,22 +55,6 @@ class Database {
     }
 
     SqlConnection getConnection() {
-        // SqlConnection conn = _pool.getConnection();
-
-        // size_t times = 0;
-        // while(!conn.isConnected() && times < _options.retry()) {
-        //     times++;
-        //     warningf("Got a broken connection, so try it again (%d).", times);
-
-        //     // Destory the broken connection
-        //     conn.close();
-        //     conn = _pool.getConnection();
-        // }
-
-        // if(times == _options.retry() && times > 0) {
-        //     throw new DatabaseException("Can't get a working DB connection.");
-        // }
-        // return conn;
         return _pool.getConnection();
     }
 
@@ -88,15 +72,16 @@ class Database {
         import core.time;
 
         version (HUNT_DB_DEBUG) {
-            tracef("maximumSize: %d, connectionTimeout: %d",
-                    _options.maximumPoolSize, _options.connectionTimeout);
+            tracef("maximumSize: %d, connectionTimeout: %d, maxWaitQueueSize: %d",
+                    _options.maximumPoolSize, _options.connectionTimeout, _options.maxWaitQueueSize);
         }
 
         // dfmt off
         PoolOptions poolOptions = new PoolOptions()
             .setMaxSize(_options.maximumPoolSize)
             .retry(_options.retry)
-            .awaittingTimeout(_options.connectionTimeout.msecs);
+            .awaittingTimeout(_options.connectionTimeout.msecs)
+            .setMaxWaitQueueSize(_options.maxWaitQueueSize);
 
         if(_options.isPgsql()) {
             PgConnectOptions connectOptions = new PgConnectOptions(_options.url);

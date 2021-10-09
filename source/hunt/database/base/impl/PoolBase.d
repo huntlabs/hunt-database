@@ -118,8 +118,9 @@ abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
 
         
         ObjectPoolOptions opOptions = new ObjectPoolOptions();
-        opOptions.size = options.getMaxSize();
         opOptions.name = "DbPool";
+        opOptions.size = options.getMaxSize();
+        opOptions.maxWaitQueueSize = options.getMaxWaitQueueSize();
 
         DbConnectionFactory factory = new DbConnectionFactory();
         factory.connector = &connect;

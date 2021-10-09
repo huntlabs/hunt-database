@@ -26,6 +26,7 @@ class DatabaseOption {
     private int _minldle = 1;
     private int _connectionTimeout = 10000;
     private size_t _retry = 5;
+    private int _maxWaitQueueSize = -1;
     private HttpURI _url;
 
     // this()
@@ -74,6 +75,16 @@ class DatabaseOption {
         _retry = value;
         return this;
     }
+
+    int maxWaitQueueSize() {
+        return _maxWaitQueueSize;
+    }
+
+    DatabaseOption maxWaitQueueSize(int value) {
+        _maxWaitQueueSize = value;
+        return this;
+    }
+
 
     DatabaseOption setConnectionTimeout(int time) {
         assert(time);
