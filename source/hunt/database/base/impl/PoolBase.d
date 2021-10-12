@@ -34,14 +34,15 @@ import hunt.database.base.AsyncResult;
 import hunt.concurrency.Future;
 import hunt.concurrency.FuturePromise;
 import hunt.Exceptions;
+import hunt.Functions;
 import hunt.logging.ConsoleLogger;
+import hunt.util.pool;
 
+import core.atomic;
 import core.time;
 
 import std.conv;
 
-import hunt.util.pool;
-import hunt.Functions;
 
 alias DbPoolOptions = hunt.database.base.PoolOptions.PoolOptions;
 alias ObjectPoolOptions = hunt.util.pool.PoolOptions;
@@ -54,17 +55,30 @@ alias DbConnectionPool = ObjectPool!DbConnection;
 class DbConnectionFactory : ObjectFactory!(DbConnection) {
 
     private Consumer!(AsyncDbConnectionHandler) connector;
-    private int counter = 0;
+    private shared int counter = 0;
+    private DbPoolOptions _options;
+
+    this(DbPoolOptions options) {
+        _options = options;
+    }
 
     override DbConnection makeObject() {
-        counter++;
-        FuturePromise!DbConnection promise = new FuturePromise!DbConnection("DbFactory " ~ counter.to!string());
+        int c = atomicOp!("+=")(counter, 1);
+        string name = "DbFactory " ~ c.to!string();
+        version(HUNT_DEBUG) {
+            tracef("Making a DB connection for %s", name);
+        }
+
+        FuturePromise!DbConnection promise = new FuturePromise!DbConnection(name);
+
 
         connector( (DbConnectionAsyncResult ar) {
 
             if (ar.succeeded()) {
-                version(HUNT_DEBUG) infof("A new DB connection created");
                 DbConnection conn = ar.result();
+                version(HUNT_DEBUG) {
+                    infof("A new DB connection %d created", conn.getProcessId());
+                }
                 promise.succeeded(conn);
             } else {
                 version(HUNT_DEBUG) {
@@ -77,14 +91,22 @@ class DbConnectionFactory : ObjectFactory!(DbConnection) {
             }
         });    
 
-        DbConnection r = promise.get(5.seconds);
+        DbConnection r = promise.get(_options.awaittingTimeout);
+
+        version(HUNT_DEBUG) {
+            tracef("Finished DB connection making for %s", name);
+        }
 
         return r;
     }
 
     override void destroyObject(DbConnection p) {
+        if(p is null) {
+            warning("The connection is null");
+            return;
+        }
         version(HUNT_DB_DEBUG) {
-            tracef("connection, id: %d, connected", p.getProcessId(), p.isConnected());
+            tracef("Connection [%d] disconnected: %s", p.getProcessId(), p.isConnected());
         }
         p.close(null);
     }
@@ -122,7 +144,7 @@ abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
         opOptions.size = options.getMaxSize();
         opOptions.maxWaitQueueSize = options.getMaxWaitQueueSize();
 
-        DbConnectionFactory factory = new DbConnectionFactory();
+        DbConnectionFactory factory = new DbConnectionFactory(options);
         factory.connector = &connect;
 
         pool = new DbConnectionPool(factory, opOptions);
@@ -190,8 +212,35 @@ abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
     SqlConnection getConnection() {
         // pool.logStatus();
         size_t times = 0;
-        SqlConnection conn;
         Duration dur = _options.awaittingTimeout();
+        SqlConnection conn = tryToBorrowConnection(dur);
+
+        version(HUNT_DB_DEBUG) {
+            if(conn is null) {
+                throw new DatabaseException("Can't get a valid DB connection.");
+            }
+        } else {
+            while(times < _options.retry() && ((conn is null) || !conn.isConnected())) {
+                times++;
+                warningf("Try to get a connection again, times: %d.", times);
+
+                // Destory the broken connection
+                if(conn !is null) {
+                    conn.close();
+                }
+
+                conn = tryToBorrowConnection(dur);
+            }
+
+            if(times > 0 && times == _options.retry()) {
+                throw new DatabaseException("Can't get a working DB connection.");
+            }
+        }
+        return conn;
+    }
+
+    private SqlConnection tryToBorrowConnection(Duration dur) {
+        SqlConnection conn = null;
 
         try {
             // https://github.com/eclipse-vertx/vertx-sql-client/issues/463
@@ -220,39 +269,8 @@ abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
             version(HUNT_DB_DEBUG) {
                 warning(ex);
             }
-            // throw ex;
         }
 
-        version(HUNT_DB_DEBUG) {
-            if(conn is null) {
-                throw new DatabaseException("Can't get a working DB connection.");
-            }
-        } else {
-            while((conn is null) || (!conn.isConnected() && times < _options.retry())) {
-                times++;
-                warningf("Try to get a connection again, times: %d.", times);
-
-                // Destory the broken connection
-                if(conn !is null) {
-                    conn.close();
-                }
-
-                // Future!(SqlConnection) f = getConnectionAsync();
-
-                try {
-                    DbConnection dbConn = pool.borrow(dur);
-                    version(HUNT_DEBUG) tracef("Got a DB connection (id=%d)", dbConn.getProcessId());
-                    conn = wrap(dbConn);
-                    dbConn.initHolder(cast(DbConnection.Holder)conn); 
-                } catch(Exception ex) {
-                    warningf("Failed to get a connection after trying %d times", times);
-                }
-            }
-
-            if(times > 0 && times == _options.retry()) {
-                throw new DatabaseException("Can't get a working DB connection.");
-            }
-        }
         return conn;
     }
 
