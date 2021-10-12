@@ -44,8 +44,6 @@ import std.range;
  */
 abstract class SocketConnectionBase : DbConnection {
 
-    // private static final Logger logger = LoggerFactory.getLogger(SocketConnectionBase.class);
-
     enum Status {
         CLOSED, CONNECTED, CLOSING
     }
@@ -295,6 +293,15 @@ abstract class SocketConnectionBase : DbConnection {
 
         if (holder !is null) {
             holder.handleClosed();
+        }
+    }
+
+    override string toString() {
+        import std.format;
+        if(_socket is null) {
+            return format("DbConnection: unknown");
+        } else {
+            return format("DbConnection %d", _socket.getId());
         }
     }
 }

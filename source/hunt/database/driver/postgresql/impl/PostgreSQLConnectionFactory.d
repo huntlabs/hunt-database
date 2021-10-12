@@ -99,8 +99,11 @@ class PgConnectionFactory {
     }
 
     void close() {
-        foreach(client; clients) {
+        foreach(NetClient client; clients) {
             if(client !is null) {
+            // FIXME: Needing refactor or cleanup -@zhangxueping at 2021-10-12T10:26:30+08:00
+            // crashed here
+                // warning(typeid(cast(Object)client));
                 client.close();
             }
         }
