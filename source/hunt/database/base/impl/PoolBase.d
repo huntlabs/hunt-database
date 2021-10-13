@@ -71,7 +71,6 @@ class DbConnectionFactory : ObjectFactory!(DbConnection) {
 
         FuturePromise!DbConnection promise = new FuturePromise!DbConnection(name);
 
-
         connector( (DbConnectionAsyncResult ar) {
 
             if (ar.succeeded()) {
@@ -94,7 +93,7 @@ class DbConnectionFactory : ObjectFactory!(DbConnection) {
         DbConnection r = promise.get(_options.awaittingTimeout);
 
         version(HUNT_DEBUG) {
-            tracef("Finished DB connection making for %s", name);
+            infof("DB connection making finished for %s", name);
         }
 
         return r;
@@ -263,7 +262,7 @@ abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
         } catch(Throwable ex) { 
             debug {
                 warning(ex.msg);
-                info(pool.toString());
+                infof("Failed to borrow. %s", pool.toString());
             }
 
             version(HUNT_DB_DEBUG) {
