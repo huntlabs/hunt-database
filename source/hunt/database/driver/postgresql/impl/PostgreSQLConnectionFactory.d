@@ -68,6 +68,8 @@ class PgConnectionFactory {
     // private Closeable hook;
 
     this(PgConnectOptions options) {
+        // FIXME: Needing refactor or cleanup -@zhangxueping at 2021-10-13T10:17:49+08:00
+        // remove clients
         clients = new ArrayList!NetClient(50);
         _netClientOptions = new NetClientOptions(options);
 

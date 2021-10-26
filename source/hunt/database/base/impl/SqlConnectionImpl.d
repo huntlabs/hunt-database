@@ -191,6 +191,9 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbCo
             return;
         }
 
+        // FIXME: Needing refactor or cleanup -@zhangxueping at 2021-10-22T11:37:35+08:00
+        // Not thread-safe
+
         _isClosed = true;
 
         if(_closeHandler !is null) {

@@ -68,7 +68,7 @@ class QueryBuilder
     private string[] _orderBy;
     private int _offset;
     private int _limit;
-    private Variant[string] _parameters; // TODO: use Variant[string];
+    private Variant[string] _parameters; 
     // private Expr _expr;
     private bool _distinct;
     private string _autoIncreaseKey;
