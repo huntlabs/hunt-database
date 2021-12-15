@@ -73,11 +73,6 @@ class ArrayTuple : ArrayList!(Variant), Tuple {
     override
     bool getBoolean(int pos) {
         return get(pos).get!bool();
-        // Object val = get(pos);
-        // if (val instanceof Boolean) {
-        //     return (Boolean) val;
-        // }
-        // return null;
     }
 
     Variant getValue(int pos) {
@@ -87,13 +82,6 @@ class ArrayTuple : ArrayList!(Variant), Tuple {
     override
     short getShort(int pos) {
         return get(pos).get!short();
-        // Variant val = get(pos);
-        // if (val.type == typeid(short) || val.type == typeid(ushort)) {
-        //     return val.get!short();
-        // // } else if (val instanceof Number) {
-        // //     return ((Number) val).shortValue();
-        // }
-        // return null;
     }
 
     override
@@ -109,13 +97,6 @@ class ArrayTuple : ArrayList!(Variant), Tuple {
             string str = v.toString();
             return to!int(str);
         }
-        // Object val = get(pos);
-        // if (val instanceof Integer) {
-        //     return (Integer) val;
-        // } else if (val instanceof Number) {
-        //     return ((Number) val).intValue();
-        // }
-        // return null;
     }
 
     override

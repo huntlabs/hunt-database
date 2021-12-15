@@ -265,7 +265,7 @@ abstract class SocketConnectionBase : DbConnection {
         }
 
         if (status == Status.CLOSED) {
-            warning("The closed connection has been handled already.");
+            version(HUNT_DB_DEBUG) warning("The closed connection has been handled already.");
             return;
         }
 
