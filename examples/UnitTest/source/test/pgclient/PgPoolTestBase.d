@@ -50,29 +50,29 @@ abstract class PgPoolTestBase : PgTestBase {
 
     protected abstract PgPool createPool(PgConnectOptions options, int size);
 
-    @Test
-    void testPool() {
-        int num = 10;
-        shared int count = 0;
-        PgPool pool = createPool(options, 4);
-        for (int i = 0;i < num;i++) {
-            pool.getConnection((SqlConnectionAsyncResult ar1) {
-                warning("running here");
-                SqlConnection conn = asyncAssertSuccess(ar1);
-                conn.query("SELECT id, randomnumber from WORLD", (AsyncResult!RowSet ar) {
-                    atomicOp!"+="(count, 1);
-                    tracef("%d ===> Done.", count);
-                    if (ar.succeeded()) {
-                        RowSet result = ar.result();
-                        assert(10000 == result.size(), result.size().to!string());
-                    } else {
-                        assert("closed" == ar.cause().message());
-                    }
-                    conn.close();
-                });
-            });
-        }
-    }
+    // @Test
+    // void testPool() {
+    //     int num = 10;
+    //     shared int count = 0;
+    //     PgPool pool = createPool(options, 4);
+    //     for (int i = 0;i < num;i++) {
+    //         pool.getConnection((SqlConnectionAsyncResult ar1) {
+    //             warning("running here");
+    //             SqlConnection conn = asyncAssertSuccess(ar1);
+    //             conn.query("SELECT id, randomnumber from WORLD", (AsyncResult!RowSet ar) {
+    //                 atomicOp!"+="(count, 1);
+    //                 tracef("%d ===> Done.", count);
+    //                 if (ar.succeeded()) {
+    //                     RowSet result = ar.result();
+    //                     assert(10000 == result.size(), result.size().to!string());
+    //                 } else {
+    //                     assert("closed" == ar.cause().message());
+    //                 }
+    //                 conn.close();
+    //             });
+    //         });
+    //     }
+    // }
 
     // @Test
     // void testQuery() {
