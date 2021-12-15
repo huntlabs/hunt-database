@@ -262,7 +262,7 @@ abstract class SocketConnectionBase : DbConnection {
     }
 
     private void handleClose(Throwable t) {
-        version(HUNT_DEBUG) {
+        version(HUNT_DB_DEBUG) {
             infof("Connection closed. Throwable: %s", t is null);
         }
 
