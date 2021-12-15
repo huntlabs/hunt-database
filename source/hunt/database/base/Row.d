@@ -21,15 +21,13 @@ import hunt.database.base.Tuple;
 
 import hunt.logging.ConsoleLogger;
 
-// import java.math.BigDecimal;
-// import java.time.*;
-// import java.time.temporal.Temporal;
 
 import std.array;
 import std.format;
 import std.functional;
 import std.meta;
 import std.traits;
+import std.typecons : Nullable;
 import std.variant;
 
 /**
@@ -345,7 +343,9 @@ interface Row : Tuple {
 
             static if(hasUDA!(currentMember, Ignore)) {
                 version(HUNT_DEBUG) { warningf("Field %s.%s ignored.", T.stringof, member); }
-            } else static if(is(memberType == class) || is(memberType == struct) ) {
+            } else static if(is(memberType == class)) { 
+                __traits(getMember, obj, member) = bind!(memberType, getColumnNameFun)();
+            } else static if(is(memberType == struct) && !is(memberType : Nullable!U, U)) {
                 __traits(getMember, obj, member) = bind!(memberType, getColumnNameFun)();
             } else {
                 static if(hasUDA!(currentMember, Column)) {
@@ -390,7 +390,7 @@ interface Row : Tuple {
 
             static if(hasUDA!(currentMember, Ignore)) {
                 version(HUNT_DEBUG) { warningf("Field %s.%s ignored.", T.stringof, member); }
-            } else static if(is(memberType == struct) ) {
+            } else static if((is(memberType == struct) && !is(memberType : Nullable!U, U))) {
                 __traits(getMember, obj, member) = bind!(memberType, getColumnNameFun)();
             } else static if(is(memberType == class)) {
                 __traits(getMember, obj, member) = bind!(memberType, traverseBase,  getColumnNameFun)(); // bug
@@ -435,19 +435,39 @@ interface Row : Tuple {
             return T.init;
         }
 
-        version(HUNT_DB_DEBUG) tracef("column, name=%s, index=%d", memberColumnName, columnIndex);
-
         Variant currentColumnValue = getValue(columnIndex);
-
-        auto memberTypeInfo = typeid(T);
-        if(memberTypeInfo == currentColumnValue.type || currentColumnValue.convertsTo!(T)) {
-            // 1) If the types are same, or the column's type can convert to the member's type
-            return currentColumnValue.get!T();
-        } else {
-            // 2) try to coerce to T
-            return currentColumnValue.coerce!T();
-            // assert(false, format("Can't convert a value from %s to %s", 
-            //     currentColumnValue.type, memberTypeInfo));
+        version(HUNT_DB_DEBUG) {
+            tracef("column, name=%s, index=%d, type {target: %s, source: %s}", 
+                memberColumnName, columnIndex, T.stringof, currentColumnValue.type);
         }
+
+        static if(is(T : Nullable!U, U)) {
+            auto memberTypeInfo = typeid(U);
+            if(memberTypeInfo == currentColumnValue.type || currentColumnValue.convertsTo!(U)) {
+                // 1) If the types are same, or the column's type can convert to the member's type
+                U tmp = currentColumnValue.get!U();
+                return T(tmp);
+            } else if(currentColumnValue == null) {
+                return T.init;
+            } else {
+                // 2) try to coerce to T
+                U tmp = currentColumnValue.coerce!U();
+                return T(tmp);
+            }
+        } else {
+            auto memberTypeInfo = typeid(T);
+            if(memberTypeInfo == currentColumnValue.type || currentColumnValue.convertsTo!(T)) {
+                // 1) If the types are same, or the column's type can convert to the member's type
+                return currentColumnValue.get!T();
+            } else if(currentColumnValue == null) {
+                return T.init;
+            } else {
+                // 2) try to coerce to T
+                return currentColumnValue.coerce!T();
+                // assert(false, format("Can't convert a value from %s to %s", 
+                //     currentColumnValue.type, memberTypeInfo));
+            }
+        }
+
     }
 }
