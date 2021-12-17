@@ -72,12 +72,12 @@ class ArrayTuple : ArrayList!(Variant), Tuple {
 
     override
     bool getBoolean(int pos) {
-        return get(pos).get!bool();
-        // Object val = get(pos);
-        // if (val instanceof Boolean) {
-        //     return (Boolean) val;
-        // }
-        // return null;
+        Variant v = get(pos);
+        if(v == null) {
+            return bool.init;
+        }else{
+            return v.get!bool();
+        }
     }
 
     Variant getValue(int pos) {
@@ -86,14 +86,12 @@ class ArrayTuple : ArrayList!(Variant), Tuple {
 
     override
     short getShort(int pos) {
-        return get(pos).get!short();
-        // Variant val = get(pos);
-        // if (val.type == typeid(short) || val.type == typeid(ushort)) {
-        //     return val.get!short();
-        // // } else if (val instanceof Number) {
-        // //     return ((Number) val).shortValue();
-        // }
-        // return null;
+        Variant v = get(pos);
+        if(v == null) {
+            return short.init;
+        }else{
+            return v.get!short();
+        }
     }
 
     override
@@ -109,18 +107,17 @@ class ArrayTuple : ArrayList!(Variant), Tuple {
             string str = v.toString();
             return to!int(str);
         }
-        // Object val = get(pos);
-        // if (val instanceof Integer) {
-        //     return (Integer) val;
-        // } else if (val instanceof Number) {
-        //     return ((Number) val).intValue();
-        // }
-        // return null;
     }
 
     override
     long getLong(int pos) {
-        return get(pos).get!long();
+        Variant v = get(pos);
+        if(v == null) {
+            return long.init;
+        }else{
+            return v.get!long();
+        }
+        
         // Object val = get(pos);
         // if (val instanceof Long) {
         //     return (Long) val;
@@ -132,7 +129,12 @@ class ArrayTuple : ArrayList!(Variant), Tuple {
 
     override
     float getFloat(int pos) {
-        return get(pos).get!float();
+        Variant v = get(pos);
+        if(v == null) {
+            return float.init;
+        }else{
+            return v.get!float();
+        }
         // Object val = get(pos);
         // if (val instanceof Float) {
         //     return (Float) val;
@@ -144,7 +146,12 @@ class ArrayTuple : ArrayList!(Variant), Tuple {
 
     override
     double getDouble(int pos) {
-        return get(pos).get!double();
+        Variant v = get(pos);
+        if(v == null) {
+            return double.init;
+        }else{
+            return v.get!double();
+        }
         // Object val = get(pos);
         // if (val instanceof Double) {
         //     return (Double) val;
@@ -307,7 +314,12 @@ class ArrayTuple : ArrayList!(Variant), Tuple {
 
     override
     string getString(int pos) {
-        return get(pos).get!string();
+        Variant v = get(pos);
+        if(v == null) {
+            return string.init;
+        }else{
+            return v.get!string();
+        }
         // Object val = get(pos);
         // if (val instanceof String) {
         //     return (String) val;
@@ -317,7 +329,12 @@ class ArrayTuple : ArrayList!(Variant), Tuple {
 
     override
     byte[] getBuffer(int pos) {
-        return get(pos).get!(byte[])();
+        Variant v = get(pos);
+        if(v == null) {
+            return [];
+        }else{
+            return v.get!(byte[])();
+        }
         // Object val = get(pos);
         // if (val instanceof Buffer) {
         //     return (Buffer) val;
