@@ -4,7 +4,7 @@ import hunt.database.base;
 import hunt.database.base.SqlConnection;
 
 import hunt.Functions;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 
 abstract class MySQLTestBase {
 

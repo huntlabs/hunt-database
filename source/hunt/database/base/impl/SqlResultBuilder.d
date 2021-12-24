@@ -23,7 +23,7 @@ import hunt.database.base.impl.RowDesc;
 import hunt.database.base.SqlResult;
 import hunt.database.base.AsyncResult;
 
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 import hunt.Functions;
 
 import std.variant;

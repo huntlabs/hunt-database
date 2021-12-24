@@ -25,7 +25,7 @@ import hunt.database.driver.mysql;
 import hunt.Assert;
 import hunt.Exceptions;
 import hunt.Functions;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 import hunt.util.Common;
 import hunt.util.UnitTest;
 

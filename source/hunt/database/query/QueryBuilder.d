@@ -30,7 +30,7 @@ import hunt.Byte;
 import hunt.Exceptions;
 import hunt.Integer;
 import hunt.Long;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 import hunt.Double;
 import hunt.Float;
 import hunt.Short;

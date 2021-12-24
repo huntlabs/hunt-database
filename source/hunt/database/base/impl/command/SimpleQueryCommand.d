@@ -22,7 +22,7 @@ import hunt.database.base.impl.command.QueryCommandBase;
 import hunt.database.base.Row;
 import hunt.database.base.impl.QueryResultHandler;
 
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 
 /**
  * @author <a href="mailto:julien@julienviet.com">Julien Viet</a>

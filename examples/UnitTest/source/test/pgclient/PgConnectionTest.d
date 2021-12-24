@@ -26,7 +26,7 @@ import hunt.database.driver.postgresql.impl;
 
 import hunt.Assert;
 import hunt.Exceptions;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 import hunt.util.Common;
 import hunt.util.UnitTest;
 

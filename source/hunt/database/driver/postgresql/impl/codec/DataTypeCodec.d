@@ -49,7 +49,7 @@ import hunt.database.base.Numeric;
 
 import hunt.Byte;
 import hunt.Exceptions;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 import hunt.net.buffer.ByteBuf;
 import hunt.net.buffer.Unpooled;
 import hunt.net.Exceptions;

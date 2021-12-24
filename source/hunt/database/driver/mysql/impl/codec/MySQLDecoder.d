@@ -15,7 +15,7 @@ import hunt.Exceptions;
 import hunt.io.ByteBuffer;
 import hunt.io.BufferUtils;
 import hunt.io.channel;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 import hunt.net.codec.Decoder;
 import hunt.net.Connection;
 import hunt.net.buffer;

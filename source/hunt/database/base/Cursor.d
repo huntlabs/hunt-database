@@ -21,7 +21,7 @@ import hunt.database.base.AsyncResult;
 import hunt.database.base.Common;
 import hunt.database.base.RowSet;
 
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 
 
 

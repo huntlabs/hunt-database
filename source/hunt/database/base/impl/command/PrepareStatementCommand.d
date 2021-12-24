@@ -19,7 +19,7 @@ module hunt.database.base.impl.command.PrepareStatementCommand;
 
 import hunt.database.base.impl.command.CommandBase;
 import hunt.database.base.impl.PreparedStatement;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 
 /**
  * 

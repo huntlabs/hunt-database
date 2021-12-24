@@ -30,7 +30,7 @@ import hunt.database.base.impl.RowSetImpl;
 
 import hunt.Exceptions;
 import hunt.Functions;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 import hunt.net.buffer.ByteBuf;
 
 import std.variant;

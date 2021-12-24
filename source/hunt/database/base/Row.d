@@ -19,7 +19,7 @@ module hunt.database.base.Row;
 import hunt.database.base.Annotations;
 import hunt.database.base.Tuple;
 
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 
 
 import std.array;

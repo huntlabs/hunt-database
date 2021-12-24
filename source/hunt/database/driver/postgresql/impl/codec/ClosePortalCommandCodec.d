@@ -21,7 +21,7 @@ import hunt.database.driver.postgresql.impl.codec.PgEncoder;
 
 import hunt.database.base.impl.command.CloseCursorCommand;
 
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 import hunt.Object;
 
 class ClosePortalCommandCodec : CommandCodec!(Void, CloseCursorCommand) {

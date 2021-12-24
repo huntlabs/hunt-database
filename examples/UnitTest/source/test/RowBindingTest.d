@@ -5,7 +5,7 @@ import hunt.database.base;
 import hunt.database.base.Annotations;
 
 import hunt.util.UnitTest;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 
 import std.conv;
 import std.format;

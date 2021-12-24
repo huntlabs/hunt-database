@@ -20,7 +20,7 @@ module hunt.database.driver.postgresql.impl.codec.NoticeResponse;
 import hunt.database.driver.postgresql.impl.codec.Response;
 import hunt.database.base.impl.Notice;
 
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 
 import std.conv;
 

@@ -62,7 +62,7 @@ struct DataTypes {
         }
 
         version(HUNT_DEBUG) {
-            import hunt.logging.ConsoleLogger;
+            import hunt.logging;
             warningf("MySQL type = %d not handled - using unknown type instead", value);
         }
         //TODO need better handling

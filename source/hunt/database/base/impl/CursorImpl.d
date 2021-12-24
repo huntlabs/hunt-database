@@ -29,7 +29,7 @@ import hunt.database.base.RowSet;
 import hunt.database.base.Tuple;
 
 import hunt.Exceptions;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 import hunt.Object;
 
 import std.range;

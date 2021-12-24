@@ -32,7 +32,7 @@ import hunt.database.base.impl.command.CommandResponse;
 import hunt.database.base.impl.TxStatus;
 
 import hunt.net.buffer;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 import hunt.text.Charset;
 
 /**

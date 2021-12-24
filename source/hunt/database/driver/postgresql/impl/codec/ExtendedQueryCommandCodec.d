@@ -24,7 +24,7 @@ import hunt.database.driver.postgresql.impl.codec.PgPreparedStatement;
 import hunt.database.base.impl.command.ExtendedQueryCommand;
 
 import hunt.collection.List;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 import std.variant;
 
 class ExtendedQueryCommandCodec(R) : ExtendedQueryCommandBaseCodec!(R, ExtendedQueryCommand!(R)) {

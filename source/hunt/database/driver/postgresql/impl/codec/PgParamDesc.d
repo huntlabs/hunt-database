@@ -25,7 +25,7 @@ import hunt.database.base.Util;
 
 import hunt.collection.List;
 import hunt.Exceptions;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 
 import std.array;
 import std.algorithm;

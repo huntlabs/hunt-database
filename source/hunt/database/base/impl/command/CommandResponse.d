@@ -8,7 +8,7 @@ import hunt.database.base.Common;
 import hunt.database.base.Exceptions;
 import hunt.database.base.impl.TxStatus;
 
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 import hunt.Object;
 import hunt.util.TypeUtils;
 

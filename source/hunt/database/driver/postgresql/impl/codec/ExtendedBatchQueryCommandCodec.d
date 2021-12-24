@@ -25,7 +25,7 @@ import hunt.database.base.Tuple;
 import hunt.database.base.impl.command.ExtendedBatchQueryCommand;
 
 import hunt.collection.List;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 
 import std.variant;
 

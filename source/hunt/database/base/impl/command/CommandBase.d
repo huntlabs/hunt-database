@@ -18,7 +18,7 @@
 module hunt.database.base.impl.command.CommandBase;
 
 import hunt.database.base.impl.command.CommandResponse;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 
 
 interface ICommand {

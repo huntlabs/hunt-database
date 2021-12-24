@@ -31,7 +31,7 @@ import core.stdc.stdio;
 import core.stdc.stdarg;
 import core.stdc.time;
 
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 
 
 /**

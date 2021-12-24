@@ -11,7 +11,7 @@ import hunt.database.base.impl.PreparedStatement;
 import hunt.database.base.PreparedQuery;
 import hunt.database.base.RowSet;
 
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 
 import std.variant;
 

@@ -8,7 +8,7 @@ import hunt.database.base.impl.ParamDesc;
 import hunt.database.base.Util;
 
 import hunt.collection.List;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 import hunt.Exceptions;
 
 import std.conv;

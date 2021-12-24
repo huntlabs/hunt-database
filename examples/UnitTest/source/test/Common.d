@@ -1,7 +1,7 @@
 module test.Common;
 
 import hunt.database.base;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 
 
 static T asyncAssertSuccess(T)(AsyncResult!T ar) {

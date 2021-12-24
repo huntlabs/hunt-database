@@ -34,7 +34,7 @@ import hunt.database.base.Tuple;
 
 import hunt.concurrency.Future;
 import hunt.Exceptions;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 import hunt.net.AbstractConnection;
 import hunt.Object;
 

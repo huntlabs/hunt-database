@@ -41,7 +41,7 @@ import hunt.collection.List;
 import hunt.concurrency.Future;
 import hunt.concurrency.FuturePromise;
 import hunt.Exceptions;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 import hunt.util.StringBuilder;
 
 

@@ -15,7 +15,7 @@ import hunt.collection.Map;
 import hunt.Exceptions;
 import hunt.io.BufferUtils;
 import hunt.io.channel;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 import hunt.Object;
 
 import hunt.net.AbstractConnection;

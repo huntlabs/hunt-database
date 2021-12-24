@@ -26,7 +26,7 @@ import hunt.database.driver.mysql.impl.codec.QueryCommandBaseCodec;
 import hunt.database.driver.mysql.impl.codec.RowResultDecoder;
 
 import hunt.Exceptions;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 import hunt.net.buffer.ByteBuf;
 import hunt.database.base.impl.command.ExtendedQueryCommand;
 

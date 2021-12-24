@@ -5,7 +5,7 @@ import hunt.net.util.HttpURI;
 
 import hunt.collection;
 import hunt.Exceptions;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 
 import std.array;
 

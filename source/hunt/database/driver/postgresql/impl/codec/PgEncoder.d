@@ -56,7 +56,7 @@ import hunt.io.ByteBuffer;
 import hunt.collection.List;
 import hunt.collection.Map;
 import hunt.Exceptions;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 import hunt.net.buffer;
 import hunt.net.codec.Encoder;
 import hunt.net.Connection;

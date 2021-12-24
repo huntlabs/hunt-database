@@ -7,7 +7,7 @@ import hunt.database.driver.mysql.impl.util.BufferUtils;
 import hunt.database.base.Numeric;
 
 import hunt.Exceptions;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 import hunt.net.buffer.ByteBuf;
 import hunt.net.Exceptions;
 import hunt.text.Charset;

@@ -28,7 +28,7 @@ import hunt.database.base.impl.StringLongSequence;
 import hunt.collection.ArrayDeque;
 import hunt.collection.Deque;
 import hunt.Exceptions;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 import hunt.net.AbstractConnection;
 import hunt.net.Connection;
 import hunt.net.Exceptions;

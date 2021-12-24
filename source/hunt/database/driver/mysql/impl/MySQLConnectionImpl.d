@@ -24,7 +24,7 @@ import hunt.database.base.impl.command.PrepareStatementCommand;
 import hunt.database.base.impl.NamedQueryDesc;
 import hunt.database.base.impl.SqlConnectionImpl;
 
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 
 import hunt.collection.List;
 import hunt.concurrency.Future;

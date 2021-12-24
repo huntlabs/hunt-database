@@ -25,7 +25,7 @@ import hunt.database.base.impl.RowDesc;
 import hunt.database.base.impl.command.ExtendedQueryCommandBase;
 
 import hunt.Exceptions;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 
 abstract class ExtendedQueryCommandBaseCodec(R, C) : QueryCommandBaseCodec!(R, C) { // extends ExtendedQueryCommandBase!(R)
 

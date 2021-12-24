@@ -33,7 +33,7 @@ import hunt.database.base.impl.command.CommandResponse;
 import hunt.database.base.impl.command.QueryCommandBase;
 
 import hunt.Functions;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 import hunt.net.buffer.ByteBuf;
 import hunt.text.Charset;
 

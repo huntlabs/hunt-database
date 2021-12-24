@@ -200,7 +200,7 @@ final class Numeric : Number {
             return cast(size_t)intValue();
         } catch(Exception ex) {
             version(HUNT_DEBUG) {
-                import hunt.logging.ConsoleLogger;
+                import hunt.logging;
                 trace(ex);
             }
             return 0;

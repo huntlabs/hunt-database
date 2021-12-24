@@ -45,7 +45,7 @@ import hunt.database.base.Tuple;
 import hunt.collection.List;
 import hunt.Exceptions;
 import hunt.Functions;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 import hunt.Object;
 
 import core.atomic;

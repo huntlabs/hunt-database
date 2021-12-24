@@ -28,7 +28,7 @@ import hunt.database.base.impl.Connection;
 import hunt.database.base.impl.command.InitCommand;
 import hunt.database.driver.postgresql.impl.PostgreSQLSocketConnection;
 
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 import hunt.Exceptions;
 
 class InitCommandCodec : CommandCodec!(DbConnection, InitCommand) {

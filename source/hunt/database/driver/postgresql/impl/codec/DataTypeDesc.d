@@ -172,7 +172,7 @@ struct DataTypes {
                 return d;
         }
         version(HUNT_DEBUG) {
-            import hunt.logging.ConsoleLogger;
+            import hunt.logging;
             warningf("Postgres type OID= %d not handled - using unknown type instead", oid);
         }
         return UNKNOWN;

@@ -30,7 +30,7 @@ import hunt.io.ByteBuffer;
 import hunt.io.BufferUtils;
 import hunt.collection.Map;
 import hunt.Exceptions;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 import hunt.net.AbstractConnection;
 import hunt.net.Exceptions;
 import hunt.util.Common;

@@ -19,7 +19,7 @@ import hunt.database.driver.mysql;
 import hunt.database.driver.postgresql;
 import hunt.database.query.QueryBuilder;
 
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 import hunt.net.util.HttpURI;
 import hunt.util.StringBuilder;
 

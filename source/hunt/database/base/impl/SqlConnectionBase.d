@@ -32,7 +32,7 @@ import hunt.database.base.PreparedQuery;
 import hunt.concurrency.Future;
 import hunt.concurrency.FuturePromise;
 import hunt.Exceptions;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 import hunt.net.AbstractConnection;
 
 /**

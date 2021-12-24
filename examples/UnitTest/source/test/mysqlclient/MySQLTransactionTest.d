@@ -12,7 +12,7 @@ import hunt.database.driver.mysql.impl;
 import hunt.Assert;
 import hunt.Exceptions;
 import hunt.Functions;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 import hunt.Object;
 import hunt.util.Common;
 import hunt.util.UnitTest;

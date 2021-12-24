@@ -30,7 +30,7 @@ import hunt.database.base.impl.command.CommandResponse;
 import hunt.database.base.impl.command.InitCommand;
 
 import hunt.Exceptions;
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 import hunt.net.buffer.ByteBuf;
 import hunt.collection.Map;
 import hunt.text.Charset;

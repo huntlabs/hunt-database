@@ -6,7 +6,7 @@ mixin template TestSettingTemplate() {
     import hunt.database.base;
     import hunt.database.driver.postgresql;
     import hunt.database.driver.postgresql.impl;
-    import hunt.logging.ConsoleLogger;
+    import hunt.logging;
     import core.thread;
 
 

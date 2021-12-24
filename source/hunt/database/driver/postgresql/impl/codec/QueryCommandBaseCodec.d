@@ -67,7 +67,7 @@ abstract class QueryCommandBaseCodec(T, C) : CommandCodec!(bool, C)
     override void decodeRow(int len, ByteBuf inBuffer) {
         decoder.decodeRow(len, inBuffer);
         // if(decoder is null) {
-        //     import hunt.logging.ConsoleLogger;
+        //     import hunt.logging;
         //     warningf("The decoder is null, len: %d, buffer: %s", len, inBuffer.toString());
         // } else {
         //     decoder.decodeRow(len, inBuffer);

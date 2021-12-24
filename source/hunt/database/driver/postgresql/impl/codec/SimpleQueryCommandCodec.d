@@ -25,7 +25,7 @@ import hunt.database.base.impl.RowSetImpl;
 
 import hunt.database.base.impl.command.SimpleQueryCommand;
 
-import hunt.logging.ConsoleLogger;
+import hunt.logging;
 
 /**
 */
