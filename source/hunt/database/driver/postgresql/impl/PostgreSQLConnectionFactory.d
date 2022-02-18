@@ -48,7 +48,7 @@ import hunt.net.NetUtil;
  */
 class PgConnectionFactory {
 
-    private ArrayList!NetClient clients;
+    // private ArrayList!NetClient clients;
     private NetClientOptions _netClientOptions;
     private bool registerCloseHook;
     private string host;
@@ -70,7 +70,7 @@ class PgConnectionFactory {
     this(PgConnectOptions options) {
         // FIXME: Needing refactor or cleanup -@zhangxueping at 2021-10-13T10:17:49+08:00
         // remove clients
-        clients = new ArrayList!NetClient(50);
+        // clients = new ArrayList!NetClient(50);
         _netClientOptions = new NetClientOptions(options);
 
         // Make sure ssl=false as we will use STARTLS
@@ -92,24 +92,24 @@ class PgConnectionFactory {
         this.isUsingDomainSocket = options.isUsingDomainSocket();
     }
 
-    // Called by hook
-    private void close(AsyncVoidHandler completionHandler) {
-        close();
-        if(completionHandler !is null) {
-            completionHandler(null);
-        }
-    }
+    // // Called by hook
+    // private void close(AsyncVoidHandler completionHandler) {
+    //     close();
+    //     if(completionHandler !is null) {
+    //         completionHandler(null);
+    //     }
+    // }
 
-    void close() {
-        foreach(NetClient client; clients) {
-            if(client !is null) {
-            // FIXME: Needing refactor or cleanup -@zhangxueping at 2021-10-12T10:26:30+08:00
-            // crashed here
-                // warning(typeid(cast(Object)client));
-                client.close();
-            }
-        }
-    }
+    // void close() {
+    //     foreach(NetClient client; clients) {
+    //         if(client !is null) {
+    //         // FIXME: Needing refactor or cleanup -@zhangxueping at 2021-10-12T10:26:30+08:00
+    //         // crashed here
+    //             // warning(typeid(cast(Object)client));
+    //             client.close();
+    //         }
+    //     }
+    // }
 
     void connectAndInit(AsyncResultHandler!(DbConnection) completionHandler) {
         connect( (ar) {
@@ -249,7 +249,7 @@ class PgConnectionFactory {
 
         try {
             client.connect(host, port);
-            clients.add(client);
+            // clients.add(client);
         } catch (Throwable e) {
             // Client is closed
             version(HUNT_DEBUG) {
@@ -258,8 +258,9 @@ class PgConnectionFactory {
                 warning(e);
             }
             
-            if(handler !is null)
+            if(handler !is null) {
                 handler(failedResult!PgSocketConnection(e));
+            }
         }
     }
 

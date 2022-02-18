@@ -57,6 +57,7 @@ abstract class SocketConnectionBase : DbConnection {
     private int inflight;
     private Holder holder;
     private int pipeliningLimit;
+    private DbConnectionHandler _closingHandler;
 
     protected AbstractConnection _socket;
     protected Status status = Status.CONNECTED;
@@ -120,9 +121,13 @@ abstract class SocketConnectionBase : DbConnection {
     override
     void close(Holder holder) {
 
-        version(HUNT_DB_DEBUG) infof("closing socket... status: %s", status);
+        version(HUNT_DB_DEBUG) infof("A socket closing... status: %s", status);
 
         if (status == Status.CONNECTED) {
+            if(_closingHandler !is null) {
+                _closingHandler(this);
+            }
+
             status = Status.CLOSING;
             _socket.close();
             // // Append directly since schedule checks the status and won't enqueue the command
@@ -139,6 +144,14 @@ abstract class SocketConnectionBase : DbConnection {
         // } else {
         //     context.runOnContext(v -> close(holder));
         // }
+    }
+
+    void onClosing(DbConnectionHandler handler) {
+        if(_closingHandler !is null) {
+            warning("The handler can't be reset.");
+            return;
+        }
+        _closingHandler = handler;
     }
 
     void schedule(ICommand cmd) {
@@ -301,7 +314,8 @@ abstract class SocketConnectionBase : DbConnection {
         if(_socket is null) {
             return format("DbConnection: unknown");
         } else {
-            return format("DbConnection %d", _socket.getId());
+            return format("DbConnection %d, local: %s", 
+                _socket.getId(), _socket.getLocalAddress());
         }
     }
 }

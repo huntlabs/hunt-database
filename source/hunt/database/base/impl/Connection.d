@@ -19,11 +19,14 @@ module hunt.database.base.impl.Connection;
 
 import hunt.database.base.AsyncResult;
 import hunt.database.base.impl.command.CommandBase;
+import hunt.Functions;
 
 // alias DbConnection = Connection;
 
 alias AsyncDbConnectionHandler = AsyncResultHandler!DbConnection; 
 alias DbConnectionAsyncResult = AsyncResult!DbConnection;
+
+alias DbConnectionHandler = Action1!(DbConnection);
 
 /**
  * 
@@ -39,6 +42,8 @@ interface DbConnection {
     void schedule(ICommand cmd);
 
     void close(Holder holder);
+
+    void onClosing(DbConnectionHandler handler);
 
     int getProcessId();
 

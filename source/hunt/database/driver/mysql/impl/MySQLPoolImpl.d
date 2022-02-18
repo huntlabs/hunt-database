@@ -33,8 +33,12 @@ class MySQLPoolImpl : PoolBase!(MySQLPoolImpl), MySQLPool {
         return new MySQLConnectionImpl(factory, conn);
     }
 
-    override protected void doClose() {
-        factory.close();
-        super.doClose();
-    }
+    // override protected void doClose() {
+    //     factory.close();
+    //     super.doClose();
+    // }
+
+    override string toString() {
+        return super.toString();
+    }        
 }

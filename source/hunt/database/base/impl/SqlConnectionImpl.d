@@ -52,6 +52,7 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbCo
     private bool _isClosed = false;
 
     this(DbConnection conn) {
+        conn.onClosing(&handleClosing);
         super(conn);
     }
 
@@ -95,18 +96,54 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbCo
     //     return super.prepareNamedQuery(sql);
     // }
 
-    // override
+    /** 
+     * Handle on connection closing
+     * Params:
+     *   conn = 
+     */
+    protected void handleClosing(DbConnection conn) {
+        version(HUNT_DB_DEBUG) { 
+            tracef("The db connection %d closing.", conn.getProcessId());
+        }
+        // FIXME: Needing refactor or cleanup -@zhangxueping at 2021-10-22T11:37:35+08:00
+        // Not thread-safe
+
+        // _isClosed = true;
+
+        // Make sure that the binded transaction is completed.
+        if (tx !is null && tx.status() != ST_COMPLETED) {
+            warningf("A transaction is forced to rollback on connection (id=%d)", conn.getProcessId());
+            tx.rollback();
+        }        
+    }
+
+    /** 
+     * Handle on connection closed
+     */
     void handleClosed() {
         if(_isClosed) {
             version(HUNT_DEBUG) { 
-                warningf("connection %d closed already.", conn.getProcessId());
+                warningf("The db connection %d has been closed already.", conn.getProcessId());
             }
             return;
         }
         _isClosed = true;
 
+        version(HUNT_DB_DEBUG) { 
+            warningf("The db connection %d closed.", conn.getProcessId());
+        }
+
+        // // handle the binded transaction
+        // if (tx !is null && tx.status() != ST_COMPLETED) {
+        //     warningf("A transaction is forced to rollback on connection (id=%d)", conn.getProcessId());
+        //     tx.rollback();
+        // }
+
         VoidHandler handler = _closeHandler;
         if (handler !is null) {
+            version (HUNT_DB_DEBUG) {
+                infof("Closing a SQL connection %d with handler...", conn.getProcessId());
+            }
             handler();
         }
     }
@@ -183,33 +220,33 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbCo
     abstract void handleNotification(int processId, string channel, string payload);
 
     override void close() {
-        // version (HUNT_DB_DEBUG)
-        //     infof("Closing a SQL connection %d...", conn.getProcessId());
+        version (HUNT_DB_DEBUG)
+            infof("Closing a SQL connection %d...", conn.getProcessId());
 
         if(_isClosed) {
-            warningf("connection %d closed already.", conn.getProcessId());
+            warningf("The connection %d has been closed already.", conn.getProcessId());
             return;
         }
 
-        // FIXME: Needing refactor or cleanup -@zhangxueping at 2021-10-22T11:37:35+08:00
-        // Not thread-safe
+        handleClosing(conn);
 
-        _isClosed = true;
-
-        if(_closeHandler !is null) {
-            version (HUNT_DB_DEBUG)
+        VoidHandler handler = _closeHandler;
+        if(handler !is null) {
+            version (HUNT_DB_DEBUG) {
                 infof("Closing a SQL connection %d with handler...", conn.getProcessId());
-            _closeHandler();
+            }
+            handler();
         } else {
             version (HUNT_DB_DEBUG)
                 infof("Closing a DB connection in SQL connection %d...", conn.getProcessId());
+            conn.close(this);
 
-            if (tx !is null) {
-                tx.rollback((ar) { conn.close(this); });
-                tx = null;
-            } else {
-                conn.close(this);
-            }
+            // if (tx !is null) {
+            //     tx.rollback((ar) { conn.close(this); });
+            //     tx = null;
+            // } else {
+            //     conn.close(this);
+            // }
         }
     }
 }

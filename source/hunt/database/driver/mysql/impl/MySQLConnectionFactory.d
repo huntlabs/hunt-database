@@ -30,7 +30,7 @@ import core.thread;
  * 
  */
 class MySQLConnectionFactory {
-    private ArrayList!NetClient clients;
+    // private ArrayList!NetClient clients;
     private NetClientOptions _netClientOptions;
     private string host;
     private int port;
@@ -44,7 +44,7 @@ class MySQLConnectionFactory {
     private int preparedStatementCacheSqlLimit;
 
     this(MySQLConnectOptions options) {
-        clients = new ArrayList!NetClient(50);
+        // clients = new ArrayList!NetClient(50);
 
         _netClientOptions = new NetClientOptions(options);
 
@@ -60,20 +60,20 @@ class MySQLConnectionFactory {
         this.preparedStatementCacheSqlLimit = options.getPreparedStatementCacheSqlLimit();
     }
 
-    // Called by hook
-    private void close(AsyncVoidHandler completionHandler) {
-        close();
-        if(completionHandler !is null) {
-            completionHandler(cast(VoidAsyncResult)null);
-        }
-    }
+    // // Called by hook
+    // private void close(AsyncVoidHandler completionHandler) {
+    //     close();
+    //     if(completionHandler !is null) {
+    //         completionHandler(cast(VoidAsyncResult)null);
+    //     }
+    // }
 
-    void close() {
-        foreach(client; clients)
-            client.close();
+    // void close() {
+    //     foreach(client; clients)
+    //         client.close();
 
-        clients.clear();
-    }
+    //     clients.clear();
+    // }
 
     void connect(AsyncResultHandler!(DbConnection) completionHandler) {
         // Promise!(NetSocket) promise = Promise.promise();
@@ -135,14 +135,14 @@ class MySQLConnectionFactory {
                         myConn.handleClosed(connection);
                     
                     // 
-                    synchronized(this.outer) {
-                        clients.remove(netClient);
-                    }
+                    // synchronized(this.outer) {
+                    //     clients.remove(netClient);
+                    // }
                     // destroy(netClient);
-                    version(HUNT_DB_DEBUG) {
-                        infof("Remaining clients: %d, threads: %d", 
-                            clients.size(), Thread.getAll().length);
-                    }
+                    // version(HUNT_DB_DEBUG) {
+                    //     infof("Remaining clients: %d, threads: %d", 
+                    //         clients.size(), Thread.getAll().length);
+                    // }
                 }
 
                 override DataHandleStatus messageReceived(Connection connection, Object message) {
@@ -181,14 +181,14 @@ class MySQLConnectionFactory {
                     if(handler !is null)
                         handler(failedResult!(MySQLSocketConnection)(t));
                     
-                    synchronized(this.outer) {
-                        clients.remove(netClient);
-                    }
+                    // synchronized(this.outer) {
+                    //     clients.remove(netClient);
+                    // }
                     destroy(netClient);
-                    version(HUNT_DB_DEBUG) {
-                        infof("Remaining clients: %d, threads: %d", 
-                            clients.size(), Thread.getAll().length);
-                    }
+                    // version(HUNT_DB_DEBUG) {
+                    //     infof("Remaining clients: %d, threads: %d", 
+                    //         clients.size(), Thread.getAll().length);
+                    // }
                 }
 
                 override void failedOpeningConnection(int connectionId, Throwable t) {
@@ -211,7 +211,7 @@ class MySQLConnectionFactory {
 
         try {
             netClient.connect(host, port);
-            clients.add(netClient);
+            // clients.add(netClient);
         } catch (Throwable e) {
             // Client is closed
             version(HUNT_DEBUG) {

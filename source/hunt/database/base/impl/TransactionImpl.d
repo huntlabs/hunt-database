@@ -45,26 +45,30 @@ import hunt.Object;
 import std.string;
 import std.container.dlist;
 
+enum int ST_BEGIN = 0;
+enum int ST_PENDING = 1;
+enum int ST_PROCESSING = 2;
+enum int ST_COMPLETED = 3;
+
 /**
  * 
  */
 class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
 
-    private enum int ST_BEGIN = 0;
-    private enum int ST_PENDING = 1;
-    private enum int ST_PROCESSING = 2;
-    private enum int ST_COMPLETED = 3;
-
     private AsyncVoidHandler disposeHandler;
     // private Deque<CommandBase<?>> pending = new ArrayDeque<>();
     private DList!(ICommand) pending;
     private AsyncVoidHandler failedHandler;
-    private int status = ST_BEGIN;
+    private int _status = ST_BEGIN;
 
     this(DbConnection conn, AsyncVoidHandler disposeHandler) { 
         super(conn); 
         this.disposeHandler = disposeHandler;
         doSchedule(doQuery("BEGIN", &afterBegin));
+    }
+
+    int status() {
+        return _status;
     }
 
     override Transaction prepare(string sql, PreparedQueryHandler handler) {
@@ -93,9 +97,9 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
     private void afterBegin(AsyncResult!RowSet ar) {
         // synchronized (this) {
             if (ar.succeeded()) {
-                status = ST_PENDING;
+                _status = ST_PENDING;
             } else {
-                status = ST_COMPLETED;
+                _status = ST_COMPLETED;
             }
             checkPending();
         // }
@@ -118,17 +122,17 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
     }
 
     private void doCheckPending() {
-        switch (status) {
+        switch (_status) {
             case ST_BEGIN:
                 break;
             case ST_PENDING: {
                 ICommand cmd = pollPending();
                 if (cmd !is null) {
                     if (isComplete(cmd)) {
-                        status = ST_COMPLETED;
+                        _status = ST_COMPLETED;
                     } else {
                         wrap(cmd);
-                        status = ST_PROCESSING;
+                        _status = ST_PROCESSING;
                     }
                     doSchedule(cmd);
                 }
@@ -148,7 +152,7 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
             }
 
             default:
-                warning("unhandled status: %d", status);
+                warning("unhandled _status: %d", _status);
                 break;
         }
     }
@@ -198,7 +202,7 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
         ResponseHandler!T handler = cmd.handler;
         cmd.handler = (CommandResponse!T ar) {
             synchronized (this) {
-                status = ST_PENDING;
+                _status = ST_PENDING;
                 if (ar.txStatus() == TxStatus.FAILED) {
                     // We won't recover from this so rollback
                     ICommand c;
@@ -226,7 +230,7 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
 
     void commit() {
         auto f = new FuturePromise!Void();
-        while(status == ST_BEGIN) {
+        while(_status == ST_BEGIN) {
             version(HUNT_DB_DEBUG_MORE) warning("Waiting for the response for BEGIN");
         }
 
@@ -238,14 +242,14 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
             }
         });
 
-        version(HUNT_DEBUG) warning("try to get a commit result");
+        version(HUNT_DB_DEBUG) warning("try to get a commit result");
         import core.time;
         f.get(awaittingTimeout);
     }
 
     void commit(AsyncVoidHandler handler) {
-        version(HUNT_DB_DEBUG) tracef("status: %d", status);
-        switch (status) {
+        version(HUNT_DB_DEBUG) tracef("_status: %d", _status);
+        switch (_status) {
             case ST_BEGIN:
             case ST_PENDING:
             case ST_PROCESSING:
@@ -273,23 +277,28 @@ class TransactionImpl : SqlConnectionBase!(TransactionImpl), Transaction {
     }
 
     void rollback() {
-        // rollback(null);
-        auto f = new FuturePromise!Void("rollback");
-        while(status == ST_BEGIN) {
-            version(HUNT_DB_DEBUG_MORE) warning("Waiting for the response for BEGIN");
-        }
-
-        rollback((VoidAsyncResult ar) {
-            if (ar.succeeded()) { 
-                f.succeeded(null);
-            } else {
-                f.failed(ar.cause()); 
+        try {
+            // rollback(null);
+            auto f = new FuturePromise!Void("rollback");
+            while(_status == ST_BEGIN) {
+                version(HUNT_DB_DEBUG_MORE) warning("Waiting for the response for BEGIN");
             }
-        });
 
-        version(HUNT_DEBUG) warning("try to get a rollback result");
-        import core.time;
-        f.get(awaittingTimeout);
+            rollback((VoidAsyncResult ar) {
+                if (ar.succeeded()) { 
+                    f.succeeded(null);
+                } else {
+                    f.failed(ar.cause()); 
+                }
+            });
+
+            version(HUNT_DB_DEBUG) trace("try to get a rollback result");
+            import core.time;
+            f.get(awaittingTimeout);
+        } catch(Throwable t) {
+            errorf("A transaction failed to rollback.");
+            warning(t);
+        }
     }
 
     void rollback(AsyncVoidHandler handler) {

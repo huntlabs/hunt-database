@@ -77,3 +77,7 @@ writeln(row["username"]);
 int result = stmt.execute();
 ```
 - Statement.lastInsertId() : Statement.execute() for insert sql, return lastInsertId.
+
+
+### See also
+- https://github.com/eclipse-vertx/vertx-sql-client

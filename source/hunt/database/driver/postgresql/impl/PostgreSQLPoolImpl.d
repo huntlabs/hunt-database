@@ -57,11 +57,15 @@ class PgPoolImpl : PoolBase!(PgPoolImpl), PgPool {
         return new PgConnectionImpl(factory, conn);
     }
 
-    override
-    protected void doClose() {
-        if(factory !is null) {
-            factory.close();
-        }
-        super.doClose();
-    }
+    // override
+    // protected void doClose() {
+    //     if(factory !is null) {
+    //         factory.close();
+    //     }
+    //     super.doClose();
+    // }
+
+    override string toString() {
+        return super.toString();
+    }    
 }

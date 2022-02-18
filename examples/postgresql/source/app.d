@@ -11,6 +11,8 @@
 
 import std.stdio;
 import hunt.logging;
+import hunt.net.EventLoopPool;
+import hunt.concurrency.Future;
 
 import hunt.database;
 import std.datetime;
@@ -35,6 +37,9 @@ void main() {
     // Database db = new Database(
     //     "postgresql://putao:putao123@10.1.223.62:5432/uas?prefix=&charset=utf8");
 
+    SqlConnection sqlConn = db.getConnection();
+    Transaction transcation = sqlConn.begin();
+
     // // 
     // writeln("============= Delete ==================");
     // sql = `DELETE From public.test where id=1;`;
@@ -48,14 +53,36 @@ void main() {
     sql = `INSERT INTO public.test(val) VALUES ('abc') RETURNING id;`;
     // sql = `INSERT INTO public.test(val) VALUES ('abc'), ('123') RETURNING id, val;`;
     // sql = `INSERT INTO public.test(val) VALUES ('abc');`;
-    result = db.execute(sql);
+    // result = db.execute(sql);
+
+    tracef("transcation status: %s", transcation.status());
+    Future!RowSet promise = transcation.queryAsync(sql);
+    rs = promise.get(5.seconds);
+
+    tracef("Rows: \n%s", rs.toString());
+
+    import core.thread;
+    // Thread.sleep(20.seconds);
+    
+    tracef("transcation status: %s", transcation.status());
+
+    // transcation.rollback();
+    // transcation.commit();
+
+    // tracef("transcation status: %s", transcation.status());
+
     // result = db.execute(sql, "id");
     // result = db.query(sql).columnInLastRow("id");
     // Row row = db.query(sql).lastRow();
     // if(row !is null) {
     //     result = row.getInteger("id");
     // }
-    tracef("result: %d", result);
+    // tracef("result: %d", result);
+
+    sqlConn.close();
+    tracef("status: %s", db.poolInfo());
+
+
 
     // string v  = db.execute!(string)(sql, "val");
     // tracef("val: %s", v);    
@@ -174,6 +201,10 @@ void main() {
 
 
     db.close();
+    getchar();
+
+    shutdownEventLoopPool();
+
     getchar();
 }
 

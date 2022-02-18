@@ -82,7 +82,7 @@ abstract class SqlConnectionBase(C) : SqlClientBase!(C) {
 
     PreparedQuery prepare(string sql) {
         auto f = prepareAsync(sql);
-        version(HUNT_DEBUG) warning("try to get a prepare result");
+        version(HUNT_DB_DEBUG) warning("try to get a prepare result");
         return f.get(awaittingTimeout);
     }
 

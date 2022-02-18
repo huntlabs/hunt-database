@@ -94,4 +94,6 @@ interface Transaction : SqlClient {
      * Rollback the transaction and release the associated resources.
      */
     void close();
+
+    int status();
 }

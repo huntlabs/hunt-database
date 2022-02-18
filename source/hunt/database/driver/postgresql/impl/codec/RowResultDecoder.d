@@ -71,7 +71,7 @@ class RowResultDecoder(R) : RowDecoder {
             row = new PgRowImpl(desc);
         }
 
-        version(HUNT_DB_DEBUG) infof("row: %d, size: %d", _size+1, len);
+        version(HUNT_DB_DEBUG_MORE) infof("row: %d, size: %d", _size+1, len);
         
         Row row = new PgRowImpl(desc);
         for (int c = 0; c < len; ++c) {

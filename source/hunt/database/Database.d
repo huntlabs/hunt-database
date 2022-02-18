@@ -153,4 +153,12 @@ class Database {
         }
     }
 
+    string poolInfo() {
+        if(_pool is null) {
+            return "unset";
+        } else {
+            return (cast(Object)_pool).toString();
+        }
+    }
+
 }

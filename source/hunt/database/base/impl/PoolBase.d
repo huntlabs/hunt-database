@@ -198,19 +198,27 @@ abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
 
         try {
             // https://github.com/eclipse-vertx/vertx-sql-client/issues/463
-            version(HUNT_DEBUG) tracef("try to get a connection in %s", dur);
+            version(HUNT_DB_DEBUG) tracef("try to get a connection in %s", dur);
             DbConnection dbConn =  pool.borrow(dur);
-            version(HUNT_DEBUG) tracef("Got a DB connection (id=%d)", dbConn.getProcessId());
+            version(HUNT_DB_DEBUG) tracef("Got a DB connection (id=%d)", dbConn.getProcessId());
 
             conn = wrap(dbConn);
             dbConn.initHolder(cast(DbConnection.Holder)conn);
 
             conn.closeHandler(() {
-                version(HUNT_DEBUG) {
-                    tracef("Returning DB connection (id=%d)", dbConn.getProcessId());
+                version(HUNT_DB_DEBUG) {
+                    tracef("Returning a DB connection (id=%d), %s", 
+                        dbConn.getProcessId(), (cast(Object)dbConn).toString());
                 }
                 dbConn.initHolder(null);
+                // The borrowed object must be returned to the pool
                 pool.returnObject(dbConn);
+
+                // if(dbConn.isConnected()) {
+                //     pool.returnObject(dbConn);
+                // } else {
+                //     warningf("Dropped a closed db connection %s", (cast(Object)dbConn).toString());
+                // }
             });
                          
 
@@ -252,4 +260,8 @@ abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
     int maxSize() { return cast(int)pool.size(); }
     
     int size() { return cast(int)pool.size(); }
+
+    override string toString() {
+        return pool.toString();
+    }
 }
