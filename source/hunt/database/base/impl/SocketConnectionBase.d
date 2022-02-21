@@ -57,7 +57,6 @@ abstract class SocketConnectionBase : DbConnection {
     private int inflight;
     private Holder holder;
     private int pipeliningLimit;
-    private DbConnectionHandler _closingHandler;
 
     protected AbstractConnection _socket;
     protected Status status = Status.CONNECTED;
@@ -119,15 +118,15 @@ abstract class SocketConnectionBase : DbConnection {
     }
 
     override
-    void close(Holder holder) {
+    void close() {
 
         version(HUNT_DB_DEBUG) infof("A socket closing... status: %s", status);
 
         if (status == Status.CONNECTED) {
-            if(_closingHandler !is null) {
-                _closingHandler(this);
+            if(holder !is null) {
+                holder.handleClosing();
+                holder = null;
             }
-
             status = Status.CLOSING;
             _socket.close();
             // // Append directly since schedule checks the status and won't enqueue the command
@@ -146,13 +145,13 @@ abstract class SocketConnectionBase : DbConnection {
         // }
     }
 
-    void onClosing(DbConnectionHandler handler) {
-        if(_closingHandler !is null) {
-            warning("The handler can't be reset.");
-            return;
-        }
-        _closingHandler = handler;
-    }
+    // void onClosing(DbConnectionHandler handler) {
+    //     if(_closingHandler !is null) {
+    //         warning("The handler can't be reset.");
+    //         return;
+    //     }
+    //     _closingHandler = handler;
+    // }
 
     void schedule(ICommand cmd) {
         if (!cmd.handlerExist()) {

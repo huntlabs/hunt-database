@@ -52,7 +52,6 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbCo
     private bool _isClosed = false;
 
     this(DbConnection conn) {
-        conn.onClosing(&handleClosing);
         super(conn);
     }
 
@@ -101,7 +100,7 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbCo
      * Params:
      *   conn = 
      */
-    protected void handleClosing(DbConnection conn) {
+    void handleClosing() {
         version(HUNT_DB_DEBUG) { 
             tracef("The db connection %d closing.", conn.getProcessId());
         }
@@ -132,12 +131,6 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbCo
         version(HUNT_DB_DEBUG) { 
             warningf("The db connection %d closed.", conn.getProcessId());
         }
-
-        // // handle the binded transaction
-        // if (tx !is null && tx.status() != ST_COMPLETED) {
-        //     warningf("A transaction is forced to rollback on connection (id=%d)", conn.getProcessId());
-        //     tx.rollback();
-        // }
 
         VoidHandler handler = _closeHandler;
         if (handler !is null) {
@@ -228,7 +221,7 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbCo
             return;
         }
 
-        handleClosing(conn);
+        handleClosing();
 
         VoidHandler handler = _closeHandler;
         if(handler !is null) {
@@ -239,7 +232,7 @@ abstract class SqlConnectionImpl(C) : SqlConnectionBase!(C), SqlConnection, DbCo
         } else {
             version (HUNT_DB_DEBUG)
                 infof("Closing a DB connection in SQL connection %d...", conn.getProcessId());
-            conn.close(this);
+            conn.close();
 
             // if (tx !is null) {
             //     tx.rollback((ar) { conn.close(this); });

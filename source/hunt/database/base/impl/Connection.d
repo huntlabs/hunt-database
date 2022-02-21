@@ -26,8 +26,6 @@ import hunt.Functions;
 alias AsyncDbConnectionHandler = AsyncResultHandler!DbConnection; 
 alias DbConnectionAsyncResult = AsyncResult!DbConnection;
 
-alias DbConnectionHandler = Action1!(DbConnection);
-
 /**
  * 
  */
@@ -41,9 +39,7 @@ interface DbConnection {
 
     void schedule(ICommand cmd);
 
-    void close(Holder holder);
-
-    void onClosing(DbConnectionHandler handler);
+    void close();
 
     int getProcessId();
 
@@ -52,6 +48,8 @@ interface DbConnection {
     interface Holder {
 
         void handleNotification(int processId, string channel, string payload);
+
+        void handleClosing();
 
         void handleClosed();
 

@@ -107,7 +107,7 @@ class DbConnectionFactory : ObjectFactory!(DbConnection) {
         version(HUNT_DB_DEBUG) {
             tracef("Connection [%d] disconnected: %s", p.getProcessId(), p.isConnected());
         }
-        p.close(null);
+        p.close();
     }
 
     override bool isValid(DbConnection p) {
