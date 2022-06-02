@@ -55,7 +55,7 @@ import std.variant;
  */
 abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : SqlClient))
 
-    private Duration _awaittingTimeout = 10.seconds;
+    private Duration _awaittingTimeout = 30.seconds;
 
     Duration awaittingTimeout() {
         return _awaittingTimeout;
