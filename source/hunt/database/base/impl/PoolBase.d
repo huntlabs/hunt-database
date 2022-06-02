@@ -61,6 +61,10 @@ abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
 
     abstract void connect(AsyncDbConnectionHandler completionHandler);
 
+    PoolOptions options() {
+        return _options;
+    }
+
     override
     void getConnection(AsyncSqlConnectionHandler handler) {
         pool.acquire((DbConnectionAsyncResult ar) {

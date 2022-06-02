@@ -22,8 +22,14 @@ void main() {
     Statement statement;
     RowSet rs;
 
-    Database db = new Database(
-            "postgresql://postgres:123456@10.1.11.44:5432/postgres?charset=utf-8");
+    string url = "postgresql://postgres:123456@10.1.11.44:5432/postgres?charset=utf-8";
+    DatabaseOption options = new DatabaseOption(url);
+
+    options.setConnectionTimeout(60000);
+
+    Database db = new Database(options);
+    SqlConnection conn = db.getConnection();
+
 
     // // 
     // writeln("============= Delete ==================");
@@ -48,15 +54,15 @@ void main() {
     // result = statement.execute();
     // tracef("result: %d", result);
 
-    // //
-    // writeln("============= Select ==================");
-    // statement = db.prepare("SELECT * FROM public.test where id=:id limit 10");
-    // statement.setParameter("id", 1);
-    // rs = statement.query();
+    //
+    writeln("============= Select ==================");
+    statement = db.prepare(conn, "SELECT * FROM public.test where id=:id limit 10");
+    statement.setParameter("id", 1);
+    rs = statement.query();
 
-    // foreach (Row row; rs) {
-    //     writeln(row);
-    // }
+    foreach (Row row; rs) {
+        writeln(row);
+    }
 
 
     //
@@ -94,19 +100,19 @@ void main() {
 
 
     // 
-    writeln("============= Class Binding ==================");
-    sql = `SELECT a.id as immutable__as__id, a.message as immutable__as__message, 
-	b.id as world__as__id, b.randomnumber as world__as__randomnumber 
-	FROM immutable as a LEFT JOIN world as b on a.id = b.id where a.id=1;`;
+    // writeln("============= Class Binding ==================");
+    // sql = `SELECT a.id as immutable__as__id, a.message as immutable__as__message, 
+	// b.id as world__as__id, b.randomnumber as world__as__randomnumber 
+	// FROM immutable as a LEFT JOIN world as b on a.id = b.id where a.id=1;`;
 
-    statement = db.prepare(sql);
-    rs = statement.query();
+    // statement = db.prepare(sql);
+    // rs = statement.query();
 
-    Immutable[] testEntities = rs.bind!(Immutable, (a, b) => a ~ "__as__" ~ b)();
+    // Immutable[] testEntities = rs.bind!(Immutable, (a, b) => a ~ "__as__" ~ b)();
 
-    foreach (Immutable t; testEntities) {
-        writeln(t);
-    }    
+    // foreach (Immutable t; testEntities) {
+    //     writeln(t);
+    // }    
 
 
     db.close();

@@ -88,7 +88,7 @@ abstract class SqlClientBase(C) : SqlClient, CommandScheduler  { // if(is(C : Sq
     RowSet query(string sql) {
         auto f = queryAsync(sql);
         try {
-            version(HUNT_DEBUG) trace("try to get a query result");
+            version(HUNT_DB_DEBUG) tracef("try to get a query result in %s", _awaittingTimeout);
             import core.time;
             return f.get(_awaittingTimeout);
         } catch(Exception ex) {

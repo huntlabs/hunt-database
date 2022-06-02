@@ -86,29 +86,32 @@ class Database
 			tracef("maximumSize: %d, connectionTimeout: %d", _options.maximumPoolSize, _options.connectionTimeout);
 		}
 
-		if(_options.isPgsql()) {
-			PgConnectOptions connectOptions = new PgConnectOptions(_options.url);
-			connectOptions.setDecoderBufferSize(_options.getDecoderBufferSize());
-			connectOptions.setEncoderBufferSize(_options.getEncoderBufferSize());
+        // dfmt off
+        PoolOptions poolOptions = new PoolOptions()
+            .setMaxSize(_options.maximumPoolSize)
+            // .retry(_options.retry)
+            .awaittingTimeout(_options.connectionTimeout.msecs);
 
-			PoolOptions poolOptions = new PoolOptions()
-				.setMaxSize(_options.maximumPoolSize)
-				.awaittingTimeout(_options.connectionTimeout.msecs);
-			_pool = new PgPoolImpl(connectOptions, poolOptions);
+        if(_options.isPgsql()) {
+            PgConnectOptions connectOptions = new PgConnectOptions(_options.url);
+            connectOptions.setDecoderBufferSize(_options.getDecoderBufferSize());
+            connectOptions.setEncoderBufferSize(_options.getEncoderBufferSize());
+            connectOptions.setConnectTimeout(_options.connectionTimeout().msecs);
 
-		} else if(_options.isMysql()) {
-			MySQLConnectOptions connectOptions = new MySQLConnectOptions(_options.url);
-			connectOptions.setDecoderBufferSize(_options.getDecoderBufferSize());
-			connectOptions.setEncoderBufferSize(_options.getEncoderBufferSize());
-			
-			PoolOptions poolOptions = new PoolOptions()
-				.setMaxSize(_options.maximumPoolSize)
-				.awaittingTimeout(_options.connectionTimeout.msecs);
-			_pool = new MySQLPoolImpl(connectOptions, poolOptions);
+            _pool = new PgPoolImpl(connectOptions, poolOptions);
+        } else if(_options.isMysql()) {
+            MySQLConnectOptions connectOptions = new MySQLConnectOptions(_options.url);
+            connectOptions.setDecoderBufferSize(_options.getDecoderBufferSize());
+            connectOptions.setEncoderBufferSize(_options.getEncoderBufferSize());
+            connectOptions.setConnectTimeout(_options.connectionTimeout().msecs);
 
-		} else {
-			throw new DatabaseException("Unsupported database driver: " ~ _options.schemeName());
-		}
+            _pool = new MySQLPoolImpl(connectOptions, poolOptions);
+
+        } else {
+            throw new DatabaseException("Unsupported database driver: " ~ _options.schemeName());
+        }
+
+        // dfmt on
 	}
 
 	int execute(string sql)
