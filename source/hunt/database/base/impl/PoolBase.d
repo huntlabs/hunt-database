@@ -156,6 +156,10 @@ abstract class PoolBase(P) : SqlClientBase!(P), Pool { //  extends PoolBase!(P)
 
     abstract void connect(AsyncDbConnectionHandler completionHandler);
 
+    DbPoolOptions options() {
+        return _options;
+    }
+
 
     int nextPromiseId() {
         import core.atomic;

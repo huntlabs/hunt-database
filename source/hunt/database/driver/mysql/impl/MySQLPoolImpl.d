@@ -30,7 +30,9 @@ class MySQLPoolImpl : PoolBase!(MySQLPoolImpl), MySQLPool {
     }
 
     override protected SqlConnection wrap(DbConnection conn) {
-        return new MySQLConnectionImpl(factory, conn);
+        MySQLConnectionImpl impl = new MySQLConnectionImpl(factory, conn);
+        impl.awaittingTimeout = options.awaittingTimeout();
+        return impl;
     }
 
     // override protected void doClose() {

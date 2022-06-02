@@ -24,8 +24,12 @@ void main() {
     Statement statement;
     RowSet rs;
 
-    Database db = new Database(
-            "postgresql://postgres:123456@10.1.11.44:5432/postgres?charset=utf-8");
+    string url = "postgresql://postgres:123456@10.1.11.44:5432/postgres?charset=utf-8";
+    DatabaseOption options = new DatabaseOption(url);
+
+    options.setConnectionTimeout(60000);
+
+    Database db = new Database(options);
 
     // Database db = new Database(
     //         "postgresql://postgres:123456@10.1.11.44:5432/eql_test?charset=utf-8");
@@ -37,50 +41,50 @@ void main() {
     // Database db = new Database(
     //     "postgresql://putao:putao123@10.1.223.62:5432/uas?prefix=&charset=utf8");
 
-    SqlConnection sqlConn = db.getConnection();
-    Transaction transcation = sqlConn.begin();
+    // SqlConnection sqlConn = db.getConnection();
+    // Transaction transcation = sqlConn.begin();
 
-    // // 
-    // writeln("============= Delete ==================");
-    // sql = `DELETE From public.test where id=1;`;
-    // result = db.execute(sql);
-    // tracef("result: %d", result);
+    // // // 
+    // // writeln("============= Delete ==================");
+    // // sql = `DELETE From public.test where id=1;`;
+    // // result = db.execute(sql);
+    // // tracef("result: %d", result);
 
-    // // 
-    // writeln("============= Insert ==================");
+    // // // 
+    // // writeln("============= Insert ==================");
 
-    // sql = `INSERT INTO public.test(id, val) VALUES (13, 'abc');`;
-    sql = `INSERT INTO public.test(val) VALUES ('abc') RETURNING id;`;
-    // sql = `INSERT INTO public.test(val) VALUES ('abc'), ('123') RETURNING id, val;`;
-    // sql = `INSERT INTO public.test(val) VALUES ('abc');`;
-    // result = db.execute(sql);
-
-    tracef("transcation status: %s", transcation.status());
-    Future!RowSet promise = transcation.queryAsync(sql);
-    rs = promise.get(5.seconds);
-
-    tracef("Rows: \n%s", rs.toString());
-
-    import core.thread;
-    // Thread.sleep(20.seconds);
-    
-    tracef("transcation status: %s", transcation.status());
-
-    // transcation.rollback();
-    // transcation.commit();
+    // // sql = `INSERT INTO public.test(id, val) VALUES (13, 'abc');`;
+    // sql = `INSERT INTO public.test(val) VALUES ('abc') RETURNING id;`;
+    // // sql = `INSERT INTO public.test(val) VALUES ('abc'), ('123') RETURNING id, val;`;
+    // // sql = `INSERT INTO public.test(val) VALUES ('abc');`;
+    // // result = db.execute(sql);
 
     // tracef("transcation status: %s", transcation.status());
+    // Future!RowSet promise = transcation.queryAsync(sql);
+    // rs = promise.get(5.seconds);
 
-    // result = db.execute(sql, "id");
-    // result = db.query(sql).columnInLastRow("id");
-    // Row row = db.query(sql).lastRow();
-    // if(row !is null) {
-    //     result = row.getInteger("id");
-    // }
-    // tracef("result: %d", result);
+    // tracef("Rows: \n%s", rs.toString());
 
-    sqlConn.close();
-    tracef("status: %s", db.poolInfo());
+    // import core.thread;
+    // // Thread.sleep(20.seconds);
+    
+    // tracef("transcation status: %s", transcation.status());
+
+    // // transcation.rollback();
+    // // transcation.commit();
+
+    // // tracef("transcation status: %s", transcation.status());
+
+    // // result = db.execute(sql, "id");
+    // // result = db.query(sql).columnInLastRow("id");
+    // // Row row = db.query(sql).lastRow();
+    // // if(row !is null) {
+    // //     result = row.getInteger("id");
+    // // }
+    // // tracef("result: %d", result);
+
+    // // sqlConn.close();
+    // tracef("status: %s", db.poolInfo());
 
 
 
@@ -100,15 +104,15 @@ void main() {
     // //
     // writeln("============= Select ==================");
 
-    // SqlConnection conn = db.getConnection();
+    SqlConnection conn = db.getConnection();
 
-    // // case 1
-    // // {
-    // //     string sql = "SELECT * FROM public.test where id=:id limit 10";
+    // case 1
+    {
+        sql = "SELECT * FROM public.test where id=:id limit 10";
         
-    // //     statement = db.prepare(conn, sql);
-    // //     statement.setParameter("id", 1);
-    // // }
+        statement = db.prepare(conn, sql);
+        statement.setParameter("id", 1);
+    }
 
     // {
     //     sql = "SELECT * FROM userinfo where id=1";
@@ -117,14 +121,14 @@ void main() {
     //     statement.setParameter("id", 1);
     // }
 
-    // rs = statement.query();
+    rs = statement.query();
 
-    // foreach (Row row; rs) {
-    //     writeln(row);
+    foreach (Row row; rs) {
+        writeln(row);
 
-    //     byte[] b  = row.getBuffer(3);
-    //     warningf("%(%02X %)", b);
-    // }
+        byte[] b  = row.getBuffer(3);
+        warningf("%(%02X %)", b);
+    }
 
 
     // warning("11111");

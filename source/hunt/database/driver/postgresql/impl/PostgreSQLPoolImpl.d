@@ -54,7 +54,9 @@ class PgPoolImpl : PoolBase!(PgPoolImpl), PgPool {
 
     override
     protected SqlConnection wrap(DbConnection conn) {
-        return new PgConnectionImpl(factory, conn);
+        PgConnectionImpl impl = new PgConnectionImpl(factory, conn);
+        impl.awaittingTimeout = options.awaittingTimeout();
+        return impl;
     }
 
     // override
