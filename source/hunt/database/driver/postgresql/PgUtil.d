@@ -20,9 +20,19 @@ import hunt.util.StringBuilder;
  */
 class PgUtil {
 
+    /** 
+     * https://developpaper.com/postgresql-database-escape-character-operation/
+     * https://www.postgresql.org/docs/11/sql-syntax-lexical.html#SQL-SYNTAX-SPECIAL-CHARS
+     * 
+     * Params:
+     *   sbuf = 
+     *   value = 
+     *   standardConformingStrings = 
+     * Returns: 
+     */
     static string escapeWithQuotes(string value) {
         scope StringBuilder sb = new StringBuilder((cast(int)value.length + 10) / 10 * 11); // Add 10% for escaping.
-        sb.append('\'') ;
+        sb.append("E'") ;
         escapeLiteral(sb, value, false);
         sb.append('\'') ;
 

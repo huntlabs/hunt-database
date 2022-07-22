@@ -680,7 +680,12 @@ class QueryBuilder
                         if(fieldTypeInfo == typeid(string))
                         {
                             // logDebug("---Insert(%s , %s )".format(k,v.value));
-                            tempValue = escapeWithQuotes(v.value.get!string());
+                            string oldValue = v.value.get!string();
+                            version(HUNT_DB_DEBUG) tracef("old value: %s", oldValue);
+
+                            tempValue = escapeWithQuotes(oldValue);
+                            version(HUNT_DB_DEBUG) tracef("escaped value: %s", tempValue);
+                            
                         } else if(fieldTypeInfo == typeid(byte[])) {
                             if(_dbType == DBType.POSTGRESQL) {
                                 tempValue = format("'\\x%(%02X%)'", v.value.get!(byte[]));
@@ -705,6 +710,7 @@ class QueryBuilder
                         } else {
                             tempValue = v.value.toString();
                         }
+
 
                         // chomp the table prefix
                         k = chompPrefix(k, tablePrefix);
