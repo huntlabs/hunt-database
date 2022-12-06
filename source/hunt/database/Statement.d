@@ -169,8 +169,9 @@ class Statement
     {
         string execSql = sql(_sqlConn);
 
-        version (HUNT_SQL_DEBUG)
+        version (HUNT_SQL_DEBUG_MORE) {
             logDebug(execSql);
+        }
 
         _rs = _sqlConn.query(execSql);
         _lastInsertId = 0;
@@ -207,7 +208,7 @@ class Statement
     int execute(string lastIdName)
     {
         string execSql = sql(_sqlConn);
-        version (HUNT_SQL_DEBUG) logDebug(execSql);
+        version (HUNT_SQL_DEBUG_MORE) logDebug(execSql);
 
         _rs = _sqlConn.query(execSql);
         _lastInsertId = 0;

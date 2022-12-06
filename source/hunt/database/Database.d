@@ -112,8 +112,10 @@ class Database {
     }
 
     RowSet query(string sql) {
-        version (HUNT_SQL_DEBUG)
+        version (HUNT_SQL_DEBUG_MORE) {
             info(sql);
+        }
+        
         SqlConnection conn = getConnection();
         scope (exit) {
             conn.close();
