@@ -166,7 +166,7 @@ class DataTypeCodec {
                 buff.writeCharSequence(value.toString(), StandardCharsets.UTF_8);
                 break;
             default:
-                warningf("Data type %s(%d) does not support text encoding", id, cast(int)id);
+                version(HUNT_DEBUG) warningf("Data type %s(%d) does not support text encoding", id, cast(int)id);
                 buff.writeCharSequence(value.toString(), StandardCharsets.UTF_8);
                 break;
         }
@@ -343,7 +343,7 @@ class DataTypeCodec {
     //             binaryEncodeArray((Interval[]) value, DataType.INTERVAL, buff);
     //             break;
             default:
-                warningf("Data type %s(%d) does not support binary encoding", id, cast(int)id);
+                version(HUNT_DEBUG) warningf("Data type %s(%d) does not support binary encoding", id, cast(int)id);
                 defaultEncodeBinary(value, buff);
                 break;
         }
@@ -474,7 +474,7 @@ class DataTypeCodec {
     //         case DataType.INTERVAL_ARRAY:
     //             return binaryDecodeArray(INTERVAL_ARRAY_FACTORY, DataType.INTERVAL, index, len, buff).Variant();
             default:
-                warningf("Data type %s(%d) does not support binary decoding", id, id);
+                version(HUNT_DEBUG) warningf("Data type %s(%d) does not support binary decoding", id, id);
                 return Variant(null);
                 // return defaultDecodeBinary(index, len, buff);
         }
@@ -599,7 +599,7 @@ class DataTypeCodec {
     //         case DataType.INTERVAL_ARRAY:
     //             return textDecodeArray(INTERVAL_ARRAY_FACTORY, DataType.INTERVAL, index, len, buff).Variant();
             default:
-                warningf("Data type %s(%d) does not support text decoding", id, id);
+                version(HUNT_DEBUG) warningf("Data type %s(%d) does not support text decoding", id, id);
                 return defaultDecodeText(index, len, buff);
         }
     }
@@ -660,7 +660,6 @@ class DataTypeCodec {
         // }
         // FIXME: Needing refactor or cleanup -@zxp at 8/28/2019, 10:34:26 AM
         // 
-        implementationMissing(false);
         return textdecodeTEXT(index, len, buff).Variant();
     }
 

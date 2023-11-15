@@ -7,7 +7,7 @@
     "license": "Apache-2.0",
     "versions": [
         "HUNT_DEBUG",
-        "HUNT_NET_DEBUG1",
+        "HUNT_NET_DEBUG",
         "HUNT_DB_DEBUG",
         "HUNT_SQL_DEBUG"
     ],
